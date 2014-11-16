@@ -1,0 +1,203 @@
+{% extends 'ComptesCoreBundle::layout.html.twig' %}
+
+{% block title %} - {{ compte }}{% endblock %}
+
+{% import _self as macros %}
+
+{% macro categoriesFilles(categorie, mouvement, depth) %}
+
+    {% set optgroup = not categorie.categorieParente %}
+    {% if optgroup %}<optgroup label="{{ categorie }}">{% endif %}
+
+        <option value="{{ categorie.id }}" style="padding-left: {{ (depth * 20) ~ "px" }};" {{ mouvement is not null and mouvement.categorie is not null and mouvement.categorie.id == categorie.id ? "selected" }}>{{ categorie }}</option>
+        {% if categorie.categoriesFilles is not empty %}
+            {% set depth = depth + 1 %}
+            {% for categorieFille in categorie.categoriesFilles %}
+                {{ _self.categoriesFilles(categorieFille, mouvement, depth) }}
+            {% endfor %}
+        {% endif %}
+
+    {% if optgroup %}</optgroup>{% endif %}
+
+{% endmacro %}
+
+{% block content %}
+    <h1>{{ compte }}</h1>
+    <div class="row">
+        <div class="col-md-6">
+            <form action="{{ path('comptes_compte', {'compte_id': compte.id}) }}" method="GET">
+                <div class="input-group">
+                    <span class="input-group-addon">Du</span>
+                    <input class="form-control" type="text" name="date_filter[start]" value="{{ date_filter.start|date('d-m-Y') }}" placeholder="{{ date_filter.start|date('d-m-Y') }}">
+                    <span class="input-group-addon middle">au</span>
+                    <input class="form-control" type="text" name="date_filter[end]" value="{{ date_filter.end|date('d-m-Y') }}" placeholder="{{ date_filter.end|date('d-m-Y') }}">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="submit">
+                            <span class="glyphicon glyphicon-time"></span> Appliquer
+                        </button>
+                    </span>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div id="chart" class="chart col-md-12"></div>
+        <script>
+            $(function(){
+                $('#chart').highcharts({
+                    title: {
+                        text: "Aperçu de la période",
+                        x: -20 // centrage
+                    },
+                    xAxis: {
+                        type: 'datetime'
+                    },
+                    yAxis: {
+                        title: {
+                            text: "Solde (€)"
+                        }
+                    },
+                    tooltip: {
+                        valueSuffix: "€"
+                    },
+                    legend: {
+                        enabled: false
+                    },
+                    credits: {
+                        enabled: false
+                    },
+                    series: [{
+                        name: "{{ compte|e('js') }}",
+                        data: [
+                            {% set solde_periode = solde_start %}
+                            {% for key, mouvement in mouvements %}
+                                {% set solde_periode = solde_periode + mouvement.montant %}
+                                {% if (mouvements[key+1] is not defined) or (mouvements[key+1] is defined and mouvements[key+1].date != mouvement.date) %}
+                                    [
+                                        Date.UTC({{ mouvement.date|date('Y')|e('js') }}, {{ (mouvement.date|date('m')-1)|e('js') }}, {{ mouvement.date|date('d')|e('js') }}),
+                                        {{ solde_periode|e('js') }}
+                                    ]{{ loop.revindex > 1 ? ","|e('js') }}
+                                {% endif %}
+                            {% endfor %}
+                        ]
+                    }]
+                });
+            });
+        </script>
+    </div>
+    <div class="row">
+        <form action="{{ path('mouvements_edit') }}" method="POST">
+            <table class="table table-condensed table-striped table-hover">
+                <caption>Liste des mouvements</caption>
+                <thead>
+                    <tr>
+                        <th>
+                            Action par lot
+                            <small>
+                                <span class="check-all glyphicon glyphicon-check" data-target-name="batch[]" title="Cocher tout"></span>
+                                <span class="uncheck-all glyphicon glyphicon-unchecked" data-target-name="batch[]" title="Décocher tout"></span>
+                            </small>
+                        </th>
+                        <th>Date</th>
+                        <th>Montant</th>
+                        <th>Solde</th>
+                        <th>Description</th>
+                        <th>Catégorie</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set solde_periode = solde_start %}
+                    {% for mouvement in mouvements %}
+                        {% set solde_periode = solde_periode + mouvement.montant %}
+                        <tr>
+                            <td>
+                                <label for="batch-{{ mouvement.id }}" class="sr-only">Éditer</label>
+                                <input id="batch-{{ mouvement.id }}" type="checkbox" name="batch[]" value="{{ mouvement.id }}">
+                            </td>
+                            <td class="input-text">
+                                <label for="date-{{ mouvement.id }}" class="sr-only">Date</label>
+                                <input id="date-{{ mouvement.id }}" type="text" name="mouvements[{{ mouvement.id }}][date]" value="{{ mouvement.date|date('d-m-Y') }}">
+                            </td>
+                            <td class="input-text">
+                                <label for="montant-{{ mouvement.id }}" class="sr-only">Montant</label>
+                                <input id="montant-{{ mouvement.id }}" type="text" name="mouvements[{{ mouvement.id }}][montant]" value="{{ mouvement.montant|number_format(2, ".", "") }}">
+                            </td>
+                            <td>
+                                {{ solde_periode|number_format(2, ".", "") ~ "€" }}
+                            </td>
+                            <td class="input-text">
+                                <label for="description-{{ mouvement.id }}" class="sr-only">Description</label>
+                                <input id="description-{{ mouvement.id }}" type="text" name="mouvements[{{ mouvement.id }}][description]" value="{{ mouvement.description }}">
+                            </td>
+                            <td>
+                                <label for="categorie-{{ mouvement.id }}" class="sr-only">Catégorie</label>
+                                <select id="categorie-{{ mouvement.id }}" name="mouvements[{{ mouvement.id }}][categorie]">
+                                    <option value=""></option>
+                                    {% if categories is not empty %}
+                                        {% for categorie in categories %}
+                                            {% if not categorie.categorieParente %}
+                                                {{ macros.categoriesFilles(categorie, mouvement, 0) }}
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                </select>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    <tr>
+                        <td>
+                            <label for="batch--1" class="sr-only">Ajouter</label>
+                            <input id="batch--1" type="checkbox" name="batch[]" value="-1">
+                            <input type="hidden" name="mouvements[-1][compte]" value="{{ compte.id }}">
+                        </td>
+                        <td class="input-text">
+                            <label for="date--1" class="sr-only">Date</label>
+                            <input id="date--1" type="text" name="mouvements[-1][date]" value="{{ date()|date('d-m-Y') }}" placeholder="{{ date()|date('d-m-Y') }}">
+                        </td>
+                        <td class="input-text">
+                            <label for="montant--1" class="sr-only">Montant</label>
+                            <input id="montant--1" type="text" name="mouvements[-1][montant]" value="0,00" placeholder="0,00">
+                        </td>
+                        <td></td>
+                        <td class="input-text">
+                            <label for="description--1" class="sr-only">Description</label>
+                            <input id="description--1" type="text" name="mouvements[-1][description]" value="" placeholder="DESCRIPTION">
+                        </td>
+                        <td>
+                            <label for="categorie--1" class="sr-only">Catégorie</label>
+                            <select id="categorie--1" name="mouvements[-1][categorie]">
+                                <option value=""></option>
+                                {% if categories is not empty %}
+                                    {% for categorie in categories %}
+                                        {% if not categorie.categorieParente %}
+                                            {{ macros.categoriesFilles(categorie, null, 0) }}
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                            </select>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="3">Solde actuel</th>
+                        <td colspan="3">{{ compte.solde|number_format(2, ".", "") ~ "€" }}</td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">Balance</th>
+                        <td colspan="4">{{ balance|number_format(2, ".", "") ~ "€" }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+            <input type="hidden" name="redirect_url" value="{{ path(app.request.get('_route'), {'compte_id': compte.id, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y')}) }}">
+            <div class="btn-group">
+                <button class="btn btn-default" type="submit" name="action" value="save">
+                    <span class="glyphicon glyphicon-floppy-disk"></span> Enregistrer
+                </button>
+                <button class="btn btn-default" type="submit" name="action" value="delete">
+                    <span class="glyphicon glyphicon-floppy-remove"></span> Supprimer
+                </button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

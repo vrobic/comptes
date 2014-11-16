@@ -1,0 +1,203 @@
+carburants:
+    -
+        # Nom commercial du carburant.
+        nom: Gazole
+        # Ordre d'affichage du carburant dans les listes.
+        rang: 1
+    -
+        nom: SP95
+        rang: 2
+    -
+        nom: SP98
+        rang: 3
+vehicules:
+    -
+        # Marque et modèle du véhicule.
+        nom: Honda Varadero
+        # Date d'achat du véhicule.
+        date_achat: 2011-10-11
+        # Date de revente du véhicule. Laisser vide si vous en êtes encore en possession.
+        date_vente: 2012-04-28
+        # Kilométrage du véhicule à son achat. Le séparateur de décimales est le point.
+        kilometrage_achat: 15815
+        # Kilométrage du véhicule après le premier plein
+        # rentré dans l'application. Le séparateur de décimales est le point.
+        kilometrage_initial: 15815
+        # Prix d'achat du véhicule, en euros. Le séparateur de décimales est le point.
+        prix_achat: 2615
+        # Identifiant du carburant (1 = Gazole, 2 = SP95, 3 = SP98 ; voir liste ci-dessus).
+        carburant: 1
+        # Capacité du réservoir, en litres. Le séparateur de décimales est le point.
+        capacite_reservoir: 17.7
+        # Ordre d'affichage du véhicule dans les listes.
+        rang: 5
+    -
+        nom: Suzuki Bandit
+        date_achat: 2012-05-05
+        date_vente: 2013-06-25
+        kilometrage_achat: 12280
+        kilometrage_initial: 12463.85
+        prix_achat: 2325
+        carburant: 1
+        capacite_reservoir: 19
+        rang: 4
+    -
+        nom: Renault 25
+        date_achat: 2010-01-01
+        date_vente: 2013-07-26
+        kilometrage_achat: 248845
+        kilometrage_initial: 258926
+        prix_achat: 1000
+        carburant: 0
+        capacite_reservoir: 66
+        rang: 3
+    -
+        nom: Peugeot 406 coupé
+        date_achat: 2013-07-06
+        date_vente:
+        kilometrage_achat: 246743
+        kilometrage_initial: 246755
+        prix_achat: 2290
+        carburant: 1
+        capacite_reservoir: 70
+        rang: 2
+    -
+        nom: Honda NC700X
+        date_achat: 2013-10-31
+        date_vente:
+        kilometrage_achat: 24650
+        kilometrage_initial: 24686
+        prix_achat: 4790
+        carburant: 1
+        capacite_reservoir: 14.1
+        rang: 1
+categories:
+    -
+        # Nom de la catégorie.
+        nom: Revenus
+        # Ordre d'affichage de la catégorie dans les listes.
+        rang: 1
+        # Sous-catégories éventuelles.
+        subcategories:
+            -
+                nom: Salaire
+                rang: 1
+    -
+        nom: Logement
+        rang: 2
+        subcategories:
+            -
+                nom: Loyer
+                rang: 1
+            -
+                nom: Charges
+                rang: 2
+            -
+                nom: Assurance habitation
+                rang: 3
+            -
+                nom: Entretien
+                rang: 4
+    -
+        nom: Transports
+        rang: 3
+        subcategories:
+            -
+                nom: Carburant
+                rang: 1
+            -
+                nom: Péage & stationnement
+                rang: 3
+            -
+                nom: Assurances
+                rang: 2
+            -
+                nom: Achat véhicule
+                rang: 4
+            -
+                nom: Entretien véhicule
+                rang: 5
+                subcategories:
+                    -
+                        nom: Auto
+                        rang: 1
+                    -
+                        nom: Moto
+                        rang: 2
+    -
+        nom: Alimentation
+        rang: 4
+        subcategories:
+            -
+                nom: Courses
+                rang: 1
+            -
+                nom: Restaurants
+                rang: 2
+    -
+        nom: Impôts
+        rang: 5
+        subcategories:
+            -
+                nom: Impôts sur le revenu
+                rang: 1
+            -
+                nom: Taxe d'habitation
+                rang: 2
+    -
+        nom: Télécommunications
+        rang: 6
+        subcategories:
+            -
+                nom: Mobile
+                rang: 1
+            -
+                nom: Internet
+                rang: 2
+    -
+        nom: Santé
+        rang: 7
+        subcategories:
+            -
+                nom: Mutuelle
+                rang: 1
+            -
+                nom: Pharmacie
+                rang: 2
+    -
+        nom: Habillement
+        rang: 8
+    -
+        nom: Loisirs & sorties
+        rang: 9
+    -
+        nom: Achats divers
+        rang: 10
+    -
+        nom: Cadeaux
+        rang: 11
+comptes:
+    -
+        # Nom du compte.
+        nom: Compte courant
+        # Numéro du compte.
+        numero: ########
+        # Domiciliation du compte.
+        banque: Ma banque
+        # Plafond du compte, en euros. Le séparateur de décimales est le point.
+        plafond: 0
+        # Solde initial du compte en euros, avant le premier mouvement
+        # rentré dans l'application. Le séparateur de décimales est le point.
+        solde_initial: 1278.83
+        # Date d'ouverture du compte, au format Y-m-d
+        date_ouverture: 2009-12-09
+        # Ordre d'affichage du compte dans les listes.
+        rang: 1
+    -
+        nom: Livret jeune
+        numero: ########
+        banque: Ma banque
+        plafond: 1600
+        solde_initial: 0
+        date_ouverture: 2012-03-31
+        rang: 2

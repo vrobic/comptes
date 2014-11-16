@@ -1,0 +1,136 @@
+{% extends 'ComptesCoreBundle::layout.html.twig' %}
+
+{% block title %} - Import des mouvements{% endblock %}
+
+{% import _self as macros %}
+
+{% macro categoriesFilles(categorie, mouvement, depth) %}
+
+    {% set optgroup = not categorie.categorieParente %}
+    {% if optgroup %}<optgroup label="{{ categorie }}">{% endif %}
+
+        <option value="{{ categorie.id }}" style="padding-left: {{ (depth * 20) ~ "px" }};" {{ mouvement.categorie is not null and mouvement.categorie.id == categorie.id ? "selected" }}>{{ categorie }}</option>
+        {% if categorie.categoriesFilles is not empty %}
+            {% set depth = depth + 1 %}
+            {% for categorieFille in categorie.categoriesFilles %}
+                {{ _self.categoriesFilles(categorieFille, mouvement, depth) }}
+            {% endfor %}
+        {% endif %}
+
+    {% if optgroup %}</optgroup>{% endif %}
+
+{% endmacro %}
+
+{% macro mouvements(type, mouvements, comptes, categories) %}
+
+    {% import _self as macros %}
+
+    <table class="table table-condensed table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Importer</th>
+                <th>Compte</th>
+                <th>Date</th>
+                <th>Montant</th>
+                <th>Description</th>
+                <th>Catégorie</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for mouvement in mouvements %}
+                <tr>
+                    <td>
+                        <label for="mouvement-{{ mouvement.hash }}" class="sr-only">Importer</label>
+                        <input id="mouvement-{{ mouvement.hash }}" type="checkbox" name="mouvements_hash_to_import[]" value="{{ mouvement.hash }}" {{ type != 'waiting' ? "checked" }}>
+                    </td>
+                    <td>
+                        <label for="compte-{{ mouvement.hash }}" class="sr-only">Compte</label>
+                        <select id="compte-{{ mouvement.hash }}" name="mouvements[{{ mouvement.hash }}][compte]">
+                            <option value=""></option>
+                            {% if comptes is not empty %}
+                                {% for compte in comptes %}
+                                    <option value="{{ compte.id }}" {{ mouvement.compte.id == compte.id ? "selected" }}>{{ compte }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </td>
+                    <td class="input-text">
+                        <label for="date-{{ mouvement.hash }}" class="sr-only">Date</label>
+                        <input id="date-{{ mouvement.hash }}" type="text" name="mouvements[{{ mouvement.hash }}][date]" value="{{ mouvement.date|date('d-m-Y') }}">
+                    </td>
+                    <td class="input-text">
+                        <label for="montant-{{ mouvement.hash }}" class="sr-only">Montant</label>
+                        <input id="montant-{{ mouvement.hash }}" type="text" name="mouvements[{{ mouvement.hash }}][montant]" value="{{ mouvement.montant|number_format(2, ".", "") }}">
+                    </td>
+                    <td class="input-text">
+                        <label for="description-{{ mouvement.hash }}" class="sr-only">Description</label>
+                        <input id="description-{{ mouvement.hash }}" type="text" name="mouvements[{{ mouvement.hash }}][description]" value="{{ mouvement.description }}">
+                    </td>
+                    <td>
+                        <label for="categorie-{{ mouvement.hash }}" class="sr-only">Catégorie</label>
+                        <select id="categorie-{{ mouvement.hash }}" name="mouvements[{{ mouvement.hash }}][categorie]">
+                            <option value=""></option>
+                            {% if categories is not empty %}
+                                {% for categorie in categories %}
+                                    {% if not categorie.categorieParente %}
+                                        {{ macros.categoriesFilles(categorie, mouvement, 0) }}
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endmacro %}
+
+{% block content %}
+    <h1>Import des mouvements</h1>
+    <form action="{{ path('import_mouvements') }}" method="POST" enctype="multipart/form-data">
+
+        <div class="form-group">
+            <label for="handler-identifier">Handler</label>
+            <select id="handler-identifier" name="handlerIdentifier">
+                {% for handlerIdentifier, handler in handlers %}
+                    <option value="{{ handlerIdentifier }}">{{ handler.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="file">Fichier</label>
+            <input id="file" type="file" name="file">
+        </div>
+        <button class="btn btn-default" type="submit" name="action" value="parse">Analyser</button>
+
+        {% if categorized_mouvements is not empty or
+              uncategorized_mouvements is not empty or
+              ambiguous_mouvements is not empty or
+              waiting_mouvements is not empty %}
+
+            {% if categorized_mouvements is not empty %}
+                <h2>Mouvements catégorisés</h2>
+                {{ macros.mouvements('categorized', categorized_mouvements, comptes, categories) }}
+            {% endif %}
+
+            {% if uncategorized_mouvements is not empty %}
+                <h2>Mouvements non catégorisés</h2>
+                {{ macros.mouvements('uncategorized', uncategorized_mouvements, comptes, categories) }}
+            {% endif %}
+
+            {% if ambiguous_mouvements is not empty %}
+                <h2>Mouvements ambigus</h2>
+                {{ macros.mouvements('ambiguous', ambiguous_mouvements, comptes, categories) }}
+            {% endif %}
+
+            {% if waiting_mouvements is not empty %}
+                <h2>Mouvements à confirmer</h2>
+                {{ macros.mouvements('waiting', waiting_mouvements, comptes, categories) }}
+            {% endif %}
+
+            <button class="btn btn-default" type="submit" name="action" value="import">Importer</button>
+
+        {% endif %}
+
+    </form>
+{% endblock %}

@@ -1,0 +1,31 @@
+services:
+
+    # Service permettant de charger et valider les fichiers de configuration
+    comptes_core.configuration.loader:
+        class: Comptes\Bundle\CoreBundle\Service\ConfigurationLoader
+        arguments: [ @service_container ]
+
+    # Fournisseur de statistiques
+    comptes_core.stats.provider:
+        class: Comptes\Bundle\CoreBundle\Service\StatsProvider
+        arguments: [ @service_container ]
+
+    # Service d'import : catégorisation automatique des mouvements
+    comptes_core.mouvement.categorizer:
+        class: Comptes\Bundle\CoreBundle\Service\MouvementCategorizer
+        arguments: [ @service_container, @doctrine.orm.entity_manager ]
+
+    # Service d'import de mouvements : handler Excel pour la banque CIC
+    comptes_core.import.mouvements.cic.excel:
+        class: Comptes\Bundle\CoreBundle\Service\CICExcelMouvementsImportHandler
+        arguments: [ @service_container ]
+        
+    # Service d'import de pleins : handler XML pour l'application MyCars
+    comptes_core.import.pleins.mycars.xml:
+        class: Comptes\Bundle\CoreBundle\Service\MyCarsXMLPleinsImportHandler
+        arguments: [ @service_container ]
+        
+    # Service d'import de pleins : handler CSV pour l'application MyCars
+    comptes_core.import.pleins.mycars.csv:
+        class: Comptes\Bundle\CoreBundle\Service\MyCarsCSVPleinsImportHandler
+        arguments: [ @service_container ]

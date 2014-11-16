@@ -1,0 +1,145 @@
+{% extends 'ComptesCoreBundle::layout.html.twig' %}
+
+{% block title %} - Pleins{% endblock %}
+
+{% block content %}
+    <h1>Pleins</h1>
+    <div class="row">
+        <h2 class="sr-only">Indicateurs</h2>
+        <div class="widget col-md-4">
+            <div class="widget-content">
+                <div class="widget-icon pull-left">
+                    <span class="glyphicon glyphicon-tint"></span>
+                </div>
+                <h3>
+                    <strong>{{ pleins|length }}</strong>
+                    <small>nombre de pleins</small>
+                </h3>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <form class="col-md-12" action="{{ path('pleins_edit') }}" method="POST">
+            <table class="table table-condensed table-striped table-hover">
+                <caption>Liste des pleins de carburant</caption>
+                <thead>
+                    <tr>
+                        <th>
+                            Action par lot
+                            <small>
+                                <span class="check-all glyphicon glyphicon-check" data-target-name="batch[]" title="Cocher tout"></span>
+                                <span class="uncheck-all glyphicon glyphicon-unchecked" data-target-name="batch[]" title="Décocher tout"></span>
+                            </small>
+                        </th>
+                        <th>Date</th>
+                        <th>Quantité</th>
+                        <th>Prix au litre</th>
+                        <th>Montant</th>
+                        <th>Véhicule</th>
+                        <th>Distance parcourue</th>
+                        <th>Consommation</th>
+                        <th>Autonomie estimée <small>(kilomètres restants)</small></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <label for="batch--1" class="sr-only">Éditer</label>
+                            <input id="batch--1" type="checkbox" name="batch[]" value="-1">
+                        </td>
+                        <td class="input-text">
+                            <label for="date--1" class="sr-only">Date</label>
+                            <input id="date--1" type="text" name="pleins[-1][date]" value="{{ date()|date('d-m-Y') }}" placeholder="{{ date()|date('d-m-Y') }}">
+                        </td>
+                        <td class="input-text">
+                            <label for="quantite--1" class="sr-only">Quantité</label>
+                            <input id="quantite--1" type="text" name="pleins[-1][quantite]" value="0,00" placeholder="0,00">
+                        </td>
+                        <td class="input-text">
+                            <label for="prixLitre--1" class="sr-only">Prix au litre</label>
+                            <input id="prixLitre--1" type="text" name="pleins[-1][prixLitre]" value="0,000" placeholder="0,000">
+                        </td>
+                        <td></td>
+                        <td>
+                            <label for="vehicule--1" class="sr-only">Véhicule</label>
+                            <select id="vehicule--1" name="pleins[-1][vehicule]">
+                                {% if vehicules is not empty %}
+                                    {% for vehicule in vehicules %}
+                                        <option value="{{ vehicule.id }}">{{ vehicule }}</option>
+                                    {% endfor %}
+                                {% endif %}
+                            </select>
+                        </td>
+                        <td class="input-text">
+                            <label for="distanceParcourue--1" class="sr-only">Distance parcourue</label>
+                            <input id="distanceParcourue--1" type="text" name="pleins[-1][distanceParcourue]" value="0,00">
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    {% for plein in pleins %}
+                        <tr>
+                            <td>
+                                <label for="batch-{{ plein.id }}" class="sr-only">Éditer</label>
+                                <input id="batch-{{ plein.id }}" type="checkbox" name="batch[]" value="{{ plein.id }}">
+                            </td>
+                            <td class="input-text">
+                                <label for="date-{{ plein.id }}" class="sr-only">Date</label>
+                                <input id="date-{{ plein.id }}" type="text" name="pleins[{{ plein.id }}][date]" value="{{ plein.date|date('d-m-Y') }}">
+                            </td>
+                            <td class="input-text">
+                                <label for="quantite-{{ plein.id }}" class="sr-only">Quantité</label>
+                                <input id="quantite-{{ plein.id }}" type="text" name="pleins[{{ plein.id }}][quantite]" value="{{ plein.quantite|number_format(2, ".", "") }}">
+                            </td>
+                            <td class="input-text">
+                                <label for="prixLitre-{{ plein.id }}" class="sr-only">Prix au litre</label>
+                                <input id="prixLitre-{{ plein.id }}" type="text" name="pleins[{{ plein.id }}][prixLitre]" value="{{ plein.prixLitre|number_format(3, ".", "") }}">
+                            </td>
+                            <td>
+                                {{ plein.montant|number_format(2, ".", "") ~ "€" }}
+                            </td>
+                            <td>
+                                <label for="vehicule-{{ plein.id }}" class="sr-only">Véhicule</label>
+                                <select id="vehicule-{{ plein.id }}" name="pleins[{{ plein.id }}][vehicule]">
+                                    {% if vehicules is not empty %}
+                                        {% for vehicule in vehicules %}
+                                            <option value="{{ vehicule.id }}" {{ plein.vehicule.id == vehicule.id ? "selected" }}>{{ vehicule }}</option>
+                                        {% endfor %}
+                                    {% endif %}
+                                </select>
+                            </td>
+                            <td class="input-text">
+                                <label for="distanceParcourue-{{ plein.id }}" class="sr-only">Distance parcourue</label>
+                                <input id="distanceParcourue-{{ plein.id }}" type="text" name="pleins[{{ plein.id }}][distanceParcourue]" value="{{ plein.distanceParcourue|number_format(2, ".", "") }}">
+                            </td>
+                            <td class="{{ plein.consommation <= plein.vehicule.consommation ? 'text-success' : 'text-danger' }}">
+                                {{ plein.consommation|number_format(2, ".", "") ~ "L" }}
+                            </td>
+                            <td>
+                                {{ plein.autonomie|number_format(2, ".", "") ~ "km" }}
+                                <small>({{ (plein.autonomie - plein.distanceParcourue)|number_format(2, ".", "") ~ "km" }})</small>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th>Totaux</th>
+                        <td colspan="2">{{ total_quantite|number_format(2, ".", "") ~ "L" }}</td>
+                        <td colspan="2">{{ total_montant|number_format(2, ".", "") ~ "€" }}</td>
+                        <td colspan="3">{{ total_distance|number_format(2, ".", "") ~ "km" }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+            <input type="hidden" name="redirect_url" value="{{ path('pleins_pleins') }}">
+            <div class="btn-group">
+                <button class="btn btn-default" type="submit" name="action" value="save">
+                    <span class="glyphicon glyphicon-floppy-disk"></span> Enregistrer
+                </button>
+                <button class="btn btn-default" type="submit" name="action" value="delete">
+                    <span class="glyphicon glyphicon-floppy-remove"></span> Supprimer
+                </button>
+            </div>
+        </form>
+    </div>
+{% endblock %}
