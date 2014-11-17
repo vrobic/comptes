@@ -26,6 +26,7 @@ Ce paragraphe sera bref puisqu'il s'agit d'une installation Symfony2 classique.
 2. Renseigner le fichier `app/config/parameters.yml.dist`
 3. Configurer un hôte virtuel, modifier le fichier `hosts` puis redémarrer le serveur web
 4. Installer _Composer_ et lancer l'installation des dépendances : `php composer.phar install`
+5. Relier les assets au le répertoire `web` : `php app/console assets:install --symlink`
 
 ### Paramétrage de l'application
 

@@ -181,7 +181,7 @@ comptes:
         # Nom du compte.
         nom: Compte courant
         # Numéro du compte.
-        numero: ########
+        numero: 00000000
         # Domiciliation du compte.
         banque: Ma banque
         # Plafond du compte, en euros. Le séparateur de décimales est le point.
@@ -195,7 +195,7 @@ comptes:
         rang: 1
     -
         nom: Livret jeune
-        numero: ########
+        numero: 00000000
         banque: Ma banque
         plafond: 1600
         solde_initial: 0
