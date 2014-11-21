@@ -315,4 +315,35 @@ class MouvementRepository extends EntityRepository
 
         return $mouvements;
     }
+
+    /**
+     * Récupère les mouvements du montant donné entre deux dates.
+     *
+     * @param float $montant
+     * @param \DateTime $dateStart
+     * @param \DateTime $dateEnd
+     * @return array
+     */
+    public function findByMontantBetweenDates($montant, $dateStart, $dateEnd)
+    {
+        $queryBuilder = $this->_em->createQueryBuilder();
+        $expressionBuilder = $this->_em->getExpressionBuilder();
+
+        $and = $expressionBuilder->andX();
+        $and->add($expressionBuilder->eq('m.montant', ':montant'));
+        $and->add($expressionBuilder->gte('m.date', ':date_start'));
+        $and->add($expressionBuilder->lte('m.date', ':date_end'));
+
+        $queryBuilder
+            ->select('m')
+            ->from('ComptesCoreBundle:Mouvement', 'm')
+            ->where($and)
+            ->setParameter(':montant', $montant)
+            ->setParameter(':date_start', $dateStart)
+            ->setParameter(':date_end', $dateEnd);
+
+        $mouvements = $queryBuilder->getQuery()->getResult();
+
+        return $mouvements;
+    }
 }

@@ -102,8 +102,9 @@ class Plein
         $date = $this->getDate()->format("d/m/Y");
         $vehicule = $this->getVehicule();
         $quantite = $this->getQuantite();
+        $montant = $this->getMontant();
 
-        return "$date $vehicule {$quantite}L";
+        return "$date $vehicule {$quantite}L {$montant}€";
     }
 
     /**
