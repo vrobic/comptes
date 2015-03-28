@@ -17,6 +17,8 @@
 
 ## Stats
 
+- catégories
+    - revoir comment est calculé le total "non catégorisé"
 - pleins
     - consommation moyenne / plein
     - autonomie estimée / plein
