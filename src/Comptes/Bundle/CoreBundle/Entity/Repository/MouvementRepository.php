@@ -72,8 +72,8 @@ class MouvementRepository extends EntityRepository
      * Récupère les mouvements d'un compte,
      * depuis le début jusqu'à une date donnée (incluse).
      *
-     * TODO : mutualiser avec self::findByCompteSinceDate()
-     *
+     * @todo Mutualiser avec self::findByCompteSinceDate()
+     * 
      * @param Compte $compte
      * @param \DateTime $date
      * @param string $order 'ASC' (par défaut) ou 'DESC'.
@@ -107,7 +107,7 @@ class MouvementRepository extends EntityRepository
      * Récupère les mouvements d'un compte,
      * depuis une date donnée jusqu'à aujourd'hui (inclus).
      *
-     * TODO : mutualiser avec self::findByCompteUntilDate()
+     * @todo Mutualiser avec self::findByCompteUntilDate()
      *
      * @param Compte $compte
      * @param \DateTime $date
@@ -177,7 +177,7 @@ class MouvementRepository extends EntityRepository
      * Récupère les mouvements,
      * depuis le début jusqu'à une date donnée (incluse).
      *
-     * TODO : mutualiser avec self::findSinceDate()
+     * @todo Mutualiser avec self::findSinceDate()
      *
      * @param \DateTime $date
      * @param string $order 'ASC' (par défaut) ou 'DESC'.
@@ -203,7 +203,7 @@ class MouvementRepository extends EntityRepository
      * Récupère les mouvements,
      * depuis une date donnée jusqu'à aujourd'hui (inclus).
      *
-     * TODO : mutualiser avec self::findUntilDate()
+     * @todo Mutualiser avec self::findUntilDate()
      *
      * @param \DateTime $date
      * @param string $order 'ASC' (par défaut) ou 'DESC'.

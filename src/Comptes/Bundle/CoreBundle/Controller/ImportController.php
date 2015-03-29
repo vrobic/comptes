@@ -35,9 +35,8 @@ class ImportController extends Controller
      *      - affichage d'un formulaire permettant d'ajuster les données
      *      - validation et import
      *
-     * TODO : comme pour MouvementController->edit(),
-     *        utiliser un formulaire Symfony.
-     *
+     * @todo Comme pour MouvementController->edit(), utiliser un formulaire Symfony.
+     * 
      * @param Request $request
      * @return Response
      * @throws \Exception En cas d'erreur d'import du fichier.
@@ -203,9 +202,8 @@ class ImportController extends Controller
      *      - affichage d'un formulaire permettant d'ajuster les données
      *      - validation et import
      *
-     * TODO : comme pour PleinController->edit(),
-     *        utiliser un formulaire Symfony.
-     *
+     * @todo Comme pour PleinController->edit(), utiliser un formulaire Symfony.
+     * 
      * @param Request $request
      * @return Response
      * @throws \Exception En cas d'erreur d'import du fichier.
@@ -414,7 +412,8 @@ class ImportController extends Controller
      *
      * @param Request $request
      * @return SplFileObject
-     * @throws \Exception En cas d'erreur d'upload du fichier.
+     * @throws \Symfony\Component\HttpKernel\Exception\BadRequestHttpException En cas d'erreur d'accès au fichier.
+     * @throws \Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException Si le type de fichier n'est pas celui attendu.
      */
     private function getFile(Request $request)
     {
@@ -422,11 +421,11 @@ class ImportController extends Controller
 
         if ($file === null)
         {
-            throw new \Exception("Fichier manquant.");
+            throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException("Fichier manquant.");
         }
         elseif (!$file->isValid())
         {
-            throw new \Exception("Échec de l'upload du fichier.");
+            throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException("Échec de l'upload du fichier.");
         }
 
         $fileExtension = $file->getClientOriginalExtension();
@@ -434,7 +433,7 @@ class ImportController extends Controller
         // Handlers disponibles
         if ($fileExtension !== $this->handlers[$this->handlerIdentifier]['extension'])
         {
-            throw new \Exception("Le handler [$this->handlerIdentifier] ne supporte pas le type de fichier [$fileExtension].");
+            throw new \Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException("Le handler [$this->handlerIdentifier] ne supporte pas le type de fichier [$fileExtension].");
         }
 
         $splFile = $file->openFile();

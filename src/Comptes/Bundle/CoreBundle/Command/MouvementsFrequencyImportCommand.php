@@ -28,7 +28,7 @@ class MouvementsFrequencyImportCommand extends ContainerAwareCommand
 
         if (!file_exists($filename))
         {
-            throw new \Exception("Le fichier $filename n'existe pas.");
+            throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException("Le fichier $filename n'existe pas.");
         }
 
         $string = file_get_contents($filename);

@@ -18,7 +18,16 @@ use Comptes\Bundle\CoreBundle\Entity\Plein;
  */
 abstract class PleinsImportHandler implements ImportHandler
 {
+    /**
+     * @internal Flag de catégorisation d'un plein valide,
+     * à importer tel quel.
+     */
     const VALID = 0;
+    
+    /**
+     * @internal Flag de catégorisation d'un plein déjà importé,
+     * nécessitant donc une validation manuelle avant d'être éventuellement réimporté.
+     */
     const WAITING = 1;
 
     /**

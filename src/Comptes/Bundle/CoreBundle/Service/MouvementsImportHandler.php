@@ -20,9 +20,29 @@ use Comptes\Bundle\CoreBundle\Entity\Mouvement;
  */
 abstract class MouvementsImportHandler implements ImportHandler
 {
+    /**
+     * @internal Flag de catégorisation d'un mouvement catégorisé,
+     * à importer tel quel.
+     */
     const CATEGORIZED = 0;
+    
+    /**
+     * @internal Flag de catégorisation d'un mouvement non catégorisé,
+     * à importer tel quel.
+     */
     const UNCATEGORIZED = 1;
+    
+    /**
+     * @internal Flag de catégorisation d'un mouvement pour lequel
+     * plusieurs catégories ont été trouvées,
+     * et qui nécessite donc une validation manuelle avant d'être importé.
+     */
     const AMBIGUOUS = 2;
+    
+    /**
+     * @internal Flag de catégorisation d'un mouvement déjà importé,
+     * nécessitant donc une validation manuelle avant d'être éventuellement réimporté.
+     */
     const WAITING = 3;
 
     /**

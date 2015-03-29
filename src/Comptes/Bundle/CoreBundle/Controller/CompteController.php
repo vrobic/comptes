@@ -82,7 +82,7 @@ class CompteController extends Controller
      *
      * @param Request $request
      * @return Response
-     * @throws \Exception Si la période de dates est invalide.
+     * @throws \Symfony\Component\HttpKernel\Exception\BadRequestHttpException Si la période de dates est invalide.
      */
     public function showAction(Request $request)
     {
@@ -125,7 +125,7 @@ class CompteController extends Controller
 
         if (!$dateStart || !$dateEnd)
         {
-            throw new \Exception("La période de dates est invalide.");
+            throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException("La période de dates est invalide.");
         }
 
         $dateFilter = array(

@@ -39,7 +39,7 @@ class MouvementCategorizer
      *
      * @param Mouvement $mouvement
      * @throws \Exception Si l'une des catégories est inconnue.
-     * @return array Liste de catégories.
+     * @return Categorie[] Liste de catégories.
      */
     function getCategories($mouvement)
     {

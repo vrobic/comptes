@@ -80,13 +80,14 @@ abstract class ImportCommand extends ContainerAwareCommand
      *
      * @param string $filename Chemin du fichier.
      * @return SplFileObject
-     * @throws \Exception En cas d'erreur d'accès au fichier.
+     * @throws \Symfony\Component\HttpKernel\Exception\BadRequestHttpException En cas d'erreur d'accès au fichier.
+     * @throws \Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException Si le type de fichier n'est pas celui attendu.
      */
     protected function getFile($filename)
     {
         if (!file_exists($filename))
         {
-            throw new \Exception("Le fichier $filename n'existe pas.");
+            throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException("Le fichier $filename n'existe pas.");
         }
 
         $splFile = new \SplFileObject($filename);
@@ -96,7 +97,7 @@ abstract class ImportCommand extends ContainerAwareCommand
         // Handlers disponibles
         if ($fileExtension !== $this->handlers[$this->handlerIdentifier]['extension'])
         {
-            throw new \Exception("Le handler [$this->handlerIdentifier] ne supporte pas le type de fichier [$fileExtension].");
+            throw new \Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException("Le handler [$this->handlerIdentifier] ne supporte pas le type de fichier [$fileExtension].");
         }
 
         return $splFile;

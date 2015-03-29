@@ -12,8 +12,8 @@ class MouvementController extends Controller
     /**
      * Édition de mouvements bancaires par lots.
      *
-     * TODO : utiliser un formulaire Symfony.
-     *
+     * @todo Utiliser un formulaire Symfony.
+     * 
      * @param Request $request
      * @return Response
      */

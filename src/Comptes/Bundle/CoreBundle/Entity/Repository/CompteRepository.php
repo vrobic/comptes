@@ -23,7 +23,7 @@ class CompteRepository extends EntityRepository
     /**
      * Calcule la balance (débit/crédit) d'une liste de mouvements.
      *
-     * @param array $mouvements
+     * @param Mouvement[] $mouvements
      * @return float
      */
     public function getBalanceByMouvements($mouvements)
@@ -42,7 +42,7 @@ class CompteRepository extends EntityRepository
     /**
      * Calcule la balance (débit/crédit) de comptes bancaires cumulés.
      *
-     * @param array $comptes
+     * @param Compte[] $comptes
      * @param \DateTime $dateStart Date de début, incluse.
      * @param \DateTime $dateEnd Date de fin, incluse.
      * @return float

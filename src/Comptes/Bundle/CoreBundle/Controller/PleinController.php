@@ -58,8 +58,8 @@ class PleinController extends Controller
     /**
      * Édition de pleins par lots.
      *
-     * TODO : utiliser un formulaire Symfony.
-     *
+     * @todo Utiliser un formulaire Symfony.
+     * 
      * @param Request $request
      * @return Response
      */

@@ -73,7 +73,7 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
 
         if (!file_exists($filename))
         {
-            throw new \Exception("Le fichier $filename n'existe pas.");
+            throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException("Le fichier $filename n'existe pas.");
         }
 
         $em = $this->getContainer()->get('doctrine')->getManager();
@@ -109,7 +109,7 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
 
             if (!$compte)
             {
-                throw new \Exception("Le compte n°$numeroCompte est inconnu.");
+                throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException("Le compte n°$numeroCompte est inconnu.");
             }
 
             // Recherche la présence des dates d'opération et de valeur, format "00-00-0000 00-00-0000"
