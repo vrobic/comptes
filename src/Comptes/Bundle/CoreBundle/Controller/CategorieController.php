@@ -11,9 +11,10 @@ class CategorieController extends Controller
     /**
      * Liste des catégories.
      *
+     * @param Request $request
      * @return Response
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
         // Repositories
         $doctrine = $this->getDoctrine();
@@ -23,18 +24,50 @@ class CategorieController extends Controller
         // Toutes les catégories
         $categories = $categorieRepository->findAll();
 
+        // Filtre sur la période
+        if ($request->get('date_filter'))
+        {
+            $dateFilterString = $request->get('date_filter');
+            $dateStartString = $dateFilterString['start'];
+            $dateEndString = $dateFilterString['end'];
+
+            $dateStart = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateStartString 00:00:00");
+            $dateEnd = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateEndString 00:00:00");
+        }
+        else // Par défaut, depuis toujours
+        {
+            list ($year, $month, $lastDayOfMonth) = explode('-', date('Y-n-t'));
+
+            $month = (int) $month;
+            $year = (int) $year;
+            $lastDayOfMonth = (int) $lastDayOfMonth;
+
+            $dateStart = \DateTime::createFromFormat('Y-n-j H:i:s', "1900-1-1 00:00:00"); // @todo : dynamiser la date de début
+            $dateEnd = \DateTime::createFromFormat('Y-n-j H:i:s', "$year-$month-$lastDayOfMonth 00:00:00");
+        }
+
+        if (!$dateStart || !$dateEnd)
+        {
+            throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException("La période de dates est invalide.");
+        }
+
+        $dateFilter = array(
+            'start' => $dateStart,
+            'end' => $dateEnd
+        );
+
         // Montant total des mouvements par catégorie
         $montants = array();
 
-        // Montant cumulé de tous les mouvements, et des mouvements catégorisés
-        $montantTotal = $mouvementRepository->getMontantTotal();
+        // Montant cumulé de tous les mouvements, et des mouvements catégorisés sur la période donnée
+        $montantTotal = $mouvementRepository->getMontantTotalByDate($dateFilter['start'], $dateFilter['end']);
         $montantTotalCategorise = 0;
 
         foreach ($categories as $categorie)
         {
             $categorieID = $categorie->getId();
 
-            $montantTotalCategorie = $categorieRepository->getMontantTotal($categorie);
+            $montantTotalCategorie = $categorieRepository->getMontantTotalByDate($categorie, $dateFilter['start'], $dateFilter['end']);
             $montantTotalCategorise += $montantTotalCategorie;
             $montants[$categorieID] = $montantTotalCategorie;
         }
@@ -46,6 +79,7 @@ class CategorieController extends Controller
             'ComptesCoreBundle:Categorie:index.html.twig',
             array(
                 'categories' => $categories,
+                'date_filter' => $dateFilter,
                 'montants' => $montants,
                 'montant_total_non_categorise' => $montantTotalNonCategorise
             )

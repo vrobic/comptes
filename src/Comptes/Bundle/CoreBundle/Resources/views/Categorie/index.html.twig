@@ -26,6 +26,23 @@
 
 {% block content %}
     <h1>Catégories</h1>
+    <div class="row">
+        <div class="col-md-6">
+            <form action="{{ path('categories_categories') }}" method="GET">
+                <div class="input-group">
+                    <span class="input-group-addon">Du</span>
+                    <input class="form-control" type="text" name="date_filter[start]" value="{{ date_filter.start|date('d-m-Y') }}" placeholder="{{ date_filter.start|date('d-m-Y') }}">
+                    <span class="input-group-addon middle">au</span>
+                    <input class="form-control" type="text" name="date_filter[end]" value="{{ date_filter.end|date('d-m-Y') }}" placeholder="{{ date_filter.end|date('d-m-Y') }}">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="submit">
+                            <span class="glyphicon glyphicon-time"></span> Appliquer
+                        </button>
+                    </span>
+                </div>
+            </form>
+        </div>
+    </div>
     {% if categories is not empty %}
         <div class="row">
             <div id="chart" class="chart col-md-12"></div>
