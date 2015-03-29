@@ -48,6 +48,36 @@ class PleinRepository extends EntityRepository
     }
 
     /**
+     * Récupère les pleins entre deux dates.
+     *
+     * @param \DateTime $dateStart Date de début, incluse.
+     * @param \DateTime $dateEnd Date de fin, incluse.
+     * @param string $order 'ASC' (par défaut) ou 'DESC'.
+     * @return array
+     */
+    public function findByDate(\DateTime $dateStart, \DateTime $dateEnd, $order='ASC')
+    {
+        $queryBuilder = $this->_em->createQueryBuilder();
+        $expressionBuilder = $this->_em->getExpressionBuilder();
+
+        $and = $expressionBuilder->andX();
+        $and->add($expressionBuilder->gte('p.date', ':date_start'));
+        $and->add($expressionBuilder->lte('p.date', ':date_end'));
+
+        $queryBuilder
+            ->select('p')
+            ->from('ComptesCoreBundle:Plein', 'p')
+            ->where($and)
+            ->setParameter('date_start', $dateStart)
+            ->setParameter('date_end', $dateEnd)
+            ->orderBy('p.date', $order);
+
+        $pleins = $queryBuilder->getQuery()->getResult();
+
+        return $pleins;
+    }
+
+    /**
      * Récupère le plein le plus récent.
      *
      * @return Plein

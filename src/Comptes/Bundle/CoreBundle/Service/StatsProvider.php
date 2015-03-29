@@ -77,4 +77,32 @@ class StatsProvider
 
         return $monthlyBalance;
     }
+
+    /**
+     * Compte la distance parcourue entre deux dates incluses,
+     * en se basant sur les pleins de carburant.
+     *
+     * @param \DateTime $dateStart Date de début, incluse.
+     * @param \DateTime $dateEnd Date de fin, incluse.
+     * @return float
+     */
+    public function getDistanceByDate($dateStart, $dateEnd)
+    {
+        // Repositories
+        $doctrine = $this->container->get('doctrine');
+        $pleinRepository = $doctrine->getRepository('ComptesCoreBundle:Plein');
+
+        // Tous les pleins entre ces deux dates
+        $pleins = $pleinRepository->findByDate($dateStart, $dateEnd);
+
+        // Distance parcourue
+        $distance = 0;
+
+        foreach ($pleins as $plein)
+        {
+            $distance += $plein->getDistanceParcourue();
+        }
+
+        return $distance;
+    }
 }
