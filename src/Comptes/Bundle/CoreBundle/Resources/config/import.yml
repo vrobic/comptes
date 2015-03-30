@@ -17,6 +17,15 @@ handlers:
                 2: 3
                 3: 2
                 4: 1
+        # Identifiant du service d'import, ici "comptes_core.import.mouvements.caissedepargne.csv".
+        caissedepargne.csv:
+            # Nom de la source
+            name: Caisse d'Épargne - CSV
+            # L'extension du fichier attendu par le handler d'import
+            extension: csv
+            # Le fichier CSV ne contient les mouvements que d'un seul compte.
+            # Ce paramètre indique l'identifiant du compte sur lequel les importer.
+            compte: 1
     pleins:
         # Identifiant du service d'import, ici "comptes_core.import.pleins.mycars.xml".
         mycars.xml:

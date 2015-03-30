@@ -19,12 +19,17 @@ services:
     comptes_core.import.mouvements.cic.excel:
         class: Comptes\Bundle\CoreBundle\Service\CICExcelMouvementsImportHandler
         arguments: [ @service_container ]
-        
+
+    # Service d'import de mouvements : handler CSV pour la banque Caisse d'Épargne
+    comptes_core.import.mouvements.caissedepargne.csv:
+        class: Comptes\Bundle\CoreBundle\Service\CaisseEpargneMouvementsImportHandler
+        arguments: [ @service_container ]
+
     # Service d'import de pleins : handler XML pour l'application MyCars
     comptes_core.import.pleins.mycars.xml:
         class: Comptes\Bundle\CoreBundle\Service\MyCarsXMLPleinsImportHandler
         arguments: [ @service_container ]
-        
+
     # Service d'import de pleins : handler CSV pour l'application MyCars
     comptes_core.import.pleins.mycars.csv:
         class: Comptes\Bundle\CoreBundle\Service\MyCarsCSVPleinsImportHandler
