@@ -34,7 +34,7 @@ class CategorieController extends Controller
             $dateStart = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateStartString 00:00:00");
             $dateEnd = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateEndString 00:00:00");
         }
-        else // Par défaut, depuis toujours
+        else // Par défaut, depuis un an et jusqu'à la fin du mois
         {
             list ($year, $month, $lastDayOfMonth) = explode('-', date('Y-n-t'));
 
@@ -42,7 +42,8 @@ class CategorieController extends Controller
             $year = (int) $year;
             $lastDayOfMonth = (int) $lastDayOfMonth;
 
-            $dateStart = \DateTime::createFromFormat('Y-n-j H:i:s', "1900-1-1 00:00:00"); // @todo : dynamiser la date de début
+            $dateStart = \DateTime::createFromFormat('Y-n-j H:i:s', "$year-$month-1 00:00:00");
+            $dateStart->modify('-1 year')->setTime(0, 0); // Depuis un an
             $dateEnd = \DateTime::createFromFormat('Y-n-j H:i:s', "$year-$month-$lastDayOfMonth 00:00:00");
         }
 
