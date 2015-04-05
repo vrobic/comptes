@@ -46,7 +46,7 @@
                     <td>
                         <label for="compte-{{ mouvement.hash }}" class="sr-only">Compte</label>
                         <select id="compte-{{ mouvement.hash }}" name="mouvements[{{ mouvement.hash }}][compte]">
-                            <option value=""></option>
+                            <option value="">&nbsp;</option>
                             {% if comptes is not empty %}
                                 {% for compte in comptes %}
                                     <option value="{{ compte.id }}" {{ mouvement.compte.id == compte.id ? "selected" }}>{{ compte }}</option>
@@ -69,7 +69,7 @@
                     <td>
                         <label for="categorie-{{ mouvement.hash }}" class="sr-only">Catégorie</label>
                         <select id="categorie-{{ mouvement.hash }}" name="mouvements[{{ mouvement.hash }}][categorie]">
-                            <option value=""></option>
+                            <option value="">&nbsp;</option>
                             {% if categories is not empty %}
                                 {% for categorie in categories %}
                                     {% if not categorie.categorieParente %}

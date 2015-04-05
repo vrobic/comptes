@@ -129,10 +129,10 @@
                                 <label for="description-{{ mouvement.id }}" class="sr-only">Description</label>
                                 <input id="description-{{ mouvement.id }}" type="text" name="mouvements[{{ mouvement.id }}][description]" value="{{ mouvement.description }}">
                             </td>
-                            <td>
+                            <td class="input-select2">
                                 <label for="categorie-{{ mouvement.id }}" class="sr-only">Catégorie</label>
                                 <select id="categorie-{{ mouvement.id }}" name="mouvements[{{ mouvement.id }}][categorie]">
-                                    <option value=""></option>
+                                    <option value="">&nbsp;</option>
                                     {% if categories is not empty %}
                                         {% for categorie in categories %}
                                             {% if not categorie.categorieParente %}
@@ -163,10 +163,10 @@
                             <label for="description--1" class="sr-only">Description</label>
                             <input id="description--1" type="text" name="mouvements[-1][description]" value="" placeholder="DESCRIPTION">
                         </td>
-                        <td>
+                        <td class="input-select2">
                             <label for="categorie--1" class="sr-only">Catégorie</label>
                             <select id="categorie--1" name="mouvements[-1][categorie]">
-                                <option value=""></option>
+                                <option value="">&nbsp;</option>
                                 {% if categories is not empty %}
                                     {% for categorie in categories %}
                                         {% if not categorie.categorieParente %}

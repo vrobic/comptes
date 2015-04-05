@@ -1,5 +1,8 @@
 $(function(){
 
+    // Select2 *****************************************************************
+    $('form table.table td.input-select2 select').select2();
+
     // Highcharts **************************************************************
     Highcharts.setOptions({
 	lang: {
