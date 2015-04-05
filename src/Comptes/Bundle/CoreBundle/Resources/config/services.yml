@@ -20,6 +20,11 @@ services:
         class: Comptes\Bundle\CoreBundle\Service\CICExcelMouvementsImportHandler
         arguments: [ @service_container ]
 
+    # Service d'import de mouvements : handler CSV pour la banque CIC
+    comptes_core.import.mouvements.cic.csv:
+        class: Comptes\Bundle\CoreBundle\Service\CICCSVMouvementsImportHandler
+        arguments: [ @service_container ]
+
     # Service d'import de mouvements : handler CSV pour la banque Caisse d'Épargne
     comptes_core.import.mouvements.caissedepargne.csv:
         class: Comptes\Bundle\CoreBundle\Service\CaisseEpargneMouvementsImportHandler
