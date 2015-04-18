@@ -1,0 +1,354 @@
+/* Polices Ubuntu */
+@font-face {
+    font-family: 'ubunturegular';
+    src: url('../fonts/ubuntu/ubuntu-r-webfont.eot');
+    src: url('../fonts/ubuntu/ubuntu-r-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/ubuntu/ubuntu-r-webfont.woff') format('woff'),
+         url('../fonts/ubuntu/ubuntu-r-webfont.ttf') format('truetype'),
+         url('../fonts/ubuntu/ubuntu-r-webfont.svg#ubunturegular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'ubuntuitalic';
+    src: url('../fonts/ubuntu/ubuntu-ri-webfont.eot');
+    src: url('../fonts/ubuntu/ubuntu-ri-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/ubuntu/ubuntu-ri-webfont.woff') format('woff'),
+         url('../fonts/ubuntu/ubuntu-ri-webfont.ttf') format('truetype'),
+         url('../fonts/ubuntu/ubuntu-ri-webfont.svg#ubuntuitalic') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'ubuntumedium';
+    src: url('../fonts/ubuntu/ubuntu-m-webfont.eot');
+    src: url('../fonts/ubuntu/ubuntu-m-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/ubuntu/ubuntu-m-webfont.woff') format('woff'),
+         url('../fonts/ubuntu/ubuntu-m-webfont.ttf') format('truetype'),
+         url('../fonts/ubuntu/ubuntu-m-webfont.svg#ubuntumedium') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'ubuntumedium_italic';
+    src: url('../fonts/ubuntu/ubuntu-mi-webfont.eot');
+    src: url('../fonts/ubuntu/ubuntu-mi-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/ubuntu/ubuntu-mi-webfont.woff') format('woff'),
+         url('../fonts/ubuntu/ubuntu-mi-webfont.ttf') format('truetype'),
+         url('../fonts/ubuntu/ubuntu-mi-webfont.svg#ubuntumedium_italic') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'ubuntubold';
+    src: url('../fonts/ubuntu/ubuntu-b-webfont.eot');
+    src: url('../fonts/ubuntu/ubuntu-b-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/ubuntu/ubuntu-b-webfont.woff') format('woff'),
+         url('../fonts/ubuntu/ubuntu-b-webfont.ttf') format('truetype'),
+         url('../fonts/ubuntu/ubuntu-b-webfont.svg#ubuntubold') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'ubuntubold_italic';
+    src: url('../fonts/ubuntu/ubuntu-bi-webfont.eot');
+    src: url('../fonts/ubuntu/ubuntu-bi-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/ubuntu/ubuntu-bi-webfont.woff') format('woff'),
+         url('../fonts/ubuntu/ubuntu-bi-webfont.ttf') format('truetype'),
+         url('../fonts/ubuntu/ubuntu-bi-webfont.svg#ubuntubold_italic') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* Police BebasNeue */
+@font-face {
+    font-family: 'bebasneue_regular';
+    src: url('../fonts/bebasneue/BebasNeue-webfont.eot');
+    src: url('../fonts/bebasneue/BebasNeue-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/bebasneue/BebasNeue-webfont.woff') format('woff'),
+         url('../fonts/bebasneue/BebasNeue-webfont.ttf') format('truetype'),
+         url('../fonts/bebasneue/BebasNeue-webfont.svg#bebas_neueregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* Polices monospace Ubuntu */
+@font-face {
+    font-family: 'ubuntu_monoregular';
+    src: url('../fonts/ubuntu/ubuntumono-r-webfont.eot');
+    src: url('../fonts/ubuntu/ubuntumono-r-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/ubuntu/ubuntumono-r-webfont.woff') format('woff'),
+         url('../fonts/ubuntu/ubuntumono-r-webfont.ttf') format('truetype'),
+         url('../fonts/ubuntu/ubuntumono-r-webfont.svg#ubuntu_monoregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'ubuntu_monobold';
+    src: url('../fonts/ubuntu/ubuntumono-b-webfont.eot');
+    src: url('../fonts/ubuntu/ubuntumono-b-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/ubuntu/ubuntumono-b-webfont.woff') format('woff'),
+         url('../fonts/ubuntu/ubuntumono-b-webfont.ttf') format('truetype'),
+         url('../fonts/ubuntu/ubuntumono-b-webfont.svg#ubuntu_monobold') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* Resets TWBS */
+code,
+kbd,
+pre,
+samp {
+    font-family: "ubuntu_monoregular", monospace, serif;
+    font-size: 1em;
+}
+pre {
+    border-radius: 2px;
+}
+abbr[title],
+abbr[data-original-title] {
+    border-bottom-width: 0;
+}
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
+    font-family: "ubunturegular", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+h1,
+.h1 {
+    margin-top: 0;
+}
+h1,
+.h1,
+h2,
+.h2 {
+    font-family: "bebasneue_regular";
+    padding: 0 5px;
+    background-color: black;
+    color: white;
+}
+h2 a,
+.h2 a,
+h2 a:hover,
+.h2 a:hover,
+h2 a:focus,
+.h2 a:focus {
+    display: block;
+    color: #5dc0dE;
+    text-decoration: none;
+}
+
+/* Composants TWBS */
+b,
+strong,
+dt,
+label,
+.label,
+.badge,
+.alert .alert-link,
+.close {
+    font-weight: normal;
+    font-family: "ubuntubold";
+}
+dt,
+dd strong {
+    font-family: "ubuntumedium";
+}
+.label {
+    border-radius: 0.15em;
+}
+.progress {
+    margin-bottom: 10px;
+}
+.progress-bar {
+    text-align: left;
+}
+.progress-bar span {
+    padding: 0 5px;
+    font-family: "ubuntubold";
+}
+.btn {
+    font-family: "bebasneue_regular";
+    line-height: 1;
+    font-size: 20px;
+    color: #5dc0de;
+    padding: 6px 12px;
+    border-radius: 2px;
+    border: 1px solid #dddddd;
+}
+.btn.disabled {
+    opacity: 1;
+    cursor: not-allowed;
+    pointer-events: auto;
+}
+.btn:hover,
+.btn:focus {
+    color: #5dc0de;
+    background-color: #eeeeee;
+}
+.btn.disabled,
+.btn.disabled:hover,
+.btn.disabled:focus {
+    color: #999999;
+    background-color: white;
+}
+
+/* Mise en page */
+body {
+    background-color: #f5f5f5;
+}
+.content {
+    padding: 15px;
+}
+
+/* Sidebar */
+.sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    border-right: 1px solid #eee;
+    background-color: #fff;
+    padding: 15px;
+}
+.sidebar .nav-sidebar {
+    margin: 0 -16px 15px -15px;
+}
+.sidebar .nav-sidebar > li > a {
+    font-family: "bebasneue_regular";
+    padding: 5px;
+    color: #5dc0dE;
+    border-radius: 0;
+    font-size: 30px;
+    line-height: 0.9;
+}
+.sidebar .nav-sidebar > li > a .glyphicon {
+    font-size: 23px;
+}
+.sidebar .nav-sidebar > .active > a,
+.sidebar .nav-sidebar > .active > a:hover,
+.sidebar .nav-sidebar > .active > a:focus {
+    background-color: black;
+    color: white;
+}
+
+/* Widgets */
+.content .widget {
+    margin-bottom: 15px;
+}
+.content .widget > a:hover,
+.content .widget > a:hover {
+    text-decoration: none;
+}
+.content .widget .widget-content {
+    border: 1px solid #eee;
+    background-color: #fff;
+    padding: 15px;
+}
+.content .widget .widget-content h3 {
+    text-align: right;
+    color: #1bbae1;
+    margin: 12px 0;
+    letter-spacing: -2px;
+}
+.content .widget .widget-content h3 strong {
+    font-size: 27px;
+}
+.content .widget .widget-content h3 small {
+    color: #777;
+    display: block;
+    letter-spacing: 0;
+}
+.content .widget .widget-content .widget-icon {
+    display: inline-block;
+    height: 64px;
+    width: 64px;
+    border-radius: 32px;
+    line-height: 64px;
+    font-size: 28px;
+    text-align: center;
+    background-color: #1bbae1;
+    color: #fff;
+}
+
+/* Tableaux */
+.content table caption {
+    display: none;
+}
+
+/* Graphiques */
+.chart {
+    margin-bottom: 15px;
+}
+
+/* Formulaires */
+form {
+    margin-bottom: 15px;
+}
+form .form-control {
+    border-radius: 2px;
+    padding: 6px;
+    font-family: "ubuntu_monoregular";
+}
+form .input-group .form-control {
+    min-height: 37px;
+}
+form .input-group-addon.middle {
+    border-width: 1px 0;
+}
+form .trigger:hover {
+    cursor: pointer;
+}
+form table.table td.input-text,
+form table.table td.input-select2 {
+    padding: 0 5px;
+}
+form table.table td.input-text input[type="text"] {
+    border: none;
+    padding: 5px;
+    width: 100%;
+}
+form table.table td.input-select2 .select2-selection {
+    height: 30px;
+}
+
+/* Media queries */
+body:before {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+@media (max-width: 767px) { /* XS */
+    body:before {
+        content: "xs";
+    }
+}
+@media (min-width: 768px) { /* SM */
+    body:before {
+        content: "sm";
+    }
+}
+@media (min-width: 992px) { /* MD */
+    body:before {
+        content: "md";
+    }
+}
+@media (min-width: 1200px) { /* LG */
+    body:before {
+        content: "lg";
+    }
+}

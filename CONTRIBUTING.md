@@ -18,12 +18,12 @@ Le moteur d'import, par sa généricité, rend le développement d'un handler tr
 
 Le service est déclaré dans :
 
-    src/Comptes/Bundle/CoreBundle/Resources/config/services.yml
+    src/ComptesBundle/Resources/config/services.yml
 
 selon le schéma suivant :
 
-    comptes_core.import.pleins.mycars.xml:
-        class: Comptes\Bundle\CoreBundle\Service\MyCarsXMLPleinsImportHandler
+    comptes_bundle.import.pleins.mycars.xml:
+        class: ComptesBundle\Service\ImportHandler\MyCarsXMLPleinsImportHandler
         arguments: [ @service_container ]
 
 où `mycars.xml` est l'identifiant du handler.
@@ -56,7 +56,7 @@ Une implémentation de la méthode parse en pseudo-code pourrait donc être :
 
 Le service étant déclaré à Symfony par `services.yml`, le handler doit être déclaré au moteur d'import dans le fichier `import.yml` :
 
-    src/Comptes/Bundle/CoreBundle/Resources/config/import.yml
+    src/ComptesBundle/Resources/config/import.yml
 
 au sein d'un des tableaux `pleins` ou `mouvements` :
 

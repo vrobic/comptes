@@ -2,21 +2,26 @@
 
 ## Core
 
+- distribuer le bundle plutôt que toute l'installation Symfony
+- remplacer ComptesBundle\Service\ConfigurationLoader par Symfony\Component\Config\Definition\ConfigurationInterface
+- Déporter le mapping Doctrine dans un fichier YML
+- Fixtures
+    - utiliser Alice
 - Améliorations
     - utilisation des .row dans les templates
-    - ranger les services et commandes
 - Évolutions
     - intégrer dépenses véhicules + coût assurance
     - intégrer gestion des congés ?
+    - intégrer suivi sportif ?
 
 ## Imports
 
-- handlers CIC en Excel et CSV
-- créer un handler pour une autre banque
 - en import web, afficher les indicateurs à l'utilisateur
 
 ## Stats
 
+- dashboard
+    - créer une classe DashboardWidget
 - pleins
     - consommation moyenne / plein
     - autonomie estimée / plein

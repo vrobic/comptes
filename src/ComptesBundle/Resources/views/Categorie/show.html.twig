@@ -1,0 +1,40 @@
+{% extends 'ComptesBundle::layout.html.twig' %}
+
+{% block modules 'forms' %}
+
+{% block title %} - {{ categorie }}{% endblock %}
+
+{% block content %}
+    <h1>{{ categorie }}</h1>
+    <table class="table table-condensed table-striped table-hover">
+        <caption>Liste des mouvements</caption>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Montant</th>
+                <th>Description</th>
+                <th>Compte</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for mouvement in mouvements %}
+                <tr>
+                    <td>{{ mouvement.date|date('d-m-Y') }}</td>
+                    <td>{{ mouvement.montant ~ "€" }}</td>
+                    <td>{{ mouvement.description }}</td>
+                    <td>
+                        <a href="{{ path('comptes_compte', {'compte_id': mouvement.compte.id}) }}">
+                            {{ mouvement.compte }}
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <th>Total</th>
+                <td colspan="3">{{ total ~ "€" }}</td>
+            </tr>
+        </tfoot>
+    </table>
+{% endblock %}

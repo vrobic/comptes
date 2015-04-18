@@ -1,0 +1,85 @@
+{% extends 'ComptesBundle::layout.html.twig' %}
+
+{% block modules 'forms;highcharts' %}
+
+{% block title %} - Véhicules{% endblock %}
+
+{% block content %}
+    <h1>Véhicules</h1>
+    <div class="row">
+        <div id="chart" class="chart col-md-12"></div>
+        <script type="text/javascript">
+            $(function(){
+                $('#chart').highcharts({
+                    title: {
+                        text: "Odomètre des véhicules",
+                        x: -20 // centrage
+                    },
+                    xAxis: {
+                        type: 'datetime'
+                    },
+                    yAxis: {
+                        floor: 0,
+                        title: {
+                            text: "Kilométrage"
+                        }
+                    },
+                    tooltip: {
+                        valueSuffix: "km"
+                    },
+                    credits: {
+                        enabled: false
+                    },
+                    series: [
+                        {% for vehicule in vehicules %}
+                            {
+                                name: "{{ vehicule|e('js') }}",
+                                data: [
+                                    {% set kilometrage_total = vehicule.kilometrageInitial %}
+                                    {% for plein in vehicule.pleins %}
+                                        {% set kilometrage_total = kilometrage_total + plein.distanceParcourue %}
+                                        [
+                                            Date.UTC({{ plein.date|date('Y')|e('js') }}, {{ (plein.date|date('m')-1)|e('js') }}, {{ plein.date|date('d')|e('js') }}),
+                                            {{ kilometrage_total|e('js') }}
+                                        ]{{ loop.revindex > 1 ? ","|e('js') }}
+                                    {% endfor %}
+                                ]
+                            }{{ loop.revindex > 1 ? ","|e('js') }}
+                        {% endfor %}
+                    ]
+                });
+            });
+        </script>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-condensed table-striped table-hover">
+                <caption>Liste des véhicules</caption>
+                <thead>
+                    <tr>
+                        <th>Identifiant</th>
+                        <th>Nom</th>
+                        <th>Kilométrage</th>
+                        <th>Kilométrage annuel</th>
+                        <th>Kilométrage effectué</th>
+                        <th>Consommation</th>
+                        <th>Autonomie estimée</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for vehicule in vehicules %}
+                        <tr>
+                            <td>{{ vehicule.id }}</td>
+                            <td>{{ vehicule }}</td>
+                            <td>{{ vehicule.kilometrage|number_format(0, ".", "") ~ "km" }}</td>
+                            <td>{{ vehicule.kilometrageAnnuel|number_format(0, ".", "") ~ "km" }}</td>
+                            <td>{{ (vehicule.kilometrage - vehicule.kilometrageInitial)|number_format(0, ".", "") ~ "km" }}</td>
+                            <td>{{ vehicule.consommation|number_format(2, ".", "") ~ "L" }}</td>
+                            <td>{{ vehicule.autonomie|number_format(0, ".", "") ~ "km" }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
