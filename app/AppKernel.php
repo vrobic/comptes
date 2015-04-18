@@ -18,7 +18,7 @@ class AppKernel extends Kernel
             new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
             new Ddeboer\DataImportBundle\DdeboerDataImportBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
-            new Comptes\Bundle\CoreBundle\ComptesCoreBundle(),
+            new ComptesBundle\ComptesBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

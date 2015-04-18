@@ -1,4 +1,4 @@
-comptes_core:
-    resource: "@ComptesCoreBundle/Resources/config/routing.yml"
+comptes_bundle:
+    resource: "@ComptesBundle/Resources/config/routing.yml"
     prefix:   /
 
