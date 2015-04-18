@@ -36,7 +36,7 @@ Ce paragraphe décrit les grandes étapes de la configuration. Les fichiers dont
 
 Les fixtures sont les jeux de données nécessaires au fonctionnement de l'application. Elles contiennent la liste des comptes bancaires, des catégories de mouvements, des véhicules et des carburants. Pour vous permettre de les définir facilement, ces données sont regroupées dans le fichier `fixtures.yml` :
 
-    src/ComptesBundleResources/config/fixtures.yml
+    src/ComptesBundle/Resources/config/fixtures.yml
 
 Une fois les données saisies, vous pouvez créer la base de données et importer les fixtures :
 
