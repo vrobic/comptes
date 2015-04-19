@@ -8,6 +8,7 @@ use Symfony\Component\Yaml\Parser;
 
 /**
  * Service permettant de charger et valider les fichiers de configuration.
+ * @todo Il existe des classes de validation de la configuration.
  */
 class ConfigurationLoader
 {

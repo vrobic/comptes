@@ -20,6 +20,8 @@
 
 ## Stats
 
+- catégories
+    - revoir comment est calculé le total "non catégorisé"
 - dashboard
     - créer une classe DashboardWidget
 - pleins
