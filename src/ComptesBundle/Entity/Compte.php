@@ -258,6 +258,14 @@ class Compte
     }
 
     /**
+     * Dissocie tous les mouvements du compte.
+     */
+    public function removeMouvements()
+    {
+        $this->mouvements->clear();
+    }
+
+    /**
      * Récupère les mouvements du compte.
      *
      * @return \Doctrine\Common\Collections\ArrayCollection

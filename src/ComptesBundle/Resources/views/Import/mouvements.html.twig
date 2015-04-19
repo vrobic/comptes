@@ -30,18 +30,18 @@
     <table class="table table-condensed table-striped table-hover">
         <thead>
             <tr>
-                <th>
+                <th class="col-md-1">
                     Importer
                     <small>
                         <span class="glyphicon glyphicon-check trigger" data-trigger="check-all" data-target-name="mouvements_hash_to_import[]" title="Cocher tout"></span>
                         <span class="glyphicon glyphicon-unchecked trigger" data-trigger="uncheck-all" data-target-name="mouvements_hash_to_import[]" title="Décocher tout"></span>
                     </small>
                 </th>
-                <th>Compte</th>
-                <th>Date</th>
-                <th>Montant</th>
-                <th>Description</th>
-                <th>Catégorie</th>
+                <th class="col-md-2">Compte</th>
+                <th class="col-md-1">Date</th>
+                <th class="col-md-1">Montant</th>
+                <th class="col-md-4">Description</th>
+                <th class="col-md-3">Catégorie</th>
             </tr>
         </thead>
         <tbody>
@@ -64,15 +64,15 @@
                     </td>
                     <td class="input-text">
                         <label for="date-{{ mouvement.hash }}" class="sr-only">Date</label>
-                        <input id="date-{{ mouvement.hash }}" type="text" name="mouvements[{{ mouvement.hash }}][date]" value="{{ mouvement.date|date('d-m-Y') }}">
+                        <input id="date-{{ mouvement.hash }}" type="text" name="mouvements[{{ mouvement.hash }}][date]" value="{{ mouvement.date|date('d-m-Y') }}" placeholder="{{ date()|date('d-m-Y') }}">
                     </td>
                     <td class="input-text">
                         <label for="montant-{{ mouvement.hash }}" class="sr-only">Montant</label>
-                        <input id="montant-{{ mouvement.hash }}" type="text" name="mouvements[{{ mouvement.hash }}][montant]" value="{{ mouvement.montant|number_format(2, ".", "") }}">
+                        <input id="montant-{{ mouvement.hash }}" type="text" name="mouvements[{{ mouvement.hash }}][montant]" value="{{ mouvement.montant|number_format(2, ".", "") }}" placeholder="0.00">
                     </td>
                     <td class="input-text">
                         <label for="description-{{ mouvement.hash }}" class="sr-only">Description</label>
-                        <input id="description-{{ mouvement.hash }}" type="text" name="mouvements[{{ mouvement.hash }}][description]" value="{{ mouvement.description }}">
+                        <input id="description-{{ mouvement.hash }}" type="text" name="mouvements[{{ mouvement.hash }}][description]" value="{{ mouvement.description }}" placeholder="Description">
                     </td>
                     <td class="input-select2">
                         <label for="categorie-{{ mouvement.hash }}" class="sr-only">Catégorie</label>

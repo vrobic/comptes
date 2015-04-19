@@ -16,7 +16,7 @@ services:
     # Service d'import : catégorisation automatique des mouvements
     comptes_bundle.mouvement.categorizer:
         class: ComptesBundle\Service\MouvementCategorizer
-        arguments: [ @service_container, @doctrine.orm.entity_manager ]
+        arguments: [ @doctrine.orm.entity_manager ]
 
     # Service d'import de mouvements : handler Excel pour la banque CIC
     comptes_bundle.import.mouvements.cic.excel:

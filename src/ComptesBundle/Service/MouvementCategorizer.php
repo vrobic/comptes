@@ -2,7 +2,6 @@
 
 namespace ComptesBundle\Service;
 
-use Symfony\Component\DependencyInjection\Container;
 use Doctrine\ORM\EntityManager;
 
 /**
@@ -12,11 +11,6 @@ use Doctrine\ORM\EntityManager;
 class MouvementCategorizer
 {
     /**
-     * @var Container
-     */
-    protected $container;
-
-    /**
      * @var EntityManager
      */
     protected $em;
@@ -24,13 +18,11 @@ class MouvementCategorizer
     /**
      * Constructeur.
      *
-     * @param Container $container
      * @param EntityManager $em
      */
-    public function __construct(Container $container, EntityManager $em)
+    public function __construct(EntityManager $em)
     {
         // Injection de dépendances
-        $this->container = $container;
         $this->em = $em;
     }
 
@@ -38,19 +30,14 @@ class MouvementCategorizer
      * Trouve les catégories probables d'un mouvement.
      *
      * @param Mouvement $mouvement
-     * @throws \Exception Si l'une des catégories est inconnue.
      * @return Categorie[] Liste de catégories.
      */
     function getCategories($mouvement)
     {
-        $categorieRepository = $this->em->getRepository('ComptesBundle:Categorie');
+        $keywordRepository = $this->em->getRepository('ComptesBundle:Keyword');
 
-        // Chargement de la configuration
-        $configurationLoader = $this->container->get('comptes_bundle.configuration.loader');
-        $configuration = $configurationLoader->load('import.yml');
-
-        // Tableau de correspondance entre les mots-clés de description et leurs catégories
-        $keywords = isset($configuration['keywords']) ? $configuration['keywords'] : array();
+        // Tous les mots-clés de description
+        $keywords = $keywordRepository->findAll();
 
         // La description du mouvement
         $description = $mouvement->getDescription();
@@ -58,17 +45,15 @@ class MouvementCategorizer
         // Les catégories probables du mouvement
         $categories = array();
 
-        foreach ($keywords as $keyword => $categorieID)
+        foreach ($keywords as $keyword)
         {
-            // Si le mot-clé est présent dans la description
-            if (preg_match("/\b$keyword\b/", $description))
-            {
-                $categorie = $categorieRepository->find($categorieID);
+            $word = $keyword->getWord();
 
-                if (!$categorie)
-                {
-                    throw new \Exception("La catégorie n°$categorieID est inconnue.");
-                }
+            // Si le mot-clé est présent dans la description
+            if (preg_match("/\b$word\b/i", $description))
+            {
+                $categorie = $keyword->getCategorie();
+                $categorieID = $categorie->getId();
 
                 $categories[$categorieID] = $categorie; // Assure l'unicité
             }

@@ -1,16 +1,20 @@
 carburants:
+    # id 1
     -
         # Nom commercial du carburant.
         nom: Gazole
         # Ordre d'affichage du carburant dans les listes.
         rang: 1
+    # id 2
     -
         nom: SP95
         rang: 2
+    # id 3
     -
         nom: SP98
         rang: 3
 vehicules:
+    # id 1
     -
         # Marque et modèle du véhicule.
         nom: Honda Varadero
@@ -31,6 +35,7 @@ vehicules:
         capacite_reservoir: 17.7
         # Ordre d'affichage du véhicule dans les listes.
         rang: 5
+    # id 2
     -
         nom: Suzuki Bandit
         date_achat: 2012-05-05
@@ -41,6 +46,7 @@ vehicules:
         carburant: 1
         capacite_reservoir: 19
         rang: 4
+    # id 3
     -
         nom: Renault 25
         date_achat: 2010-01-01
@@ -51,6 +57,7 @@ vehicules:
         carburant: 0
         capacite_reservoir: 66
         rang: 3
+    # id 4
     -
         nom: Peugeot 406 coupé
         date_achat: 2013-07-06
@@ -61,6 +68,7 @@ vehicules:
         carburant: 1
         capacite_reservoir: 70
         rang: 2
+    # id 5
     -
         nom: Honda NC700X
         date_achat: 2013-10-31
@@ -71,6 +79,33 @@ vehicules:
         carburant: 1
         capacite_reservoir: 14.1
         rang: 1
+comptes:
+    # id 1
+    -
+        # Nom du compte.
+        nom: Compte courant
+        # Numéro du compte.
+        numero: 00000000
+        # Domiciliation du compte.
+        banque: Ma banque
+        # Plafond du compte, en euros. Le séparateur de décimales est le point.
+        plafond: 0
+        # Solde initial du compte en euros, avant le premier mouvement
+        # rentré dans l'application. Le séparateur de décimales est le point.
+        solde_initial: 1278.83
+        # Date d'ouverture du compte, au format Y-m-d
+        date_ouverture: 2009-12-09
+        # Ordre d'affichage du compte dans les listes.
+        rang: 1
+    # id 2
+    -
+        nom: Livret jeune
+        numero: 00000000
+        banque: Ma banque
+        plafond: 1600
+        solde_initial: 0
+        date_ouverture: 2012-03-31
+        rang: 2
 categories:
     -
         # Nom de la catégorie.
@@ -176,28 +211,6 @@ categories:
     -
         nom: Cadeaux
         rang: 11
-comptes:
     -
-        # Nom du compte.
-        nom: Compte courant
-        # Numéro du compte.
-        numero: 00000000
-        # Domiciliation du compte.
-        banque: Ma banque
-        # Plafond du compte, en euros. Le séparateur de décimales est le point.
-        plafond: 0
-        # Solde initial du compte en euros, avant le premier mouvement
-        # rentré dans l'application. Le séparateur de décimales est le point.
-        solde_initial: 1278.83
-        # Date d'ouverture du compte, au format Y-m-d
-        date_ouverture: 2009-12-09
-        # Ordre d'affichage du compte dans les listes.
-        rang: 1
-    -
-        nom: Livret jeune
-        numero: 00000000
-        banque: Ma banque
-        plafond: 1600
-        solde_initial: 0
-        date_ouverture: 2012-03-31
-        rang: 2
+        nom: Frais bancaires
+        rang: 12

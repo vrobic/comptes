@@ -94,6 +94,16 @@
     font-style: normal;
 }
 
+/* Police Glyphicons de TWBS */
+@font-face {
+  font-family: 'Glyphicons Halflings';
+  src: url('../fonts/glyphicons-halflings-regular.eot');
+  src: url('../fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'),
+       url('../fonts/glyphicons-halflings-regular.woff') format('woff'),
+       url('../fonts/glyphicons-halflings-regular.ttf') format('truetype'),
+       url('../fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
+}
+
 /* Resets TWBS */
 code,
 kbd,
@@ -312,16 +322,72 @@ form .trigger:hover {
     cursor: pointer;
 }
 form table.table td.input-text,
+form table.table td.input-tags,
 form table.table td.input-select2 {
     padding: 0 5px;
 }
-form table.table td.input-text input[type="text"] {
+form table.table td.input-text input[type="text"],
+form table.table td.input-tags input[type="text"] {
     border: none;
     padding: 5px;
     width: 100%;
 }
 form table.table td.input-select2 .select2-selection {
     height: 30px;
+}
+
+/* Tags */
+.tag-editor {
+    padding: 0 5px;
+    border: none;
+    font-family: "ubunturegular"
+}
+.tag-editor li {
+    margin: 5px 0;
+}
+.tag-editor li.placeholder,
+.tag-editor li.placeholder div {
+    padding: 0;
+}
+.tag-editor li .tag-editor-spacer {
+    width: 5px;
+}
+.tag-editor li:nth-child(2) .tag-editor-spacer {
+    width: 0;
+}
+.tag-editor li .tag-editor-tag,
+.tag-editor li .tag-editor-delete {
+    background: #5dc0de;
+    color: white;
+}
+.tag-editor li .tag-editor-tag.active {
+    color: inherit;
+}
+.tag-editor li .tag-editor-delete i {
+    top: 0;
+    background: none;
+    width: 1em;
+    height: 1em;
+}
+.tag-editor li .tag-editor-delete i:before {
+    position: relative;
+    top: -2px;
+    font-family: "Glyphicons Halflings";
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    content: "\e014"; /* .glyphicon .glyphicon-remove */
+}
+.tag-editor li .tag-editor-delete:hover i:before {
+    color: #333;
+}
+.tag-editor li .tag-editor-tag.active + .tag-editor-delete i:before {
+    content: "";
+}
+form table.table td.input-tags .tag-editor input[type="text"] {
+    padding: 0;
 }
 
 /* Media queries */

@@ -8,9 +8,6 @@
 
 {% macro categoriesFilles(categorie, montants, depth) %}
     <tr>
-        <td>
-            {{ categorie.id }}
-        </td>
         <td style="padding-left: {{ (5 + depth * 20) ~ "px" }};">
             <a href="{{ path('categories_categorie', {'categorie_id': categorie.id}) }}">{{ categorie }}</a>
         </td>
@@ -48,7 +45,7 @@
     {% if categories is not empty %}
         <div class="row">
             <div id="chart" class="chart col-md-12"></div>
-            <script type="text/javascript">
+            <script>
                 $(function(){
                     $('#chart').highcharts({
                         title: {
@@ -62,7 +59,7 @@
                                 allowPointSelect: true,
                                 cursor: 'pointer',
                                 dataLabels: {
-                                    format: "<strong>{point.name}</strong>: {point.percentage:.1f}%",
+                                    format: "<strong>{point.name}</strong>: {point.percentage:.1f}%"
                                 }
                             }
                         },
@@ -76,7 +73,8 @@
                                 ["Non catégorisé", {{ montant_total_non_categorise|abs|e('js') }}],
                                 {% for categorie in categories %}
                                     {% if not categorie.categorieParente and montants[categorie.id] < 0 %}
-                                        ["{{ categorie|e('js') }}", {{ montants[categorie.id]|abs|e('js') }}],
+                                        ["{{ categorie|e('js') }}", {{ montants[categorie.id]|abs|e('js') }}]
+                                        {{ loop.revindex > 1 ? ","|e('js') }}
                                     {% endif %}
                                 {% endfor %}
                             ]
@@ -89,14 +87,12 @@
             <caption>Liste des catégories</caption>
             <thead>
                 <tr>
-                    <th>Identifiant</th>
-                    <th>Catégorie</th>
-                    <th>Total</th>
+                    <th class="col-md-9">Catégorie</th>
+                    <th class="col-md-3">Total</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td></td>
                     <td>
                         Non catégorisé
                     </td>
@@ -112,4 +108,8 @@
             </tbody>
         </table>
     {% endif %}
+    <a href="{{ path('categories_edit') }}" class="btn btn-default">
+        <span class="glyphicon glyphicon-pencil"></span>
+        Éditer les catégories
+    </a>
 {% endblock %}

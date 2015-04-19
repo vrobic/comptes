@@ -5,6 +5,8 @@ namespace ComptesBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use ComptesBundle\Entity\Categorie;
+use ComptesBundle\Entity\Keyword;
 
 class CategorieController extends Controller
 {
@@ -127,6 +129,157 @@ class CategorieController extends Controller
                 'categorie' => $categorie,
                 'mouvements' => $mouvements,
                 'total' => $total
+            )
+        );
+    }
+
+    /**
+     * Édition de catégories par lots.
+     *
+     * @todo Utiliser un formulaire Symfony.
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function editAction(Request $request)
+    {
+        // Entity manager et repositories
+        $doctrine = $this->getDoctrine();
+        $manager = $doctrine->getManager();
+        $categorieRepository = $doctrine->getRepository('ComptesBundle:Categorie');
+        $keywordRepository = $doctrine->getRepository('ComptesBundle:Keyword');
+
+        // Tous les mots-clés, classés par catégories
+        $keywords = $keywordRepository->findAllSortedByCategories();
+
+        // Valeurs postées
+        $action = $request->get('action');
+        $batchArray = $request->get('batch', array());
+        $categoriesArray = $request->get('categories', array());
+
+        foreach ($batchArray as $categorieID)
+        {
+            if (isset($categoriesArray[$categorieID]))
+            {
+                $categorieArray = $categoriesArray[$categorieID];
+                $categorie = $categorieID > 0 ? $categorieRepository->find($categorieID) : new Categorie();
+
+                switch ($action)
+                {
+                    case 'save': // Création et édition
+
+                        // Nom
+                        if (isset($categorieArray['nom']))
+                        {
+                            $nom = $categorieArray['nom'];
+                            $categorie->setNom($nom);
+                        }
+
+                        // Catégorie parente
+                        if (isset($categorieArray['categorieParente']))
+                        {
+                            $categorieParenteID = $categorieArray['categorieParente'];
+
+                            if ($categorieParenteID == $categorieID)
+                            {
+                                throw new \ComptesBundle\Exception\MerIlEtFouException("Référence circulaire. Tu veux tomber dans l'hyper espace ?");
+                            }
+
+                            $categorieParente = $categorieParenteID !== "" ? $categorieRepository->find($categorieParenteID) : null;
+                            $categorie->setCategorieParente($categorieParente);
+                        }
+
+                        // Mots-clés
+                        if (isset($categorieArray['keywords']))
+                        {
+                            $words = array_diff(explode('|', $categorieArray['keywords']), array(''));
+                            $keywords = $categorie->getKeywords();
+
+                            // Supprime les mots-clés qui ne sont plus sélectionnés
+                            foreach ($keywords as $keyword)
+                            {
+                                $word = $keyword->getWord();
+
+                                if (!in_array($word, $words))
+                                {
+                                    $categorie->removeKeyword($keyword);
+                                    $manager->remove($keyword);
+                                }
+                            }
+
+                            // Ajoute les mots-clés sélectionnés
+                            foreach ($words as $word)
+                            {
+                                // Ce mot-clé existe-il déjà ?
+                                $keyword = $keywordRepository->findOneBy(array('word' => $word));
+
+                                if ($keyword === null) // Si non, on le crée
+                                {
+                                    $keyword = new Keyword();
+                                    $keyword->setWord($word);
+                                    $keyword->setCategorie($categorie);
+                                }
+                                else // Si oui, on vérifie qu'il n'est pas déjà affecté à une autre catégorie
+                                {
+                                    $keywordCategorie = $keyword->getCategorie();
+                                    $keywordCategorieID = $keywordCategorie->getId();
+
+                                    if ($keywordCategorieID != $categorieID)
+                                    {
+                                        throw new \Exception("Le mot-clé [$keyword] ne peut pas être ajouté à la catégorie [$categorie] puisqu'il est déjà affecté à [$keywordCategorie].");
+                                    }
+                                }
+
+                                $categorie->addKeyword($keyword);
+                            }
+                        }
+
+                        // Rang
+                        if (isset($categorieArray['rang']))
+                        {
+                            $rang = $categorieArray['rang'] !== "" ? (int) $categorieArray['rang'] : null;
+                            $categorie->setRang($rang);
+                        }
+
+                        $manager->persist($categorie);
+
+                        break;
+
+                    case 'delete': // Suppression
+
+                        // Décroche tous les mouvements liés à cette catégorie
+                        $mouvements = $categorie->getMouvements();
+
+                        foreach ($mouvements as $mouvement)
+                        {
+                            $mouvement->setCategorie(null);
+                            $manager->persist($mouvement);
+                        }
+
+                        $manager->remove($categorie);
+
+                        break;
+                }
+            }
+        }
+
+        $manager->flush();
+
+        // URL de redirection
+        $redirectURL = $request->get('redirect_url', null);
+
+        if ($redirectURL !== null)
+        {
+            return $this->redirect($redirectURL);
+        }
+
+        $categories = $categorieRepository->findAll();
+
+        return $this->render(
+            'ComptesBundle:Categorie:edit.html.twig',
+            array(
+                'categories' => $categories,
+                'keywords' => $keywords
             )
         );
     }

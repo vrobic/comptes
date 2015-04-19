@@ -27,7 +27,7 @@ use ComptesBundle\Entity\Mouvement;
  *    23/10/2012 23/10/2012 PRLV ORANGE FRANCE SA                                      29,00
  *                          MOBILE
  *    02/11/2012 02/11/2012 VIR LOYER NOVEMBRE + EAU                                570,00
- *    €     LIVRET JEUNE N° 00073384003 en euros
+ *    €     LIVRET JEUNE N° ########### en euros
  *    21/10/2012 01/11/2012 VIR FB DE C/C CONTRAT PERSONNEL                           75,00
  *
  *    A noter :

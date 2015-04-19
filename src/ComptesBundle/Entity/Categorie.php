@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use ComptesBundle\Entity\Categorie;
 use ComptesBundle\Entity\Mouvement;
+use ComptesBundle\Entity\Keyword;
 
 /**
  * Catégorie de mouvements.
@@ -66,6 +67,15 @@ class Categorie
     protected $mouvements;
 
     /**
+     * Mots-clés de la catégorie.
+     *
+     * @var \Doctrine\Common\Collections\ArrayCollection
+     *
+     * @ORM\OneToMany(targetEntity="Keyword", mappedBy="categorie", cascade={"persist"})
+     */
+    protected $keywords;
+
+    /**
      * Rang d'affichage de la catégorie.
      *
      * @var integer
@@ -80,6 +90,7 @@ class Categorie
     public function __construct()
     {
         $this->mouvements = new ArrayCollection();
+        $this->keywords = new ArrayCollection();
     }
 
     /**
@@ -172,6 +183,14 @@ class Categorie
     }
 
     /**
+     * Dissocie toutes les catégories filles.
+     */
+    public function removeCategoriesFilles()
+    {
+        $this->categoriesFilles->clear();
+    }
+
+    /**
      * Récupère les catégories filles.
      *
      * @return \Doctrine\Common\Collections\ArrayCollection
@@ -220,6 +239,14 @@ class Categorie
     }
 
     /**
+     * Dissocie tous les mouvements de la catégorie.
+     */
+    public function removeMouvements()
+    {
+        $this->mouvements->clear();
+    }
+
+    /**
      * Récupère les mouvements de la catégorie.
      *
      * @return \Doctrine\Common\Collections\ArrayCollection
@@ -227,6 +254,47 @@ class Categorie
     public function getMouvements()
     {
         return $this->mouvements;
+    }
+
+    /**
+     * Associe un mot-clé à la catégorie.
+     *
+     * @param Keyword $keyword
+     * @return Categorie
+     */
+    public function addKeyword(Keyword $keyword)
+    {
+        $this->keywords[] = $keyword;
+
+        return $this;
+    }
+
+    /**
+     * Dissocie un mot-clé de la catégorie.
+     *
+     * @param Keyword $keyword
+     */
+    public function removeKeyword(Keyword $keyword)
+    {
+        $this->keywords->removeElement($keyword);
+    }
+
+    /**
+     * Dissocie tous les mots-clés de la catégorie.
+     */
+    public function removeKeywords()
+    {
+        $this->keywords->clear();
+    }
+
+    /**
+     * Récupère les mots-clés de la catégorie.
+     *
+     * @return \Doctrine\Common\Collections\ArrayCollection
+     */
+    public function getKeywords()
+    {
+        return $this->keywords;
     }
 
     /**

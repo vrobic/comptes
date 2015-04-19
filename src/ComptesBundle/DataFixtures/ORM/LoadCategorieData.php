@@ -17,17 +17,17 @@ class LoadCategorieData extends AbstractFixture implements OrderedFixtureInterfa
     private $container;
 
     /**
+     * @var \Doctrine\Common\Persistence\ObjectManager
+     */
+    private $manager;
+
+    /**
      * {@inheritDoc}
      */
     public function setContainer(ContainerInterface $container=null)
     {
         $this->container = $container;
     }
-
-    /**
-     * @var \Doctrine\Common\Persistence\ObjectManager
-     */
-    private $manager;
 
     /**
      * {@inheritDoc}

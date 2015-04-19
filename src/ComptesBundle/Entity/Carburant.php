@@ -128,6 +128,14 @@ class Carburant
     }
 
     /**
+     * Dissocie tous les véhicules du carburant.
+     */
+    public function removeVehicules()
+    {
+        $this->vehicules->clear();
+    }
+
+    /**
      * Récupère les véhicules utilisant ce carburant.
      *
      * @return \Doctrine\Common\Collections\ArrayCollection

@@ -74,7 +74,7 @@
                         </td>
                         <td class="input-text">
                             <label for="distanceParcourue--1" class="sr-only">Distance parcourue</label>
-                            <input id="distanceParcourue--1" type="text" name="pleins[-1][distanceParcourue]" value="0.00">
+                            <input id="distanceParcourue--1" type="text" name="pleins[-1][distanceParcourue]" value="0.00" placeholder="0.00">
                         </td>
                         <td></td>
                         <td></td>
@@ -87,15 +87,15 @@
                             </td>
                             <td class="input-text">
                                 <label for="date-{{ plein.id }}" class="sr-only">Date</label>
-                                <input id="date-{{ plein.id }}" type="text" name="pleins[{{ plein.id }}][date]" value="{{ plein.date|date('d-m-Y') }}">
+                                <input id="date-{{ plein.id }}" type="text" name="pleins[{{ plein.id }}][date]" value="{{ plein.date|date('d-m-Y') }}" placeholder="{{ date()|date('d-m-Y') }}">
                             </td>
                             <td class="input-text">
                                 <label for="quantite-{{ plein.id }}" class="sr-only">Quantité</label>
-                                <input id="quantite-{{ plein.id }}" type="text" name="pleins[{{ plein.id }}][quantite]" value="{{ plein.quantite|number_format(2, ".", "") }}">
+                                <input id="quantite-{{ plein.id }}" type="text" name="pleins[{{ plein.id }}][quantite]" value="{{ plein.quantite|number_format(2, ".", "") }}" placeholder="0.00">
                             </td>
                             <td class="input-text">
                                 <label for="prixLitre-{{ plein.id }}" class="sr-only">Prix au litre</label>
-                                <input id="prixLitre-{{ plein.id }}" type="text" name="pleins[{{ plein.id }}][prixLitre]" value="{{ plein.prixLitre|number_format(3, ".", "") }}">
+                                <input id="prixLitre-{{ plein.id }}" type="text" name="pleins[{{ plein.id }}][prixLitre]" value="{{ plein.prixLitre|number_format(3, ".", "") }}" placeholder="0.000">
                             </td>
                             <td>
                                 {{ plein.montant|number_format(2, ".", "") ~ "€" }}
@@ -112,7 +112,7 @@
                             </td>
                             <td class="input-text">
                                 <label for="distanceParcourue-{{ plein.id }}" class="sr-only">Distance parcourue</label>
-                                <input id="distanceParcourue-{{ plein.id }}" type="text" name="pleins[{{ plein.id }}][distanceParcourue]" value="{{ plein.distanceParcourue|number_format(2, ".", "") }}">
+                                <input id="distanceParcourue-{{ plein.id }}" type="text" name="pleins[{{ plein.id }}][distanceParcourue]" value="{{ plein.distanceParcourue|number_format(2, ".", "") }}" placeholder="0.00">
                             </td>
                             <td class="{{ plein.consommation <= plein.vehicule.consommation ? 'text-success' : 'text-danger' }}">
                                 {{ plein.consommation|number_format(2, ".", "") ~ "L" }}
@@ -129,7 +129,7 @@
                         <th>Totaux</th>
                         <td colspan="2">{{ total_quantite|number_format(2, ".", "") ~ "L" }}</td>
                         <td colspan="2">{{ total_montant|number_format(2, ".", "") ~ "€" }}</td>
-                        <td colspan="3">{{ total_distance|number_format(2, ".", "") ~ "km" }}</td>
+                        <td colspan="4">{{ total_distance|number_format(2, ".", "") ~ "km" }}</td>
                     </tr>
                 </tfoot>
             </table>

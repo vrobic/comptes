@@ -52,6 +52,11 @@ mouvements_edit:
     path:     /mouvements/edit
     defaults: { _controller: ComptesBundle:Mouvement:edit }
 
+# Édition d'une liste de catégories
+categories_edit:
+    path:     /categories/edit
+    defaults: { _controller: ComptesBundle:Categorie:edit }
+
 # Édition d'une liste de pleins
 pleins_edit:
     path:     /pleins/edit

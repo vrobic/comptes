@@ -368,6 +368,14 @@ class Vehicule
     }
 
     /**
+     * Dissocie tous les pleins de carburant du véhicule.
+     */
+    public function removePleins()
+    {
+        $this->pleins->clear();
+    }
+
+    /**
      * Récupère les pleins de carburant du véhicule.
      *
      * @return \Doctrine\Common\Collections\ArrayCollection

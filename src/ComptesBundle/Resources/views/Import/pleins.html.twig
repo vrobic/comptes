@@ -35,15 +35,15 @@
                     </td>
                     <td class="input-text">
                         <label for="date-{{ plein.hash }}" class="sr-only">Date</label>
-                        <input id="date-{{ plein.hash }}" type="text" name="pleins[{{ plein.hash }}][date]" value="{{ plein.date|date('d-m-Y') }}">
+                        <input id="date-{{ plein.hash }}" type="text" name="pleins[{{ plein.hash }}][date]" value="{{ plein.date|date('d-m-Y') }}" placeholder="{{ date()|date('d-m-Y') }}">
                     </td>
                     <td class="input-text">
                         <label for="quantite-{{ plein.hash }}" class="sr-only">Quantité</label>
-                        <input id="quantite-{{ plein.hash }}" type="text" name="pleins[{{ plein.hash }}][quantite]" value="{{ plein.quantite|number_format(2, ".", "") }}">
+                        <input id="quantite-{{ plein.hash }}" type="text" name="pleins[{{ plein.hash }}][quantite]" value="{{ plein.quantite|number_format(2, ".", "") }}" placeholder="0.00">
                     </td>
                     <td class="input-text">
                         <label for="prixLitre-{{ plein.hash }}" class="sr-only">Prix au litre</label>
-                        <input id="prixLitre-{{ plein.hash }}" type="text" name="pleins[{{ plein.hash }}][prixLitre]" value="{{ plein.prixLitre|number_format(3, ".", "") }}">
+                        <input id="prixLitre-{{ plein.hash }}" type="text" name="pleins[{{ plein.hash }}][prixLitre]" value="{{ plein.prixLitre|number_format(3, ".", "") }}" placeholder="0.000">
                     </td>
                     <td>
                         {{ plein.montant|number_format(2, ".", "") ~ "€" }}
@@ -60,7 +60,7 @@
                     </td>
                     <td class="input-text">
                         <label for="distanceParcourue-{{ plein.hash }}" class="sr-only">Distance parcourue</label>
-                        <input id="distanceParcourue-{{ plein.hash }}" type="text" name="pleins[{{ plein.hash }}][distanceParcourue]" value="{{ plein.distanceParcourue|number_format(2, ".", "") }}">
+                        <input id="distanceParcourue-{{ plein.hash }}" type="text" name="pleins[{{ plein.hash }}][distanceParcourue]" value="{{ plein.distanceParcourue|number_format(2, ".", "") }}" placeholder="0.00">
                     </td>
                 </tr>
             {% endfor %}
