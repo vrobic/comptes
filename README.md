@@ -46,17 +46,19 @@ L'application peut maintenant être ouverte dans un navigateur web !
 
 #### Import des données
 
-Le moteur d'import est capable de catégoriser automatiquement les mouvements importés. Mais puisque rien n'est magique, il requiert un rapide paramétrage dans `import.yml` :
+Le moteur d'import requiert un rapide paramétrage dans `import.yml` :
 
     src/ComptesBundle/Resources/config/import.yml
 
-Lors de l'import, le tableau `keywords` permettra d'associer tel ou tel mot clé à une catégorie de mouvement. Pour connaître l'identifiant des catégories, accéder à la page _Catégories_ depuis le menu de l'application.
+Il vous faut modifier le tableau `handlers` pour ajuster les identifiants de comptes bancaires et de véhicules.
 
-Il vous faudra également modifier le tableau `handlers` pour ajuster les identifiants de comptes bancaires ou de véhicules, selon le même principe.
+Le moteur d'import est capable de catégoriser automatiquement les mouvements importés, en analysant les mots-clés contenus dans leur description. Si vous souhaitez bénéficier de cette fonctionnalité, il vous faudra vous rendre sur la page d'édition des catégories et renseigner les mots-clés associés à chaque catégorie de mouvement.
 
 ## Utilisation
 
 ### Import
+
+Les mouvements de comptes bancaires et pleins de carburant peuvent être importés soit par l'interface web, soit en ligne de commande.
 
 Import des mouvements de comptes bancaires :
 
@@ -66,6 +68,6 @@ Import des pleins de carburant d'un parc de véhicules :
 
     php app/console comptes:import:pleins filename handler
 
-où `filename` est le chemin du fichier et `handler` le service de prise en charge du fichier. En cas de doute, donner une valeur arbitraire à `handler` pour que le système vous liste les possibilités.
+où `filename` est le chemin du fichier et `handler` le service de prise en charge du fichier. En cas de doute, donnez une valeur arbitraire à `handler` pour que le système vous liste les possibilités.
 
 Le fichier que vous tentez d'importer n'est pas pris en charge ? La documentation `CONTRIBUTING.md` vous détaillera le développement d'un handler d'import.

@@ -8,9 +8,8 @@ Techniquement, le handler n'est qu'une des briques du moteur d'import et ce n'es
 
 L'application n'embarque qu'une poignée de handlers :
 
-- relevé de comptes de la banque CIC, au format Excel
-- données de l'application Android MyCars, au format XML
-- données de l'application Android MyCars, au format CSV
+- relevé de comptes de la banque CIC, aux formats Excel et CSV
+- données de l'application Android MyCars, aux formats XML et CSV
 
 Le moteur d'import, par sa généricité, rend le développement d'un handler très simple. Il se résume à un service Symfony2 et quelques lignes de configuration.
 

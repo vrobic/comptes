@@ -1,18 +1,21 @@
 # Liste de tâches
 
+## Partage et documentation
+
+- rajouter l'entité Keyword dans le MLD Dia
+- distribuer le bundle plutôt que toute l'installation Symfony
+
 ## Core
 
-- distribuer le bundle plutôt que toute l'installation Symfony
-- remplacer ComptesBundle\Service\ConfigurationLoader par Symfony\Component\Config\Definition\ConfigurationInterface
-- Déporter le mapping Doctrine dans un fichier YML
+- Services
+    - n'injecter que les dépendances nécessaires, pas tout le container
+    - remplacer ComptesBundle\Service\ConfigurationLoader par Symfony\Component\Config\Definition\ConfigurationInterface
+- Doctrine
+    - déporter le mapping dans un fichier YML
 - Fixtures
     - utiliser Alice
-- Améliorations
-    - utilisation des .row dans les templates
-- Évolutions
-    - intégrer dépenses véhicules + coût assurance
-    - intégrer gestion des congés ?
-    - intégrer suivi sportif ?
+- Assets
+    - mettre à jour les librairies : TWBS, jQuery, Highcharts et Select2
 
 ## Imports
 
@@ -24,6 +27,7 @@
     - revoir comment est calculé le total "non catégorisé"
 - dashboard
     - créer une classe DashboardWidget
+    - permettre de choisir quels widgets afficher
 - pleins
     - consommation moyenne / plein
     - autonomie estimée / plein
@@ -31,3 +35,9 @@
     - coût en carburant / véhicule, au 100km
 - comptes
     - dépenses moyennes / mois
+
+## Évolutions
+
+- intégrer dépenses véhicules + coût assurance
+- intégrer gestion des congés ?
+- intégrer suivi sportif ?
