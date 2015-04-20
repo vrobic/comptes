@@ -1,11 +1,58 @@
 {% extends 'ComptesBundle::layout.html.twig' %}
 
-{% block modules 'forms' %}
+{% block modules 'forms;highcharts' %}
 
 {% block title %} - {{ categorie }}{% endblock %}
 
 {% block content %}
     <h1>{{ categorie }}</h1>
+    <div class="row">
+            <div id="chart" class="chart col-md-12"></div>
+            <script>
+                $(function(){
+                    $('#chart').highcharts({
+                        title: {
+                            text: "Évolution mensuelle",
+                            x: -20 // centrage
+                        },
+                        xAxis: {
+                            type: 'datetime'
+                        },
+                        yAxis: {
+                            min: 0,
+                            title: {
+                                text: "Total mensuel (€)"
+                            }
+                        },
+                        tooltip: {
+                            valueSuffix: "€"
+                        },
+                        legend: {
+                            enabled: false
+                        },
+                        credits: {
+                            enabled: false
+                        },
+                        series: [
+                            {
+                                name: "{{ categorie|e('js') }}",
+                                data: [
+                                    {% for key, montant in monthly_montants %}
+                                        {% set array = key|split('-') %}
+                                        {% set year = array.0 %}
+                                        {% set month = array.1 %}
+                                        [
+                                            Date.UTC({{ year|e('js') }}, {{ month|e('js') }}, 1),
+                                            {{ montant|abs|e('js') }}
+                                        ]{{ loop.revindex > 1 ? ","|e('js') }}
+                                    {% endfor %}
+                                ]
+                            }
+                        ]
+                    });
+                });
+            </script>
+        </div>
     <table class="table table-condensed table-striped table-hover">
         <caption>Liste des mouvements</caption>
         <thead>

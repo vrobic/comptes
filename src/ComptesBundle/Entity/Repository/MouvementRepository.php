@@ -178,7 +178,7 @@ class MouvementRepository extends EntityRepository
      * @param \DateTime $dateStart Date de début, incluse.
      * @param \DateTime $dateEnd Date de fin, incluse.
      * @param string $order 'ASC' (par défaut) ou 'DESC'.
-     * @return array
+     * @return \Doctrine\Common\Collections\ArrayCollection
      */
     public function findByCompteAndDate(Compte $compte, \DateTime $dateStart, \DateTime $dateEnd, $order='ASC')
     {
@@ -264,7 +264,7 @@ class MouvementRepository extends EntityRepository
      * @param \DateTime $dateStart Date de début, incluse.
      * @param \DateTime $dateEnd Date de fin, incluse.
      * @param string $order 'ASC' (par défaut) ou 'DESC'.
-     * @return array
+     * @return \Doctrine\Common\Collections\ArrayCollection
      */
     public function findByDate(\DateTime $dateStart, \DateTime $dateEnd, $order='ASC')
     {
@@ -281,6 +281,49 @@ class MouvementRepository extends EntityRepository
             ->where($and)
             ->setParameter('date_start', $dateStart)
             ->setParameter('date_end', $dateEnd)
+            ->orderBy('m.date', $order);
+
+        $mouvements = $queryBuilder->getQuery()->getResult();
+
+        return $mouvements;
+    }
+
+    /**
+     * Récupère les mouvements d'une catégorie, entre deux dates.
+     *
+     * @param Categorie $categorie La catégorie.
+     * @param \DateTime $dateStart Date de début, incluse.
+     * @param \DateTime $dateEnd Date de fin, incluse.
+     * @param string $order 'ASC' (par défaut) ou 'DESC'.
+     * @return \Doctrine\Common\Collections\ArrayCollection
+     */
+    public function findByDateAndCategorie(Categorie $categorie, \DateTime $dateStart, \DateTime $dateEnd, $order='ASC')
+    {
+        $queryBuilder = $this->_em->createQueryBuilder();
+        $expressionBuilder = $this->_em->getExpressionBuilder();
+
+        // La liste des catégories de mouvements
+        $categorieID = $categorie->getId();
+        $categories = array($categorieID);
+        $categoriesFilles = $categorie->getCategoriesFillesRecursive();
+
+        foreach ($categoriesFilles as $categorieFille)
+        {
+            $categories[] = $categorieFille->getId();
+        }
+
+        $and = $expressionBuilder->andX();
+        $and->add($expressionBuilder->in('m.categorie', ':categories'));
+        $and->add($expressionBuilder->gte('m.date', ':date_start'));
+        $and->add($expressionBuilder->lte('m.date', ':date_end'));
+
+        $queryBuilder
+            ->select('m')
+            ->from('ComptesBundle:Mouvement', 'm')
+            ->where($and)
+            ->setParameter('date_start', $dateStart)
+            ->setParameter('date_end', $dateEnd)
+            ->setParameter('categories', $categories)
             ->orderBy('m.date', $order);
 
         $mouvements = $queryBuilder->getQuery()->getResult();
@@ -320,7 +363,7 @@ class MouvementRepository extends EntityRepository
      *
      * @param Categorie $categorie La catégorie.
      * @param string $order 'ASC' (par défaut) ou 'DESC'.
-     * @return array
+     * @return \Doctrine\Common\Collections\ArrayCollection
      */
     public function findByCategorie(Categorie $categorie, $order='ASC')
     {
@@ -355,7 +398,7 @@ class MouvementRepository extends EntityRepository
      * @param float $montant
      * @param \DateTime $dateStart
      * @param \DateTime $dateEnd
-     * @return array
+     * @return \Doctrine\Common\Collections\ArrayCollection
      */
     public function findByMontantBetweenDates($montant, $dateStart, $dateEnd)
     {

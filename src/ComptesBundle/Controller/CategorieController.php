@@ -123,12 +123,22 @@ class CategorieController extends Controller
             $total += $montant;
         }
 
+        // Total des mouvements par mois
+        $firstMouvement = reset($mouvements);
+        $lastMouvement = end($mouvements);
+        $firstMouvementDate = $firstMouvement->getDate();
+        $lastMouvementDate = $lastMouvement->getDate();
+
+        $statsProvider = $this->container->get('comptes_bundle.stats.provider');
+        $monthlyMontants = $statsProvider->getMonthlyMontantsByCategorie($categorie, $firstMouvementDate, $lastMouvementDate);
+
         return $this->render(
             'ComptesBundle:Categorie:show.html.twig',
             array(
                 'categorie' => $categorie,
                 'mouvements' => $mouvements,
-                'total' => $total
+                'total' => $total,
+                'monthly_montants' => $monthlyMontants
             )
         );
     }

@@ -53,7 +53,7 @@ class PleinRepository extends EntityRepository
      * @param \DateTime $dateStart Date de début, incluse.
      * @param \DateTime $dateEnd Date de fin, incluse.
      * @param string $order 'ASC' (par défaut) ou 'DESC'.
-     * @return array
+     * @return \Doctrine\Common\Collections\ArrayCollection
      */
     public function findByDate(\DateTime $dateStart, \DateTime $dateEnd, $order='ASC')
     {

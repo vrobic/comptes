@@ -4,6 +4,7 @@ namespace ComptesBundle\Service;
 
 use Symfony\Component\DependencyInjection\Container;
 use Doctrine\ORM\EntityManager;
+use ComptesBundle\Entity\Categorie;
 
 /**
  * Fournisseur de statistiques.
@@ -52,7 +53,7 @@ class StatsProvider
      * @param \DateTime $dateEnd Date de fin, incluse.
      * @return float
      */
-    public function getMonthlyBalance($dateStart, $dateEnd)
+    public function getMonthlyBalance(\DateTime $dateStart, \DateTime $dateEnd)
     {
         // Repositories
         $doctrine = $this->container->get('doctrine');
@@ -79,6 +80,57 @@ class StatsProvider
     }
 
     /**
+     * Calcule le montant total mensuel des mouvements d'une catégorie,
+     * compris entre deux dates incluses.
+     *
+     * @param \DateTime $dateStart Date de début, incluse.
+     * @param \DateTime $dateEnd Date de fin, incluse.
+     * @return array Les montants des mouvements, classés par mois.
+     */
+    public function getMonthlyMontantsByCategorie(Categorie $categorie, \DateTime $dateStart, \DateTime $dateEnd)
+    {
+        // Repositories
+        $doctrine = $this->container->get('doctrine');
+        $mouvementRepository = $doctrine->getRepository('ComptesBundle:Mouvement');
+
+        // Les montants totaux mensuels des mouvements de la catégorie
+        $montants = array();
+
+        // Tous les mois entre et sur les deux dates
+        $interval = \DateInterval::createFromDateString('1 month');
+        $periods = new \DatePeriod($dateStart, $interval, $dateEnd);
+
+        // Chaque mois de la période
+        foreach ($periods as $date)
+        {
+            $year = $date->format('Y');
+            $month = $date->format('m');
+            $day = $date->format('d');
+
+            $monthStartDate = new \DateTime();
+            $monthStartDate->setDate($year, $month, $day);
+            $monthStartDate->modify('first day of this month');
+
+            $monthEndDate = new \DateTime();
+            $monthEndDate->setDate($year, $month, $day);
+            $monthEndDate->modify('last day of this month');
+
+            // Mouvements du mois
+            $mouvements = $mouvementRepository->findByDateAndCategorie($categorie, $monthStartDate, $monthEndDate);
+
+            $montants["$year-$month"] = 0;
+
+            foreach ($mouvements as $mouvement)
+            {
+                $montant = $mouvement->getMontant();
+                $montants["$year-$month"] += $montant;
+            }
+        }
+
+        return $montants;
+    }
+
+    /**
      * Compte la distance parcourue entre deux dates incluses,
      * en se basant sur les pleins de carburant.
      *
@@ -86,7 +138,7 @@ class StatsProvider
      * @param \DateTime $dateEnd Date de fin, incluse.
      * @return float
      */
-    public function getDistanceByDate($dateStart, $dateEnd)
+    public function getDistanceByDate(\DateTime $dateStart, \DateTime $dateEnd)
     {
         // Repositories
         $doctrine = $this->container->get('doctrine');

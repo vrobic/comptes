@@ -6,6 +6,15 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * @todo Faire une fonction pour chaque action :
+ *       - mouvementsParseAction
+ *       - mouvementsImportParseAction
+ *       - pleinsImportParseAction
+ *       - pleinssImportParseAction
+ * 
+ * @todo Utiliser un service pour mutualiser le reste.
+ */
 class ImportController extends Controller
 {
     /**
