@@ -108,12 +108,18 @@ class StatsProvider
             $day = $date->format('d');
 
             $monthStartDate = new \DateTime();
-            $monthStartDate->setDate($year, $month, $day);
-            $monthStartDate->modify('first day of this month');
+            $monthStartDate
+                ->setDate($year, $month, $day)
+                ->setTime(0, 0)
+                ->modify('first day of this month')
+            ;
 
             $monthEndDate = new \DateTime();
-            $monthEndDate->setDate($year, $month, $day);
-            $monthEndDate->modify('last day of this month');
+            $monthEndDate
+                ->setDate($year, $month, $day)
+                ->setTime(23, 59, 59)
+                ->modify('last day of this month')
+            ;
 
             // Mouvements du mois
             $mouvements = $mouvementRepository->findByDateAndCategorie($categorie, $monthStartDate, $monthEndDate);
