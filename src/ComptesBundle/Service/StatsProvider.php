@@ -80,12 +80,51 @@ class StatsProvider
     }
 
     /**
+     * Calcule le montant total annuel des mouvements,
+     * pour toutes les années incluses dans un intervalle.
+     *
+     * @param int $yearStart Année de début, incluse.
+     * @param int $yearEnd Année de fin, incluse.
+     * @return array Les montants des mouvements, classés par années.
+     */
+    public function getYearlyMontants($yearStart, $yearEnd)
+    {
+        // Repositories
+        $doctrine = $this->container->get('doctrine');
+        $mouvementRepository = $doctrine->getRepository('ComptesBundle:Mouvement');
+
+        $dateStart = \DateTime::createFromFormat("Y-m-d H:i:s", "$yearStart-01-01 00:00:00");
+        $dateEnd = \DateTime::createFromFormat("Y-m-d H:i:s", "$yearEnd-12-31 23:59:59");
+
+        $mouvements = $mouvementRepository->findByDate($dateStart, $dateEnd);
+
+        $yearlyMontants = array();
+
+        foreach ($mouvements as $mouvement)
+        {
+            $montant = $mouvement->getMontant();
+            $date = $mouvement->getDate();
+            $year = $date->format('Y');
+
+            if (!isset($yearlyMontants[$year]))
+            {
+                $yearlyMontants[$year] = 0;
+            }
+
+            $yearlyMontants[$year] += $montant;
+        }
+
+        return $yearlyMontants;
+    }
+
+    /**
      * Calcule le montant total annuel des mouvements d'une catégorie,
      * pour toutes les années incluses dans un intervalle.
      *
-     * @param \DateTime $dateStart Date de début, incluse.
-     * @param \DateTime $dateEnd Date de fin, incluse.
-     * @return array Les montants des mouvements, classés par années.
+     * @param Categorie $categorie
+     * @param int $yearStart Année de début, incluse.
+     * @param int $yearEnd Année de fin, incluse.
+     * @return array Les montants des mouvements de la catégorie, classés par années.
      */
     public function getYearlyMontantsByCategorie(Categorie $categorie, $yearStart, $yearEnd)
     {
@@ -112,9 +151,10 @@ class StatsProvider
      * Calcule le montant total mensuel des mouvements d'une catégorie,
      * compris entre deux dates incluses.
      *
+     * @param Categorie $categorie
      * @param \DateTime $dateStart Date de début, incluse.
      * @param \DateTime $dateEnd Date de fin, incluse.
-     * @return array Les montants des mouvements, classés par mois.
+     * @return array Les montants des mouvements de la catégorie, classés par mois.
      */
     public function getMonthlyMontantsByCategorie(Categorie $categorie, \DateTime $dateStart, \DateTime $dateEnd)
     {

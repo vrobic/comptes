@@ -56,9 +56,9 @@
                                         [
                                             Date.UTC({{ year|e('js') }}, {{ (month-1)|e('js') }}),
                                             {{ montant|abs|e('js') }}
-                                        ]{{ loop.revindex > 1 ? ","|e('js') }}
+                                        ]{{ loop.revindex > 1 ? ','|e('js') }}
                                     {% endfor %}
-                                    {{ loop.revindex > 1 ? ","|e('js') }}
+                                    {{ loop.revindex > 1 ? ','|e('js') }}
                                 {% endfor %}
                             ]
                         }
@@ -94,7 +94,7 @@
         <tfoot>
             <tr>
                 <th>Total</th>
-                <td colspan="3">{{ total ~ "€" }}</td>
+                <td colspan="3">{{ total|number_format(2, ".", "") ~ "€" }}</td>
             </tr>
         </tfoot>
     </table>

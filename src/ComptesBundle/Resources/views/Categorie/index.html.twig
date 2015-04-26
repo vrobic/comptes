@@ -12,9 +12,9 @@
             <a href="{{ path('categories_categorie', {'categorie_id': categorie.id, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y')}) }}">{{ categorie }}</a>
         </td>
         <td>
-            {{ montants[categorie.id].period ~ "€" }}
+            {{ montants[categorie.id].period|number_format(2, ".", "") ~ "€" }}
         </td>
-        <td data-sparkline="{% for year, montant in montants[categorie.id].yearly %}{{ year ~ ':' ~ montant|abs ~ (loop.revindex > 1 ? ",") | e('js') }}{% endfor %}"></td>
+        <td data-sparkline="{% for year, montant in montants[categorie.id].yearly %}{{ year ~ ':' ~ montant|abs ~ (loop.revindex > 1 ? ',') | e('js') }}{% endfor %}"></td>
     </tr>
     {% if categorie.categoriesFilles is not empty %}
         {% set depth = depth + 1 %}
@@ -75,7 +75,7 @@
                                         y: {{ montants[categorie.id].period|abs|e('js') }},
                                         url: '{{ path('categories_categorie', {'categorie_id': categorie.id, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y')})|e('js') }}'
                                     }
-                                    {{ loop.revindex > 1 ? ","|e('js') }}
+                                    {{ loop.revindex > 1 ? ','|e('js') }}
                                 {% endif %}
                             {% endfor %}
                         ],
@@ -105,9 +105,19 @@
                     Non catégorisé
                 </td>
                 <td>
-                    {{ montant_total_non_categorise ~ "€" }}
+                    {{ montant_total_non_categorise|number_format(2, ".", "") ~ "€" }}
                 </td>
                 <td></td>
+            </tr>
+            <tr>
+                <td>
+                    Toutes catégories confondues
+                    <small>(dont non catégorisé)</small>
+                </td>
+                <td>
+                    {{ montant_total|number_format(2, ".", "") ~ "€" }}
+                </td>
+                <td data-sparkline="{% for year, montant in yearly_montants %}{{ year ~ ':' ~ montant ~ (loop.revindex > 1 ? ',') | e('js') }}{% endfor %}"></td>
             </tr>
             {% for categorie in categories %}
                 {% if not categorie.categorieParente %}

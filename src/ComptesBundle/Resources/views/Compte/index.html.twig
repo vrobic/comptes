@@ -38,7 +38,7 @@
                         categories: [
                             {% for compte in comptes %}
                                 "{{ compte|e('js') }}"
-                                {{ loop.revindex > 1 ? ","|e('js') }}
+                                {{ loop.revindex > 1 ? ','|e('js') }}
                             {% endfor %}
                         ],
                         title: {
@@ -68,7 +68,7 @@
                                     y: {{ compte.solde|e('js') }},
                                     url: '{{ path('comptes_compte', {'compte_id': compte.id})|e('js') }}'
                                 }
-                                {{ loop.revindex > 1 ? ","|e('js') }}
+                                {{ loop.revindex > 1 ? ','|e('js') }}
                             {% endfor %}
                         ],
                         events: {
@@ -112,7 +112,7 @@
                                     [
                                         Date.UTC({{ mouvement.date|date('Y')|e('js') }}, {{ (mouvement.date|date('m')-1)|e('js') }}, {{ mouvement.date|date('d')|e('js') }}),
                                         {{ solde_total|e('js') }}
-                                    ]{{ loop.revindex > 1 ? ","|e('js') }}
+                                    ]{{ loop.revindex > 1 ? ','|e('js') }}
                                 {% endif %}
                             {% endfor %}
                         ]

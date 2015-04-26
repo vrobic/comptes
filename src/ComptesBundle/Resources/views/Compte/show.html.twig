@@ -72,7 +72,7 @@
                                     [
                                         Date.UTC({{ mouvement.date|date('Y')|e('js') }}, {{ (mouvement.date|date('m')-1)|e('js') }}, {{ mouvement.date|date('d')|e('js') }}),
                                         {{ solde_periode|e('js') }}
-                                    ]{{ loop.revindex > 1 ? ","|e('js') }}
+                                    ]{{ loop.revindex > 1 ? ','|e('js') }}
                                 {% endif %}
                             {% endfor %}
                         ]

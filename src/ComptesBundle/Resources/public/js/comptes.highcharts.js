@@ -106,7 +106,7 @@ window.highcharts = function()
                     shared: true,
                     positioner: function (w, h, point) {
                         return {
-                            x: point.plotX - w / 2,
+                            x: point.plotX - w,
                             y: point.plotY - h
                         };
                     }

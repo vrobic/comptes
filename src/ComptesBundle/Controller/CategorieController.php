@@ -14,6 +14,7 @@ class CategorieController extends Controller
      * Liste des catégories.
      *
      * @todo Optimiser la vitesse de calcul des statistiques en limitant le nombre de requêtes.
+     * @todo Refactorer le nom des variables passés au template.
      *
      * @param Request $request
      * @return Response
@@ -74,32 +75,40 @@ class CategorieController extends Controller
             $yearStart = (int) $firstMouvementDate->format('Y');
         }
 
+        // Montant total des mouvements, toutes catégories confondues
+        $yearlyMontants = $statsProvider->getYearlyMontants($yearStart, $yearEnd);
+        $montantTotal = 0;
+        foreach ($yearlyMontants as $montant)
+        {
+            $montantTotal += $montant;
+        }
+
         // Montant total des mouvements par catégorie
         $montants = array();
 
         // Montant cumulé de tous les mouvements, et des mouvements catégorisés sur la période donnée
-        $montantTotal = $mouvementRepository->getMontantTotalByDate($dateFilter['start'], $dateFilter['end']);
-        $montantTotalCategorise = 0;
+        $montantTotalPeriode = $mouvementRepository->getMontantTotalByDate($dateFilter['start'], $dateFilter['end']);
+        $montantTotalPeriodeCategorise = 0;
 
         foreach ($categories as $categorie)
         {
             $categorieID = $categorie->getId();
 
             // Montant cumulé des mouvements de la catégorie sur la période donnée
-            $montantTotalCategorie = $categorieRepository->getMontantTotalByDate($categorie, $dateFilter['start'], $dateFilter['end']);
-            $montantTotalCategorise += $montantTotalCategorie;
+            $montantTotalPeriodeCategorie = $categorieRepository->getMontantTotalByDate($categorie, $dateFilter['start'], $dateFilter['end']);
+            $montantTotalPeriodeCategorise += $montantTotalPeriodeCategorie;
 
             // Montant cumulé des mouvements de la catégorie, année par année
-            $yearlyMontants = $statsProvider->getYearlyMontantsByCategorie($categorie, $yearStart, $yearEnd);
+            $montantAnnuelCategorie = $statsProvider->getYearlyMontantsByCategorie($categorie, $yearStart, $yearEnd);
 
             $montants[$categorieID] = array(
-                'period' => $montantTotalCategorie,
-                'yearly' => $yearlyMontants
+                'period' => $montantTotalPeriodeCategorie,
+                'yearly' => $montantAnnuelCategorie
             );
         }
 
         // Montant total des mouvements non catégorisés
-        $montantTotalNonCategorise = $montantTotal - $montantTotalCategorise;
+        $montantTotalPeriodeNonCategorise = $montantTotalPeriode - $montantTotalPeriodeCategorise;
 
         return $this->render(
             'ComptesBundle:Categorie:index.html.twig',
@@ -107,7 +116,9 @@ class CategorieController extends Controller
                 'categories' => $categories,
                 'date_filter' => $dateFilter,
                 'montants' => $montants,
-                'montant_total_non_categorise' => $montantTotalNonCategorise
+                'montant_total_non_categorise' => $montantTotalPeriodeNonCategorise, // Sur la période
+                'yearly_montants' => $yearlyMontants, // Depuis toujours
+                'montant_total' => $montantTotal // Depuis toujours
             )
         );
     }

@@ -7,6 +7,8 @@
 
 ## Core
 
+- Contrôleurs
+    - utiliser OptionsResolver pour contrôler les données en entrée
 - Services
     - n'injecter que les dépendances nécessaires, pas tout le container
     - remplacer ComptesBundle\Service\ConfigurationLoader par Symfony\Component\Config\Definition\ConfigurationInterface

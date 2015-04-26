@@ -38,10 +38,10 @@
                                         [
                                             Date.UTC({{ plein.date|date('Y')|e('js') }}, {{ (plein.date|date('m')-1)|e('js') }}, {{ plein.date|date('d')|e('js') }}),
                                             {{ kilometrage_total|e('js') }}
-                                        ]{{ loop.revindex > 1 ? ","|e('js') }}
+                                        ]{{ loop.revindex > 1 ? ','|e('js') }}
                                     {% endfor %}
                                 ]
-                            }{{ loop.revindex > 1 ? ","|e('js') }}
+                            }{{ loop.revindex > 1 ? ','|e('js') }}
                         {% endfor %}
                     ]
                 });
