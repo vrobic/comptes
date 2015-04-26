@@ -6,19 +6,20 @@
 
 {% import _self as macros %}
 
-{% macro categoriesFilles(categorie, montants, depth) %}
+{% macro categoriesFilles(categorie, montants, depth, date_filter) %}
     <tr>
         <td style="padding-left: {{ (5 + depth * 20) ~ "px" }};">
-            <a href="{{ path('categories_categorie', {'categorie_id': categorie.id}) }}">{{ categorie }}</a>
+            <a href="{{ path('categories_categorie', {'categorie_id': categorie.id, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y')}) }}">{{ categorie }}</a>
         </td>
         <td>
-            {{ montants[categorie.id] ~ "€" }}
+            {{ montants[categorie.id].period ~ "€" }}
         </td>
+        <td data-sparkline="{% for year, montant in montants[categorie.id].yearly %}{{ year ~ ':' ~ montant|abs ~ (loop.revindex > 1 ? ",") | e('js') }}{% endfor %}"></td>
     </tr>
     {% if categorie.categoriesFilles is not empty %}
         {% set depth = depth + 1 %}
         {% for categorieFille in categorie.categoriesFilles %}
-            {{ _self.categoriesFilles(categorieFille, montants, depth) }}
+            {{ _self.categoriesFilles(categorieFille, montants, depth, date_filter) }}
         {% endfor %}
     {% endif %}
 {% endmacro %}
@@ -42,72 +43,113 @@
             </form>
         </div>
     </div>
-    {% if categories is not empty %}
-        <div class="row">
-            <div id="chart" class="chart col-md-12"></div>
-            <script>
-                $(function(){
-                    $('#chart').highcharts({
-                        title: {
-                            text: "Répartition des dépenses par catégorie"
-                        },
-                        tooltip: {
-                            pointFormat: "{point.y:.0f}€"
-                        },
-                        plotOptions: {
-                            pie: {
-                                allowPointSelect: true,
-                                cursor: 'pointer',
-                                dataLabels: {
-                                    format: "<strong>{point.name}</strong>: {point.percentage:.1f}%"
-                                }
+    <div class="row">
+        <div id="chart" class="chart col-md-12"></div>
+        <script>
+            $(function(){
+                $('#chart').highcharts({
+                    title: {
+                        text: "Répartition des dépenses par catégorie"
+                    },
+                    tooltip: {
+                        pointFormat: "{point.y:.0f}€"
+                    },
+                    plotOptions: {
+                        pie: {
+                            allowPointSelect: false,
+                            cursor: 'pointer',
+                            dataLabels: {
+                                format: "<strong>{point.name}</strong>: {point.percentage:.1f}%"
                             }
-                        },
-                        credits: {
-                            enabled: false
-                        },
-                        series: [{
-                            type: 'pie',
-                            name: "Répartition des dépenses",
-                            data: [
-                                ["Non catégorisé", {{ montant_total_non_categorise|abs|e('js') }}],
-                                {% for categorie in categories %}
-                                    {% if not categorie.categorieParente and montants[categorie.id] < 0 %}
-                                        ["{{ categorie|e('js') }}", {{ montants[categorie.id]|abs|e('js') }}]
-                                        {{ loop.revindex > 1 ? ","|e('js') }}
-                                    {% endif %}
-                                {% endfor %}
-                            ]
-                        }]
-                    });
+                        }
+                    },
+                    series: [{
+                        type: 'pie',
+                        name: "Répartition des dépenses",
+                        data: [
+                            ["Non catégorisé", {{ montant_total_non_categorise|abs|e('js') }}],
+                            {% for categorie in categories %}
+                                {% if not categorie.categorieParente and montants[categorie.id].period < 0 %}
+                                    {
+                                        name: "{{ categorie|e('js') }}",
+                                        y: {{ montants[categorie.id].period|abs|e('js') }},
+                                        url: '{{ path('categories_categorie', {'categorie_id': categorie.id, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y')})|e('js') }}'
+                                    }
+                                    {{ loop.revindex > 1 ? ","|e('js') }}
+                                {% endif %}
+                            {% endfor %}
+                        ],
+                        events: {
+                            click: function(e) {
+                                e.preventDefault();
+                                window.location.href = e.point.url;
+                            }
+                        }
+                    }]
                 });
-            </script>
-        </div>
-        <table class="table table-condensed table-striped table-hover">
-            <caption>Liste des catégories</caption>
-            <thead>
-                <tr>
-                    <th class="col-md-9">Catégorie</th>
-                    <th class="col-md-3">Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>
-                        Non catégorisé
-                    </td>
-                    <td>
-                        {{ montant_total_non_categorise ~ "€" }}
-                    </td>
-                </tr>
-                {% for categorie in categories %}
-                    {% if not categorie.categorieParente %}
-                        {{ macros.categoriesFilles(categorie, montants, 0) }}
-                    {% endif %}
-                {% endfor %}
-            </tbody>
-        </table>
-    {% endif %}
+            });
+        </script>
+    </div>
+    <table class="table table-condensed table-striped table-hover">
+        <caption>Liste des catégories</caption>
+        <thead>
+            <tr>
+                <th class="col-md-6">Catégorie</th>
+                <th class="col-md-3">Total</th>
+                <th class="col-md-3">Évolution annuelle</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    Non catégorisé
+                </td>
+                <td>
+                    {{ montant_total_non_categorise ~ "€" }}
+                </td>
+                <td></td>
+            </tr>
+            {% for categorie in categories %}
+                {% if not categorie.categorieParente %}
+                    {{ macros.categoriesFilles(categorie, montants, 0, date_filter) }}
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+    <script>
+        $(function() {
+            $('td[data-sparkline]').each(function()
+            {
+                var td = $(this),
+                    stringData = td.data('sparkline'), // "2012:1890.36,2013:2559.62"
+                    arrayData = stringData.split(','), // ["2012:1890.36", "2013:2559.62"]
+                    seriesData = [];
+
+                for (var i=0; i < arrayData.length; i++)
+                {
+                    var data = arrayData[i].split(':'), // ["2012", "1890.36"]
+                        year = data[0], // "2012"
+                        montant = data[1]; // "1890.36"
+
+                    seriesData.push({
+                        year: year, // "2012"
+                        y: parseFloat(montant) // 1890.36
+                    });
+                }
+
+                td.highcharts('sparkline', {
+                    series: [{
+                        data: seriesData,
+                        pointStart: 1
+                    }],
+                    tooltip: {
+                        headerFormat: "",
+                        pointFormat: "<strong>{point.year}</strong>: {point.y:.0f}€"
+                    }
+                });
+            });
+        });
+    </script>
     <a href="{{ path('categories_edit') }}" class="btn btn-default">
         <span class="glyphicon glyphicon-pencil"></span>
         Éditer les catégories

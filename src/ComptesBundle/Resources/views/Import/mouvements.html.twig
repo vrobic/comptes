@@ -55,11 +55,9 @@
                         <label for="compte-{{ mouvement.hash }}" class="sr-only">Compte</label>
                         <select id="compte-{{ mouvement.hash }}" name="mouvements[{{ mouvement.hash }}][compte]">
                             <option value="">&nbsp;</option>
-                            {% if comptes is not empty %}
-                                {% for compte in comptes %}
-                                    <option value="{{ compte.id }}" {{ mouvement.compte.id == compte.id ? "selected" }}>{{ compte }}</option>
-                                {% endfor %}
-                            {% endif %}
+                            {% for compte in comptes %}
+                                <option value="{{ compte.id }}" {{ mouvement.compte.id == compte.id ? "selected" }}>{{ compte }}</option>
+                            {% endfor %}
                         </select>
                     </td>
                     <td class="input-text">
@@ -78,13 +76,11 @@
                         <label for="categorie-{{ mouvement.hash }}" class="sr-only">Catégorie</label>
                         <select id="categorie-{{ mouvement.hash }}" name="mouvements[{{ mouvement.hash }}][categorie]">
                             <option value="">&nbsp;</option>
-                            {% if categories is not empty %}
-                                {% for categorie in categories %}
-                                    {% if not categorie.categorieParente %}
-                                        {{ macros.categoriesFilles(categorie, mouvement, 0) }}
-                                    {% endif %}
-                                {% endfor %}
-                            {% endif %}
+                            {% for categorie in categories %}
+                                {% if not categorie.categorieParente %}
+                                    {{ macros.categoriesFilles(categorie, mouvement, 0) }}
+                                {% endif %}
+                            {% endfor %}
                         </select>
                     </td>
                 </tr>

@@ -24,13 +24,11 @@
             <label for="categorie-parente-{{ currentCategorie.id }}" class="sr-only">Catégorie parente</label>
             <select id="categorie-parente-{{ currentCategorie.id }}" name="categories[{{ currentCategorie.id }}][categorieParente]">
                 <option value="">&nbsp;</option>
-                {% if categories is not empty %}
-                    {% for categorie in categories %}
-                        {% if not categorie.categorieParente %}
-                            {{ _self.categoriesFillesSelect(categorie, currentCategorie, 0) }}
-                        {% endif %}
-                    {% endfor %}
-                {% endif %}
+                {% for categorie in categories %}
+                    {% if not categorie.categorieParente %}
+                        {{ _self.categoriesFillesSelect(categorie, currentCategorie, 0) }}
+                    {% endif %}
+                {% endfor %}
             </select>
         </td>
         <td class="input-tags">
@@ -90,13 +88,11 @@
                 </tr>
             </thead>
             <tbody>
-                {% if categories is not empty %}
-                    {% for categorie in categories %}
-                        {% if not categorie.categorieParente %}
-                            {{ macros.categoriesFillesRow(categories, categorie, keywords, 0) }}
-                        {% endif %}
-                    {% endfor %}
-                {% endif %}
+                {% for categorie in categories %}
+                    {% if not categorie.categorieParente %}
+                        {{ macros.categoriesFillesRow(categories, categorie, keywords, 0) }}
+                    {% endif %}
+                {% endfor %}
                 <tr class="new-row hidden" data-id="-1">
                     <td>
                         <label for="batch--1" class="sr-only">Ajouter</label>
@@ -114,13 +110,11 @@
                         <label for="categorie-parente--1" class="sr-only">Catégorie parente</label>
                         <select id="categorie-parente--1" name="categories[-1][categorieParente]">
                             <option value="">&nbsp;</option>
-                            {% if categories is not empty %}
-                                {% for categorie in categories %}
-                                    {% if not categorie.categorieParente %}
-                                        {{ macros.categoriesFillesSelect(categorie, null, 0) }}
-                                    {% endif %}
-                                {% endfor %}
-                            {% endif %}
+                            {% for categorie in categories %}
+                                {% if not categorie.categorieParente %}
+                                    {{ macros.categoriesFillesSelect(categorie, null, 0) }}
+                                {% endif %}
+                            {% endfor %}
                         </select>
                     </td>
                     <td class="input-tags">

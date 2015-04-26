@@ -105,7 +105,7 @@ class MouvementRepository extends EntityRepository
      * Récupère les mouvements d'un compte,
      * depuis le début jusqu'à une date donnée (incluse).
      *
-     * @todo Mutualiser avec self::findByCompteSinceDate()
+     * @todo Mutualiser avec self->findByCompteSinceDate()
      *
      * @param Compte $compte
      * @param \DateTime $date
@@ -140,7 +140,7 @@ class MouvementRepository extends EntityRepository
      * Récupère les mouvements d'un compte,
      * depuis une date donnée jusqu'à aujourd'hui (inclus).
      *
-     * @todo Mutualiser avec self::findByCompteUntilDate()
+     * @todo Mutualiser avec self->findByCompteUntilDate()
      *
      * @param Compte $compte
      * @param \DateTime $date
@@ -210,7 +210,7 @@ class MouvementRepository extends EntityRepository
      * Récupère les mouvements,
      * depuis le début jusqu'à une date donnée (incluse).
      *
-     * @todo Mutualiser avec self::findSinceDate()
+     * @todo Mutualiser avec self->findSinceDate()
      *
      * @param \DateTime $date
      * @param string $order 'ASC' (par défaut) ou 'DESC'.
@@ -236,7 +236,7 @@ class MouvementRepository extends EntityRepository
      * Récupère les mouvements,
      * depuis une date donnée jusqu'à aujourd'hui (inclus).
      *
-     * @todo Mutualiser avec self::findUntilDate()
+     * @todo Mutualiser avec self->findUntilDate()
      *
      * @param \DateTime $date
      * @param string $order 'ASC' (par défaut) ou 'DESC'.
@@ -332,7 +332,38 @@ class MouvementRepository extends EntityRepository
     }
 
     /**
+     * Récupère le mouvement le plus ancien.
+     *
+     * @todo Mutualiser avec self->findLatestOne()
+     *
+     * @return Mouvement
+     */
+    public function findFirstOne()
+    {
+        $queryBuilder = $this->_em->createQueryBuilder();
+
+        $queryBuilder
+            ->select('m')
+            ->from('ComptesBundle:Mouvement', 'm')
+            ->orderBy('m.date', 'ASC')
+            ->setMaxResults(1);
+
+        try
+        {
+            $mouvement = $queryBuilder->getQuery()->getSingleResult();
+        }
+        catch (\Doctrine\ORM\NoResultException $exception)
+        {
+            $mouvement = null;
+        }
+
+        return $mouvement;
+    }
+
+    /**
      * Récupère le mouvement le plus récent.
+     *
+     * @todo Mutualiser avec self->findFirstOne()
      *
      * @return Mouvement
      */

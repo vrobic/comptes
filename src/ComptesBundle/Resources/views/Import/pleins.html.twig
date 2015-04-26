@@ -51,11 +51,9 @@
                     <td>
                         <label for="vehicule-{{ plein.hash }}" class="sr-only">Véhicule</label>
                         <select id="vehicule-{{ plein.hash }}" name="pleins[{{ plein.hash }}][vehicule]">
-                            {% if vehicules is not empty %}
-                                {% for vehicule in vehicules %}
-                                    <option value="{{ vehicule.id }}" {{ plein.vehicule.id == vehicule.id ? "selected" }}>{{ vehicule }}</option>
-                                {% endfor %}
-                            {% endif %}
+                            {% for vehicule in vehicules %}
+                                <option value="{{ vehicule.id }}" {{ plein.vehicule.id == vehicule.id ? "selected" }}>{{ vehicule }}</option>
+                            {% endfor %}
                         </select>
                     </td>
                     <td class="input-text">

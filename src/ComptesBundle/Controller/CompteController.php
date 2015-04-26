@@ -109,7 +109,7 @@ class CompteController extends Controller
             $dateEndString = $dateFilterString['end'];
 
             $dateStart = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateStartString 00:00:00");
-            $dateEnd = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateEndString 00:00:00");
+            $dateEnd = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateEndString 23:59:59");
         }
         else // Par défaut, le mois courant en entier
         {
@@ -120,10 +120,10 @@ class CompteController extends Controller
             $lastDayOfMonth = (int) $lastDayOfMonth;
 
             $dateStart = \DateTime::createFromFormat('Y-n-j H:i:s', "$year-$month-1 00:00:00");
-            $dateEnd = \DateTime::createFromFormat('Y-n-j H:i:s', "$year-$month-$lastDayOfMonth 00:00:00");
+            $dateEnd = \DateTime::createFromFormat('Y-n-j H:i:s', "$year-$month-$lastDayOfMonth 23:59:59");
         }
 
-        if (!$dateStart || !$dateEnd)
+        if (!$dateStart || !$dateEnd || $dateStart > $dateEnd)
         {
             throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException("La période de dates est invalide.");
         }

@@ -7,52 +7,66 @@
 {% block content %}
     <h1>{{ categorie }}</h1>
     <div class="row">
-            <div id="chart" class="chart col-md-12"></div>
-            <script>
-                $(function(){
-                    $('#chart').highcharts({
+        <div class="col-md-6">
+            <form action="{{ path('categories_categorie', {'categorie_id': categorie.id}) }}" method="GET">
+                <div class="input-group">
+                    <span class="input-group-addon">Du</span>
+                    <input class="form-control" type="text" name="date_filter[start]" value="{{ date_filter.start|date('d-m-Y') }}" placeholder="{{ date_filter.start|date('d-m-Y') }}">
+                    <span class="input-group-addon middle">au</span>
+                    <input class="form-control" type="text" name="date_filter[end]" value="{{ date_filter.end|date('d-m-Y') }}" placeholder="{{ date_filter.end|date('d-m-Y') }}">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="submit">
+                            <span class="glyphicon glyphicon-time"></span> Appliquer
+                        </button>
+                    </span>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div id="chart-1" class="chart col-md-12"></div>
+        <script>
+            $(function(){
+                $('#chart-1').highcharts({
+                    chart: {
+                        type: 'spline'
+                    },
+                    title: {
+                        text: "Évolution mensuelle",
+                        x: -20 // centrage
+                    },
+                    xAxis: {
+                        type: 'datetime',
+                    },
+                    yAxis: {
+                        min: 0,
                         title: {
-                            text: "Évolution mensuelle",
-                            x: -20 // centrage
-                        },
-                        xAxis: {
-                            type: 'datetime'
-                        },
-                        yAxis: {
-                            min: 0,
-                            title: {
-                                text: "Total mensuel (€)"
-                            }
-                        },
-                        tooltip: {
-                            valueSuffix: "€"
-                        },
-                        legend: {
-                            enabled: false
-                        },
-                        credits: {
-                            enabled: false
-                        },
-                        series: [
-                            {
-                                name: "{{ categorie|e('js') }}",
-                                data: [
-                                    {% for key, montant in monthly_montants %}
-                                        {% set array = key|split('-') %}
-                                        {% set year = array.0 %}
-                                        {% set month = array.1 %}
+                            text: "Total mensuel (€)"
+                        }
+                    },
+                    tooltip: {
+                        valueSuffix: "€"
+                    },
+                    series: [
+                        {
+                            name: "{{ categorie|e('js') }}",
+                            data: [
+                                {% for year, months in monthly_montants %}
+                                    {% for month, montant in months %}
                                         [
-                                            Date.UTC({{ year|e('js') }}, {{ month|e('js') }}, 1),
+                                            Date.UTC({{ year|e('js') }}, {{ (month-1)|e('js') }}),
                                             {{ montant|abs|e('js') }}
                                         ]{{ loop.revindex > 1 ? ","|e('js') }}
                                     {% endfor %}
-                                ]
-                            }
-                        ]
-                    });
+                                    {{ loop.revindex > 1 ? ","|e('js') }}
+                                {% endfor %}
+                            ]
+                        }
+                    ]
                 });
-            </script>
-        </div>
+            });
+        </script>
+    </div>
     <table class="table table-condensed table-striped table-hover">
         <caption>Liste des mouvements</caption>
         <thead>
@@ -70,7 +84,7 @@
                     <td>{{ mouvement.montant ~ "€" }}</td>
                     <td>{{ mouvement.description }}</td>
                     <td>
-                        <a href="{{ path('comptes_compte', {'compte_id': mouvement.compte.id}) }}">
+                        <a href="{{ path('comptes_compte', {'compte_id': mouvement.compte.id, 'date_filter[start]': mouvement.date|date('d-m-Y'), 'date_filter[end]': mouvement.date|date('d-m-Y')}) }}">
                             {{ mouvement.compte }}
                         </a>
                     </td>

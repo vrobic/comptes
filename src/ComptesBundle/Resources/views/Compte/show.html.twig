@@ -62,12 +62,6 @@
                     tooltip: {
                         valueSuffix: "€"
                     },
-                    legend: {
-                        enabled: false
-                    },
-                    credits: {
-                        enabled: false
-                    },
                     series: [{
                         name: "{{ compte|e('js') }}",
                         data: [
@@ -134,13 +128,11 @@
                             <label for="categorie-{{ mouvement.id }}" class="sr-only">Catégorie</label>
                             <select id="categorie-{{ mouvement.id }}" name="mouvements[{{ mouvement.id }}][categorie]">
                                 <option value="">&nbsp;</option>
-                                {% if categories is not empty %}
-                                    {% for categorie in categories %}
-                                        {% if not categorie.categorieParente %}
-                                            {{ macros.categoriesFilles(categorie, mouvement, 0) }}
-                                        {% endif %}
-                                    {% endfor %}
-                                {% endif %}
+                                {% for categorie in categories %}
+                                    {% if not categorie.categorieParente %}
+                                        {{ macros.categoriesFilles(categorie, mouvement, 0) }}
+                                    {% endif %}
+                                {% endfor %}
                             </select>
                         </td>
                     </tr>
@@ -168,13 +160,11 @@
                         <label for="categorie--1" class="sr-only">Catégorie</label>
                         <select id="categorie--1" name="mouvements[-1][categorie]">
                             <option value="">&nbsp;</option>
-                            {% if categories is not empty %}
-                                {% for categorie in categories %}
-                                    {% if not categorie.categorieParente %}
-                                        {{ macros.categoriesFilles(categorie, null, 0) }}
-                                    {% endif %}
-                                {% endfor %}
-                            {% endif %}
+                            {% for categorie in categories %}
+                                {% if not categorie.categorieParente %}
+                                    {{ macros.categoriesFilles(categorie, null, 0) }}
+                                {% endif %}
+                            {% endfor %}
                         </select>
                     </td>
                 </tr>

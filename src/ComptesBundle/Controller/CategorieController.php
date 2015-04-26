@@ -13,6 +13,8 @@ class CategorieController extends Controller
     /**
      * Liste des catégories.
      *
+     * @todo Optimiser la vitesse de calcul des statistiques en limitant le nombre de requêtes.
+     *
      * @param Request $request
      * @return Response
      */
@@ -22,6 +24,9 @@ class CategorieController extends Controller
         $doctrine = $this->getDoctrine();
         $categorieRepository = $doctrine->getRepository('ComptesBundle:Categorie');
         $mouvementRepository = $doctrine->getRepository('ComptesBundle:Mouvement');
+
+        // Fournisseur de statistiques
+        $statsProvider = $this->container->get('comptes_bundle.stats.provider');
 
         // Toutes les catégories
         $categories = $categorieRepository->findAll();
@@ -34,7 +39,7 @@ class CategorieController extends Controller
             $dateEndString = $dateFilterString['end'];
 
             $dateStart = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateStartString 00:00:00");
-            $dateEnd = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateEndString 00:00:00");
+            $dateEnd = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateEndString 23:59:59");
         }
         else // Par défaut, depuis un an et jusqu'à la fin du mois
         {
@@ -46,10 +51,10 @@ class CategorieController extends Controller
 
             $dateStart = \DateTime::createFromFormat('Y-n-j H:i:s', "$year-$month-1 00:00:00");
             $dateStart->modify('-1 year')->setTime(0, 0); // Depuis un an
-            $dateEnd = \DateTime::createFromFormat('Y-n-j H:i:s', "$year-$month-$lastDayOfMonth 00:00:00");
+            $dateEnd = \DateTime::createFromFormat('Y-n-j H:i:s', "$year-$month-$lastDayOfMonth 23:59:59");
         }
 
-        if (!$dateStart || !$dateEnd)
+        if (!$dateStart || !$dateEnd || $dateStart > $dateEnd)
         {
             throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException("La période de dates est invalide.");
         }
@@ -58,6 +63,16 @@ class CategorieController extends Controller
             'start' => $dateStart,
             'end' => $dateEnd
         );
+
+        // Années de début et de fin pour les classements par années
+        $yearStart = (int) date('Y');
+        $yearEnd = $yearStart;
+        $firstMouvement = $mouvementRepository->findFirstOne();
+        if ($firstMouvement !== null)
+        {
+            $firstMouvementDate = $firstMouvement->getDate();
+            $yearStart = (int) $firstMouvementDate->format('Y');
+        }
 
         // Montant total des mouvements par catégorie
         $montants = array();
@@ -70,9 +85,17 @@ class CategorieController extends Controller
         {
             $categorieID = $categorie->getId();
 
+            // Montant cumulé des mouvements de la catégorie sur la période donnée
             $montantTotalCategorie = $categorieRepository->getMontantTotalByDate($categorie, $dateFilter['start'], $dateFilter['end']);
             $montantTotalCategorise += $montantTotalCategorie;
-            $montants[$categorieID] = $montantTotalCategorie;
+
+            // Montant cumulé des mouvements de la catégorie, année par année
+            $yearlyMontants = $statsProvider->getYearlyMontantsByCategorie($categorie, $yearStart, $yearEnd);
+
+            $montants[$categorieID] = array(
+                'period' => $montantTotalCategorie,
+                'yearly' => $yearlyMontants
+            );
         }
 
         // Montant total des mouvements non catégorisés
@@ -111,31 +134,70 @@ class CategorieController extends Controller
             throw $this->createNotFoundException("La catégorie $categorieID n'existe pas.");
         }
 
-        // Tous les mouvements de la catégorie
-        $mouvements = $mouvementRepository->findByCategorie($categorie);
+        // Filtre sur la période
+        if ($request->get('date_filter'))
+        {
+            $dateFilterString = $request->get('date_filter');
+            $dateStartString = $dateFilterString['start'];
+            $dateEndString = $dateFilterString['end'];
+
+            $dateStart = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateStartString 00:00:00");
+            $dateEnd = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateEndString 23:59:59");
+        }
+        else // Par défaut, depuis un an et jusqu'à la fin du mois
+        {
+            list ($year, $month, $lastDayOfMonth) = explode('-', date('Y-n-t'));
+
+            $month = (int) $month;
+            $year = (int) $year;
+            $lastDayOfMonth = (int) $lastDayOfMonth;
+
+            $dateStart = \DateTime::createFromFormat('Y-n-j H:i:s', "$year-$month-1 00:00:00");
+            $dateStart->modify('-1 year')->setTime(0, 0); // Depuis un an
+            $dateEnd = \DateTime::createFromFormat('Y-n-j H:i:s', "$year-$month-$lastDayOfMonth 23:59:59");
+        }
+
+        if (!$dateStart || !$dateEnd || $dateStart > $dateEnd)
+        {
+            throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException("La période de dates est invalide.");
+        }
+
+        $dateFilter = array(
+            'start' => $dateStart,
+            'end' => $dateEnd
+        );
+
+        // Tous les mouvements de la catégorie sur la période donnée
+        $mouvements = $mouvementRepository->findByDateAndCategorie($categorie, $dateFilter['start'], $dateFilter['end']);
 
         // Total des mouvements
         $total = 0;
 
-        foreach ($mouvements as $mouvement)
-        {
-            $montant = $mouvement->getMontant();
-            $total += $montant;
-        }
-
         // Total des mouvements par mois
-        $firstMouvement = reset($mouvements);
-        $lastMouvement = end($mouvements);
-        $firstMouvementDate = $firstMouvement->getDate();
-        $lastMouvementDate = $lastMouvement->getDate();
+        $monthlyMontants = array();
 
-        $statsProvider = $this->container->get('comptes_bundle.stats.provider');
-        $monthlyMontants = $statsProvider->getMonthlyMontantsByCategorie($categorie, $firstMouvementDate, $lastMouvementDate);
+        if ($mouvements)
+        {
+            foreach ($mouvements as $mouvement)
+            {
+                $montant = $mouvement->getMontant();
+                $total += $montant;
+            }
+
+            $firstMouvement = reset($mouvements);
+            $lastMouvement = end($mouvements);
+            $firstMouvementDate = $firstMouvement->getDate();
+            $lastMouvementDate = $lastMouvement->getDate();
+
+            $statsProvider = $this->container->get('comptes_bundle.stats.provider');
+            $monthlyMontants = $statsProvider->getMonthlyMontantsByCategorie($categorie, $firstMouvementDate, $lastMouvementDate);
+        }
 
         return $this->render(
             'ComptesBundle:Categorie:show.html.twig',
             array(
                 'categorie' => $categorie,
+                'date_filter' => $dateFilter,
                 'mouvements' => $mouvements,
                 'total' => $total,
                 'monthly_montants' => $monthlyMontants
