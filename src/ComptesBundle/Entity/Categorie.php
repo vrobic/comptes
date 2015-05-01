@@ -176,18 +176,25 @@ class Categorie
      * Dissocie une catégorie fille.
      *
      * @param Categorie $categorie
+     * @return Categorie
      */
     public function removeCategorieFille(Categorie $categorie)
     {
         $this->categoriesFilles->removeElement($categorie);
+
+        return $this;
     }
 
     /**
      * Dissocie toutes les catégories filles.
+     *
+     * @return Categorie
      */
     public function removeCategoriesFilles()
     {
         $this->categoriesFilles->clear();
+
+        return $this;
     }
 
     /**
@@ -232,18 +239,25 @@ class Categorie
      * Dissocie un mouvement de la catégorie.
      *
      * @param Mouvement $mouvement
+     * @return Categorie
      */
     public function removeMouvement(Mouvement $mouvement)
     {
         $this->mouvements->removeElement($mouvement);
+
+        return $this;
     }
 
     /**
      * Dissocie tous les mouvements de la catégorie.
+     *
+     * @return Categorie
      */
     public function removeMouvements()
     {
         $this->mouvements->clear();
+
+        return $this;
     }
 
     /**
@@ -273,18 +287,25 @@ class Categorie
      * Dissocie un mot-clé de la catégorie.
      *
      * @param Keyword $keyword
+     * @return Categorie
      */
     public function removeKeyword(Keyword $keyword)
     {
         $this->keywords->removeElement($keyword);
+
+        return $this;
     }
 
     /**
      * Dissocie tous les mots-clés de la catégorie.
+     *
+     * @return Categorie
      */
     public function removeKeywords()
     {
         $this->keywords->clear();
+
+        return $this;
     }
 
     /**

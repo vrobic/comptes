@@ -121,18 +121,25 @@ class Carburant
      * Dissocie un véhicule du carburant.
      *
      * @param Vehicule $vehicule
+     * @return Carburant
      */
     public function removeVehicule(Vehicule $vehicule)
     {
         $this->vehicules->removeElement($vehicule);
+
+        return $this;
     }
 
     /**
      * Dissocie tous les véhicules du carburant.
+     *
+     * @return Carburant
      */
     public function removeVehicules()
     {
         $this->vehicules->clear();
+
+        return $this;
     }
 
     /**

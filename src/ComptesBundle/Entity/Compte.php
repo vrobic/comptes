@@ -251,18 +251,25 @@ class Compte
      * Dissocie un mouvement du compte.
      *
      * @param Mouvement $mouvement
+     * @return Compte
      */
     public function removeMouvement(Mouvement $mouvement)
     {
         $this->mouvements->removeElement($mouvement);
+
+        return $this;
     }
 
     /**
      * Dissocie tous les mouvements du compte.
+     *
+     * @return Compte
      */
     public function removeMouvements()
     {
         $this->mouvements->clear();
+
+        return $this;
     }
 
     /**

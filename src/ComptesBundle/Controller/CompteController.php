@@ -26,6 +26,8 @@ class CompteController extends Controller
 
         // Tous les mouvements
         $mouvements = $mouvementRepository->findBy(array(), array('date' => 'ASC'));
+        $firstMouvement = reset($mouvements) ?: null;
+        $lastMouvement = end($mouvements) ?: null;
 
         // Versements initiaux, à prendre en compte pour le calcul du solde cumulé
         $versementsInitiaux = array();
@@ -68,11 +70,20 @@ class CompteController extends Controller
             }
         }
 
+        // Les faux mouvements peuvent avoir été intercalés au mauvais endroit
+        usort($mouvements, function($mouvementA, $mouvementB) {
+            $dateA = $mouvementA->getDate();
+            $dateB = $mouvementB->getDate();
+            return $dateA > $dateB;
+        });
+
         return $this->render(
             'ComptesBundle:Compte:index.html.twig',
             array(
                 'comptes' => $comptes,
-                'mouvements' => $mouvements
+                'mouvements' => $mouvements,
+                'first_mouvement' => $firstMouvement,
+                'last_mouvement' => $lastMouvement
             )
         );
     }

@@ -7,6 +7,10 @@
 
 ## Core
 
+- Comptes
+    - afficher le solde en début et fin de période
+    - permettre d'éditer les comptes ?
+    - rajouter une date de fermeture
 - Contrôleurs
     - utiliser OptionsResolver pour contrôler les données en entrée
 - Services

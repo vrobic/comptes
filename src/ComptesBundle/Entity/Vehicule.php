@@ -361,18 +361,25 @@ class Vehicule
      * Dissocie un plein de carburant du véhicule.
      *
      * @param Plein $plein
+     * @return Vehicule
      */
     public function removePlein(Plein $plein)
     {
         $this->pleins->removeElement($plein);
+
+        return $this;
     }
 
     /**
      * Dissocie tous les pleins de carburant du véhicule.
+     *
+     * @return Vehicule
      */
     public function removePleins()
     {
         $this->pleins->clear();
+
+        return $this;
     }
 
     /**

@@ -87,6 +87,9 @@
         <script>
             $(function(){
                 $('#chart-2').highcharts({
+                    chart: {
+                        zoomType: 'x'
+                    },
                     title: {
                         text: "Solde cumulé",
                         x: -20 // centrage
@@ -100,7 +103,8 @@
                         }
                     },
                     tooltip: {
-                        valueSuffix: "€"
+                        valueSuffix: "€",
+                        crosshairs: true
                     },
                     series: [{
                         name: "Solde cumulé",
@@ -108,7 +112,7 @@
                             {% set solde_total = 0 %}
                             {% for key, mouvement in mouvements %}
                                 {% set solde_total = solde_total + mouvement.montant %}
-                                {% if (mouvements[key+1] is not defined) or (mouvements[key+1] is defined and mouvements[key+1].date != mouvement.date) %}
+                                {% if (first_mouvement.date <= mouvement.date and mouvement.date <= last_mouvement.date) and ((mouvements[key+1] is not defined) or (mouvements[key+1] is defined and mouvements[key+1].date != mouvement.date)) %}
                                     [
                                         Date.UTC({{ mouvement.date|date('Y')|e('js') }}, {{ (mouvement.date|date('m')-1)|e('js') }}, {{ mouvement.date|date('d')|e('js') }}),
                                         {{ solde_total|e('js') }}

@@ -14,7 +14,7 @@ class CategorieController extends Controller
      * Liste des catégories.
      *
      * @todo Optimiser la vitesse de calcul des statistiques en limitant le nombre de requêtes.
-     * @todo Refactorer le nom des variables passés au template.
+     * @todo Refactorer le nom des variables passées au template.
      *
      * @param Request $request
      * @return Response
@@ -99,11 +99,11 @@ class CategorieController extends Controller
             $montantTotalPeriodeCategorise += $montantTotalPeriodeCategorie;
 
             // Montant cumulé des mouvements de la catégorie, année par année
-            $montantAnnuelCategorie = $statsProvider->getYearlyMontantsByCategorie($categorie, $yearStart, $yearEnd);
+            $montantsAnnuelsCategorie = $statsProvider->getYearlyMontantsByCategorie($categorie, $yearStart, $yearEnd);
 
             $montants[$categorieID] = array(
                 'period' => $montantTotalPeriodeCategorie,
-                'yearly' => $montantAnnuelCategorie
+                'yearly' => $montantsAnnuelsCategorie
             );
         }
 
