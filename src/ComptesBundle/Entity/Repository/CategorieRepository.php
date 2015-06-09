@@ -30,7 +30,7 @@ class CategorieRepository extends EntityRepository
     public function getMontantTotal(Categorie $categorie)
     {
         // Calcul du montant total des mouvements de la catégorie
-        $queryBuilder = $this->_em->createQueryBuilder();
+        $queryBuilder = $this->getEntityManager()->createQueryBuilder();
 
         // La liste des catégories de mouvements
         $categorieID = $categorie->getId();
@@ -67,8 +67,8 @@ class CategorieRepository extends EntityRepository
     public function getMontantTotalByDate(Categorie $categorie, \DateTime $dateStart, \DateTime $dateEnd, $order='ASC')
     {
         // Calcul du montant total des mouvements de la catégorie
-        $queryBuilder = $this->_em->createQueryBuilder();
-        $expressionBuilder = $this->_em->getExpressionBuilder();
+        $queryBuilder = $this->getEntityManager()->createQueryBuilder();
+        $expressionBuilder = $this->getEntityManager()->getExpressionBuilder();
 
         $and = $expressionBuilder->andX();
         $and->add($expressionBuilder->in('m.categorie', ':categories'));

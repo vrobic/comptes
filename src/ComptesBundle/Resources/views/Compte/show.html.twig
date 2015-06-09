@@ -26,6 +26,24 @@
 {% block content %}
     <h1>{{ compte }}</h1>
     <div class="row">
+        <div class="col-md-12">
+            <dl>
+                <dt>Banque</dt>
+                    <dd>{{ compte.banque }}</dd>
+                <dt>Numéro</dt>
+                    <dd>{{ compte.numero }}</dd>
+                <dt>Plafond</dt>
+                    <dd>{{ compte.plafond > 0 ? compte.plafond|number_format(2, ".", "") : "néant" }}</dd>
+                <dt>Date d'ouverture</dt>
+                    <dd>{{ compte.dateOuverture|date('d-m-Y') }}</dd>
+                {% if compte.dateFermeture is not null %}
+                <dt>Date de fermeture</dt>
+                    <dd>{{ compte.dateFermeture|date('d-m-Y') }}</dd>
+                {% endif %}
+            </dl>
+        </div>
+    </div>
+    <div class="row">
         <div class="col-md-6">
             <form action="{{ path('comptes_compte', {'compte_id': compte.id}) }}" method="GET">
                 <div class="input-group">
@@ -73,7 +91,7 @@
                                     [
                                         Date.UTC({{ mouvement.date|date('Y')|e('js') }}, {{ (mouvement.date|date('m')-1)|e('js') }}, {{ mouvement.date|date('d')|e('js') }}),
                                         {{ solde_periode|e('js') }}
-                                    ]{{ loop.revindex > 1 ? ','|e('js') }}
+                                    ]{{ not loop.last ? ','|e('js') }}
                                 {% endif %}
                             {% endfor %}
                         ]

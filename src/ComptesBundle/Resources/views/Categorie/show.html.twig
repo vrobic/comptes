@@ -56,9 +56,9 @@
                                         [
                                             Date.UTC({{ year|e('js') }}, {{ (month-1)|e('js') }}),
                                             {{ montant|abs|e('js') }}
-                                        ]{{ loop.revindex > 1 ? ','|e('js') }}
+                                        ]{{ not loop.last ? ','|e('js') }}
                                     {% endfor %}
-                                    {{ loop.revindex > 1 ? ','|e('js') }}
+                                    {{ not loop.last ? ','|e('js') }}
                                 {% endfor %}
                             ]
                         }

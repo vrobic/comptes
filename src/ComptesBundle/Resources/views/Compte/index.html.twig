@@ -6,8 +6,8 @@
 
 {% block content %}
     <h1>Comptes</h1>
-    {% for compte in comptes %}
-        {% if loop.index == 1 %}<div class="row">{% endif %}
+    <div class="row">
+        {% for compte in comptes %}
             <div class="widget col-md-3">
                 <a href="{{ path('comptes_compte', {'compte_id': compte.id}) }}">
                     <div class="widget-content">
@@ -21,8 +21,9 @@
                     </div>
                 </a>
             </div>
-        {% if loop.index % 4 == 0 %}</div>{% endif %}
-    {% endfor %}
+            {% if loop.index % 4 == 0 %}</div><div class="row">{% endif %}
+        {% endfor %}
+    </div>
     <div class="row">
         <div id="chart-1" class="chart col-md-12"></div>
         <script>
@@ -38,7 +39,7 @@
                         categories: [
                             {% for compte in comptes %}
                                 "{{ compte|e('js') }}"
-                                {{ loop.revindex > 1 ? ','|e('js') }}
+                                {{ not loop.last ? ','|e('js') }}
                             {% endfor %}
                         ],
                         title: {
@@ -68,7 +69,7 @@
                                     y: {{ compte.solde|e('js') }},
                                     url: '{{ path('comptes_compte', {'compte_id': compte.id})|e('js') }}'
                                 }
-                                {{ loop.revindex > 1 ? ','|e('js') }}
+                                {{ not loop.last ? ','|e('js') }}
                             {% endfor %}
                         ],
                         events: {
@@ -116,7 +117,7 @@
                                     [
                                         Date.UTC({{ mouvement.date|date('Y')|e('js') }}, {{ (mouvement.date|date('m')-1)|e('js') }}, {{ mouvement.date|date('d')|e('js') }}),
                                         {{ solde_total|e('js') }}
-                                    ]{{ loop.revindex > 1 ? ','|e('js') }}
+                                    ]{{ not loop.last ? ','|e('js') }}
                                 {% endif %}
                             {% endfor %}
                         ]

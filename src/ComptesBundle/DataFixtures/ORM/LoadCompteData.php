@@ -40,9 +40,11 @@ class LoadCompteData extends AbstractFixture implements OrderedFixtureInterface,
         {
             $compte = new Compte();
 
-            // Date d'ouverture
+            // Dates d'ouverture et de fermeture
             $dateOuverture = new \DateTime();
             $dateOuverture->setTimestamp($compteContent['date_ouverture']);
+            $dateFermeture = new \DateTime();
+            $dateFermeture->setTimestamp($compteContent['date_fermeture']);
 
             $compte->setNom($compteContent['nom']);
             $compte->setNumero($compteContent['numero']);
@@ -50,6 +52,7 @@ class LoadCompteData extends AbstractFixture implements OrderedFixtureInterface,
             $compte->setPlafond($compteContent['plafond']);
             $compte->setSoldeInitial($compteContent['solde_initial']);
             $compte->setDateOuverture($dateOuverture);
+            $compte->setDateFermeture($dateFermeture);
             $compte->setRang($compteContent['rang']);
 
             $manager->persist($compte);

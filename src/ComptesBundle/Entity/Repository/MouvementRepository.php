@@ -30,7 +30,7 @@ class MouvementRepository extends EntityRepository
      */
     public function getMontantTotal()
     {
-        $queryBuilder = $this->_em->createQueryBuilder();
+        $queryBuilder = $this->getEntityManager()->createQueryBuilder();
 
         $queryBuilder
             ->select('SUM(m.montant) AS total')
@@ -54,8 +54,8 @@ class MouvementRepository extends EntityRepository
     public function getMontantTotalByDate(\DateTime $dateStart, \DateTime $dateEnd, $order='ASC')
     {
         // Calcul du montant total des mouvements entre deux dates
-        $queryBuilder = $this->_em->createQueryBuilder();
-        $expressionBuilder = $this->_em->getExpressionBuilder();
+        $queryBuilder = $this->getEntityManager()->createQueryBuilder();
+        $expressionBuilder = $this->getEntityManager()->getExpressionBuilder();
 
         $and = $expressionBuilder->andX();
         $and->add($expressionBuilder->gte('m.date', ':date_start'));
@@ -85,13 +85,11 @@ class MouvementRepository extends EntityRepository
      */
     public function findByCompte(Compte $compte, $order='ASC')
     {
-        $queryBuilder = $this->_em->createQueryBuilder();
+        $queryBuilder = $this->createQueryBuilder('m');
 
         $compteID = $compte->getId();
 
         $queryBuilder
-            ->select('m')
-            ->from('ComptesBundle:Mouvement', 'm')
             ->where('m.compte = :compte_id')
             ->orderBy('m.date', $order)
             ->setParameter(':compte_id', $compteID);
@@ -114,8 +112,8 @@ class MouvementRepository extends EntityRepository
      */
     public function findByCompteUntilDate(Compte $compte, \DateTime $date, $order='ASC')
     {
-        $queryBuilder = $this->_em->createQueryBuilder();
-        $expressionBuilder = $this->_em->getExpressionBuilder();
+        $queryBuilder = $this->createQueryBuilder('m');
+        $expressionBuilder = $this->getEntityManager()->getExpressionBuilder();
 
         $compteID = $compte->getId();
 
@@ -124,8 +122,6 @@ class MouvementRepository extends EntityRepository
         $and->add($expressionBuilder->lte('m.date', ':date'));
 
         $queryBuilder
-            ->select('m')
-            ->from('ComptesBundle:Mouvement', 'm')
             ->where($and)
             ->orderBy('m.date', $order)
             ->setParameter(':compte_id', $compteID)
@@ -149,8 +145,8 @@ class MouvementRepository extends EntityRepository
      */
     public function findByCompteSinceDate(Compte $compte, \DateTime $date, $order='ASC')
     {
-        $queryBuilder = $this->_em->createQueryBuilder();
-        $expressionBuilder = $this->_em->getExpressionBuilder();
+        $queryBuilder = $this->createQueryBuilder('m');
+        $expressionBuilder = $this->getEntityManager()->getExpressionBuilder();
 
         $compteID = $compte->getId();
 
@@ -159,8 +155,6 @@ class MouvementRepository extends EntityRepository
         $and->add($expressionBuilder->gte('m.date', ':date'));
 
         $queryBuilder
-            ->select('m')
-            ->from('ComptesBundle:Mouvement', 'm')
             ->where($and)
             ->orderBy('m.date', $order)
             ->setParameter(':compte_id', $compteID)
@@ -182,8 +176,8 @@ class MouvementRepository extends EntityRepository
      */
     public function findByCompteAndDate(Compte $compte, \DateTime $dateStart, \DateTime $dateEnd, $order='ASC')
     {
-        $queryBuilder = $this->_em->createQueryBuilder();
-        $expressionBuilder = $this->_em->getExpressionBuilder();
+        $queryBuilder = $this->createQueryBuilder('m');
+        $expressionBuilder = $this->getEntityManager()->getExpressionBuilder();
 
         $compteID = $compte->getId();
 
@@ -193,8 +187,6 @@ class MouvementRepository extends EntityRepository
         $and->add($expressionBuilder->lte('m.date', ':date_end'));
 
         $queryBuilder
-            ->select('m')
-            ->from('ComptesBundle:Mouvement', 'm')
             ->where($and)
             ->setParameter('compte_id', $compteID)
             ->setParameter('date_start', $dateStart)
@@ -218,11 +210,9 @@ class MouvementRepository extends EntityRepository
      */
     public function findUntilDate(\DateTime $date, $order='ASC')
     {
-        $queryBuilder = $this->_em->createQueryBuilder();
+        $queryBuilder = $this->createQueryBuilder('m');
 
         $queryBuilder
-            ->select('m')
-            ->from('ComptesBundle:Mouvement', 'm')
             ->where('m.date <= :date')
             ->orderBy('m.date', $order)
             ->setParameter(':date', $date);
@@ -244,11 +234,9 @@ class MouvementRepository extends EntityRepository
      */
     public function findSinceDate(\DateTime $date, $order='ASC')
     {
-        $queryBuilder = $this->_em->createQueryBuilder();
+        $queryBuilder = $this->createQueryBuilder('m');
 
         $queryBuilder
-            ->select('m')
-            ->from('ComptesBundle:Mouvement', 'm')
             ->where('m.date >= :date')
             ->orderBy('m.date', $order)
             ->setParameter(':date', $date);
@@ -268,16 +256,14 @@ class MouvementRepository extends EntityRepository
      */
     public function findByDate(\DateTime $dateStart, \DateTime $dateEnd, $order='ASC')
     {
-        $queryBuilder = $this->_em->createQueryBuilder();
-        $expressionBuilder = $this->_em->getExpressionBuilder();
+        $queryBuilder = $this->createQueryBuilder('m');
+        $expressionBuilder = $this->getEntityManager()->getExpressionBuilder();
 
         $and = $expressionBuilder->andX();
         $and->add($expressionBuilder->gte('m.date', ':date_start'));
         $and->add($expressionBuilder->lte('m.date', ':date_end'));
 
         $queryBuilder
-            ->select('m')
-            ->from('ComptesBundle:Mouvement', 'm')
             ->where($and)
             ->setParameter('date_start', $dateStart)
             ->setParameter('date_end', $dateEnd)
@@ -299,8 +285,8 @@ class MouvementRepository extends EntityRepository
      */
     public function findByDateAndCategorie(Categorie $categorie, \DateTime $dateStart, \DateTime $dateEnd, $order='ASC')
     {
-        $queryBuilder = $this->_em->createQueryBuilder();
-        $expressionBuilder = $this->_em->getExpressionBuilder();
+        $queryBuilder = $this->createQueryBuilder('m');
+        $expressionBuilder = $this->getEntityManager()->getExpressionBuilder();
 
         // La liste des catégories de mouvements
         $categorieID = $categorie->getId();
@@ -318,8 +304,6 @@ class MouvementRepository extends EntityRepository
         $and->add($expressionBuilder->lte('m.date', ':date_end'));
 
         $queryBuilder
-            ->select('m')
-            ->from('ComptesBundle:Mouvement', 'm')
             ->where($and)
             ->setParameter('date_start', $dateStart)
             ->setParameter('date_end', $dateEnd)
@@ -340,11 +324,9 @@ class MouvementRepository extends EntityRepository
      */
     public function findFirstOne()
     {
-        $queryBuilder = $this->_em->createQueryBuilder();
+        $queryBuilder = $this->createQueryBuilder('m');
 
         $queryBuilder
-            ->select('m')
-            ->from('ComptesBundle:Mouvement', 'm')
             ->orderBy('m.date', 'ASC')
             ->setMaxResults(1);
 
@@ -369,11 +351,9 @@ class MouvementRepository extends EntityRepository
      */
     public function findLatestOne()
     {
-        $queryBuilder = $this->_em->createQueryBuilder();
+        $queryBuilder = $this->createQueryBuilder('m');
 
         $queryBuilder
-            ->select('m')
-            ->from('ComptesBundle:Mouvement', 'm')
             ->orderBy('m.date', 'DESC')
             ->setMaxResults(1);
 
@@ -399,7 +379,7 @@ class MouvementRepository extends EntityRepository
     public function findByCategorie(Categorie $categorie, $order='ASC')
     {
         // Récupération des mouvements de la catégorie
-        $queryBuilder = $this->_em->createQueryBuilder();
+        $queryBuilder = $this->createQueryBuilder('m');
 
         // La liste des catégories de mouvements
         $categorieID = $categorie->getId();
@@ -412,8 +392,6 @@ class MouvementRepository extends EntityRepository
         }
 
         $queryBuilder
-            ->select('m')
-            ->from('ComptesBundle:Mouvement', 'm')
             ->where('m.categorie in (:categories)')
             ->orderBy('m.date', $order)
             ->setParameter('categories', $categories);
@@ -433,8 +411,8 @@ class MouvementRepository extends EntityRepository
      */
     public function findByMontantBetweenDates($montant, $dateStart, $dateEnd)
     {
-        $queryBuilder = $this->_em->createQueryBuilder();
-        $expressionBuilder = $this->_em->getExpressionBuilder();
+        $queryBuilder = $this->createQueryBuilder('m');
+        $expressionBuilder = $this->getEntityManager()->getExpressionBuilder();
 
         $and = $expressionBuilder->andX();
         $and->add($expressionBuilder->eq('m.montant', ':montant'));
@@ -442,8 +420,6 @@ class MouvementRepository extends EntityRepository
         $and->add($expressionBuilder->lte('m.date', ':date_end'));
 
         $queryBuilder
-            ->select('m')
-            ->from('ComptesBundle:Mouvement', 'm')
             ->where($and)
             ->setParameter(':montant', $montant)
             ->setParameter(':date_start', $dateStart)

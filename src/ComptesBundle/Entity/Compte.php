@@ -89,6 +89,15 @@ class Compte
     protected $dateOuverture;
 
     /**
+     * Date de fermeture éventuelle du compte.
+     *
+     * @var \DateTime
+     *
+     * @ORM\Column(name="date_fermeture", type="date", nullable=true)
+     */
+    protected $dateFermeture;
+
+    /**
      * Rang d'affichage du compte.
      *
      * @var integer
@@ -359,7 +368,7 @@ class Compte
     /**
      * Définit la date d'ouverture du compte.
      *
-     * @param \DateTime
+     * @param \DateTime $dateOuverture
      * @return Compte
      */
     public function setDateOuverture($dateOuverture)
@@ -377,6 +386,29 @@ class Compte
     public function getDateOuverture()
     {
         return $this->dateOuverture;
+    }
+
+    /**
+     * Définit la date de fermeture du compte.
+     *
+     * @param \DateTime $dateFermeture
+     * @return Compte
+     */
+    public function setDateFermeture($dateFermeture)
+    {
+        $this->dateFermeture = $dateFermeture;
+
+        return $this;
+    }
+
+    /**
+     * Récupère la date de fermeture du compte.
+     *
+     * @return \DateTime
+     */
+    public function getDateFermeture()
+    {
+        return $this->dateFermeture;
     }
 
     /**

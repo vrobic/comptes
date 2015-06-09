@@ -14,7 +14,7 @@
         <td>
             {{ montants[categorie.id].period|number_format(2, ".", "") ~ "€" }}
         </td>
-        <td data-sparkline="{% for year, montant in montants[categorie.id].yearly %}{{ year ~ ':' ~ montant|abs ~ (loop.revindex > 1 ? ',') | e('js') }}{% endfor %}"></td>
+        <td data-sparkline="{% for year, montant in montants[categorie.id].yearly %}{{ year ~ ':' ~ montant|abs ~ (not loop.last ? ',') | e('js') }}{% endfor %}"></td>
     </tr>
     {% if categorie.categoriesFilles is not empty %}
         {% set depth = depth + 1 %}
@@ -75,7 +75,7 @@
                                         y: {{ montants[categorie.id].period|abs|e('js') }},
                                         url: '{{ path('categories_categorie', {'categorie_id': categorie.id, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y')})|e('js') }}'
                                     }
-                                    {{ loop.revindex > 1 ? ','|e('js') }}
+                                    {{ not loop.last ? ','|e('js') }}
                                 {% endif %}
                             {% endfor %}
                         ],
@@ -117,7 +117,7 @@
                 <td>
                     {{ montant_total|number_format(2, ".", "") ~ "€" }}
                 </td>
-                <td data-sparkline="{% for year, montant in yearly_montants %}{{ year ~ ':' ~ montant ~ (loop.revindex > 1 ? ',') | e('js') }}{% endfor %}"></td>
+                <td data-sparkline="{% for year, montant in yearly_montants %}{{ year ~ ':' ~ montant ~ (not loop.last ? ',') | e('js') }}{% endfor %}"></td>
             </tr>
             {% for categorie in categories %}
                 {% if not categorie.categorieParente %}

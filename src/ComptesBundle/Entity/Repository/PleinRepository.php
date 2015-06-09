@@ -31,13 +31,11 @@ class PleinRepository extends EntityRepository
      */
     public function findByVehicule(Vehicule $vehicule, $order='ASC')
     {
-        $queryBuilder = $this->_em->createQueryBuilder();
+        $queryBuilder = $this->createQueryBuilder('p');
 
         $vehiculeID = $vehicule->getId();
 
         $queryBuilder
-            ->select('p')
-            ->from('ComptesBundle:Plein', 'p')
             ->where('p.vehicule = :vehicule_id')
             ->orderBy('p.date', $order)
             ->setParameter(':vehicule_id', $vehiculeID);
@@ -57,16 +55,14 @@ class PleinRepository extends EntityRepository
      */
     public function findByDate(\DateTime $dateStart, \DateTime $dateEnd, $order='ASC')
     {
-        $queryBuilder = $this->_em->createQueryBuilder();
-        $expressionBuilder = $this->_em->getExpressionBuilder();
+        $queryBuilder = $this->createQueryBuilder('p');
+        $expressionBuilder = $this->getEntityManager()->getExpressionBuilder();
 
         $and = $expressionBuilder->andX();
         $and->add($expressionBuilder->gte('p.date', ':date_start'));
         $and->add($expressionBuilder->lte('p.date', ':date_end'));
 
         $queryBuilder
-            ->select('p')
-            ->from('ComptesBundle:Plein', 'p')
             ->where($and)
             ->setParameter('date_start', $dateStart)
             ->setParameter('date_end', $dateEnd)
@@ -84,11 +80,9 @@ class PleinRepository extends EntityRepository
      */
     public function findLatestOne()
     {
-        $queryBuilder = $this->_em->createQueryBuilder();
+        $queryBuilder = $this->createQueryBuilder('p');
 
         $queryBuilder
-            ->select('p')
-            ->from('ComptesBundle:Plein', 'p')
             ->orderBy('p.date', 'DESC')
             ->setMaxResults(1);
 

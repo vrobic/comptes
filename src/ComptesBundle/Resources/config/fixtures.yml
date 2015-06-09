@@ -95,6 +95,8 @@ comptes:
         solde_initial: 1278.83
         # Date d'ouverture du compte, au format Y-m-d
         date_ouverture: 2009-12-09
+        # Date de fermeture éventuelle du compte, au format Y-m-d
+        date_fermeture: null
         # Ordre d'affichage du compte dans les listes.
         rang: 1
     # id 2
@@ -105,6 +107,7 @@ comptes:
         plafond: 1600
         solde_initial: 0
         date_ouverture: 2012-03-31
+        date_fermeture: null
         rang: 2
 categories:
     -
