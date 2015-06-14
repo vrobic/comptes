@@ -32,7 +32,7 @@ class CompteController extends Controller
         // Versements initiaux, à prendre en compte pour le calcul du solde cumulé
         $versementsInitiaux = array();
 
-        foreach ($comptes as $compte)
+        foreach ($comptes as $key => $compte)
         {
             $soldeInitial = $compte->getSoldeInitial();
 
@@ -76,6 +76,17 @@ class CompteController extends Controller
             $dateB = $mouvementB->getDate();
             return $dateA > $dateB;
         });
+
+        // Suppression des comptes fermés
+        foreach ($comptes as $key => $compte)
+        {
+            $dateFermeture = $compte->getDateFermeture();
+
+            if ($dateFermeture !== null)
+            {
+                unset($comptes[$key]);
+            }
+        }
 
         return $this->render(
             'ComptesBundle:Compte:index.html.twig',

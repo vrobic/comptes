@@ -19,15 +19,16 @@ class DashboardController extends Controller
 
         // Période sur laquelle baser le calcul de la balance mensuelle
         $dateStart = new \DateTime();
-        $dateStart->modify('-1 year')->setTime(0, 0); // Depuis un an
+        $dateStart->modify('last year first day of this month midnight'); // Depuis un an, en début de mois
         $dateEnd = new \DateTime();
+        $dateEnd->modify('first day of this month midnight'); // Jusqu'à la fin du mois dernier
 
         // Balance mensuelle
         $monthlyBalance = $statsProvider->getMonthlyBalance($dateStart, $dateEnd);
 
         // Période sur laquelle baser le calcul de la distance parcourue
         $dateStart = new \DateTime();
-        $dateStart->modify('-1 month')->setTime(0, 0); // Depuis un mois
+        $dateStart->modify('-1 month midnight'); // Depuis un mois
         $dateEnd = new \DateTime();
 
         // Distance parcourue
