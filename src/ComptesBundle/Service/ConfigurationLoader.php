@@ -13,6 +13,10 @@ use Symfony\Component\Yaml\Parser;
 class ConfigurationLoader
 {
     /**
+     * L'injection du conteneur de services est justifiée par le dynamisme
+     * des handlers d'import qui ne permet pas de connaître à ce stade le nom
+     * des classes utilisées.
+     *
      * @var Container
      */
     protected $container;

@@ -2,8 +2,8 @@
 
 namespace ComptesBundle\Service;
 
-use Symfony\Component\DependencyInjection\Container;
-use Doctrine\ORM\EntityManager;
+use Doctrine\Bundle\DoctrineBundle\Registry;
+use ComptesBundle\Service\ConfigurationLoader;
 use ComptesBundle\Entity\Categorie;
 
 /**
@@ -12,14 +12,9 @@ use ComptesBundle\Entity\Categorie;
 class StatsProvider
 {
     /**
-     * @var Container
+     * @var Registry
      */
-    protected $container;
-
-    /**
-     * @var EntityManager
-     */
-    protected $em;
+    protected $doctrine;
 
     /**
      * Configuration des statistiques,
@@ -31,16 +26,15 @@ class StatsProvider
     /**
      * Constructeur.
      *
-     * @param Container $container
+     * @param Registry $doctrine
+     * @param ConfigurationLoader $configurationLoader
      */
-    public function __construct(Container $container)
+    public function __construct(Registry $doctrine, ConfigurationLoader $configurationLoader)
     {
         // Injection de dépendances
-        $this->container = $container;
-        $this->em = $container->get('doctrine')->getManager();
+        $this->doctrine = $doctrine;
 
         // Chargement de la configuration
-        $configurationLoader = $container->get('comptes_bundle.configuration.loader');
         $configuration = $configurationLoader->load('stats.yml');
         $this->configuration = $configuration;
     }
@@ -56,9 +50,8 @@ class StatsProvider
     public function getMonthlyBalance(\DateTime $dateStart, \DateTime $dateEnd)
     {
         // Repositories
-        $doctrine = $this->container->get('doctrine');
-        $compteRepository = $doctrine->getRepository('ComptesBundle:Compte');
-        $mouvementRepository = $doctrine->getRepository('ComptesBundle:Mouvement');
+        $compteRepository = $this->doctrine->getRepository('ComptesBundle:Compte');
+        $mouvementRepository = $this->doctrine->getRepository('ComptesBundle:Mouvement');
 
         // Nombre de mois entre les deux dates
         $diff = $dateStart->diff($dateEnd);
@@ -90,8 +83,7 @@ class StatsProvider
     public function getYearlyMontants($yearStart, $yearEnd)
     {
         // Repositories
-        $doctrine = $this->container->get('doctrine');
-        $mouvementRepository = $doctrine->getRepository('ComptesBundle:Mouvement');
+        $mouvementRepository = $this->doctrine->getRepository('ComptesBundle:Mouvement');
 
         $dateStart = \DateTime::createFromFormat("Y-m-d H:i:s", "$yearStart-01-01 00:00:00");
         $dateEnd = \DateTime::createFromFormat("Y-m-d H:i:s", "$yearEnd-12-31 23:59:59");
@@ -159,8 +151,7 @@ class StatsProvider
     public function getMonthlyMontantsByCategorie(Categorie $categorie, \DateTime $dateStart, \DateTime $dateEnd)
     {
         // Repositories
-        $doctrine = $this->container->get('doctrine');
-        $mouvementRepository = $doctrine->getRepository('ComptesBundle:Mouvement');
+        $mouvementRepository = $this->doctrine->getRepository('ComptesBundle:Mouvement');
 
         // Les montants totaux mensuels des mouvements de la catégorie
         $montants = array();
@@ -216,8 +207,7 @@ class StatsProvider
     public function getDistanceByDate(\DateTime $dateStart, \DateTime $dateEnd)
     {
         // Repositories
-        $doctrine = $this->container->get('doctrine');
-        $pleinRepository = $doctrine->getRepository('ComptesBundle:Plein');
+        $pleinRepository = $this->doctrine->getRepository('ComptesBundle:Plein');
 
         // Tous les pleins entre ces deux dates
         $pleins = $pleinRepository->findByDate($dateStart, $dateEnd);

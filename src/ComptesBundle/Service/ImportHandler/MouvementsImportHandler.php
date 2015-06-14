@@ -2,8 +2,9 @@
 
 namespace ComptesBundle\Service\ImportHandler;
 
-use Symfony\Component\DependencyInjection\Container;
 use Doctrine\ORM\EntityManager;
+use ComptesBundle\Service\ConfigurationLoader;
+use ComptesBundle\Service\MouvementCategorizer;
 use ComptesBundle\Entity\Mouvement;
 use ComptesBundle\Service\ImportHandler;
 
@@ -45,11 +46,6 @@ abstract class MouvementsImportHandler implements ImportHandler
      * nécessitant donc une validation manuelle avant d'être éventuellement réimporté.
      */
     const WAITING = 3;
-
-    /**
-     * @var Container
-     */
-    protected $container;
 
     /**
      * @var EntityManager
@@ -115,16 +111,17 @@ abstract class MouvementsImportHandler implements ImportHandler
     /**
      * Constructeur.
      *
-     * @param Container $container
+     * @param EntityManager $entityManager
+     * @param ConfigurationLoader $configurationLoader
+     * @param MouvementCategorizer $mouvementCategorizer
      */
-    public function __construct(Container $container)
+    public function __construct(EntityManager $entityManager, ConfigurationLoader $configurationLoader, MouvementCategorizer $mouvementCategorizer)
     {
         // Injection de dépendances
-        $this->container = $container;
-        $this->em = $container->get('doctrine')->getManager();
+        $this->em = $entityManager;
+        $this->mouvementCategorizer = $mouvementCategorizer;
 
         // Chargement de la configuration
-        $configurationLoader = $container->get('comptes_bundle.configuration.loader');
         $configuration = $configurationLoader->load('import.yml');
         $this->configuration = $configuration['handlers']['mouvements'];
 
@@ -273,8 +270,7 @@ abstract class MouvementsImportHandler implements ImportHandler
     protected function getClassification(Mouvement $mouvement)
     {
         // Service de catégorisation automatique des mouvements
-        $mouvementCategorizer = $this->container->get('comptes_bundle.mouvement.categorizer');
-        $categories = $mouvementCategorizer->getCategories($mouvement);
+        $categories = $this->mouvementCategorizer->getCategories($mouvement);
 
         if ($categories)
         {
