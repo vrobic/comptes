@@ -199,6 +199,8 @@ class StatsProvider
     /**
      * Compte la distance parcourue entre deux dates incluses,
      * en se basant sur les pleins de carburant.
+     * Le calcul de la distance est pessimiste car il ne tient pas compte des
+     * pleins non terminés ou qui étaient déjà entamés au début de la période.
      *
      * @param \DateTime $dateStart Date de début, incluse.
      * @param \DateTime $dateEnd Date de fin, incluse.
@@ -210,14 +212,29 @@ class StatsProvider
         $pleinRepository = $this->doctrine->getRepository('ComptesBundle:Plein');
 
         // Tous les pleins entre ces deux dates
-        $pleins = $pleinRepository->findByDate($dateStart, $dateEnd);
+        $pleins = $pleinRepository->findByDate($dateStart, $dateEnd, 'ASC');
+
+        // Les pleins classés par véhicule, ne sert que de flag
+        $pleinsByVehicule = array();
 
         // Distance parcourue
         $distance = 0;
 
         foreach ($pleins as $plein)
         {
-            $distance += $plein->getDistanceParcourue();
+            $vehicule = $plein->getVehicule();
+            $vehiculeID = $vehicule->getId();
+
+            // Ne calcule pas la distance pour le premier plein de ce véhicule
+            if (!isset($pleinsByVehicule[$vehiculeID]))
+            {
+                $pleinsByVehicule[$vehiculeID] = [];
+            }
+            else
+            {
+                $pleinsByVehicule[$vehiculeID][] = $plein;
+                $distance += $plein->getDistanceParcourue();
+            }
         }
 
         return $distance;

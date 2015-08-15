@@ -2,11 +2,14 @@
 
 ## Partage et documentation
 
-- rajouter l'entité Keyword dans le MLD Dia
+- rajouter l'entité Keyword et Compte > dateFermeture dans le MLD Dia
 - distribuer le bundle plutôt que toute l'installation Symfony
+- tout rendre PSR
 
 ## Core
 
+- Traduction
+    - tout piper avec trans
 - Comptes
     - afficher le solde en début et fin de période
     - permettre d'éditer les comptes ?
@@ -14,7 +17,6 @@
 - Contrôleurs
     - utiliser OptionsResolver pour contrôler les données en entrée
 - Services
-    - n'injecter que les dépendances nécessaires, pas tout le container
     - remplacer ComptesBundle\Service\ConfigurationLoader par Symfony\Component\Config\Definition\ConfigurationInterface
 - Doctrine
     - déporter le mapping dans un fichier YML
