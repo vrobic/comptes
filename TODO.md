@@ -4,7 +4,6 @@
 
 - rajouter l'entité Keyword et Compte > dateFermeture dans le MLD Dia
 - distribuer le bundle plutôt que toute l'installation Symfony
-- tout rendre PSR
 
 ## Core
 
@@ -14,6 +13,8 @@
     - afficher le solde en début et fin de période
     - permettre d'éditer les comptes ?
     - rajouter une date de fermeture
+- Catégories
+    - à la mise à jour ou création d'une catégorie et s'il y a un mot-clé, proposer de recatégoriser les mouvements existants
 - Contrôleurs
     - utiliser OptionsResolver pour contrôler les données en entrée
 - Services
@@ -42,6 +43,7 @@
     - prix du carburant / plein
     - coût en carburant / véhicule, au 100km
 - comptes
+    - économies / intervalle de dates
     - dépenses moyennes / mois
 
 ## Évolutions
