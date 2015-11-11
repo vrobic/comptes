@@ -51,12 +51,12 @@ class MouvementsImportCommand extends ImportCommand
         // 1. Les mouvements catégorisés
         $categorizedMouvements = $handler->getCategorizedMouvements();
 
-        if ($categorizedMouvements)
-        {
+        if ($categorizedMouvements) {
+
             $verbose && $output->writeln("<info>Mouvements catégorisés</info>");
 
-            foreach ($categorizedMouvements as $mouvement)
-            {
+            foreach ($categorizedMouvements as $mouvement) {
+
                 $output->writeln("<comment>$mouvement</comment>");
 
                 // Indicateurs
@@ -71,12 +71,12 @@ class MouvementsImportCommand extends ImportCommand
         // 2. Les mouvements non catégorisés
         $uncategorizedMouvements = $handler->getUncategorizedMouvements();
 
-        if ($uncategorizedMouvements)
-        {
+        if ($uncategorizedMouvements) {
+
             $verbose && $output->writeln("<info>Mouvements non catégorisés</info>");
 
-            foreach ($uncategorizedMouvements as $mouvement)
-            {
+            foreach ($uncategorizedMouvements as $mouvement) {
+
                 $output->writeln("<comment>$mouvement</comment>");
 
                 // Indicateurs
@@ -91,28 +91,27 @@ class MouvementsImportCommand extends ImportCommand
         // 3. Les mouvements dont la catégorie n'a pas pu être formellement déterminée
         $ambiguousMouvements = $handler->getAmbiguousMouvements();
 
-        if ($ambiguousMouvements)
-        {
+        if ($ambiguousMouvements) {
+
             $verbose && $output->writeln("<info>Mouvements ambigus</info>");
 
             // Service de catégorisation automatique des mouvements
             $mouvementCategorizer = $this->getContainer()->get('comptes_bundle.mouvement.categorizer');
 
-            foreach ($ambiguousMouvements as $mouvement)
-            {
+            foreach ($ambiguousMouvements as $mouvement) {
+
                 $output->writeln("<comment>$mouvement</comment>");
 
-                if ($interaction)
-                {
+                if ($interaction) {
+
                     // Catégorisation automatique du mouvement
                     $categories = $mouvementCategorizer->getCategories($mouvement);
 
-                    if ($categories)
-                    {
+                    if ($categories) {
+
                         $question = "<question>Proposition de catégories :\n";
 
-                        foreach ($categories as $key => $categorie)
-                        {
+                        foreach ($categories as $key => $categorie) {
                             $question .= "\t($key) : $categorie\n";
                         }
 
@@ -123,13 +122,11 @@ class MouvementsImportCommand extends ImportCommand
                         // La clé de la catégorie au sein du tableau $categories
                         $categorieKey = null; // Réponse obligatoire
 
-                        while (strtolower($categorieKey) !== "n" && !isset($categories[$categorieKey]))
-                        {
+                        while (strtolower($categorieKey) !== "n" && !isset($categories[$categorieKey])) {
                             $categorieKey = $dialog->ask($output, $question);
                         }
 
-                        if (strtolower($categorieKey) !== "n") // Réponse insensible à la casse
-                        {
+                        if (strtolower($categorieKey) !== "n") { // Réponse insensible à la casse
                             $categorie = $categories[$categorieKey];
                             $mouvement->setCategorie($categorie);
                         }
@@ -146,20 +143,20 @@ class MouvementsImportCommand extends ImportCommand
         }
 
         // 4. Les mouvements suspectés comme doublons, qui nécessitent une confirmation manuelle
-        if ($interaction)
-        {
+        if ($interaction) {
+
             $waitingMouvements = $handler->getWaitingMouvements();
 
-            foreach ($waitingMouvements as $mouvement)
-            {
+            foreach ($waitingMouvements as $mouvement) {
+
                 $verbose && $output->writeln("<info>Mouvements à valider</info>");
 
                 $output->writeln("<comment>$mouvement</comment>");
 
                 $confirm = $dialog->askConfirmation($output, "<question>Un mouvement similaire existe déjà :\n\t$mouvement\nImporter (y/N) ?</question>", false);
 
-                if ($confirm)
-                {
+                if ($confirm) {
+
                     // Indicateurs
                     $i++;
                     $balance += $mouvement->getMontant();

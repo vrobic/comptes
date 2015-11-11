@@ -36,8 +36,8 @@ class LoadCompteData extends AbstractFixture implements OrderedFixtureInterface,
         // Tableau de données
         $comptesContent = $fixturesConfiguration['comptes'];
 
-        foreach ($comptesContent as $compteContent)
-        {
+        foreach ($comptesContent as $compteContent) {
+
             $compte = new Compte();
 
             // Dates d'ouverture et de fermeture

@@ -25,8 +25,7 @@ final class MyCarsCSVPleinsImportHandler extends PleinsImportHandler
         // Tableau de correspondance entre le nom du véhicule dans MyCars et l'objet Vehicule
         $vehicules = array();
 
-        foreach ($configuration['vehicules'] as $vehiculeLabel => $vehiculeID)
-        {
+        foreach ($configuration['vehicules'] as $vehiculeLabel => $vehiculeID) {
             $vehicules[$vehiculeLabel] = $vehiculeRepository->find($vehiculeID);
         }
 
@@ -40,31 +39,29 @@ final class MyCarsCSVPleinsImportHandler extends PleinsImportHandler
         $currentLine = 0;
         $headersLine = false;
 
-        while (($cols = $file->fgetcsv()) !== null)
-        {
+        while (($cols = $file->fgetcsv()) !== null) {
+
             // Recherche de la ligne d'en-têtes
-            if ($cols[0] == "#entity: refuel")
-            {
+            if ($cols[0] == "#entity: refuel") {
                 $headersLine = $currentLine+1;
             }
 
             // Si la ligne d'en-têtes a été trouvée et qu'on l'a dépassée
-            if ($headersLine !== false && $currentLine > $headersLine)
-            {
+            if ($headersLine !== false && $currentLine > $headersLine) {
+
                 // La ligne en cours est un plein
                 $refuel = array_combine($headers, $cols);
                 $refuels[] = $refuel;
-            }
-            elseif ($currentLine == $headersLine)
-            {
+
+            } elseif ($currentLine == $headersLine) {
                 $headers = $cols;
             }
 
             $currentLine++;
         }
 
-        foreach ($refuels as $refuel)
-        {
+        foreach ($refuels as $refuel) {
+        
             $plein = new Plein();
 
             // Véhicule

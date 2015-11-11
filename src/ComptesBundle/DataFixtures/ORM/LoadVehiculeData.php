@@ -36,29 +36,23 @@ class LoadVehiculeData extends AbstractFixture implements OrderedFixtureInterfac
         // Tableau de données
         $vehiculesContent = $fixturesConfiguration['vehicules'];
 
-        foreach ($vehiculesContent as $vehiculeContent)
-        {
+        foreach ($vehiculesContent as $vehiculeContent) {
+
             $vehicule = new Vehicule();
 
             // Date d'achat
-            if ($vehiculeContent['date_achat'] !== null)
-            {
+            if ($vehiculeContent['date_achat'] !== null) {
                 $dateAchat = new \DateTime();
                 $dateAchat->setTimestamp($vehiculeContent['date_achat']);
-            }
-            else
-            {
+            } else {
                 $dateAchat = null;
             }
 
             // Date de vente
-            if ($vehiculeContent['date_vente'] !== null)
-            {
+            if ($vehiculeContent['date_vente'] !== null) {
                 $dateVente = new \DateTime();
                 $dateVente->setTimestamp($vehiculeContent['date_vente']);
-            }
-            else
-            {
+            } else {
                 $dateVente = null;
             }
 

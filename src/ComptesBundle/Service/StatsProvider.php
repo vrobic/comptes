@@ -57,8 +57,7 @@ class StatsProvider
         $diff = $dateStart->diff($dateEnd);
         $monthsCount = $diff->y*12 + $diff->m + $diff->d / 30;
 
-        if ($monthsCount < 1)
-        {
+        if ($monthsCount < 1) {
             $monthsCount = 1;
         }
 
@@ -92,14 +91,13 @@ class StatsProvider
 
         $yearlyMontants = array();
 
-        foreach ($mouvements as $mouvement)
-        {
+        foreach ($mouvements as $mouvement) {
+
             $montant = $mouvement->getMontant();
             $date = $mouvement->getDate();
             $year = $date->format('Y');
 
-            if (!isset($yearlyMontants[$year]))
-            {
+            if (!isset($yearlyMontants[$year])) {
                 $yearlyMontants[$year] = 0;
             }
 
@@ -126,12 +124,11 @@ class StatsProvider
         $yearlyMontants = array();
         $monthlyMontants = $this->getMonthlyMontantsByCategorie($categorie, $dateStart, $dateEnd);
 
-        foreach ($monthlyMontants as $year => $months)
-        {
+        foreach ($monthlyMontants as $year => $months) {
+
             $yearlyMontants[$year] = 0;
 
-            foreach ($months as $monthlyMontant)
-            {
+            foreach ($months as $monthlyMontant) {
                 $yearlyMontants[$year] += $monthlyMontant;
             }
         }
@@ -161,8 +158,8 @@ class StatsProvider
         $periods = new \DatePeriod($dateStart, $interval, $dateEnd);
 
         // Chaque mois de la période
-        foreach ($periods as $date)
-        {
+        foreach ($periods as $date) {
+
             $year = $date->format('Y');
             $month = $date->format('m');
             $day = $date->format('d');
@@ -186,8 +183,7 @@ class StatsProvider
 
             $montants[$year][$month] = 0;
 
-            foreach ($mouvements as $mouvement)
-            {
+            foreach ($mouvements as $mouvement) {
                 $montant = $mouvement->getMontant();
                 $montants[$year][$month] += $montant;
             }
@@ -220,18 +216,15 @@ class StatsProvider
         // Distance parcourue
         $distance = 0;
 
-        foreach ($pleins as $plein)
-        {
+        foreach ($pleins as $plein) {
+
             $vehicule = $plein->getVehicule();
             $vehiculeID = $vehicule->getId();
 
             // Ne calcule pas la distance pour le premier plein de ce véhicule
-            if (!isset($pleinsByVehicule[$vehiculeID]))
-            {
+            if (!isset($pleinsByVehicule[$vehiculeID])) {
                 $pleinsByVehicule[$vehiculeID] = [];
-            }
-            else
-            {
+            } else {
                 $pleinsByVehicule[$vehiculeID][] = $plein;
                 $distance += $plein->getDistanceParcourue();
             }

@@ -30,8 +30,7 @@ class CompteRepository extends EntityRepository
     {
         $balance = 0;
 
-        foreach ($mouvements as $mouvement)
-        {
+        foreach ($mouvements as $mouvement) {
             $montant = $mouvement->getMontant();
             $balance += $montant;
         }
@@ -53,22 +52,15 @@ class CompteRepository extends EntityRepository
 
         $mouvementRepository = $this->getEntityManager()->getRepository('ComptesBundle:Mouvement');
 
-        foreach ($comptes as $compte)
-        {
-            if ($dateStart !== null && $dateEnd !== null)
-            {
+        foreach ($comptes as $compte) {
+
+            if ($dateStart !== null && $dateEnd !== null) {
                 $mouvements = $mouvementRepository->findByCompteAndDate($compte, $dateStart, $dateEnd);
-            }
-            elseif ($dateStart !== null)
-            {
+            } elseif ($dateStart !== null) {
                 $mouvements = $mouvementRepository->findByCompteSinceDate($compte, $dateStart);
-            }
-            elseif ($dateEnd !== null)
-            {
+            } elseif ($dateEnd !== null) {
                 $mouvements = $mouvementRepository->findByCompteUntilDate($compte, $dateEnd);
-            }
-            else
-            {
+            } else {
                 $mouvements = $mouvementRepository->findByCompte($compte);
             }
 

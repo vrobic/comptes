@@ -37,8 +37,7 @@ class KeywordsImportCommand extends ContainerAwareCommand
     {
         $filename = $input->getArgument('filename');
 
-        if (!file_exists($filename))
-        {
+        if (!file_exists($filename)) {
             throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException("Le fichier $filename n'existe pas.");
         }
 
@@ -50,8 +49,8 @@ class KeywordsImportCommand extends ContainerAwareCommand
 
         $file = new \SplFileObject($filename);
 
-        while (!$file->eof())
-        {
+        while (!$file->eof()) {
+
             $line = $file->fgets();
 
             list ($word, $categorieID) = explode(':', $line);
@@ -61,8 +60,7 @@ class KeywordsImportCommand extends ContainerAwareCommand
 
             $categorie = $categorieRepository->find($categorieID);
 
-            if ($categorie === null)
-            {
+            if ($categorie === null) {
                 throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException("La catégorie n°$categorieID est inconnue.");
             }
 

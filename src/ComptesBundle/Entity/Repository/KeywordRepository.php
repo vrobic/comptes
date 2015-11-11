@@ -24,13 +24,12 @@ class KeywordRepository extends EntityRepository
         $keywords = array();
         $unsortedKeywords = $this->findAll();
 
-        foreach ($unsortedKeywords as $keyword)
-        {
+        foreach ($unsortedKeywords as $keyword) {
+
             $categorie = $keyword->getCategorie();
             $categorieID = $categorie->getId();
 
-            if (!isset($keywords[$categorieID]))
-            {
+            if (!isset($keywords[$categorieID])) {
                 $keywords[$categorieID] = array();
             }
 

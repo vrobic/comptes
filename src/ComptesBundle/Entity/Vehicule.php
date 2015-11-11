@@ -403,8 +403,7 @@ class Vehicule
 
         $pleins = $this->getPleins();
 
-        foreach ($pleins as $plein)
-        {
+        foreach ($pleins as $plein) {
             $distanceParcourue = $plein->getDistanceParcourue();
             $kilometrage += $distanceParcourue;
         }
@@ -448,8 +447,8 @@ class Vehicule
         // Consommations au 100km, cumulées (pour calculer ensuite la moyenne)
         $consommations = 0;
 
-        foreach ($pleins as $plein)
-        {
+        foreach ($pleins as $plein) {
+
             $distanceParcourue = $plein->getDistanceParcourue();
             $quantite = $plein->getQuantite();
 

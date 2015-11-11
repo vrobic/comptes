@@ -33,17 +33,17 @@ class CategorieController extends Controller
         $categories = $categorieRepository->findAll();
 
         // Filtre sur la période
-        if ($request->get('date_filter'))
-        {
+        if ($request->get('date_filter')) {
+
             $dateFilterString = $request->get('date_filter');
             $dateStartString = $dateFilterString['start'];
             $dateEndString = $dateFilterString['end'];
 
             $dateStart = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateStartString 00:00:00");
             $dateEnd = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateEndString 23:59:59");
-        }
-        else // Par défaut, depuis un an et jusqu'à la fin du mois
-        {
+
+        } else { // Par défaut, depuis un an et jusqu'à la fin du mois
+
             list ($year, $month, $lastDayOfMonth) = explode('-', date('Y-n-t'));
 
             $month = (int) $month;
@@ -55,8 +55,7 @@ class CategorieController extends Controller
             $dateEnd = \DateTime::createFromFormat('Y-n-j H:i:s', "$year-$month-$lastDayOfMonth 23:59:59");
         }
 
-        if (!$dateStart || !$dateEnd || $dateStart > $dateEnd)
-        {
+        if (!$dateStart || !$dateEnd || $dateStart > $dateEnd) {
             throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException("La période de dates est invalide.");
         }
 
@@ -69,8 +68,7 @@ class CategorieController extends Controller
         $yearStart = (int) date('Y');
         $yearEnd = $yearStart;
         $firstMouvement = $mouvementRepository->findFirstOne();
-        if ($firstMouvement !== null)
-        {
+        if ($firstMouvement !== null) {
             $firstMouvementDate = $firstMouvement->getDate();
             $yearStart = (int) $firstMouvementDate->format('Y');
         }
@@ -78,8 +76,7 @@ class CategorieController extends Controller
         // Montant total des mouvements, toutes catégories confondues
         $yearlyMontants = $statsProvider->getYearlyMontants($yearStart, $yearEnd);
         $montantTotal = 0;
-        foreach ($yearlyMontants as $montant)
-        {
+        foreach ($yearlyMontants as $montant) {
             $montantTotal += $montant;
         }
 
@@ -90,8 +87,8 @@ class CategorieController extends Controller
         $montantTotalPeriode = $mouvementRepository->getMontantTotalByDate($dateFilter['start'], $dateFilter['end']);
         $montantTotalPeriodeCategorise = 0;
 
-        foreach ($categories as $categorie)
-        {
+        foreach ($categories as $categorie) {
+
             $categorieID = $categorie->getId();
 
             // Montant cumulé des mouvements de la catégorie sur la période donnée
@@ -140,23 +137,22 @@ class CategorieController extends Controller
         $categorieID = $request->get('categorie_id');
         $categorie = $categorieRepository->find($categorieID);
 
-        if (!$categorie)
-        {
+        if (!$categorie) {
             throw $this->createNotFoundException("La catégorie $categorieID n'existe pas.");
         }
 
         // Filtre sur la période
-        if ($request->get('date_filter'))
-        {
+        if ($request->get('date_filter')) {
+
             $dateFilterString = $request->get('date_filter');
             $dateStartString = $dateFilterString['start'];
             $dateEndString = $dateFilterString['end'];
 
             $dateStart = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateStartString 00:00:00");
             $dateEnd = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateEndString 23:59:59");
-        }
-        else // Par défaut, depuis un an et jusqu'à la fin du mois
-        {
+
+        } else { // Par défaut, depuis un an et jusqu'à la fin du mois
+
             list ($year, $month, $lastDayOfMonth) = explode('-', date('Y-n-t'));
 
             $month = (int) $month;
@@ -168,8 +164,7 @@ class CategorieController extends Controller
             $dateEnd = \DateTime::createFromFormat('Y-n-j H:i:s', "$year-$month-$lastDayOfMonth 23:59:59");
         }
 
-        if (!$dateStart || !$dateEnd || $dateStart > $dateEnd)
-        {
+        if (!$dateStart || !$dateEnd || $dateStart > $dateEnd) {
             throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException("La période de dates est invalide.");
         }
 
@@ -187,10 +182,9 @@ class CategorieController extends Controller
         // Total des mouvements par mois
         $monthlyMontants = array();
 
-        if ($mouvements)
-        {
-            foreach ($mouvements as $mouvement)
-            {
+        if ($mouvements) {
+
+            foreach ($mouvements as $mouvement) {
                 $montant = $mouvement->getMontant();
                 $total += $montant;
             }
@@ -240,31 +234,29 @@ class CategorieController extends Controller
         $batchArray = $request->get('batch', array());
         $categoriesArray = $request->get('categories', array());
 
-        foreach ($batchArray as $categorieID)
-        {
-            if (isset($categoriesArray[$categorieID]))
-            {
+        foreach ($batchArray as $categorieID) {
+
+            if (isset($categoriesArray[$categorieID])) {
+
                 $categorieArray = $categoriesArray[$categorieID];
                 $categorie = $categorieID > 0 ? $categorieRepository->find($categorieID) : new Categorie();
 
-                switch ($action)
-                {
+                switch ($action) {
+
                     case 'save': // Création et édition
 
                         // Nom
-                        if (isset($categorieArray['nom']))
-                        {
+                        if (isset($categorieArray['nom'])) {
                             $nom = $categorieArray['nom'];
                             $categorie->setNom($nom);
                         }
 
                         // Catégorie parente
-                        if (isset($categorieArray['categorieParente']))
-                        {
+                        if (isset($categorieArray['categorieParente'])) {
+
                             $categorieParenteID = $categorieArray['categorieParente'];
 
-                            if ($categorieParenteID == $categorieID)
-                            {
+                            if ($categorieParenteID == $categorieID) {
                                 throw new \ComptesBundle\Exception\MerIlEtFouException("Référence circulaire. Tu veux tomber dans l'hyper espace ?");
                             }
 
@@ -273,42 +265,40 @@ class CategorieController extends Controller
                         }
 
                         // Mots-clés
-                        if (isset($categorieArray['keywords']))
-                        {
+                        if (isset($categorieArray['keywords'])) {
+
                             $words = array_diff(explode('|', $categorieArray['keywords']), array(''));
                             $keywords = $categorie->getKeywords();
 
                             // Supprime les mots-clés qui ne sont plus sélectionnés
-                            foreach ($keywords as $keyword)
-                            {
+                            foreach ($keywords as $keyword) {
+
                                 $word = $keyword->getWord();
 
-                                if (!in_array($word, $words))
-                                {
+                                if (!in_array($word, $words)) {
                                     $categorie->removeKeyword($keyword);
                                     $manager->remove($keyword);
                                 }
                             }
 
                             // Ajoute les mots-clés sélectionnés
-                            foreach ($words as $word)
-                            {
+                            foreach ($words as $word) {
+
                                 // Ce mot-clé existe-il déjà ?
                                 $keyword = $keywordRepository->findOneBy(array('word' => $word));
 
-                                if ($keyword === null) // Si non, on le crée
-                                {
+                                if ($keyword === null) { // Si non, on le crée
+
                                     $keyword = new Keyword();
                                     $keyword->setWord($word);
                                     $keyword->setCategorie($categorie);
-                                }
-                                else // Si oui, on vérifie qu'il n'est pas déjà affecté à une autre catégorie
-                                {
+
+                                } else { // Si oui, on vérifie qu'il n'est pas déjà affecté à une autre catégorie
+
                                     $keywordCategorie = $keyword->getCategorie();
                                     $keywordCategorieID = $keywordCategorie->getId();
 
-                                    if ($keywordCategorieID != $categorieID)
-                                    {
+                                    if ($keywordCategorieID != $categorieID) {
                                         throw new \Exception("Le mot-clé [$keyword] ne peut pas être ajouté à la catégorie [$categorie] puisqu'il est déjà affecté à [$keywordCategorie].");
                                     }
                                 }
@@ -318,8 +308,7 @@ class CategorieController extends Controller
                         }
 
                         // Rang
-                        if (isset($categorieArray['rang']))
-                        {
+                        if (isset($categorieArray['rang'])) {
                             $rang = $categorieArray['rang'] !== "" ? (int) $categorieArray['rang'] : null;
                             $categorie->setRang($rang);
                         }
@@ -333,8 +322,7 @@ class CategorieController extends Controller
                         // Décroche tous les mouvements liés à cette catégorie
                         $mouvements = $categorie->getMouvements();
 
-                        foreach ($mouvements as $mouvement)
-                        {
+                        foreach ($mouvements as $mouvement) {
                             $mouvement->setCategorie(null);
                             $manager->persist($mouvement);
                         }
@@ -351,8 +339,7 @@ class CategorieController extends Controller
         // URL de redirection
         $redirectURL = $request->get('redirect_url', null);
 
-        if ($redirectURL !== null)
-        {
+        if ($redirectURL !== null) {
             return $this->redirect($redirectURL);
         }
 

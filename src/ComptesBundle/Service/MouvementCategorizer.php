@@ -45,13 +45,13 @@ class MouvementCategorizer
         // Les catégories probables du mouvement
         $categories = array();
 
-        foreach ($keywords as $keyword)
-        {
+        foreach ($keywords as $keyword) {
+
             $word = $keyword->getWord();
 
             // Si le mot-clé est présent dans la description
-            if (preg_match("/\b$word\b/i", $description))
-            {
+            if (preg_match("/\b$word\b/i", $description)) {
+            
                 $categorie = $keyword->getCategorie();
                 $categorieID = $categorie->getId();
 

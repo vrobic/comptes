@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
  *       - mouvementsImportParseAction
  *       - pleinsImportParseAction
  *       - pleinssImportParseAction
- * 
+ *
  * @todo Utiliser un service pour mutualiser le reste.
  */
 class ImportController extends Controller
@@ -86,8 +86,8 @@ class ImportController extends Controller
         // Action : parsing ou import
         $action = $request->get('action');
 
-        switch ($action)
-        {
+        switch ($action) {
+
             case 'parse': // Parsing du fichier uploadé
 
                 // Parsing du fichier
@@ -104,21 +104,21 @@ class ImportController extends Controller
 
                 // Indique si on doit ignorer les mouvements anciens
                 $skipOldOnes = $request->get('skipOldOnes', false);
-                
+
                 /* Passage des mouvements en session.
                  * Ils sont identifiés par leur hash car leur id ne sera disponible
                  * qu'une fois qu'ils auront été persistés. */
-                foreach ($mouvements as $hash => $mouvement)
-                {
+                foreach ($mouvements as $hash => $mouvement) {
+
                     /* Si on doit ignorer les mouvements anciens,
                      * alors on n'importe le mouvement que s'il est plus récent que le dernier présent en base. */
-                    if ($skipOldOnes !== false && $latestMouvement !== null)
-                    {
+                    if ($skipOldOnes !== false && $latestMouvement !== null) {
+
                         $date = $mouvement->getDate();
                         $latestMouvementDate = $latestMouvement->getDate();
 
-                        if ($date < $latestMouvementDate)
-                        {
+                        if ($date < $latestMouvementDate) {
+
                             unset($mouvements[$hash]);
                             unset($categorizedMouvements[$hash]);
                             unset($uncategorizedMouvements[$hash]);
@@ -132,7 +132,7 @@ class ImportController extends Controller
                     // Détache les relations
                     $em->detach($mouvement);
                 }
-                
+
                 $session->set('mouvements', $mouvements);
 
                 break;
@@ -152,50 +152,44 @@ class ImportController extends Controller
                 // Récupération des mouvements
                 $mouvements = $session->get('mouvements');
 
-                foreach ($mouvements as $mouvement)
-                {
+                foreach ($mouvements as $mouvement) {
+
                     // Identification du mouvement par son hash
                     $hash = $mouvement->getHash();
 
-                    if (!in_array($hash, $mouvementsHashToImport))
-                    {
+                    if (!in_array($hash, $mouvementsHashToImport)) {
                         continue;
                     }
 
                     // Modification éventuelle de la date
-                    if (isset($mouvementsData[$hash]['date']))
-                    {
+                    if (isset($mouvementsData[$hash]['date'])) {
                         $dateString = $mouvementsData[$hash]['date'];
                         $date = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateString 00:00:00");
                         $mouvement->setDate($date);
                     }
 
                     // Modification éventuelle de la catégorie
-                    if (isset($mouvementsData[$hash]['categorie']))
-                    {
+                    if (isset($mouvementsData[$hash]['categorie'])) {
                         $categorieID = $mouvementsData[$hash]['categorie'];
                         $categorie = $categorieID !== "" ? $categorieRepository->find($categorieID) : null;
                         $mouvement->setCategorie($categorie);
                     }
 
                     // Modification éventuelle du compte
-                    if (isset($mouvementsData[$hash]['compte']))
-                    {
+                    if (isset($mouvementsData[$hash]['compte'])) {
                         $compteID = $mouvementsData[$hash]['compte'];
                         $compte = $compteID !== "" ? $compteRepository->find($compteID) : null;
                         $mouvement->setCompte($compte);
                     }
 
                     // Modification éventuelle du montant
-                    if (isset($mouvementsData[$hash]['montant']))
-                    {
+                    if (isset($mouvementsData[$hash]['montant'])) {
                         $montant = $mouvementsData[$hash]['montant'];
                         $mouvement->setMontant($montant);
                     }
 
                     // Modification éventuelle de la description
-                    if (isset($mouvementsData[$hash]['description']))
-                    {
+                    if (isset($mouvementsData[$hash]['description'])) {
                         $description = $mouvementsData[$hash]['description'];
                         $mouvement->setDescription($description);
                     }
@@ -274,8 +268,8 @@ class ImportController extends Controller
         // Action : parsing ou import
         $action = $request->get('action');
 
-        switch ($action)
-        {
+        switch ($action) {
+
             case 'parse': // Parsing du fichier uploadé
 
                 // Parsing du fichier
@@ -290,21 +284,21 @@ class ImportController extends Controller
 
                 // Indique si on doit ignorer les pleins anciens
                 $skipOldOnes = $request->get('skipOldOnes', false);
-                
+
                 /* Passage des pleins en session.
                  * Ils sont identifiés par leur hash car leur id ne sera disponible
                  * qu'une fois qu'ils auront été persistés. */
-                foreach ($pleins as $hash => $plein)
-                {
+                foreach ($pleins as $hash => $plein) {
+
                     /* Si on doit importer les pleins anciens,
                      * alors on n'importe le plein que s'il est plus récent que le dernier présent en base. */
-                    if ($skipOldOnes !== false && $latestPlein !== null)
-                    {
+                    if ($skipOldOnes !== false && $latestPlein !== null) {
+
                         $date = $plein->getDate();
                         $latestPleinDate = $latestPlein->getDate();
 
-                        if ($date < $latestPleinDate)
-                        {
+                        if ($date < $latestPleinDate) {
+
                             unset($validPleins[$hash]);
                             unset($waitingPleins[$hash]);
                             unset($pleins[$hash]);
@@ -335,49 +329,43 @@ class ImportController extends Controller
                 // Récupération des pleins
                 $pleins = $session->get('pleins');
 
-                foreach ($pleins as $plein)
-                {
+                foreach ($pleins as $plein) {
+
                     // Identification du plein par son hash
                     $hash = $plein->getHash();
 
-                    if (!in_array($hash, $pleinsHashToImport))
-                    {
+                    if (!in_array($hash, $pleinsHashToImport)) {
                         continue;
                     }
 
                     // Modification éventuelle de la date
-                    if (isset($pleinsData[$hash]['date']))
-                    {
+                    if (isset($pleinsData[$hash]['date'])) {
                         $dateString = $pleinsData[$hash]['date'];
                         $date = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateString 00:00:00");
                         $plein->setDate($date);
                     }
 
                     // Modification éventuelle du véhicule
-                    if (isset($pleinsData[$hash]['vehicule']))
-                    {
+                    if (isset($pleinsData[$hash]['vehicule'])) {
                         $vehiculeID = $pleinsData[$hash]['vehicule'];
                         $vehicule = $vehiculeID !== "" ? $vehiculeRepository->find($vehiculeID) : null;
                         $plein->setVehicule($vehicule);
                     }
 
                     // Modification éventuelle de la distance parcourue
-                    if (isset($pleinsData[$hash]['distanceParcourue']))
-                    {
+                    if (isset($pleinsData[$hash]['distanceParcourue'])) {
                         $distanceParcourue = $pleinsData[$hash]['distanceParcourue'];
                         $plein->setDistanceParcourue($distanceParcourue);
                     }
 
                     // Modification éventuelle de la quantité
-                    if (isset($pleinsData[$hash]['quantite']))
-                    {
+                    if (isset($pleinsData[$hash]['quantite'])) {
                         $quantite = $pleinsData[$hash]['quantite'];
                         $plein->setQuantite($quantite);
                     }
 
                     // Modification éventuelle du prix au litre
-                    if (isset($pleinsData[$hash]['prixLitre']))
-                    {
+                    if (isset($pleinsData[$hash]['prixLitre'])) {
                         $prixLitre = $pleinsData[$hash]['prixLitre'];
                         $plein->setPrixLitre($prixLitre);
                     }
@@ -424,8 +412,7 @@ class ImportController extends Controller
      */
     private function setType($type)
     {
-        if (!in_array($type, array('mouvements', 'pleins')))
-        {
+        if (!in_array($type, array('mouvements', 'pleins'))) {
             throw new \Exception("Type d'import invalide.");
         }
 
@@ -453,12 +440,9 @@ class ImportController extends Controller
     {
         $handlerIdentifier = $request->get('handlerIdentifier');
 
-        if ($handlerIdentifier === null)
-        {
+        if ($handlerIdentifier === null) {
             throw new \Exception("Handler manquant.");
-        }
-        elseif (!in_array($handlerIdentifier, array_keys($this->handlers)))
-        {
+        } elseif (!in_array($handlerIdentifier, array_keys($this->handlers))) {
             throw new \Exception("Le handler [$handlerIdentifier] n'existe pas.");
         }
 
@@ -480,20 +464,16 @@ class ImportController extends Controller
     {
         $file = $request->files->get('file');
 
-        if ($file === null)
-        {
+        if ($file === null) {
             throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException("Fichier manquant.");
-        }
-        elseif (!$file->isValid())
-        {
+        } elseif (!$file->isValid()) {
             throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException("Échec de l'upload du fichier.");
         }
 
         $fileExtension = $file->getClientOriginalExtension();
 
         // Handlers disponibles
-        if ($fileExtension !== $this->handlers[$this->handlerIdentifier]['extension'])
-        {
+        if ($fileExtension !== $this->handlers[$this->handlerIdentifier]['extension']) {
             throw new \Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException("Le handler [$this->handlerIdentifier] ne supporte pas le type de fichier [$fileExtension].");
         }
 

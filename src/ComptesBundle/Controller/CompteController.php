@@ -32,12 +32,12 @@ class CompteController extends Controller
         // Versements initiaux, à prendre en compte pour le calcul du solde cumulé
         $versementsInitiaux = array();
 
-        foreach ($comptes as $key => $compte)
-        {
+        foreach ($comptes as $key => $compte) {
+
             $soldeInitial = $compte->getSoldeInitial();
 
-            if ($soldeInitial > 0)
-            {
+            if ($soldeInitial > 0) {
+
                 $compteID = $compte->getId();
                 $dateOuverture = $compte->getDateOuverture();
 
@@ -49,14 +49,14 @@ class CompteController extends Controller
         }
 
         // On intercale les versements initiaux sous forme de faux mouvements
-        foreach ($mouvements as $key => $mouvement)
-        {
+        foreach ($mouvements as $key => $mouvement) {
+
             $date = $mouvement->getDate();
             $compte = $mouvement->getCompte();
             $compteID = $compte->getId();
 
-            if (isset($versementsInitiaux[$compteID]) && $date >= $versementsInitiaux[$compteID]['date'])
-            {
+            if (isset($versementsInitiaux[$compteID]) && $date >= $versementsInitiaux[$compteID]['date']) {
+
                 $fakeMouvement = new Mouvement();
                 $fakeMouvement->setCompte($compte);
                 $fakeMouvement->setDate($versementsInitiaux[$compteID]['date']);
@@ -78,12 +78,11 @@ class CompteController extends Controller
         });
 
         // Suppression des comptes fermés
-        foreach ($comptes as $key => $compte)
-        {
+        foreach ($comptes as $key => $compte) {
+
             $dateFermeture = $compte->getDateFermeture();
 
-            if ($dateFermeture !== null)
-            {
+            if ($dateFermeture !== null) {
                 unset($comptes[$key]);
             }
         }
@@ -118,23 +117,22 @@ class CompteController extends Controller
         $compteID = $request->get('compte_id');
         $compte = $compteRepository->find($compteID);
 
-        if (!$compte)
-        {
+        if (!$compte) {
             throw $this->createNotFoundException("Le compte bancaire $compteID n'existe pas.");
         }
 
         // Filtre sur la période
-        if ($request->get('date_filter'))
-        {
+        if ($request->get('date_filter')) {
+
             $dateFilterString = $request->get('date_filter');
             $dateStartString = $dateFilterString['start'];
             $dateEndString = $dateFilterString['end'];
 
             $dateStart = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateStartString 00:00:00");
             $dateEnd = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateEndString 23:59:59");
-        }
-        else // Par défaut, le mois courant en entier
-        {
+
+        } else { // Par défaut, le mois courant en entier
+
             list ($year, $month, $lastDayOfMonth) = explode('-', date('Y-n-t'));
 
             $month = (int) $month;
@@ -145,8 +143,7 @@ class CompteController extends Controller
             $dateEnd = \DateTime::createFromFormat('Y-n-j H:i:s', "$year-$month-$lastDayOfMonth 23:59:59");
         }
 
-        if (!$dateStart || !$dateEnd || $dateStart > $dateEnd)
-        {
+        if (!$dateStart || !$dateEnd || $dateStart > $dateEnd) {
             throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException("La période de dates est invalide.");
         }
 
@@ -162,14 +159,11 @@ class CompteController extends Controller
         $categories = $categorieRepository->findAll();
 
         // Solde du compte en début de période
-        if (isset($mouvements[0]))
-        {
+        if (isset($mouvements[0])) {
             $firstMouvement = $mouvements[0];
             $firstMouvementDate = $firstMouvement->getDate();
             $soldeStart = $compte->getSoldeOnDate($firstMouvementDate);
-        }
-        else
-        {
+        } else {
             $soldeStart = 0;
         }
 

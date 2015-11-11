@@ -50,12 +50,12 @@ class PleinsImportCommand extends ImportCommand
         // 1. Les pleins valides
         $validPleins = $handler->getValidPleins();
 
-        if ($validPleins)
-        {
+        if ($validPleins) {
+
             $verbose && $output->writeln("<info>Pleins valides</info>");
 
-            foreach ($validPleins as $plein)
-            {
+            foreach ($validPleins as $plein) {
+
                 $output->writeln("<comment>$plein</comment>");
 
                 // Indicateurs
@@ -67,20 +67,20 @@ class PleinsImportCommand extends ImportCommand
         }
 
         // 2. Les pleins suspectés comme doublons, qui nécessitent une confirmation manuelle
-        if ($interaction)
-        {
+        if ($interaction) {
+
             $waitingPleins = $handler->getWaitingPleins();
 
-            foreach ($waitingPleins as $plein)
-            {
+            foreach ($waitingPleins as $plein) {
+
                 $verbose && $output->writeln("<info>Pleins à valider</info>");
 
                 $output->writeln("<comment>$plein</comment>");
 
                 $confirm = $dialog->askConfirmation($output, "<question>Un plein similaire existe déjà :\n\t$plein\nImporter (y/N) ?</question>", false);
 
-                if ($confirm)
-                {
+                if ($confirm) {
+                
                     // Indicateurs
                     $i++;
 

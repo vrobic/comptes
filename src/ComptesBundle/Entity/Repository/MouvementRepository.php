@@ -293,8 +293,7 @@ class MouvementRepository extends EntityRepository
         $categories = array($categorieID);
         $categoriesFilles = $categorie->getCategoriesFillesRecursive();
 
-        foreach ($categoriesFilles as $categorieFille)
-        {
+        foreach ($categoriesFilles as $categorieFille) {
             $categories[] = $categorieFille->getId();
         }
 
@@ -330,12 +329,9 @@ class MouvementRepository extends EntityRepository
             ->orderBy('m.date', 'ASC')
             ->setMaxResults(1);
 
-        try
-        {
+        try {
             $mouvement = $queryBuilder->getQuery()->getSingleResult();
-        }
-        catch (\Doctrine\ORM\NoResultException $exception)
-        {
+        } catch (\Doctrine\ORM\NoResultException $exception) {
             $mouvement = null;
         }
 
@@ -357,12 +353,9 @@ class MouvementRepository extends EntityRepository
             ->orderBy('m.date', 'DESC')
             ->setMaxResults(1);
 
-        try
-        {
+        try {
             $mouvement = $queryBuilder->getQuery()->getSingleResult();
-        }
-        catch (\Doctrine\ORM\NoResultException $exception)
-        {
+        } catch (\Doctrine\ORM\NoResultException $exception) {
             $mouvement = null;
         }
 
@@ -386,8 +379,7 @@ class MouvementRepository extends EntityRepository
         $categories = array($categorieID);
         $categoriesFilles = $categorie->getCategoriesFillesRecursive();
 
-        foreach ($categoriesFilles as $categorieFille)
-        {
+        foreach ($categoriesFilles as $categorieFille) {
             $categories[] = $categorieFille->getId();
         }
 

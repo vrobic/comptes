@@ -25,16 +25,15 @@ final class MyCarsXMLPleinsImportHandler extends PleinsImportHandler
         // Tableau de correspondance entre le nom du véhicule dans MyCars et l'objet Vehicule
         $vehicules = array();
 
-        foreach ($configuration['vehicules'] as $vehiculeLabel => $vehiculeID)
-        {
+        foreach ($configuration['vehicules'] as $vehiculeLabel => $vehiculeID) {
             $vehicules[$vehiculeLabel] = $vehiculeRepository->find($vehiculeID);
         }
 
         $filename = $file->getPathname();
         $xml = simplexml_load_file($filename);
 
-        foreach ($xml->refuel as $refuel)
-        {
+        foreach ($xml->refuel as $refuel) {
+        
             $plein = new Plein();
 
             // Véhicule

@@ -183,12 +183,9 @@ abstract class PleinsImportHandler implements ImportHandler
         $pleinRepository = $this->em->getRepository('ComptesBundle:Plein');
         $similarPlein = $pleinRepository->findOneBy($criteria);
 
-        if ($similarPlein !== null)
-        {
+        if ($similarPlein !== null) {
             $classification = self::WAITING;
-        }
-        else
-        {
+        } else {
             $classification = self::VALID;
         }
 
@@ -204,8 +201,8 @@ abstract class PleinsImportHandler implements ImportHandler
     protected function classify(Plein $plein, $classification)
     {
         // Classification du plein
-        switch ($classification)
-        {
+        switch ($classification) {
+        
             case self::VALID:
                 $this->addValidPlein($plein);
                 break;

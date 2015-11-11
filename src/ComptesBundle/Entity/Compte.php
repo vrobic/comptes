@@ -327,8 +327,7 @@ class Compte
 
         $mouvements = $this->getMouvements();
 
-        foreach ($mouvements as $mouvement)
-        {
+        foreach ($mouvements as $mouvement) {
             $montant = $mouvement->getMontant();
             $solde += $montant;
         }
@@ -349,12 +348,11 @@ class Compte
 
         $mouvements = $this->getMouvements();
 
-        foreach ($mouvements as $mouvement)
-        {
+        foreach ($mouvements as $mouvement) {
+
             $mouvementDate = $mouvement->getDate();
 
-            if ($mouvementDate >= $date)
-            {
+            if ($mouvementDate >= $date) {
                 continue;
             }
 

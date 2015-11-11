@@ -71,8 +71,7 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
         $dialog = $this->getHelperSet()->get('dialog');
         $filename = $input->getArgument('filename');
 
-        if (!file_exists($filename))
-        {
+        if (!file_exists($filename)) {
             throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException("Le fichier $filename n'existe pas.");
         }
 
@@ -88,27 +87,24 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
         // Numéro de compte
         $numeroCompte = null;
 
-        foreach ($lines as $lineNumber => $line)
-        {
+        foreach ($lines as $lineNumber => $line) {
+
             // Recherche la présence du numéro de compte, signalé par "€ N° ###########"
             preg_match('/€.+[N°|N˚]\s(\d{11})/', $line, $matches);
 
-            if (isset($matches[1]))
-            {
+            if (isset($matches[1])) {
                 $numeroCompteRaw = $matches[1];
                 $numeroCompte = ltrim($numeroCompteRaw, "0");
             }
 
             // Si le numéro de compte n'est pas déterminé, la ligne ne sera pas exploitable
-            if ($numeroCompte === null)
-            {
+            if ($numeroCompte === null) {
                 continue;
             }
 
             $compte = $compteRepository->findOneBy(array('numero' => $numeroCompte));
 
-            if (!$compte)
-            {
+            if (!$compte) {
                 throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException("Le compte n°$numeroCompte est inconnu.");
             }
 
@@ -116,8 +112,7 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
             preg_match('/(\d{2}\/\d{2}\/\d{4})\s{1}\d{2}\/\d{2}\/\d{4}/', $line, $matches, PREG_OFFSET_CAPTURE);
 
             // S'il n'y en a pas, la ligne ne concerne pas un mouvement
-            if (!isset($matches[1]))
-            {
+            if (!isset($matches[1])) {
                 continue;
             }
 
@@ -135,31 +130,28 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
             $descriptionRows = array();
             $montant = null;
 
-            for ($nextLineOffset = 0; $nextLineOffset <= 4; $nextLineOffset++)
-            {
+            for ($nextLineOffset = 0; $nextLineOffset <= 4; $nextLineOffset++) {
+
                 $nextLineNumber = $lineNumber + $nextLineOffset;
 
-                if (!isset($lines[$nextLineNumber]))
-                {
+                if (!isset($lines[$nextLineNumber])) {
                     break;
                 }
 
                 $nextLine = $lines[$nextLineNumber];
 
                 // Les lignes suivantes ne peuvent contenir que des espaces avant la description
-                if ($nextLineOffset > 0)
-                {
+                if ($nextLineOffset > 0) {
+
                     $nextLineLength = strlen($nextLine);
 
-                    if ($nextLineLength < $descriptionPos)
-                    {
+                    if ($nextLineLength < $descriptionPos) {
                         break;
                     }
 
                     $spacesCount = substr_count($nextLine, " ", 0, $descriptionPos);
 
-                    if ($spacesCount !== $descriptionPos)
-                    {
+                    if ($spacesCount !== $descriptionPos) {
                         break;
                     }
                 }
@@ -169,8 +161,7 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
                 preg_match('/(.+?)(?=\s{15,}|$)/', $subject, $matches);
 
                 // Si elle n'a pas été trouvée, on passe à la ligne suivante
-                if (!isset($matches[1]))
-                {
+                if (!isset($matches[1])) {
                     continue;
                 }
 
@@ -180,16 +171,15 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
 
                 /* Le montant n'est présent que sur une des lignes.
                  * Donc s'il n'a pas encore été défini... */
-                if ($montant === null)
-                {
+                if ($montant === null) {
+
                     $descriptionLength = strlen($descriptionRaw);
 
                     // Il se trouve en fin de ligne, après une série d'espaces
                     $subject = substr($nextLine, $descriptionPos + $descriptionLength);
                     preg_match('/([^\s]+.+)$/', $subject, $matches);
 
-                    if (isset($matches[1]))
-                    {
+                    if (isset($matches[1])) {
                         $montantRaw = $matches[1];
                         $montant = str_replace('.', '', $montantRaw); // Séparateur milliers
                         $montant = str_replace(',', '.', $montant); // Séparateur décimales
@@ -197,12 +187,9 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
                 }
             }
 
-            if (!$descriptionRows)
-            {
+            if (!$descriptionRows) {
                 throw new \Exception("La description n'a pas été trouvée à la ligne n°$lineNumber.");
-            }
-            elseif ($montant === null)
-            {
+            } elseif ($montant === null) {
                 throw new \Exception("Le montant n'a pas été trouvé à la ligne n°$lineNumber.");
             }
 
@@ -219,13 +206,11 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
             // Réponse obligatoire
             $signe = null;
 
-            while (!in_array(strtolower($signe), array("c", "d")))
-            {
+            while (!in_array(strtolower($signe), array("c", "d"))) {
                 $signe = $dialog->ask($output, "<question>S'agit-il d'un crédit ou d'un débit (c/D) ?</question>", "d");
             }
 
-            if (strtolower($signe) === "d") // Réponse insensible à la casse
-            {
+            if (strtolower($signe) === "d") { // Réponse insensible à la casse
                 $montant = -$montant;
                 $mouvement->setMontant($montant);
             }
@@ -234,17 +219,16 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
             $mouvementCategorizer = $this->getContainer()->get('comptes_bundle.mouvement.categorizer');
             $categories = $mouvementCategorizer->getCategories($mouvement);
 
-            if ($categories)
-            {
+            if ($categories) {
+
                 $categorieKey = 0; // La clé de la catégorie au sein du tableau $categories
 
                 // S'il y a plus d'une catégorie, on laisse le choix
-                if (count($categories) > 1)
-                {
+                if (count($categories) > 1) {
+
                     $question = "<question>Proposition de catégories :\n";
 
-                    foreach ($categories as $key => $categorie)
-                    {
+                    foreach ($categories as $key => $categorie) {
                         $question .= "\t($key) : $categorie\n";
                     }
 
@@ -255,14 +239,12 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
                     // Réponse obligatoire
                     $categorieKey = null;
 
-                    while (strtolower($categorieKey) !== "n" && !isset($categories[$categorieKey]))
-                    {
+                    while (strtolower($categorieKey) !== "n" && !isset($categories[$categorieKey])) {
                         $categorieKey = $dialog->ask($output, $question);
                     }
                 }
 
-                if (strtolower($categorieKey) !== "n") // Réponse insensible à la casse
-                {
+                if (strtolower($categorieKey) !== "n") { // Réponse insensible à la casse
                     $categorie = $categories[$categorieKey];
                     $mouvement->setCategorie($categorie);
                 }

@@ -272,21 +272,16 @@ abstract class MouvementsImportHandler implements ImportHandler
         // Service de catégorisation automatique des mouvements
         $categories = $this->mouvementCategorizer->getCategories($mouvement);
 
-        if ($categories)
-        {
-            if (count($categories) > 1)
-            {
-                $classification = self::AMBIGUOUS;
-            }
-            else
-            {
-                $mouvement->setCategorie($categories[0]);
+        if ($categories) {
 
+            if (count($categories) > 1) {
+                $classification = self::AMBIGUOUS;
+            } else {
+                $mouvement->setCategorie($categories[0]);
                 $classification = self::CATEGORIZED;
             }
-        }
-        else
-        {
+
+        } else {
             $classification = self::UNCATEGORIZED;
         }
 
@@ -299,8 +294,7 @@ abstract class MouvementsImportHandler implements ImportHandler
         $mouvementRepository = $this->em->getRepository('ComptesBundle:Mouvement');
         $similarMouvement = $mouvementRepository->findOneBy($criteria);
 
-        if ($similarMouvement !== null)
-        {
+        if ($similarMouvement !== null) {
             $classification = self::WAITING;
         }
 
@@ -316,8 +310,8 @@ abstract class MouvementsImportHandler implements ImportHandler
     protected function classify(Mouvement $mouvement, $classification)
     {
         // Classification du mouvement
-        switch ($classification)
-        {
+        switch ($classification) {
+
             case self::CATEGORIZED:
                 $this->addCategorizedMouvement($mouvement);
                 break;

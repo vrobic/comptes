@@ -65,8 +65,8 @@ class LoadCategorieData extends AbstractFixture implements OrderedFixtureInterfa
      */
     private function loadCategories($categoriesContent, $categorieParente=null)
     {
-        foreach ($categoriesContent as $categorieContent)
-        {
+        foreach ($categoriesContent as $categorieContent) {
+
             $categorie = new Categorie();
 
             $categorie->setNom($categorieContent['nom']);
@@ -75,8 +75,8 @@ class LoadCategorieData extends AbstractFixture implements OrderedFixtureInterfa
 
             $this->manager->persist($categorie);
 
-            if (!empty($categorieContent['subcategories']))
-            {
+            if (!empty($categorieContent['subcategories'])) {
+
                 $subCategoriesContent = $categorieContent['subcategories'];
 
                 $this->loadCategories($subCategoriesContent, $categorie);

@@ -13,10 +13,9 @@ handlers:
             # Ce paramètre établit la correspondance entre les numéros de feuille
             # et les identifiants des comptes bancaires correspondants.
             sheets:
-                1: 4
-                2: 3
-                3: 2
-                4: 1
+                1: 3
+                2: 2
+                3: 1
         # Identifiant du service d'import, ici "comptes_bundle.import.mouvements.cic.csv".
         cic.csv:
             # Nom de la source

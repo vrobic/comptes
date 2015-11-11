@@ -214,8 +214,7 @@ class Categorie
      */
     public function getCategoriesFillesRecursive($categoriesFilles=array())
     {
-        foreach ($this->categoriesFilles as $categorieFille)
-        {
+        foreach ($this->categoriesFilles as $categorieFille) {
             $categoriesFilles = array_merge($categoriesFilles, $categorieFille->getCategoriesFillesRecursive(array($categorieFille)));
         }
 

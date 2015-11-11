@@ -35,8 +35,7 @@ abstract class ImportCommand extends ContainerAwareCommand
      */
     protected function setType($type)
     {
-        if (!in_array($type, array('mouvements', 'pleins')))
-        {
+        if (!in_array($type, array('mouvements', 'pleins'))) {
             throw new \Exception("Type d'import invalide.");
         }
 
@@ -64,8 +63,7 @@ abstract class ImportCommand extends ContainerAwareCommand
     {
         $handlerIdentifiers = array_keys($this->handlers);
 
-        if (!in_array($handlerIdentifier, $handlerIdentifiers))
-        {
+        if (!in_array($handlerIdentifier, $handlerIdentifiers)) {
             throw new \Exception("Le handler [$handlerIdentifier] n'existe pas. Sont disponibles : [".implode(', ', $handlerIdentifiers)."].");
         }
 
@@ -85,8 +83,7 @@ abstract class ImportCommand extends ContainerAwareCommand
      */
     protected function getFile($filename)
     {
-        if (!file_exists($filename))
-        {
+        if (!file_exists($filename)) {
             throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException("Le fichier $filename n'existe pas.");
         }
 
@@ -95,8 +92,7 @@ abstract class ImportCommand extends ContainerAwareCommand
         $fileExtension = $splFile->getExtension();
 
         // Handlers disponibles
-        if ($fileExtension !== $this->handlers[$this->handlerIdentifier]['extension'])
-        {
+        if ($fileExtension !== $this->handlers[$this->handlerIdentifier]['extension']) {
             throw new \Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException("Le handler [$this->handlerIdentifier] ne supporte pas le type de fichier [$fileExtension].");
         }
 

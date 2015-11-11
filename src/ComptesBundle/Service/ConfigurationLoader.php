@@ -70,8 +70,7 @@ class ConfigurationLoader
         // Validation de la configuration
         $valid = $this->validateConfiguration();
 
-        if (!$valid)
-        {
+        if (!$valid) {
             $this->configuration = array();
             throw new \Exception("$configurationFile : configuration invalide.");
         }
@@ -109,14 +108,10 @@ class ConfigurationLoader
             'stats.yml' => 'validateStatsConfiguration'
         );
 
-        if (isset($validators[$configurationFile]))
-        {
+        if (isset($validators[$configurationFile])) {
             $validator = $validators[$configurationFile];
-
             $valid = $this->$validator();
-        }
-        else
-        {
+        } else {
             $valid = true;
         }
 
@@ -145,44 +140,37 @@ class ConfigurationLoader
         $configuration = $this->configuration;
 
         // Vérification des handlers
-        if (empty($configuration['handlers']))
-        {
+        if (empty($configuration['handlers'])) {
             throw new \Exception($this->getExceptionMessage(array("handlers"), "Aucun handler n'est défini."));
         }
 
-        if (!is_array($configuration['handlers']))
-        {
+        if (!is_array($configuration['handlers'])) {
             throw new \Exception($this->getExceptionMessage(array("handlers"), "Doit être un tableau."));
         }
 
-        foreach ($configuration['handlers'] as $type => $handlers)
-        {
-            if (!in_array($type, array('mouvements', 'pleins')))
-            {
+        foreach ($configuration['handlers'] as $type => $handlers) {
+
+            if (!in_array($type, array('mouvements', 'pleins'))) {
                 throw new \Exception($this->getExceptionMessage(array("handlers", $type), "Les types de handler autorisés sont [mouvements] et [pleins], pas [$type]."));
             }
 
-            if (!is_array($handlers))
-            {
+            if (!is_array($handlers)) {
                 throw new \Exception($this->getExceptionMessage(array("handlers", $type), "Doit être un tableau."));
             }
 
-            foreach ($handlers as $identifier => $handler)
-            {
+            foreach ($handlers as $identifier => $handler) {
+
                 $hasService = $this->container->has("comptes_bundle.import.$type.$identifier");
 
-                if (!$hasService)
-                {
+                if (!$hasService) {
                     throw new \Exception($this->getExceptionMessage(array("handlers", $type, $identifier), "Aucun service correspondant à [comptes_bundle.import.$type.$identifier]."));
                 }
 
-                if (!key_exists('name', $handler))
-                {
+                if (!key_exists('name', $handler)) {
                     throw new \Exception($this->getExceptionMessage(array("handlers", $type, $identifier, "name"), "Paramètre manquant."));
                 }
 
-                if (!key_exists('extension', $handler))
-                {
+                if (!key_exists('extension', $handler)) {
                     throw new \Exception($this->getExceptionMessage(array("handlers", $type, $identifier, "extension"), "Paramètre manquant."));
                 }
             }

@@ -44,18 +44,17 @@ final class CaisseEpargneMouvementsImportHandler extends MouvementsImportHandler
         $currentLine = 0;
         $headersLine = 4;
 
-        while (($cols = $file->fgetcsv(';')) !== null)
-        {
+        while (($cols = $file->fgetcsv(';')) !== null) {
+
             // Si on a dépassé la ligne d'en-têtes
-            if ($currentLine > $headersLine)
-            {
+            if ($currentLine > $headersLine) {
+
                 // Si la date est valide et sans month shifting
                 $date = \DateTime::createFromFormat('d/m/y', $cols[0]);
                 $isValidDate = $date !== false && !array_sum($date->getLastErrors());
 
                 // Alors la ligne en cours est un mouvement
-                if ($isValidDate)
-                {
+                if ($isValidDate) {
                     $row = array_combine($headers, $cols);
                     $rows[] = $row;
                 }
@@ -64,8 +63,8 @@ final class CaisseEpargneMouvementsImportHandler extends MouvementsImportHandler
             $currentLine++;
         }
 
-        foreach ($rows as $row)
-        {
+        foreach ($rows as $row) {
+        
             $mouvement = new Mouvement();
 
             // Date

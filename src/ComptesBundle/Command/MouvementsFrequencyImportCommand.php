@@ -26,8 +26,7 @@ class MouvementsFrequencyImportCommand extends ContainerAwareCommand
     {
         $filename = $input->getArgument('filename');
 
-        if (!file_exists($filename))
-        {
+        if (!file_exists($filename)) {
             throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException("Le fichier $filename n'existe pas.");
         }
 
@@ -35,10 +34,8 @@ class MouvementsFrequencyImportCommand extends ContainerAwareCommand
         $words = array_count_values(str_word_count($string, 1));
         arsort($words);
 
-        foreach ($words as $word => $count)
-        {
-            if ($count > 1)
-            {
+        foreach ($words as $word => $count) {
+            if ($count > 1) {
                 $output->writeln("$count => $word");
             }
         }

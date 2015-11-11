@@ -26,20 +26,18 @@ final class CICExcelMouvementsImportHandler extends MouvementsImportHandler
         // Tableau de correspondance entre l'index de la feuille et le compte bancaire
         $comptesBySheets = array();
 
-        foreach ($configuration['sheets'] as $sheetIndex => $compteID)
-        {
+        foreach ($configuration['sheets'] as $sheetIndex => $compteID) {
             $comptesBySheets[$sheetIndex] = $compteRepository->find($compteID);
         }
 
-        foreach ($comptesBySheets as $sheetIndex => $compte)
-        {
+        foreach ($comptesBySheets as $sheetIndex => $compte) {
+
             $reader = new ExcelReader($file, 4, $sheetIndex);
 
-            foreach ($reader as $row)
-            {
+            foreach ($reader as $row) {
+
                 // Arrivée à la fin du tableau des mouvements
-                if ($row["Solde"] === null)
-                {
+                if ($row["Solde"] === null) {
                     break;
                 }
 

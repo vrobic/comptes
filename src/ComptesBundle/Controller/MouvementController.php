@@ -31,51 +31,46 @@ class MouvementController extends Controller
         $batchArray = $request->get('batch', array());
         $mouvementsArray = $request->get('mouvements', array());
 
-        foreach ($batchArray as $mouvementID)
-        {
-            if (isset($mouvementsArray[$mouvementID]))
-            {
+        foreach ($batchArray as $mouvementID) {
+
+            if (isset($mouvementsArray[$mouvementID])) {
+
                 $mouvementArray = $mouvementsArray[$mouvementID];
                 $mouvement = $mouvementID > 0 ? $mouvementRepository->find($mouvementID) : new Mouvement();
 
-                switch ($action)
-                {
+                switch ($action) {
+
                     case 'save': // Création et édition
 
                         // Date
-                        if (isset($mouvementArray['date']))
-                        {
+                        if (isset($mouvementArray['date'])) {
                             $dateString = $mouvementArray['date'];
                             $date = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateString 00:00:00");
                             $mouvement->setDate($date);
                         }
 
                         // Catégorie
-                        if (isset($mouvementArray['categorie']))
-                        {
+                        if (isset($mouvementArray['categorie'])) {
                             $categorieID = $mouvementArray['categorie'];
                             $categorie = $categorieID !== "" ? $categorieRepository->find($categorieID) : null;
                             $mouvement->setCategorie($categorie);
                         }
 
                         // Compte
-                        if (isset($mouvementArray['compte']))
-                        {
+                        if (isset($mouvementArray['compte'])) {
                             $compteID = $mouvementArray['compte'];
                             $compte = $compteID !== "" ? $compteRepository->find($compteID) : null;
                             $mouvement->setCompte($compte);
                         }
 
                         // Montant
-                        if (isset($mouvementArray['montant']))
-                        {
+                        if (isset($mouvementArray['montant'])) {
                             $montant = $mouvementArray['montant'];
                             $mouvement->setMontant($montant);
                         }
 
                         // Description
-                        if (isset($mouvementArray['description']))
-                        {
+                        if (isset($mouvementArray['description'])) {
                             $description = $mouvementArray['description'];
                             $mouvement->setDescription($description);
                         }

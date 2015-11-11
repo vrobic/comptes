@@ -37,8 +37,7 @@ class CategorieRepository extends EntityRepository
         $categories = array($categorieID);
         $categoriesFilles = $categorie->getCategoriesFillesRecursive();
 
-        foreach ($categoriesFilles as $categorieFille)
-        {
+        foreach ($categoriesFilles as $categorieFille) {
             $categories[] = $categorieFille->getId();
         }
 
@@ -80,8 +79,7 @@ class CategorieRepository extends EntityRepository
         $categories = array($categorieID);
         $categoriesFilles = $categorie->getCategoriesFillesRecursive();
 
-        foreach ($categoriesFilles as $categorieFille)
-        {
+        foreach ($categoriesFilles as $categorieFille) {
             $categories[] = $categorieFille->getId();
         }
 

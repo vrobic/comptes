@@ -86,12 +86,9 @@ class PleinRepository extends EntityRepository
             ->orderBy('p.date', 'DESC')
             ->setMaxResults(1);
 
-        try
-        {
+        try {
             $plein = $queryBuilder->getQuery()->getSingleResult();
-        }
-        catch (\Doctrine\ORM\NoResultException $exception)
-        {
+        } catch (\Doctrine\ORM\NoResultException $exception) {
             $plein = null;
         }
 

@@ -31,8 +31,8 @@ class PleinController extends Controller
         $totalMontant = 0;
         $totalDistance = 0;
 
-        foreach ($pleins as $plein)
-        {
+        foreach ($pleins as $plein) {
+
             $quantite = $plein->getQuantite();
             $totalQuantite += $quantite;
 
@@ -59,7 +59,7 @@ class PleinController extends Controller
      * Édition de pleins par lots.
      *
      * @todo Utiliser un formulaire Symfony.
-     * 
+     *
      * @param Request $request
      * @return Response
      */
@@ -76,50 +76,45 @@ class PleinController extends Controller
         $batchArray = $request->get('batch', array());
         $pleinsArray = $request->get('pleins', array());
 
-        foreach ($batchArray as $pleinID)
-        {
-            if (isset($pleinsArray[$pleinID]))
-            {
+        foreach ($batchArray as $pleinID) {
+
+            if (isset($pleinsArray[$pleinID])) {
+
                 $pleinArray = $pleinsArray[$pleinID];
                 $plein = $pleinID > 0 ? $pleinRepository->find($pleinID) : new Plein();
 
-                switch ($action)
-                {
+                switch ($action) {
+
                     case 'save': // Création et édition
 
                         // Date
-                        if (isset($pleinArray['date']))
-                        {
+                        if (isset($pleinArray['date'])) {
                             $dateString = $pleinArray['date'];
                             $date = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateString 00:00:00");
                             $plein->setDate($date);
                         }
 
                         // Véhicule
-                        if (isset($pleinArray['vehicule']))
-                        {
+                        if (isset($pleinArray['vehicule'])) {
                             $vehiculeID = $pleinArray['vehicule'];
                             $vehicule = $vehiculeID !== "" ? $vehiculeRepository->find($vehiculeID) : null;
                             $plein->setVehicule($vehicule);
                         }
 
                         // Distance parcourue
-                        if (isset($pleinArray['distanceParcourue']))
-                        {
+                        if (isset($pleinArray['distanceParcourue'])) {
                             $distanceParcourue = $pleinArray['distanceParcourue'];
                             $plein->setDistanceParcourue($distanceParcourue);
                         }
 
                         // Quantité
-                        if (isset($pleinArray['quantite']))
-                        {
+                        if (isset($pleinArray['quantite'])) {
                             $quantite = $pleinArray['quantite'];
                             $plein->setQuantite($quantite);
                         }
 
                         // Prix au litre
-                        if (isset($pleinArray['prixLitre']))
-                        {
+                        if (isset($pleinArray['prixLitre'])) {
                             $prixLitre = $pleinArray['prixLitre'];
                             $plein->setPrixLitre($prixLitre);
                         }

@@ -36,8 +36,8 @@ class LoadCarburantData extends AbstractFixture implements OrderedFixtureInterfa
         // Tableau de données
         $carburantsContent = $fixturesConfiguration['carburants'];
 
-        foreach ($carburantsContent as $key => $carburantContent)
-        {
+        foreach ($carburantsContent as $key => $carburantContent) {
+
             $carburant = new Carburant();
 
             $carburant->setNom($carburantContent['nom']);

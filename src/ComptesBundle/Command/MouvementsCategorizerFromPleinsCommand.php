@@ -42,8 +42,8 @@ class MouvementsCategorizerFromPleinsCommand extends ContainerAwareCommand
         // Indicateurs
         $i = 0; // Nombre de mouvements modifiés
 
-        foreach ($pleins as $plein)
-        {
+        foreach ($pleins as $plein) {
+
             $output->writeln("<comment>Plein : $plein</comment>");
 
             // Recherche du mouvement correspondant au plein
@@ -58,15 +58,15 @@ class MouvementsCategorizerFromPleinsCommand extends ContainerAwareCommand
             // Les mouvements correspondants au plein, à plus ou moins 7 jours
             $mouvements = $mouvementRepository->findByMontantBetweenDates($montant, $dateStart, $dateEnd);
 
-            if ($mouvements)
-            {
-                foreach ($mouvements as $mouvement)
-                {
+            if ($mouvements) {
+
+                foreach ($mouvements as $mouvement) {
+
                     $output->writeln("<comment>\tMouvement : $mouvement</comment>");
                     $confirm = $dialog->askConfirmation($output, "<question>\tModifier la catégorie (Y/n) ?</question>");
 
-                    if ($confirm)
-                    {
+                    if ($confirm) {
+
                         // Enregistrement
                         $mouvement->setCategorie($categorie);
                         $em->persist($mouvement);
@@ -75,9 +75,7 @@ class MouvementsCategorizerFromPleinsCommand extends ContainerAwareCommand
                         $i++;
                     }
                 }
-            }
-            else
-            {
+            } else {
                 $output->writeln("<comment>\tAucun mouvement correspondant</comment>");
             }
         }
