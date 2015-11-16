@@ -77,4 +77,16 @@ window.forms = function()
         $('td.input-select2 select', newRow).add(selects).select2(select2Options);
         $('td.input-tags input[type="text"]', newRow).add(tags).tagEditor(tagEditorOptions);
     });
-}
+
+    /* Soumission des lignes cochées uniquement, au sein des formulaires batch.
+     * Ceci pour limiter le nombre de variables dans la requête HTTP. */
+    $('form').submit(function(){
+
+        // Les checkboxes, lignes et inputs à ne pas envoyer
+        var checkboxes = $('table.table td:first-child input[type="checkbox"][name$="[]"]:not(:checked)', $(this)),
+            rows = checkboxes.parents('tr'),
+            inputs = $(':input', rows);
+
+        inputs.prop('disabled', true);
+    });
+};

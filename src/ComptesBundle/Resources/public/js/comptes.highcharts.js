@@ -137,4 +137,4 @@ window.highcharts = function()
 
         return new Highcharts.Chart(options, callback);
     };
-}
+};
