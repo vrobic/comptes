@@ -6,10 +6,13 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class MouvementsImportCommand extends ImportCommand
+/**
+ * Script d'import de mouvements bancaires depuis un fichier.
+ */
+class MouvementsImportCommand extends AbstractImportCommand
 {
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function configure()
     {
@@ -20,7 +23,7 @@ class MouvementsImportCommand extends ImportCommand
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {

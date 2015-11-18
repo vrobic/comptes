@@ -7,6 +7,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use ComptesBundle\Entity\Plein;
 
+/**
+ * Contrôleur des pleins de carburant.
+ */
 class PleinController extends Controller
 {
     /**
@@ -50,7 +53,7 @@ class PleinController extends Controller
                 'vehicules' => $vehicules,
                 'total_quantite' => $totalQuantite,
                 'total_montant' => $totalMontant,
-                'total_distance' => $totalDistance
+                'total_distance' => $totalDistance,
             )
         );
     }
@@ -61,6 +64,7 @@ class PleinController extends Controller
      * @todo Utiliser un formulaire Symfony.
      *
      * @param Request $request
+     *
      * @return Response
      */
     public function editAction(Request $request)
@@ -97,7 +101,7 @@ class PleinController extends Controller
                         // Véhicule
                         if (isset($pleinArray['vehicule'])) {
                             $vehiculeID = $pleinArray['vehicule'];
-                            $vehicule = $vehiculeID !== "" ? $vehiculeRepository->find($vehiculeID) : null;
+                            $vehicule = $vehiculeID !== '' ? $vehiculeRepository->find($vehiculeID) : null;
                             $plein->setVehicule($vehicule);
                         }
 

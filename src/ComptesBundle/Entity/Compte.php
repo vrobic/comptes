@@ -3,7 +3,6 @@
 namespace ComptesBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use ComptesBundle\Entity\Mouvement;
 
 /**
  * Compte bancaire.
@@ -16,7 +15,7 @@ class Compte
     /**
      * Identifiant du compte.
      *
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
@@ -54,7 +53,7 @@ class Compte
     /**
      * Plafond du compte, en euros.
      *
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="plafond", type="integer")
      */
@@ -100,7 +99,7 @@ class Compte
     /**
      * Rang d'affichage du compte.
      *
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="rang", type="integer", nullable=true)
      */
@@ -128,7 +127,7 @@ class Compte
     /**
      * Récupère l'identifiant du compte.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -139,6 +138,7 @@ class Compte
      * Définit le nom du compte.
      *
      * @param string $nom
+     *
      * @return Compte
      */
     public function setNom($nom)
@@ -162,6 +162,7 @@ class Compte
      * Définit le numéro du compte.
      *
      * @param string $numero
+     *
      * @return Compte
      */
     public function setNumero($numero)
@@ -185,6 +186,7 @@ class Compte
      * Définit la domiciliation du compte.
      *
      * @param string $banque
+     *
      * @return Compte
      */
     public function setBanque($banque)
@@ -207,7 +209,8 @@ class Compte
     /**
      * Définit le plafond du compte.
      *
-     * @param integer $plafond La valeur 0 correspond à l'absence de plafond.
+     * @param int $plafond La valeur 0 correspond à l'absence de plafond.
+     *
      * @return Compte
      */
     public function setPlafond($plafond)
@@ -221,7 +224,7 @@ class Compte
      * Récupère le plafond du compte.
      * La valeur 0 correspond à l'absence de plafond.
      *
-     * @return integer
+     * @return int
      */
     public function getPlafond()
     {
@@ -231,7 +234,7 @@ class Compte
     /**
      * Indique si le plafond du compte est atteint.
      *
-     * @return boolean
+     * @return bool
      */
     public function isPlafondAtteint()
     {
@@ -247,6 +250,7 @@ class Compte
      * Associe un mouvement au compte.
      *
      * @param Mouvement $mouvement
+     *
      * @return Compte
      */
     public function addMouvement(Mouvement $mouvement)
@@ -260,6 +264,7 @@ class Compte
      * Dissocie un mouvement du compte.
      *
      * @param Mouvement $mouvement
+     *
      * @return Compte
      */
     public function removeMouvement(Mouvement $mouvement)
@@ -295,7 +300,8 @@ class Compte
      * Définit le solde initial du compte,
      * avant le premier mouvement rentré dans l'application.
      *
-     * @param integer $soldeInitial Le solde initial du compte, en euros.
+     * @param int $soldeInitial Le solde initial du compte, en euros.
+     *
      * @return Compte
      */
     public function setSoldeInitial($soldeInitial)
@@ -339,6 +345,7 @@ class Compte
      * Calcule le solde du compte à une date.
      *
      * @param \DateTime $date
+     *
      * @return float
      */
     public function getSoldeOnDate($date)
@@ -367,6 +374,7 @@ class Compte
      * Définit la date d'ouverture du compte.
      *
      * @param \DateTime $dateOuverture
+     *
      * @return Compte
      */
     public function setDateOuverture($dateOuverture)
@@ -390,6 +398,7 @@ class Compte
      * Définit la date de fermeture du compte.
      *
      * @param \DateTime $dateFermeture
+     *
      * @return Compte
      */
     public function setDateFermeture($dateFermeture)
@@ -412,7 +421,8 @@ class Compte
     /**
      * Définit le rang d'affichage du compte.
      *
-     * @param integer $rang
+     * @param int $rang
+     *
      * @return Compte
      */
     public function setRang($rang)
@@ -425,7 +435,7 @@ class Compte
     /**
      * Récupère le rang d'affichage du compte.
      *
-     * @return integer
+     * @return int
      */
     public function getRang()
     {

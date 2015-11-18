@@ -7,10 +7,14 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Script utilitaire permettant de compter le nombre d'occurences des mots d'un
+ * fichier texte. Il permet d'en extraire une liste de mots-clés récurrents.
+ */
 class MouvementsFrequencyImportCommand extends ContainerAwareCommand
 {
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function configure()
     {
@@ -20,7 +24,7 @@ class MouvementsFrequencyImportCommand extends ContainerAwareCommand
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {

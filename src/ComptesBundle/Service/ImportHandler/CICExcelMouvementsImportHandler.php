@@ -8,7 +8,7 @@ use ComptesBundle\Entity\Mouvement;
 /**
  * Implémente un handler Excel d'import de mouvements de la banque CIC.
  */
-final class CICExcelMouvementsImportHandler extends MouvementsImportHandler
+final class CICExcelMouvementsImportHandler extends AbstractMouvementsImportHandler
 {
     /**
      * Parse les mouvements et remplit les tableaux de classification du handler.

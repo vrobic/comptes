@@ -4,8 +4,6 @@ namespace ComptesBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
-use ComptesBundle\Entity\Carburant;
-use ComptesBundle\Entity\Plein;
 
 /**
  * Véhicule.
@@ -18,7 +16,7 @@ class Vehicule
     /**
      * Identifiant du véhicule.
      *
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
@@ -112,7 +110,7 @@ class Vehicule
     /**
      * Rang d'affichage du véhicule.
      *
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="rang", type="integer", nullable=true)
      */
@@ -139,7 +137,7 @@ class Vehicule
     /**
      * Récupère l'identifiant du véhicule.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -150,6 +148,7 @@ class Vehicule
      * Définit les marque et modèle du véhicule.
      *
      * @param string $nom
+     *
      * @return Vehicule
      */
     public function setNom($nom)
@@ -173,6 +172,7 @@ class Vehicule
      * Définit la date d'achat du véhicule.
      *
      * @param \DateTime $dateAchat
+     *
      * @return Vehicule
      */
     public function setDateAchat($dateAchat)
@@ -196,6 +196,7 @@ class Vehicule
      * Définit la date de revente du véhicule.
      *
      * @param \DateTime $dateVente
+     *
      * @return Vehicule
      */
     public function setDateVente($dateVente)
@@ -218,7 +219,7 @@ class Vehicule
     /**
      * Indique si le véhicule est revendu.
      *
-     * @return boolean
+     * @return bool
      */
     public function isVendu()
     {
@@ -233,6 +234,7 @@ class Vehicule
      * Définit le kilométrage du véhicule à son achat.
      *
      * @param string $kilometrageAchat
+     *
      * @return Vehicule
      */
     public function setKilometrageAchat($kilometrageAchat)
@@ -256,6 +258,7 @@ class Vehicule
      * Définit le kilométrage du véhicule après le premier plein rentré dans l'application.
      *
      * @param string $kilometrageInitial
+     *
      * @return Vehicule
      */
     public function setKilometrageInitial($kilometrageInitial)
@@ -279,6 +282,7 @@ class Vehicule
      * Définit le prix d'achat du véhicule, en euros.
      *
      * @param string $prixAchat
+     *
      * @return Vehicule
      */
     public function setPrixAchat($prixAchat)
@@ -302,6 +306,7 @@ class Vehicule
      * Définit le carburant utilisé par le véhicule.
      *
      * @param Carburant $carburant
+     *
      * @return Vehicule
      */
     public function setCarburant(Carburant $carburant)
@@ -325,6 +330,7 @@ class Vehicule
      * Définit la capacité du réservoir, en litres.
      *
      * @param string $capaciteReservoir
+     *
      * @return Vehicule
      */
     public function setCapaciteReservoir($capaciteReservoir)
@@ -348,6 +354,7 @@ class Vehicule
      * Associe un plein de carburant au véhicule.
      *
      * @param Plein $plein
+     *
      * @return Vehicule
      */
     public function addPlein(Plein $plein)
@@ -361,6 +368,7 @@ class Vehicule
      * Dissocie un plein de carburant du véhicule.
      *
      * @param Plein $plein
+     *
      * @return Vehicule
      */
     public function removePlein(Plein $plein)
@@ -427,7 +435,7 @@ class Vehicule
         $dateDebut = $this->getDateAchat();
         $dateFin = $this->isVendu() ? $this->getDateVente() : new \DateTime();
         $interval = $dateDebut->diff($dateFin);
-        $days = (int) $interval->format("%r%a");
+        $days = (int) $interval->format('%r%a');
 
         $kilometrage = $kilometrageParcouru * 365 / $days;
 
@@ -481,7 +489,8 @@ class Vehicule
     /**
      * Définit le rang d'affichage du véhicule.
      *
-     * @param integer $rang
+     * @param int $rang
+     *
      * @return Vehicule
      */
     public function setRang($rang)
@@ -494,7 +503,7 @@ class Vehicule
     /**
      * Récupère le rang d'affichage du véhicule.
      *
-     * @return integer
+     * @return int
      */
     public function getRang()
     {

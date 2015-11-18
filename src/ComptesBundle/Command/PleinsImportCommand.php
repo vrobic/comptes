@@ -6,10 +6,13 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class PleinsImportCommand extends ImportCommand
+/**
+ * Script d'import de pleins de carburant depuis un fichier.
+ */
+class PleinsImportCommand extends AbstractImportCommand
 {
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function configure()
     {
@@ -20,7 +23,7 @@ class PleinsImportCommand extends ImportCommand
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -80,7 +83,7 @@ class PleinsImportCommand extends ImportCommand
                 $confirm = $dialog->askConfirmation($output, "<question>Un plein similaire existe déjà :\n\t$plein\nImporter (y/N) ?</question>", false);
 
                 if ($confirm) {
-                
+
                     // Indicateurs
                     $i++;
 

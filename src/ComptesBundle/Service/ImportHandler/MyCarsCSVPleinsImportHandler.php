@@ -7,7 +7,7 @@ use ComptesBundle\Entity\Plein;
 /**
  * Implémente un handler CSV d'import de pleins pour l'application MyCars.
  */
-final class MyCarsCSVPleinsImportHandler extends PleinsImportHandler
+final class MyCarsCSVPleinsImportHandler extends AbstractPleinsImportHandler
 {
     /**
      * Parse les pleins et remplit le tableau $pleins.
@@ -42,8 +42,8 @@ final class MyCarsCSVPleinsImportHandler extends PleinsImportHandler
         while (($cols = $file->fgetcsv()) !== null) {
 
             // Recherche de la ligne d'en-têtes
-            if ($cols[0] == "#entity: refuel") {
-                $headersLine = $currentLine+1;
+            if ($cols[0] == '#entity: refuel') {
+                $headersLine = $currentLine + 1;
             }
 
             // Si la ligne d'en-têtes a été trouvée et qu'on l'a dépassée
@@ -61,7 +61,7 @@ final class MyCarsCSVPleinsImportHandler extends PleinsImportHandler
         }
 
         foreach ($refuels as $refuel) {
-        
+
             $plein = new Plein();
 
             // Véhicule

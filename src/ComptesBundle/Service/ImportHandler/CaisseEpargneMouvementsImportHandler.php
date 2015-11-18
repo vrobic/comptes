@@ -7,7 +7,7 @@ use ComptesBundle\Entity\Mouvement;
 /**
  * Implémente un handler CSV d'import de mouvements de la banque Caisse d'Épargne.
  */
-final class CaisseEpargneMouvementsImportHandler extends MouvementsImportHandler
+final class CaisseEpargneMouvementsImportHandler extends AbstractMouvementsImportHandler
 {
     /**
      * Parse les mouvements et remplit les tableaux de classification du handler.
@@ -37,7 +37,7 @@ final class CaisseEpargneMouvementsImportHandler extends MouvementsImportHandler
             'debit',
             'credit',
             'detail',
-            ''
+            '',
         );
 
         // Numéros de ligne
@@ -64,7 +64,7 @@ final class CaisseEpargneMouvementsImportHandler extends MouvementsImportHandler
         }
 
         foreach ($rows as $row) {
-        
+
             $mouvement = new Mouvement();
 
             // Date
@@ -75,7 +75,7 @@ final class CaisseEpargneMouvementsImportHandler extends MouvementsImportHandler
             $mouvement->setCompte($compte);
 
             // Montant
-            $montant = $row['debit'] !== "" ? $row['debit'] : $row['credit'];
+            $montant = $row['debit'] !== '' ? $row['debit'] : $row['credit'];
             $montant = str_replace(',', '.', $montant);
             $montant = sprintf('%0.2f', $montant);
             $mouvement->setMontant($montant);

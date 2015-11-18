@@ -8,6 +8,9 @@ use Symfony\Component\HttpFoundation\Response;
 use ComptesBundle\Entity\Categorie;
 use ComptesBundle\Entity\Keyword;
 
+/**
+ * Contrôleur des catégories de mouvements bancaires.
+ */
 class CategorieController extends Controller
 {
     /**
@@ -17,6 +20,7 @@ class CategorieController extends Controller
      * @todo Refactorer le nom des variables passées au template.
      *
      * @param Request $request
+     *
      * @return Response
      */
     public function indexAction(Request $request)
@@ -44,7 +48,7 @@ class CategorieController extends Controller
 
         } else { // Par défaut, depuis un an et jusqu'à la fin du mois
 
-            list ($year, $month, $lastDayOfMonth) = explode('-', date('Y-n-t'));
+            list($year, $month, $lastDayOfMonth) = explode('-', date('Y-n-t'));
 
             $month = (int) $month;
             $year = (int) $year;
@@ -61,7 +65,7 @@ class CategorieController extends Controller
 
         $dateFilter = array(
             'start' => $dateStart,
-            'end' => $dateEnd
+            'end' => $dateEnd,
         );
 
         // Années de début et de fin pour les classements par années
@@ -100,7 +104,7 @@ class CategorieController extends Controller
 
             $montants[$categorieID] = array(
                 'period' => $montantTotalPeriodeCategorie,
-                'yearly' => $montantsAnnuelsCategorie
+                'yearly' => $montantsAnnuelsCategorie,
             );
         }
 
@@ -115,7 +119,7 @@ class CategorieController extends Controller
                 'montants' => $montants,
                 'montant_total_non_categorise' => $montantTotalPeriodeNonCategorise, // Sur la période
                 'yearly_montants' => $yearlyMontants, // Depuis toujours
-                'montant_total' => $montantTotal // Depuis toujours
+                'montant_total' => $montantTotal, // Depuis toujours
             )
         );
     }
@@ -124,6 +128,7 @@ class CategorieController extends Controller
      * Affichage d'une catégorie.
      *
      * @param Request $request
+     *
      * @return Response
      */
     public function showAction(Request $request)
@@ -153,7 +158,7 @@ class CategorieController extends Controller
 
         } else { // Par défaut, depuis un an et jusqu'à la fin du mois
 
-            list ($year, $month, $lastDayOfMonth) = explode('-', date('Y-n-t'));
+            list($year, $month, $lastDayOfMonth) = explode('-', date('Y-n-t'));
 
             $month = (int) $month;
             $year = (int) $year;
@@ -170,7 +175,7 @@ class CategorieController extends Controller
 
         $dateFilter = array(
             'start' => $dateStart,
-            'end' => $dateEnd
+            'end' => $dateEnd,
         );
 
         // Tous les mouvements de la catégorie sur la période donnée
@@ -205,7 +210,7 @@ class CategorieController extends Controller
                 'date_filter' => $dateFilter,
                 'mouvements' => $mouvements,
                 'total' => $total,
-                'monthly_montants' => $monthlyMontants
+                'monthly_montants' => $monthlyMontants,
             )
         );
     }
@@ -216,6 +221,7 @@ class CategorieController extends Controller
      * @todo Utiliser un formulaire Symfony.
      *
      * @param Request $request
+     *
      * @return Response
      */
     public function editAction(Request $request)
@@ -260,7 +266,7 @@ class CategorieController extends Controller
                                 throw new \ComptesBundle\Exception\MerIlEtFouException("Référence circulaire. Tu veux tomber dans l'hyper espace ?");
                             }
 
-                            $categorieParente = $categorieParenteID !== "" ? $categorieRepository->find($categorieParenteID) : null;
+                            $categorieParente = $categorieParenteID !== '' ? $categorieRepository->find($categorieParenteID) : null;
                             $categorie->setCategorieParente($categorieParente);
                         }
 
@@ -309,7 +315,7 @@ class CategorieController extends Controller
 
                         // Rang
                         if (isset($categorieArray['rang'])) {
-                            $rang = $categorieArray['rang'] !== "" ? (int) $categorieArray['rang'] : null;
+                            $rang = $categorieArray['rang'] !== '' ? (int) $categorieArray['rang'] : null;
                             $categorie->setRang($rang);
                         }
 
@@ -349,7 +355,7 @@ class CategorieController extends Controller
             'ComptesBundle:Categorie:edit.html.twig',
             array(
                 'categories' => $categories,
-                'keywords' => $keywords
+                'keywords' => $keywords,
             )
         );
     }

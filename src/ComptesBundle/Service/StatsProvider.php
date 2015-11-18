@@ -3,7 +3,6 @@
 namespace ComptesBundle\Service;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
-use ComptesBundle\Service\ConfigurationLoader;
 use ComptesBundle\Entity\Categorie;
 
 /**
@@ -17,7 +16,7 @@ class StatsProvider
     protected $doctrine;
 
     /**
-     * Configuration des statistiques,
+     * Configuration des statistiques.
      *
      * @var array
      */
@@ -26,7 +25,7 @@ class StatsProvider
     /**
      * Constructeur.
      *
-     * @param Registry $doctrine
+     * @param Registry            $doctrine
      * @param ConfigurationLoader $configurationLoader
      */
     public function __construct(Registry $doctrine, ConfigurationLoader $configurationLoader)
@@ -44,7 +43,8 @@ class StatsProvider
      * compris entre deux dates, incluses.
      *
      * @param \DateTime $dateStart Date de début, incluse.
-     * @param \DateTime $dateEnd Date de fin, incluse.
+     * @param \DateTime $dateEnd   Date de fin, incluse.
+     *
      * @return float
      */
     public function getMonthlyBalance(\DateTime $dateStart, \DateTime $dateEnd)
@@ -55,7 +55,7 @@ class StatsProvider
 
         // Nombre de mois entre les deux dates
         $diff = $dateStart->diff($dateEnd);
-        $monthsCount = $diff->y*12 + $diff->m + $diff->d / 30;
+        $monthsCount = $diff->y * 12 + $diff->m + $diff->d / 30;
 
         if ($monthsCount < 1) {
             $monthsCount = 1;
@@ -76,7 +76,8 @@ class StatsProvider
      * pour toutes les années incluses dans un intervalle.
      *
      * @param int $yearStart Année de début, incluse.
-     * @param int $yearEnd Année de fin, incluse.
+     * @param int $yearEnd   Année de fin, incluse.
+     *
      * @return array Les montants des mouvements, classés par années.
      */
     public function getYearlyMontants($yearStart, $yearEnd)
@@ -84,8 +85,8 @@ class StatsProvider
         // Repositories
         $mouvementRepository = $this->doctrine->getRepository('ComptesBundle:Mouvement');
 
-        $dateStart = \DateTime::createFromFormat("Y-m-d H:i:s", "$yearStart-01-01 00:00:00");
-        $dateEnd = \DateTime::createFromFormat("Y-m-d H:i:s", "$yearEnd-12-31 23:59:59");
+        $dateStart = \DateTime::createFromFormat('Y-m-d H:i:s', "$yearStart-01-01 00:00:00");
+        $dateEnd = \DateTime::createFromFormat('Y-m-d H:i:s', "$yearEnd-12-31 23:59:59");
 
         $mouvements = $mouvementRepository->findByDate($dateStart, $dateEnd);
 
@@ -112,14 +113,15 @@ class StatsProvider
      * pour toutes les années incluses dans un intervalle.
      *
      * @param Categorie $categorie
-     * @param int $yearStart Année de début, incluse.
-     * @param int $yearEnd Année de fin, incluse.
+     * @param int       $yearStart Année de début, incluse.
+     * @param int       $yearEnd   Année de fin, incluse.
+     *
      * @return array Les montants des mouvements de la catégorie, classés par années.
      */
     public function getYearlyMontantsByCategorie(Categorie $categorie, $yearStart, $yearEnd)
     {
-        $dateStart = \DateTime::createFromFormat("Y-m-d H:i:s", "$yearStart-01-01 00:00:00");
-        $dateEnd = \DateTime::createFromFormat("Y-m-d H:i:s", "$yearEnd-12-31 23:59:59");
+        $dateStart = \DateTime::createFromFormat('Y-m-d H:i:s', "$yearStart-01-01 00:00:00");
+        $dateEnd = \DateTime::createFromFormat('Y-m-d H:i:s', "$yearEnd-12-31 23:59:59");
 
         $yearlyMontants = array();
         $monthlyMontants = $this->getMonthlyMontantsByCategorie($categorie, $dateStart, $dateEnd);
@@ -142,7 +144,8 @@ class StatsProvider
      *
      * @param Categorie $categorie
      * @param \DateTime $dateStart Date de début, incluse.
-     * @param \DateTime $dateEnd Date de fin, incluse.
+     * @param \DateTime $dateEnd   Date de fin, incluse.
+     *
      * @return array Les montants des mouvements de la catégorie, classés par mois.
      */
     public function getMonthlyMontantsByCategorie(Categorie $categorie, \DateTime $dateStart, \DateTime $dateEnd)
@@ -199,7 +202,8 @@ class StatsProvider
      * pleins non terminés ou qui étaient déjà entamés au début de la période.
      *
      * @param \DateTime $dateStart Date de début, incluse.
-     * @param \DateTime $dateEnd Date de fin, incluse.
+     * @param \DateTime $dateEnd   Date de fin, incluse.
+     *
      * @return float
      */
     public function getDistanceByDate(\DateTime $dateStart, \DateTime $dateEnd)

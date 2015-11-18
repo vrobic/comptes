@@ -54,7 +54,7 @@ use ComptesBundle\Entity\Mouvement;
 class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
 {
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function configure()
     {
@@ -64,7 +64,7 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {

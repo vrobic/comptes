@@ -21,7 +21,7 @@ use ComptesBundle\Entity\Keyword;
 class KeywordsImportCommand extends ContainerAwareCommand
 {
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function configure()
     {
@@ -31,7 +31,7 @@ class KeywordsImportCommand extends ContainerAwareCommand
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -53,7 +53,7 @@ class KeywordsImportCommand extends ContainerAwareCommand
 
             $line = $file->fgets();
 
-            list ($word, $categorieID) = explode(':', $line);
+            list($word, $categorieID) = explode(':', $line);
 
             $word = trim($word);
             $categorieID = (int) $categorieID;

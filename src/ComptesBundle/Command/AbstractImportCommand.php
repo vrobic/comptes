@@ -4,7 +4,10 @@ namespace ComptesBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 
-abstract class ImportCommand extends ContainerAwareCommand
+/**
+ * Classe d'abstraction des scripts d'import de mouvements et de pleins.
+ */
+abstract class AbstractImportCommand extends ContainerAwareCommand
 {
     /**
      * Type d'import : 'mouvements' ou 'pleins'.
@@ -31,6 +34,7 @@ abstract class ImportCommand extends ContainerAwareCommand
      * Définit le type d'import.
      *
      * @param string Deux valeurs possibles : 'mouvements' ou 'pleins'.
+     *
      * @throws \Exception Dans le cas où le type est invalide.
      */
     protected function setType($type)
@@ -56,7 +60,9 @@ abstract class ImportCommand extends ContainerAwareCommand
      * Renvoie une instance du handler d'import.
      *
      * @param string $handlerIdentifier
-     * @return Une implémentation de l'interface ImportHandler.
+     *
+     * @return Une implémentation de l'interface ImportHandlerInterface.
+     *
      * @throws \Exception Si le handler demandé est invalide.
      */
     protected function getHandler($handlerIdentifier)
@@ -77,8 +83,10 @@ abstract class ImportCommand extends ContainerAwareCommand
      * Renvoie le fichier dont le chemin est passé en paramètre.
      *
      * @param string $filename Chemin du fichier.
+     *
      * @return SplFileObject
-     * @throws \Symfony\Component\HttpKernel\Exception\BadRequestHttpException En cas d'erreur d'accès au fichier.
+     *
+     * @throws \Symfony\Component\HttpKernel\Exception\BadRequestHttpException           En cas d'erreur d'accès au fichier.
      * @throws \Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException Si le type de fichier n'est pas celui attendu.
      */
     protected function getFile($filename)

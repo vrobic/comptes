@@ -8,10 +8,13 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Script d'installation de la base de données.
+ */
 class InstallCommand extends ContainerAwareCommand
 {
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function configure()
     {
@@ -22,7 +25,7 @@ class InstallCommand extends ContainerAwareCommand
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -51,7 +54,7 @@ class InstallCommand extends ContainerAwareCommand
             $command = $this->getApplication()->find('doctrine:database:create');
             $in = new ArrayInput(
                 array(
-                    'command' => 'doctrine:database:create'
+                    'command' => 'doctrine:database:create',
                 )
             );
             $returnCode = $command->run($in, $output);
@@ -64,7 +67,7 @@ class InstallCommand extends ContainerAwareCommand
             $command = $this->getApplication()->find('doctrine:schema:create');
             $in = new ArrayInput(
                 array(
-                    'command' => 'doctrine:schema:create'
+                    'command' => 'doctrine:schema:create',
                 )
             );
             $returnCode = $command->run($in, $output);
@@ -80,7 +83,7 @@ class InstallCommand extends ContainerAwareCommand
             $in = new ArrayInput(
                 array(
                     'command' => 'doctrine:fixtures:load',
-                    '--no-interaction' => true
+                    '--no-interaction' => true,
                 )
             );
             $returnCode = $command->run($in, $output);

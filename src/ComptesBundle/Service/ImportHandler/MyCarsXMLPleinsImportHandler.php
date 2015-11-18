@@ -7,7 +7,7 @@ use ComptesBundle\Entity\Plein;
 /**
  * Implémente un handler XML d'import de pleins pour l'application MyCars.
  */
-final class MyCarsXMLPleinsImportHandler extends PleinsImportHandler
+final class MyCarsXMLPleinsImportHandler extends AbstractPleinsImportHandler
 {
     /**
      * Parse les pleins et remplit le tableau $pleins.
@@ -33,7 +33,7 @@ final class MyCarsXMLPleinsImportHandler extends PleinsImportHandler
         $xml = simplexml_load_file($filename);
 
         foreach ($xml->refuel as $refuel) {
-        
+
             $plein = new Plein();
 
             // Véhicule

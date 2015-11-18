@@ -3,8 +3,6 @@
 namespace ComptesBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use ComptesBundle\Entity\Categorie;
-use ComptesBundle\Entity\Compte;
 
 /**
  * Mouvement bancaire.
@@ -17,7 +15,7 @@ class Mouvement
     /**
      * Identifiant du mouvement.
      *
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
@@ -92,7 +90,7 @@ class Mouvement
     public function __toString()
     {
         $compte = $this->getCompte();
-        $date = $this->getDate()->format("d/m/Y");
+        $date = $this->getDate()->format('d/m/Y');
         $description = $this->getDescription();
         $montant = $this->getMontant();
 
@@ -116,7 +114,7 @@ class Mouvement
     /**
      * Récupère l'identifiant du mouvement.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -127,6 +125,7 @@ class Mouvement
      * Définit la date du mouvement.
      *
      * @param \DateTime $date
+     *
      * @return Mouvement
      */
     public function setDate($date)
@@ -150,6 +149,7 @@ class Mouvement
      * Définit la catégorie du mouvement.
      *
      * @param Categorie $categorie
+     *
      * @return Mouvement
      */
     public function setCategorie(Categorie $categorie = null)
@@ -173,6 +173,7 @@ class Mouvement
      * Définit le compte bancaire.
      *
      * @param Compte $compte
+     *
      * @return Mouvement
      */
     public function setCompte(Compte $compte)
@@ -196,6 +197,7 @@ class Mouvement
      * Définit le montant du mouvement en euros, positif (crédit) ou négatif (débit).
      *
      * @param string $montant
+     *
      * @return Mouvement
      */
     public function setMontant($montant)
@@ -219,6 +221,7 @@ class Mouvement
      * Définit la description du mouvement.
      *
      * @param string $description
+     *
      * @return Mouvement
      */
     public function setDescription($description)

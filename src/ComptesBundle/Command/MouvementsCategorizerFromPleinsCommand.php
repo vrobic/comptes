@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class MouvementsCategorizerFromPleinsCommand extends ContainerAwareCommand
 {
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function configure()
     {
@@ -22,7 +22,7 @@ class MouvementsCategorizerFromPleinsCommand extends ContainerAwareCommand
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -47,7 +47,7 @@ class MouvementsCategorizerFromPleinsCommand extends ContainerAwareCommand
             $output->writeln("<comment>Plein : $plein</comment>");
 
             // Recherche du mouvement correspondant au plein
-            $montant = - $plein->getMontant();
+            $montant = -$plein->getMontant();
             $interval = new \DateInterval('P7D'); // 7 jours
             $dateString = $plein->getDate()->format('Ymd');
             $dateStart = new \DateTime($dateString);

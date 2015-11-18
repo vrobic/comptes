@@ -30,9 +30,10 @@ class MouvementCategorizer
      * Trouve les catégories probables d'un mouvement.
      *
      * @param Mouvement $mouvement
+     *
      * @return Categorie[] Liste de catégories.
      */
-    function getCategories($mouvement)
+    public function getCategories($mouvement)
     {
         $keywordRepository = $this->em->getRepository('ComptesBundle:Keyword');
 
@@ -51,7 +52,7 @@ class MouvementCategorizer
 
             // Si le mot-clé est présent dans la description
             if (preg_match("/\b$word\b/i", $description)) {
-            
+
                 $categorie = $keyword->getCategorie();
                 $categorieID = $categorie->getId();
 

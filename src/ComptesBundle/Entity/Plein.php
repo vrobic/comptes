@@ -3,7 +3,6 @@
 namespace ComptesBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use ComptesBundle\Entity\Vehicule;
 
 /**
  * Plein de carburant.
@@ -16,7 +15,7 @@ class Plein
     /**
      * Identifiant du plein.
      *
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
@@ -99,7 +98,7 @@ class Plein
      */
     public function __toString()
     {
-        $date = $this->getDate()->format("d/m/Y");
+        $date = $this->getDate()->format('d/m/Y');
         $vehicule = $this->getVehicule();
         $quantite = $this->getQuantite();
         $montant = $this->getMontant();
@@ -124,7 +123,7 @@ class Plein
     /**
      * Récupère l'identifiant du mouvement.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -135,6 +134,7 @@ class Plein
      * Définit la date du plein.
      *
      * @param \DateTime $date
+     *
      * @return Mouvement
      */
     public function setDate($date)
@@ -158,6 +158,7 @@ class Plein
      * Définit le véhicule.
      *
      * @param Vehicule $vehicule
+     *
      * @return Plein
      */
     public function setVehicule(Vehicule $vehicule)
@@ -181,6 +182,7 @@ class Plein
      * Définit la distance parcourue depuis le plein précédent.
      *
      * @param string $distanceParcourue
+     *
      * @return Plein
      */
     public function setDistanceParcourue($distanceParcourue)
@@ -204,6 +206,7 @@ class Plein
      * Définit le volume du plein, en litres de carburant.
      *
      * @param string $quantite
+     *
      * @return Plein
      */
     public function setQuantite($quantite)
@@ -227,6 +230,7 @@ class Plein
      * Définit le prix du litre du carburant, en euros.
      *
      * @param string $prixLitre
+     *
      * @return Plein
      */
     public function setPrixLitre($prixLitre)
@@ -250,6 +254,7 @@ class Plein
      * Définit le montant du plein, en euros.
      *
      * @param string $montant
+     *
      * @return Plein
      */
     public function setMontant($montant)

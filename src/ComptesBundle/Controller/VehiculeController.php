@@ -5,6 +5,9 @@ namespace ComptesBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Contrôleur des véhicules.
+ */
 class VehiculeController extends Controller
 {
     /**
@@ -22,7 +25,7 @@ class VehiculeController extends Controller
         return $this->render(
             'ComptesBundle:Vehicule:index.html.twig',
             array(
-                'vehicules' => $vehicules
+                'vehicules' => $vehicules,
             )
         );
     }

@@ -9,6 +9,9 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use ComptesBundle\Entity\Carburant;
 
+/**
+ * La fixture qui crée les carburants.
+ */
 class LoadCarburantData extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
 {
     /**
@@ -17,15 +20,15 @@ class LoadCarburantData extends AbstractFixture implements OrderedFixtureInterfa
     private $container;
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function setContainer(ContainerInterface $container=null)
+    public function setContainer(ContainerInterface $container = null)
     {
         $this->container = $container;
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function load(ObjectManager $manager)
     {
@@ -53,7 +56,7 @@ class LoadCarburantData extends AbstractFixture implements OrderedFixtureInterfa
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getOrder()
     {

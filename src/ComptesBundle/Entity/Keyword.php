@@ -3,7 +3,6 @@
 namespace ComptesBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use ComptesBundle\Entity\Categorie;
 
 /**
  * Mot-clé de catégorie.
@@ -16,7 +15,7 @@ class Keyword
     /**
      * Identifiant du mot-clé.
      *
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
@@ -57,7 +56,7 @@ class Keyword
     /**
      * Récupère l'identifiant du mot-clé.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -68,6 +67,7 @@ class Keyword
      * Définit le mot.
      *
      * @param string $word
+     *
      * @return Keyword
      */
     public function setWord($word)
@@ -91,6 +91,7 @@ class Keyword
      * Définit la catégorie du mot-clé.
      *
      * @param Categorie $categorie
+     *
      * @return Keyword
      */
     public function setCategorie($categorie)

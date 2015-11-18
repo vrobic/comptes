@@ -7,12 +7,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
+ * Contrôleur du centre d'import.
+ *
  * @todo Faire une fonction pour chaque action :
  *       - mouvementsParseAction
  *       - mouvementsImportParseAction
  *       - pleinsImportParseAction
  *       - pleinssImportParseAction
- *
  * @todo Utiliser un service pour mutualiser le reste.
  */
 class ImportController extends Controller
@@ -47,7 +48,9 @@ class ImportController extends Controller
      * @todo Comme pour MouvementController->edit(), utiliser un formulaire Symfony.
      *
      * @param Request $request
+     *
      * @return Response
+     *
      * @throws \Exception En cas d'erreur d'import du fichier.
      */
     public function mouvementsAction(Request $request)
@@ -171,14 +174,14 @@ class ImportController extends Controller
                     // Modification éventuelle de la catégorie
                     if (isset($mouvementsData[$hash]['categorie'])) {
                         $categorieID = $mouvementsData[$hash]['categorie'];
-                        $categorie = $categorieID !== "" ? $categorieRepository->find($categorieID) : null;
+                        $categorie = $categorieID !== '' ? $categorieRepository->find($categorieID) : null;
                         $mouvement->setCategorie($categorie);
                     }
 
                     // Modification éventuelle du compte
                     if (isset($mouvementsData[$hash]['compte'])) {
                         $compteID = $mouvementsData[$hash]['compte'];
-                        $compte = $compteID !== "" ? $compteRepository->find($compteID) : null;
+                        $compte = $compteID !== '' ? $compteRepository->find($compteID) : null;
                         $mouvement->setCompte($compte);
                     }
 
@@ -221,7 +224,7 @@ class ImportController extends Controller
                 'categorized_mouvements' => $categorizedMouvements,
                 'uncategorized_mouvements' => $uncategorizedMouvements,
                 'ambiguous_mouvements' => $ambiguousMouvements,
-                'waiting_mouvements' => $waitingMouvements
+                'waiting_mouvements' => $waitingMouvements,
             )
         );
     }
@@ -235,7 +238,9 @@ class ImportController extends Controller
      * @todo Comme pour PleinController->edit(), utiliser un formulaire Symfony.
      *
      * @param Request $request
+     *
      * @return Response
+     *
      * @throws \Exception En cas d'erreur d'import du fichier.
      */
     public function pleinsAction(Request $request)
@@ -348,7 +353,7 @@ class ImportController extends Controller
                     // Modification éventuelle du véhicule
                     if (isset($pleinsData[$hash]['vehicule'])) {
                         $vehiculeID = $pleinsData[$hash]['vehicule'];
-                        $vehicule = $vehiculeID !== "" ? $vehiculeRepository->find($vehiculeID) : null;
+                        $vehicule = $vehiculeID !== '' ? $vehiculeRepository->find($vehiculeID) : null;
                         $plein->setVehicule($vehicule);
                     }
 
@@ -399,7 +404,7 @@ class ImportController extends Controller
                 'handlers' => $this->handlers,
                 'vehicules' => $vehicules,
                 'valid_pleins' => $validPleins,
-                'waiting_pleins' => $waitingPleins
+                'waiting_pleins' => $waitingPleins,
             )
         );
     }
@@ -408,6 +413,7 @@ class ImportController extends Controller
      * Définit le type d'import.
      *
      * @param string Deux valeurs possibles : 'mouvements' ou 'pleins'.
+     *
      * @throws \Exception Dans le cas où le type est invalide.
      */
     private function setType($type)
@@ -433,7 +439,9 @@ class ImportController extends Controller
      * Renvoie une instance du handler d'import.
      *
      * @param Request $request
-     * @return Une implémentation de l'interface ImportHandler.
+     *
+     * @return Une implémentation de l'interface ImportHandlerInterface.
+     *
      * @throws \Exception Si le handler demandé est invalide.
      */
     private function getHandler(Request $request)
@@ -456,8 +464,10 @@ class ImportController extends Controller
      * Renvoie le fichier uploadé.
      *
      * @param Request $request
+     *
      * @return SplFileObject
-     * @throws \Symfony\Component\HttpKernel\Exception\BadRequestHttpException En cas d'erreur d'accès au fichier.
+     *
+     * @throws \Symfony\Component\HttpKernel\Exception\BadRequestHttpException           En cas d'erreur d'accès au fichier.
      * @throws \Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException Si le type de fichier n'est pas celui attendu.
      */
     private function getFile(Request $request)

@@ -7,6 +7,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use ComptesBundle\Entity\Mouvement;
 
+/**
+ * Contrôleur des comptes bancaires.
+ */
 class CompteController extends Controller
 {
     /**
@@ -43,7 +46,7 @@ class CompteController extends Controller
 
                 $versementsInitiaux[$compteID] = array(
                     'date' => $dateOuverture,
-                    'montant' => $soldeInitial
+                    'montant' => $soldeInitial,
                 );
             }
         }
@@ -71,9 +74,11 @@ class CompteController extends Controller
         }
 
         // Les faux mouvements peuvent avoir été intercalés au mauvais endroit
-        usort($mouvements, function($mouvementA, $mouvementB) {
+        usort($mouvements, function ($mouvementA, $mouvementB) {
+
             $dateA = $mouvementA->getDate();
             $dateB = $mouvementB->getDate();
+
             return $dateA > $dateB;
         });
 
@@ -93,7 +98,7 @@ class CompteController extends Controller
                 'comptes' => $comptes,
                 'mouvements' => $mouvements,
                 'first_mouvement' => $firstMouvement,
-                'last_mouvement' => $lastMouvement
+                'last_mouvement' => $lastMouvement,
             )
         );
     }
@@ -102,7 +107,9 @@ class CompteController extends Controller
      * Affichage d'un compte bancaire.
      *
      * @param Request $request
+     *
      * @return Response
+     *
      * @throws \Symfony\Component\HttpKernel\Exception\BadRequestHttpException Si la période de dates est invalide.
      */
     public function showAction(Request $request)
@@ -133,7 +140,7 @@ class CompteController extends Controller
 
         } else { // Par défaut, le mois courant en entier
 
-            list ($year, $month, $lastDayOfMonth) = explode('-', date('Y-n-t'));
+            list($year, $month, $lastDayOfMonth) = explode('-', date('Y-n-t'));
 
             $month = (int) $month;
             $year = (int) $year;
@@ -149,7 +156,7 @@ class CompteController extends Controller
 
         $dateFilter = array(
             'start' => $dateStart,
-            'end' => $dateEnd
+            'end' => $dateEnd,
         );
 
         // Tous les mouvements de la période
@@ -178,7 +185,7 @@ class CompteController extends Controller
                 'mouvements' => $mouvements,
                 'categories' => $categories,
                 'solde_start' => $soldeStart,
-                'balance' => $balance
+                'balance' => $balance,
             )
         );
     }

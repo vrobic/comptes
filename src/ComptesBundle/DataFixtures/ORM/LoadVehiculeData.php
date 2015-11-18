@@ -9,6 +9,9 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use ComptesBundle\Entity\Vehicule;
 
+/**
+ * La fixture qui crée les véhicules.
+ */
 class LoadVehiculeData extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
 {
     /**
@@ -17,15 +20,15 @@ class LoadVehiculeData extends AbstractFixture implements OrderedFixtureInterfac
     private $container;
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function setContainer(ContainerInterface $container=null)
+    public function setContainer(ContainerInterface $container = null)
     {
         $this->container = $container;
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function load(ObjectManager $manager)
     {
@@ -77,7 +80,7 @@ class LoadVehiculeData extends AbstractFixture implements OrderedFixtureInterfac
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getOrder()
     {

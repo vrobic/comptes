@@ -5,6 +5,9 @@ namespace ComptesBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Contrôleur du tableau de bord.
+ */
 class DashboardController extends Controller
 {
     /**
@@ -38,7 +41,7 @@ class DashboardController extends Controller
             'ComptesBundle:Dashboard:index.html.twig',
             array(
                 'monthly_balance' => $monthlyBalance,
-                'distance_for_once_month' => $distanceForOneMonth
+                'distance_for_once_month' => $distanceForOneMonth,
             )
         );
     }

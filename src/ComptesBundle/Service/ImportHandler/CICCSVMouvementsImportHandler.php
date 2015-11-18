@@ -7,7 +7,7 @@ use ComptesBundle\Entity\Mouvement;
 /**
  * Implémente un handler CSV d'import de mouvements de la banque CIC.
  */
-final class CICCSVMouvementsImportHandler extends MouvementsImportHandler
+final class CICCSVMouvementsImportHandler extends AbstractMouvementsImportHandler
 {
     /**
      * Parse les mouvements et remplit les tableaux de classification du handler.
@@ -36,7 +36,7 @@ final class CICCSVMouvementsImportHandler extends MouvementsImportHandler
             'debit',
             'credit',
             'libelle',
-            'solde'
+            'solde',
         );
 
         // Numéros de ligne
@@ -63,7 +63,7 @@ final class CICCSVMouvementsImportHandler extends MouvementsImportHandler
         }
 
         foreach ($rows as $row) {
-        
+
             $mouvement = new Mouvement();
 
             // Date
@@ -74,7 +74,7 @@ final class CICCSVMouvementsImportHandler extends MouvementsImportHandler
             $mouvement->setCompte($compte);
 
             // Montant
-            $montant = $row['debit'] !== "" ? $row['debit'] : $row['credit'];
+            $montant = $row['debit'] !== '' ? $row['debit'] : $row['credit'];
             $montant = str_replace(',', '.', $montant);
             $montant = sprintf('%0.2f', $montant);
             $mouvement->setMontant($montant);

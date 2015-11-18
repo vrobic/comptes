@@ -9,6 +9,9 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use ComptesBundle\Entity\Categorie;
 
+/**
+ * La fixture qui crée les catégories de mouvements bancaires.
+ */
 class LoadCategorieData extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
 {
     /**
@@ -22,15 +25,15 @@ class LoadCategorieData extends AbstractFixture implements OrderedFixtureInterfa
     private $manager;
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function setContainer(ContainerInterface $container=null)
+    public function setContainer(ContainerInterface $container = null)
     {
         $this->container = $container;
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function load(ObjectManager $manager)
     {
@@ -50,7 +53,7 @@ class LoadCategorieData extends AbstractFixture implements OrderedFixtureInterfa
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getOrder()
     {
@@ -60,10 +63,10 @@ class LoadCategorieData extends AbstractFixture implements OrderedFixtureInterfa
     /**
      * Fonction récursive de création des catégories.
      *
-     * @param array $categoriesContent Le contenu de la catégorie
-     * @param Categorie $categorieParente La catégorie parente
+     * @param array     $categoriesContent Le contenu de la catégorie
+     * @param Categorie $categorieParente  La catégorie parente
      */
-    private function loadCategories($categoriesContent, $categorieParente=null)
+    private function loadCategories($categoriesContent, $categorieParente = null)
     {
         foreach ($categoriesContent as $categorieContent) {
 

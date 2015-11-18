@@ -6,7 +6,7 @@ use Doctrine\ORM\EntityManager;
 use ComptesBundle\Service\ConfigurationLoader;
 use ComptesBundle\Service\MouvementCategorizer;
 use ComptesBundle\Entity\Mouvement;
-use ComptesBundle\Service\ImportHandler;
+use ComptesBundle\Service\ImportHandlerInterface;
 
 /**
  * Décrit un handler d'import de mouvements.
@@ -20,7 +20,7 @@ use ComptesBundle\Service\ImportHandler;
  *      - les ambigus,
  *      - ceux à valider.
  */
-abstract class MouvementsImportHandler implements ImportHandler
+abstract class AbstractMouvementsImportHandler implements ImportHandlerInterface
 {
     /**
      * @internal Flag de catégorisation d'un mouvement catégorisé,
@@ -111,8 +111,8 @@ abstract class MouvementsImportHandler implements ImportHandler
     /**
      * Constructeur.
      *
-     * @param EntityManager $entityManager
-     * @param ConfigurationLoader $configurationLoader
+     * @param EntityManager        $entityManager
+     * @param ConfigurationLoader  $configurationLoader
      * @param MouvementCategorizer $mouvementCategorizer
      */
     public function __construct(EntityManager $entityManager, ConfigurationLoader $configurationLoader, MouvementCategorizer $mouvementCategorizer)
@@ -137,6 +137,7 @@ abstract class MouvementsImportHandler implements ImportHandler
      * Ajoute un mouvement à la liste de tous les mouvements parsés.
      *
      * @param Mouvement $mouvement
+     *
      * @return self
      */
     public function addMouvement(Mouvement $mouvement)
@@ -161,6 +162,7 @@ abstract class MouvementsImportHandler implements ImportHandler
      * Ajoute un mouvement à la liste des mouvements parsés et catégorisés.
      *
      * @param Mouvement $mouvement
+     *
      * @return self
      */
     public function addCategorizedMouvement(Mouvement $mouvement)
@@ -185,6 +187,7 @@ abstract class MouvementsImportHandler implements ImportHandler
      * Ajoute un mouvement à la liste des mouvements parsés et non catégorisés.
      *
      * @param Mouvement $mouvement
+     *
      * @return self
      */
     public function addUncategorizedMouvement(Mouvement $mouvement)
@@ -210,6 +213,7 @@ abstract class MouvementsImportHandler implements ImportHandler
      * la catégorie n'a pas pu être formellement déterminée.
      *
      * @param Mouvement $mouvement
+     *
      * @return self
      */
     public function addAmbiguousMouvement(Mouvement $mouvement)
@@ -236,6 +240,7 @@ abstract class MouvementsImportHandler implements ImportHandler
      * une vérification manuelle est nécessaire.
      *
      * @param Mouvement $mouvement
+     *
      * @return self
      */
     public function addWaitingMouvement(Mouvement $mouvement)
@@ -265,6 +270,7 @@ abstract class MouvementsImportHandler implements ImportHandler
      *      - self::WAITING
      *
      * @param Mouvement $mouvement
+     *
      * @return int
      */
     protected function getClassification(Mouvement $mouvement)
@@ -289,7 +295,7 @@ abstract class MouvementsImportHandler implements ImportHandler
         $criteria = array(
             'date' => $mouvement->getDate(),
             'compte' => $mouvement->getCompte(),
-            'montant' => $mouvement->getMontant()
+            'montant' => $mouvement->getMontant(),
         );
         $mouvementRepository = $this->em->getRepository('ComptesBundle:Mouvement');
         $similarMouvement = $mouvementRepository->findOneBy($criteria);
@@ -305,7 +311,7 @@ abstract class MouvementsImportHandler implements ImportHandler
      * Insère le mouvement dans les tableaux de classification.
      *
      * @param Mouvement $mouvement
-     * @param int $classification
+     * @param int       $classification
      */
     protected function classify(Mouvement $mouvement, $classification)
     {

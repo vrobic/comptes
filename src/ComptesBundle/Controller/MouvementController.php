@@ -7,6 +7,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use ComptesBundle\Entity\Mouvement;
 
+/**
+ * Contrôleur des mouvements bancaires.
+ */
 class MouvementController extends Controller
 {
     /**
@@ -15,6 +18,7 @@ class MouvementController extends Controller
      * @todo Utiliser un formulaire Symfony.
      *
      * @param Request $request
+     *
      * @return Response
      */
     public function editAction(Request $request)
@@ -52,14 +56,14 @@ class MouvementController extends Controller
                         // Catégorie
                         if (isset($mouvementArray['categorie'])) {
                             $categorieID = $mouvementArray['categorie'];
-                            $categorie = $categorieID !== "" ? $categorieRepository->find($categorieID) : null;
+                            $categorie = $categorieID !== '' ? $categorieRepository->find($categorieID) : null;
                             $mouvement->setCategorie($categorie);
                         }
 
                         // Compte
                         if (isset($mouvementArray['compte'])) {
                             $compteID = $mouvementArray['compte'];
-                            $compte = $compteID !== "" ? $compteRepository->find($compteID) : null;
+                            $compte = $compteID !== '' ? $compteRepository->find($compteID) : null;
                             $mouvement->setCompte($compte);
                         }
 

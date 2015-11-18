@@ -9,6 +9,9 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use ComptesBundle\Entity\Compte;
 
+/**
+ * La fixture qui crée les comptes bancaires.
+ */
 class LoadCompteData extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
 {
     /**
@@ -17,15 +20,15 @@ class LoadCompteData extends AbstractFixture implements OrderedFixtureInterface,
     private $container;
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function setContainer(ContainerInterface $container=null)
+    public function setContainer(ContainerInterface $container = null)
     {
         $this->container = $container;
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function load(ObjectManager $manager)
     {
@@ -62,7 +65,7 @@ class LoadCompteData extends AbstractFixture implements OrderedFixtureInterface,
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getOrder()
     {

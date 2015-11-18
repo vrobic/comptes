@@ -8,6 +8,7 @@ use Symfony\Component\Yaml\Parser;
 
 /**
  * Service permettant de charger et valider les fichiers de configuration.
+ *
  * @todo Il existe des classes de validation de la configuration.
  */
 class ConfigurationLoader
@@ -53,7 +54,9 @@ class ConfigurationLoader
      * Charge la configuration.
      *
      * @param string $configurationFile Le nom du fichier de configuration.
+     *
      * @return array La configuration.
+     *
      * @throws \Exception En cas d'erreur de configuration.
      */
     public function load($configurationFile)
@@ -79,22 +82,10 @@ class ConfigurationLoader
     }
 
     /**
-     * Construit un message d'exception détaillé.
-     *
-     * @param array $parameters Le chemin du paramètre en faute.
-     * @param string $message Le message d'erreur.
-     * @return string Le message d'exception.
-     */
-    private function getExceptionMessage($parameters, $message)
-    {
-        $parametersString = implode(":", $parameters);
-        return "Mauvaise configuration $this->configurationFile (paramètre $parametersString) : $message";
-    }
-
-    /**
      * Valide la configuration.
      *
-     * @return boolean
+     * @return bool
+     *
      * @throws \Exception En cas d'erreur de configuration.
      */
     public function validateConfiguration()
@@ -105,7 +96,7 @@ class ConfigurationLoader
         $validators = array(
             'fixtures.yml' => 'validateFixturesConfiguration',
             'import.yml' => 'validateImportConfiguration',
-            'stats.yml' => 'validateStatsConfiguration'
+            'stats.yml' => 'validateStatsConfiguration',
         );
 
         if (isset($validators[$configurationFile])) {
@@ -121,7 +112,8 @@ class ConfigurationLoader
     /**
      * Valide la configuration du fichier fixtures.yml.
      *
-     * @return boolean
+     * @return bool
+     *
      * @throws \Exception En cas d'erreur de configuration.
      */
     private function validateFixturesConfiguration()
@@ -132,7 +124,8 @@ class ConfigurationLoader
     /**
      * Valide la configuration du fichier import.yml.
      *
-     * @return boolean
+     * @return bool
+     *
      * @throws \Exception En cas d'erreur de configuration.
      */
     private function validateImportConfiguration()
@@ -141,21 +134,21 @@ class ConfigurationLoader
 
         // Vérification des handlers
         if (empty($configuration['handlers'])) {
-            throw new \Exception($this->getExceptionMessage(array("handlers"), "Aucun handler n'est défini."));
+            throw new \Exception($this->getExceptionMessage(array('handlers'), "Aucun handler n'est défini."));
         }
 
         if (!is_array($configuration['handlers'])) {
-            throw new \Exception($this->getExceptionMessage(array("handlers"), "Doit être un tableau."));
+            throw new \Exception($this->getExceptionMessage(array('handlers'), "Doit être un tableau."));
         }
 
         foreach ($configuration['handlers'] as $type => $handlers) {
 
             if (!in_array($type, array('mouvements', 'pleins'))) {
-                throw new \Exception($this->getExceptionMessage(array("handlers", $type), "Les types de handler autorisés sont [mouvements] et [pleins], pas [$type]."));
+                throw new \Exception($this->getExceptionMessage(array('handlers', $type), "Les types de handler autorisés sont [mouvements] et [pleins], pas [$type]."));
             }
 
             if (!is_array($handlers)) {
-                throw new \Exception($this->getExceptionMessage(array("handlers", $type), "Doit être un tableau."));
+                throw new \Exception($this->getExceptionMessage(array('handlers', $type), "Doit être un tableau."));
             }
 
             foreach ($handlers as $identifier => $handler) {
@@ -163,15 +156,15 @@ class ConfigurationLoader
                 $hasService = $this->container->has("comptes_bundle.import.$type.$identifier");
 
                 if (!$hasService) {
-                    throw new \Exception($this->getExceptionMessage(array("handlers", $type, $identifier), "Aucun service correspondant à [comptes_bundle.import.$type.$identifier]."));
+                    throw new \Exception($this->getExceptionMessage(array('handlers', $type, $identifier), "Aucun service correspondant à [comptes_bundle.import.$type.$identifier]."));
                 }
 
                 if (!key_exists('name', $handler)) {
-                    throw new \Exception($this->getExceptionMessage(array("handlers", $type, $identifier, "name"), "Paramètre manquant."));
+                    throw new \Exception($this->getExceptionMessage(array('handlers', $type, $identifier, 'name'), "Paramètre manquant."));
                 }
 
                 if (!key_exists('extension', $handler)) {
-                    throw new \Exception($this->getExceptionMessage(array("handlers", $type, $identifier, "extension"), "Paramètre manquant."));
+                    throw new \Exception($this->getExceptionMessage(array('handlers', $type, $identifier, 'extension'), "Paramètre manquant."));
                 }
             }
         }
@@ -182,11 +175,27 @@ class ConfigurationLoader
     /**
      * Valide la configuration du fichier stats.yml.
      *
-     * @return boolean
+     * @return bool
+     *
      * @throws \Exception En cas d'erreur de configuration.
      */
     private function validateStatsConfiguration()
     {
         return true;
+    }
+
+    /**
+     * Construit un message d'exception détaillé.
+     *
+     * @param array  $parameters Le chemin du paramètre en faute.
+     * @param string $message    Le message d'erreur.
+     *
+     * @return string Le message d'exception.
+     */
+    private function getExceptionMessage($parameters, $message)
+    {
+        $parametersString = implode(':', $parameters);
+
+        return "Mauvaise configuration $this->configurationFile (paramètre $parametersString) : $message";
     }
 }

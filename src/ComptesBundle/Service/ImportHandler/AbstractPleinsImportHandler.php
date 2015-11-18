@@ -5,7 +5,7 @@ namespace ComptesBundle\Service\ImportHandler;
 use Doctrine\ORM\EntityManager;
 use ComptesBundle\Service\ConfigurationLoader;
 use ComptesBundle\Entity\Plein;
-use ComptesBundle\Service\ImportHandler;
+use ComptesBundle\Service\ImportHandlerInterface;
 
 /**
  * Décrit un handler d'import de pleins.
@@ -17,7 +17,7 @@ use ComptesBundle\Service\ImportHandler;
  *      - les valides,
  *      - ceux à valider.
  */
-abstract class PleinsImportHandler implements ImportHandler
+abstract class AbstractPleinsImportHandler implements ImportHandlerInterface
 {
     /**
      * @internal Flag de catégorisation d'un plein valide,
@@ -73,7 +73,7 @@ abstract class PleinsImportHandler implements ImportHandler
     /**
      * Constructeur.
      *
-     * @param EntityManager $entityManager
+     * @param EntityManager       $entityManager
      * @param ConfigurationLoader $configurationLoader
      */
     public function __construct(EntityManager $entityManager, ConfigurationLoader $configurationLoader)
@@ -95,6 +95,7 @@ abstract class PleinsImportHandler implements ImportHandler
      * Ajoute un plein à la liste de tous les pleins parsés.
      *
      * @param Plein $plein
+     *
      * @return self
      */
     public function addPlein(Plein $plein)
@@ -119,6 +120,7 @@ abstract class PleinsImportHandler implements ImportHandler
      * Ajoute un plein à la liste des pleins parsés valides.
      *
      * @param Plein $plein
+     *
      * @return self
      */
     public function addValidPlein(Plein $plein)
@@ -144,6 +146,7 @@ abstract class PleinsImportHandler implements ImportHandler
      * une vérification manuelle est nécessaire.
      *
      * @param Plein $plein
+     *
      * @return self
      */
     public function addWaitingPlein(Plein $plein)
@@ -171,6 +174,7 @@ abstract class PleinsImportHandler implements ImportHandler
      *      - self::WAITING
      *
      * @param Plein $plein
+     *
      * @return int
      */
     protected function getClassification(Plein $plein)
@@ -178,7 +182,7 @@ abstract class PleinsImportHandler implements ImportHandler
         // Recherche d'un éventuel doublon
         $criteria = array(
             'date' => $plein->getDate(),
-            'vehicule' => $plein->getVehicule()
+            'vehicule' => $plein->getVehicule(),
         );
         $pleinRepository = $this->em->getRepository('ComptesBundle:Plein');
         $similarPlein = $pleinRepository->findOneBy($criteria);
@@ -196,13 +200,13 @@ abstract class PleinsImportHandler implements ImportHandler
      * Insère le plein dans les tableaux de classification.
      *
      * @param Plein $plein
-     * @param int $classification
+     * @param int   $classification
      */
     protected function classify(Plein $plein, $classification)
     {
         // Classification du plein
         switch ($classification) {
-        
+
             case self::VALID:
                 $this->addValidPlein($plein);
                 break;

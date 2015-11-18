@@ -4,9 +4,6 @@ namespace ComptesBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
-use ComptesBundle\Entity\Categorie;
-use ComptesBundle\Entity\Mouvement;
-use ComptesBundle\Entity\Keyword;
 
 /**
  * Catégorie de mouvements.
@@ -19,7 +16,7 @@ class Categorie
     /**
      * Identifiant de la catégorie.
      *
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
@@ -78,7 +75,7 @@ class Categorie
     /**
      * Rang d'affichage de la catégorie.
      *
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="rang", type="integer", nullable=true)
      */
@@ -106,7 +103,7 @@ class Categorie
     /**
      * Récupère l'identifiant de la catégorie.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -117,6 +114,7 @@ class Categorie
      * Définit le nom de la catégorie.
      *
      * @param string $nom
+     *
      * @return Categorie
      */
     public function setNom($nom)
@@ -140,6 +138,7 @@ class Categorie
      * Définit la catégorie parente.
      *
      * @param Categorie $categorieParente
+     *
      * @return Categorie
      */
     public function setCategorieParente(Categorie $categorieParente = null)
@@ -163,6 +162,7 @@ class Categorie
      * Associe une catégorie fille.
      *
      * @param Categorie $categorie
+     *
      * @return Categorie
      */
     public function addCategorieFille(Categorie $categorie)
@@ -176,6 +176,7 @@ class Categorie
      * Dissocie une catégorie fille.
      *
      * @param Categorie $categorie
+     *
      * @return Categorie
      */
     public function removeCategorieFille(Categorie $categorie)
@@ -210,9 +211,11 @@ class Categorie
     /**
      * Récupère les catégories filles récursivement.
      *
+     * @param Categorie[] $categoriesFilles
+     *
      * @return \Doctrine\Common\Collections\ArrayCollection
      */
-    public function getCategoriesFillesRecursive($categoriesFilles=array())
+    public function getCategoriesFillesRecursive($categoriesFilles = array())
     {
         foreach ($this->categoriesFilles as $categorieFille) {
             $categoriesFilles = array_merge($categoriesFilles, $categorieFille->getCategoriesFillesRecursive(array($categorieFille)));
@@ -225,6 +228,7 @@ class Categorie
      * Associe un mouvement à la catégorie.
      *
      * @param Mouvement $mouvement
+     *
      * @return Categorie
      */
     public function addMouvement(Mouvement $mouvement)
@@ -238,6 +242,7 @@ class Categorie
      * Dissocie un mouvement de la catégorie.
      *
      * @param Mouvement $mouvement
+     *
      * @return Categorie
      */
     public function removeMouvement(Mouvement $mouvement)
@@ -273,6 +278,7 @@ class Categorie
      * Associe un mot-clé à la catégorie.
      *
      * @param Keyword $keyword
+     *
      * @return Categorie
      */
     public function addKeyword(Keyword $keyword)
@@ -286,6 +292,7 @@ class Categorie
      * Dissocie un mot-clé de la catégorie.
      *
      * @param Keyword $keyword
+     *
      * @return Categorie
      */
     public function removeKeyword(Keyword $keyword)
@@ -320,7 +327,8 @@ class Categorie
     /**
      * Définit le rang d'affichage de la catégorie.
      *
-     * @param integer $rang
+     * @param int $rang
+     *
      * @return Categorie
      */
     public function setRang($rang)
@@ -333,7 +341,7 @@ class Categorie
     /**
      * Récupère le rang d'affichage de la catégorie.
      *
-     * @return integer
+     * @return int
      */
     public function getRang()
     {

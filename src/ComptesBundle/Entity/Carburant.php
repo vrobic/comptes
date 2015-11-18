@@ -4,7 +4,6 @@ namespace ComptesBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
-use ComptesBundle\Entity\Vehicule;
 
 /**
  * Carburant.
@@ -17,7 +16,7 @@ class Carburant
     /**
      * Identifiant du carburant.
      *
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
@@ -47,7 +46,7 @@ class Carburant
     /**
      * Rang d'affichage du carburant.
      *
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="rang", type="integer", nullable=true)
      */
@@ -74,7 +73,7 @@ class Carburant
     /**
      * Récupère l'identifiant du carburant.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -85,6 +84,7 @@ class Carburant
      * Définit le nom commercial du carburant.
      *
      * @param string $nom
+     *
      * @return Carburant
      */
     public function setNom($nom)
@@ -108,6 +108,7 @@ class Carburant
      * Associe un véhicule au carburant.
      *
      * @param Vehicule $vehicule
+     *
      * @return Carburant
      */
     public function addVehicule(Vehicule $vehicule)
@@ -121,6 +122,7 @@ class Carburant
      * Dissocie un véhicule du carburant.
      *
      * @param Vehicule $vehicule
+     *
      * @return Carburant
      */
     public function removeVehicule(Vehicule $vehicule)
@@ -155,7 +157,8 @@ class Carburant
     /**
      * Définit le rang d'affichage du carburant.
      *
-     * @param integer $rang
+     * @param int $rang
+     *
      * @return Carburant
      */
     public function setRang($rang)
@@ -168,7 +171,7 @@ class Carburant
     /**
      * Récupère le rang d'affichage du carburant.
      *
-     * @return integer
+     * @return int
      */
     public function getRang()
     {
