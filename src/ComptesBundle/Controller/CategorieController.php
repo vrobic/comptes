@@ -48,7 +48,7 @@ class CategorieController extends Controller
 
         } else { // Par défaut, depuis un an et jusqu'à la fin du mois
 
-            list($year, $month, $lastDayOfMonth) = explode('-', date('Y-n-t'));
+            list ($year, $month, $lastDayOfMonth) = explode('-', date('Y-n-t'));
 
             $month = (int) $month;
             $year = (int) $year;
@@ -102,9 +102,13 @@ class CategorieController extends Controller
             // Montant cumulé des mouvements de la catégorie, année par année
             $montantsAnnuelsCategorie = $statsProvider->getYearlyMontantsByCategorie($categorie, $yearStart, $yearEnd);
 
+            // Montant mensuel moyen des mouvements de la catégorie
+            $average = $statsProvider->getAverageMonthlyMontantsByCategorie($categorie, $dateFilter['start'], $dateFilter['end']);
+
             $montants[$categorieID] = array(
                 'period' => $montantTotalPeriodeCategorie,
                 'yearly' => $montantsAnnuelsCategorie,
+                'average' => $average,
             );
         }
 
@@ -181,8 +185,9 @@ class CategorieController extends Controller
         // Tous les mouvements de la catégorie sur la période donnée
         $mouvements = $mouvementRepository->findByDateAndCategorie($categorie, $dateFilter['start'], $dateFilter['end']);
 
-        // Total des mouvements
+        // Montant total et mensuel moyen de la catégorie
         $total = 0;
+        $average = 0;
 
         // Total des mouvements par mois
         $monthlyMontants = array();
@@ -201,6 +206,7 @@ class CategorieController extends Controller
 
             $statsProvider = $this->container->get('comptes_bundle.stats.provider');
             $monthlyMontants = $statsProvider->getMonthlyMontantsByCategorie($categorie, $firstMouvementDate, $lastMouvementDate);
+            $average = $statsProvider->getAverageMonthlyMontantsByCategorie($categorie, $dateFilter['start'], $dateFilter['end']);
         }
 
         return $this->render(
@@ -210,6 +216,7 @@ class CategorieController extends Controller
                 'date_filter' => $dateFilter,
                 'mouvements' => $mouvements,
                 'total' => $total,
+                'average' => $average,
                 'monthly_montants' => $monthlyMontants,
             )
         );

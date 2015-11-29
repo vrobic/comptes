@@ -24,6 +24,9 @@
         </div>
     </div>
     <div class="row">
+        <div class="col-md-12">
+            <p>Moyenne mensuelle sur la période : {{ average|abs|number_format(2, ".", "") ~ "€" }}</p>
+        </div>
         <div id="chart-1" class="chart col-md-12"></div>
         <script>
             $(function(){

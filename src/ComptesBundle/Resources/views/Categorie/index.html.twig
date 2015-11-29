@@ -14,6 +14,9 @@
         <td>
             {{ montants[categorie.id].period|number_format(2, ".", "") ~ "€" }}
         </td>
+        <td>
+            {{ montants[categorie.id].average|number_format(2, ".", "") ~ "€" }}
+        </td>
         <td data-sparkline="{% for year, montant in montants[categorie.id].yearly %}{{ year ~ ':' ~ montant|abs ~ (not loop.last ? ',') | e('js') }}{% endfor %}"></td>
     </tr>
     {% if categorie.categoriesFilles is not empty %}
@@ -94,8 +97,9 @@
         <caption>Liste des catégories</caption>
         <thead>
             <tr>
-                <th class="col-md-6">Catégorie</th>
+                <th class="col-md-3">Catégorie</th>
                 <th class="col-md-3">Total</th>
+                <th class="col-md-3">Moyenne mensuelle</th>
                 <th class="col-md-3">Évolution annuelle</th>
             </tr>
         </thead>
@@ -107,7 +111,7 @@
                 <td>
                     {{ montant_total_non_categorise|number_format(2, ".", "") ~ "€" }}
                 </td>
-                <td></td>
+                <td colspan="2"></td>
             </tr>
             <tr>
                 <td>
@@ -117,6 +121,7 @@
                 <td>
                     {{ montant_total|number_format(2, ".", "") ~ "€" }}
                 </td>
+                <td></td>
                 <td data-sparkline="{% for year, montant in yearly_montants %}{{ year ~ ':' ~ montant ~ (not loop.last ? ',') | e('js') }}{% endfor %}"></td>
             </tr>
             {% for categorie in categories %}

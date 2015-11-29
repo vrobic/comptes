@@ -139,7 +139,7 @@ class StatsProvider
     }
 
     /**
-     * Calcule le montant total mensuel des mouvements d'une catégorie,
+     * Calcule le montant mensuel total des mouvements d'une catégorie,
      * compris entre deux dates incluses.
      *
      * @param Categorie $categorie
@@ -193,6 +193,35 @@ class StatsProvider
         }
 
         return $montants;
+    }
+
+    /**
+     * Calcule le montant mensuel moyen des mouvements d'une catégorie,
+     * compris entre deux dates incluses.
+     *
+     * @param Categorie $categorie
+     * @param \DateTime $dateStart Date de début, incluse.
+     * @param \DateTime $dateEnd   Date de fin, incluse.
+     *
+     * @return float Le montant mensuel moyen des mouvements de la catégorie
+     */
+    public function getAverageMonthlyMontantsByCategorie(Categorie $categorie, \DateTime $dateStart, \DateTime $dateEnd)
+    {
+        $monthlyMontants = $this->getMonthlyMontantsByCategorie($categorie, $dateStart, $dateEnd);
+
+        $average = 0;
+        $monthCount = 0;
+
+        foreach ($monthlyMontants as $months) {
+            foreach ($months as $montant) {
+                $average += $montant;
+                $monthCount++;
+            }
+        }
+
+        $average /= $monthCount;
+
+        return $average;
     }
 
     /**
