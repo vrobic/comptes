@@ -9,6 +9,7 @@ Techniquement, le handler n'est qu'une des briques du moteur d'import et ce n'es
 L'application n'embarque qu'une poignée de handlers :
 
 - relevé de comptes de la banque CIC, aux formats Excel et CSV
+- relevé de comptes de la banque Caisse d'Épargne, au format CSV
 - données de l'application Android MyCars, aux formats XML et CSV
 
 Le moteur d'import, par sa généricité, rend le développement d'un handler très simple. Il se résume à un service Symfony2 et quelques lignes de configuration.
@@ -29,7 +30,7 @@ où `mycars.xml` est l'identifiant du handler.
 
 Le service doit étendre une des deux classes abstraites suivantes : `PleinsImportHandler` ou `MouvementsImportHandler` et implémenter la méthode :
 
-`public function parse(\SplFileObject $file) {}`
+public function parse(\SplFileObject $file) {}
 
 Cette méthode doit parser le contenu de `$file` pour en extraire les données. Chaque objet détecté doit être instancié puis passé aux fonctions de classification.
 
@@ -39,8 +40,8 @@ Une implémentation de la méthode parse en pseudo-code pourrait donc être :
     {
         $lines = $file->getLines();
 
-        foreach ($lines as $line)
-        {
+        foreach ($lines as $line) {
+
             $plein = new Plein();
 
             $plein->setVehicule($line->vehicule);
