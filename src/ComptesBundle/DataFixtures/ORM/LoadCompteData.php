@@ -43,11 +43,17 @@ class LoadCompteData extends AbstractFixture implements OrderedFixtureInterface,
 
             $compte = new Compte();
 
-            // Dates d'ouverture et de fermeture
+            // Date d'ouverture
             $dateOuverture = new \DateTime();
             $dateOuverture->setTimestamp($compteContent['date_ouverture']);
-            $dateFermeture = new \DateTime();
-            $dateFermeture->setTimestamp($compteContent['date_fermeture']);
+
+            // Date de fermeture facultative
+            if ($compteContent['date_fermeture'] !== null) {
+                $dateFermeture = new \DateTime();
+                $dateFermeture->setTimestamp($compteContent['date_fermeture']);
+            } else {
+                $dateFermeture = null;
+            }
 
             $compte->setNom($compteContent['nom']);
             $compte->setNumero($compteContent['numero']);
