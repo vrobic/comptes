@@ -30,7 +30,7 @@ où `mycars.xml` est l'identifiant du handler.
 
 Le service doit étendre une des deux classes abstraites suivantes : `PleinsImportHandler` ou `MouvementsImportHandler` et implémenter la méthode :
 
-public function parse(\SplFileObject $file) {}
+    public function parse(\SplFileObject $file) {}
 
 Cette méthode doit parser le contenu de `$file` pour en extraire les données. Chaque objet détecté doit être instancié puis passé aux fonctions de classification.
 
