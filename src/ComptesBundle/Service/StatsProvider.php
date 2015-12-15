@@ -112,13 +112,13 @@ class StatsProvider
      * Calcule le montant total annuel des mouvements d'une catégorie,
      * pour toutes les années incluses dans un intervalle.
      *
-     * @param Categorie $categorie
-     * @param int       $yearStart Année de début, incluse.
-     * @param int       $yearEnd   Année de fin, incluse.
+     * @param Categorie|null $categorie
+     * @param int            $yearStart Année de début, incluse.
+     * @param int            $yearEnd   Année de fin, incluse.
      *
      * @return array Les montants des mouvements de la catégorie, classés par années.
      */
-    public function getYearlyMontantsByCategorie(Categorie $categorie, $yearStart, $yearEnd)
+    public function getYearlyMontantsByCategorie($categorie, $yearStart, $yearEnd)
     {
         $dateStart = \DateTime::createFromFormat('Y-m-d H:i:s', "$yearStart-01-01 00:00:00");
         $dateEnd = \DateTime::createFromFormat('Y-m-d H:i:s', "$yearEnd-12-31 23:59:59");
@@ -142,13 +142,13 @@ class StatsProvider
      * Calcule le montant mensuel total des mouvements d'une catégorie,
      * compris entre deux dates incluses.
      *
-     * @param Categorie $categorie
-     * @param \DateTime $dateStart Date de début, incluse.
-     * @param \DateTime $dateEnd   Date de fin, incluse.
+     * @param Categorie|null $categorie
+     * @param \DateTime      $dateStart Date de début, incluse.
+     * @param \DateTime      $dateEnd   Date de fin, incluse.
      *
      * @return array Les montants des mouvements de la catégorie, classés par mois.
      */
-    public function getMonthlyMontantsByCategorie(Categorie $categorie, \DateTime $dateStart, \DateTime $dateEnd)
+    public function getMonthlyMontantsByCategorie($categorie, \DateTime $dateStart, \DateTime $dateEnd)
     {
         // Repositories
         $mouvementRepository = $this->doctrine->getRepository('ComptesBundle:Mouvement');
@@ -199,13 +199,13 @@ class StatsProvider
      * Calcule le montant mensuel moyen des mouvements d'une catégorie,
      * compris entre deux dates incluses.
      *
-     * @param Categorie $categorie
-     * @param \DateTime $dateStart Date de début, incluse.
-     * @param \DateTime $dateEnd   Date de fin, incluse.
+     * @param Categorie|null $categorie
+     * @param \DateTime      $dateStart Date de début, incluse.
+     * @param \DateTime      $dateEnd   Date de fin, incluse.
      *
      * @return float Le montant mensuel moyen des mouvements de la catégorie
      */
-    public function getAverageMonthlyMontantsByCategorie(Categorie $categorie, \DateTime $dateStart, \DateTime $dateEnd)
+    public function getAverageMonthlyMontantsByCategorie($categorie, \DateTime $dateStart, \DateTime $dateEnd)
     {
         $monthlyMontants = $this->getMonthlyMontantsByCategorie($categorie, $dateStart, $dateEnd);
 

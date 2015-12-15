@@ -16,6 +16,7 @@
     - rajouter une date de fermeture
 - Catégories
     - à la mise à jour ou création d'une catégorie et s'il y a un mot-clé, proposer de recatégoriser les mouvements existants
+    - sur les graphiques de catégories, ajouter une courbe de moyenne lissée
 - Contrôleurs
     - utiliser OptionsResolver pour contrôler les données en entrée
 - Services

@@ -340,7 +340,7 @@ form table.table td.input-select2 .select2-selection {
 .tag-editor {
     padding: 0 5px;
     border: none;
-    font-family: "ubunturegular"
+    font-family: "ubunturegular";
 }
 .tag-editor li {
     margin: 5px 0;

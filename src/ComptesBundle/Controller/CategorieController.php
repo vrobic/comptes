@@ -79,10 +79,6 @@ class CategorieController extends Controller
 
         // Montant total des mouvements, toutes catégories confondues
         $yearlyMontants = $statsProvider->getYearlyMontants($yearStart, $yearEnd);
-        $montantTotal = 0;
-        foreach ($yearlyMontants as $montant) {
-            $montantTotal += $montant;
-        }
 
         // Montant total des mouvements par catégorie
         $montants = array();
@@ -97,7 +93,11 @@ class CategorieController extends Controller
 
             // Montant cumulé des mouvements de la catégorie sur la période donnée
             $montantTotalPeriodeCategorie = $categorieRepository->getMontantTotalByDate($categorie, $dateFilter['start'], $dateFilter['end']);
-            $montantTotalPeriodeCategorise += $montantTotalPeriodeCategorie;
+
+            // Si la catégorie est de premier niveau, on la prend en compte dans le calcul du total des mouvements catégorisés
+            if ($categorie->getCategorieParente() === null) {
+                $montantTotalPeriodeCategorise += $montantTotalPeriodeCategorie;
+            }
 
             // Montant cumulé des mouvements de la catégorie, année par année
             $montantsAnnuelsCategorie = $statsProvider->getYearlyMontantsByCategorie($categorie, $yearStart, $yearEnd);
@@ -121,9 +121,9 @@ class CategorieController extends Controller
                 'categories' => $categories,
                 'date_filter' => $dateFilter,
                 'montants' => $montants,
+                'montant_total' => $montantTotalPeriode, // Sur la période
                 'montant_total_non_categorise' => $montantTotalPeriodeNonCategorise, // Sur la période
                 'yearly_montants' => $yearlyMontants, // Depuis toujours
-                'montant_total' => $montantTotal, // Depuis toujours
             )
         );
     }
@@ -144,10 +144,14 @@ class CategorieController extends Controller
 
         // La catégorie
         $categorieID = $request->get('categorie_id');
-        $categorie = $categorieRepository->find($categorieID);
 
-        if (!$categorie) {
-            throw $this->createNotFoundException("La catégorie $categorieID n'existe pas.");
+        if ($categorieID > 0) {
+            $categorie = $categorieRepository->find($categorieID);
+            if (!$categorie) {
+                throw $this->createNotFoundException("La catégorie $categorieID n'existe pas.");
+            }
+        } else {
+            $categorie = null;
         }
 
         // Filtre sur la période

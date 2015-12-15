@@ -94,7 +94,7 @@ class Keyword
      *
      * @return Keyword
      */
-    public function setCategorie($categorie)
+    public function setCategorie(Categorie $categorie)
     {
         $this->categorie = $categorie;
 

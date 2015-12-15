@@ -282,37 +282,50 @@ class MouvementRepository extends EntityRepository
     /**
      * Récupère les mouvements d'une catégorie, entre deux dates.
      *
-     * @param Categorie $categorie La catégorie.
-     * @param \DateTime $dateStart Date de début, incluse.
-     * @param \DateTime $dateEnd   Date de fin, incluse.
-     * @param string    $order     'ASC' (par défaut) ou 'DESC'.
+     * @todo : optimiser le query builder et son expression builder.
+     *
+     * @param Categorie|null $categorie La catégorie.
+     * @param \DateTime      $dateStart Date de début, incluse.
+     * @param \DateTime      $dateEnd   Date de fin, incluse.
+     * @param string         $order     'ASC' (par défaut) ou 'DESC'.
      *
      * @return \Doctrine\Common\Collections\ArrayCollection
      */
-    public function findByDateAndCategorie(Categorie $categorie, \DateTime $dateStart, \DateTime $dateEnd, $order = 'ASC')
+    public function findByDateAndCategorie($categorie, \DateTime $dateStart, \DateTime $dateEnd, $order = 'ASC')
     {
         $queryBuilder = $this->createQueryBuilder('m');
         $expressionBuilder = $this->getEntityManager()->getExpressionBuilder();
 
-        // La liste des catégories de mouvements
-        $categorieID = $categorie->getId();
-        $categories = array($categorieID);
-        $categoriesFilles = $categorie->getCategoriesFillesRecursive();
-
-        foreach ($categoriesFilles as $categorieFille) {
-            $categories[] = $categorieFille->getId();
-        }
-
         $and = $expressionBuilder->andX();
-        $and->add($expressionBuilder->in('m.categorie', ':categories'));
         $and->add($expressionBuilder->gte('m.date', ':date_start'));
         $and->add($expressionBuilder->lte('m.date', ':date_end'));
 
+        if ($categorie !== null) {
+
+            // La liste des catégories de mouvements
+            $categorieID = $categorie->getId();
+            $categories = array($categorieID);
+            $categoriesFilles = $categorie->getCategoriesFillesRecursive();
+
+            foreach ($categoriesFilles as $categorieFille) {
+                $categories[] = $categorieFille->getId();
+            }
+
+            $and->add($expressionBuilder->in('m.categorie', ':categories'));
+            $queryBuilder
+                ->where($and)
+                ->setParameter('categories', $categories);
+
+        } else {
+
+            $and->add($expressionBuilder->isNull('m.categorie'));
+            $queryBuilder->where($and);
+            
+        }
+
         $queryBuilder
-            ->where($and)
             ->setParameter('date_start', $dateStart)
             ->setParameter('date_end', $dateEnd)
-            ->setParameter('categories', $categories)
             ->orderBy('m.date', $order);
 
         $mouvements = $queryBuilder->getQuery()->getResult();
@@ -371,29 +384,36 @@ class MouvementRepository extends EntityRepository
     /**
      * Récupère les mouvements d'une catégorie.
      *
-     * @param Categorie $categorie La catégorie.
-     * @param string    $order     'ASC' (par défaut) ou 'DESC'.
+     * @param Categorie|null $categorie La catégorie.
+     * @param string         $order     'ASC' (par défaut) ou 'DESC'.
      *
      * @return \Doctrine\Common\Collections\ArrayCollection
      */
-    public function findByCategorie(Categorie $categorie, $order = 'ASC')
+    public function findByCategorie($categorie, $order = 'ASC')
     {
-        // Récupération des mouvements de la catégorie
         $queryBuilder = $this->createQueryBuilder('m');
+        $expressionBuilder = $this->getEntityManager()->getExpressionBuilder();
 
-        // La liste des catégories de mouvements
-        $categorieID = $categorie->getId();
-        $categories = array($categorieID);
-        $categoriesFilles = $categorie->getCategoriesFillesRecursive();
+        if ($categorie !== null) {
 
-        foreach ($categoriesFilles as $categorieFille) {
-            $categories[] = $categorieFille->getId();
+            // La liste des catégories de mouvements
+            $categorieID = $categorie->getId();
+            $categories = array($categorieID);
+            $categoriesFilles = $categorie->getCategoriesFillesRecursive();
+
+            foreach ($categoriesFilles as $categorieFille) {
+                $categories[] = $categorieFille->getId();
+            }
+
+            $queryBuilder
+                ->where($expressionBuilder->in('m.categorie', ':categories'))
+                ->setParameter('categories', $categories);
+
+        } else {
+            $queryBuilder->where($expressionBuilder->isNull('m.categorie'));
         }
 
-        $queryBuilder
-            ->where('m.categorie in (:categories)')
-            ->orderBy('m.date', $order)
-            ->setParameter('categories', $categories);
+        $queryBuilder->orderBy('m.date', $order);
 
         $mouvements = $queryBuilder->getQuery()->getResult();
 

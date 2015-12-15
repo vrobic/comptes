@@ -5,10 +5,10 @@
 {% block title %} - {{ categorie }}{% endblock %}
 
 {% block content %}
-    <h1>{{ categorie }}</h1>
+    <h1>{{ categorie is not null ? categorie : "Mouvements non catégorisés" }}</h1>
     <div class="row">
         <div class="col-md-6">
-            <form action="{{ path('categories_categorie', {'categorie_id': categorie.id}) }}" method="GET">
+            <form action="{{ path('categories_categorie', {'categorie_id': categorie is not null ? categorie.id : 0}) }}" method="GET">
                 <div class="input-group">
                     <span class="input-group-addon">Du</span>
                     <input class="form-control" type="text" name="date_filter[start]" value="{{ date_filter.start|date('d-m-Y') }}" placeholder="{{ date_filter.start|date('d-m-Y') }}">
@@ -52,7 +52,7 @@
                     },
                     series: [
                         {
-                            name: "{{ categorie|e('js') }}",
+                            name: "{{ categorie is not null ? categorie|e('js') : "Mouvements non catégorisés" }}",
                             data: [
                                 {% for year, months in monthly_montants %}
                                     {% for month, montant in months %}

@@ -70,7 +70,11 @@
                         type: 'pie',
                         name: "Répartition des dépenses",
                         data: [
-                            ["Non catégorisé", {{ montant_total_non_categorise|abs|e('js') }}],
+                            {
+                                name: "Non catégorisé",
+                                y: {{ montant_total_non_categorise|abs|e('js') }},
+                                url: '{{ path('categories_categorie', {'categorie_id': 0, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y')})|e('js') }}'
+                            },
                             {% for categorie in categories %}
                                 {% if not categorie.categorieParente and montants[categorie.id].period < 0 %}
                                     {
