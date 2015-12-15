@@ -282,8 +282,6 @@ class MouvementRepository extends EntityRepository
     /**
      * Récupère les mouvements d'une catégorie, entre deux dates.
      *
-     * @todo : optimiser le query builder et son expression builder.
-     *
      * @param Categorie|null $categorie La catégorie.
      * @param \DateTime      $dateStart Date de début, incluse.
      * @param \DateTime      $dateEnd   Date de fin, incluse.
@@ -320,7 +318,7 @@ class MouvementRepository extends EntityRepository
 
             $and->add($expressionBuilder->isNull('m.categorie'));
             $queryBuilder->where($and);
-            
+
         }
 
         $queryBuilder
