@@ -163,6 +163,10 @@ class ConfigurationLoader
                     throw new \Exception($this->getExceptionMessage(array('handlers', $type, $identifier, 'name'), "Paramètre manquant."));
                 }
 
+                if (!key_exists('description', $handler)) {
+                    throw new \Exception($this->getExceptionMessage(array('handlers', $type, $identifier, 'description'), "Paramètre manquant."));
+                }
+
                 if (!key_exists('extension', $handler)) {
                     throw new \Exception($this->getExceptionMessage(array('handlers', $type, $identifier, 'extension'), "Paramètre manquant."));
                 }

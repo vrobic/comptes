@@ -71,12 +71,27 @@
     <form action="{{ path('import_pleins') }}" method="POST" enctype="multipart/form-data">
 
         <div class="form-group">
-            <label for="handler-identifier">Handler</label>
-            <select id="handler-identifier" name="handlerIdentifier">
-                {% for handlerIdentifier, handler in handlers %}
-                    <option value="{{ handlerIdentifier }}">{{ handler.name }}</option>
-                {% endfor %}
-            </select>
+            <table class="table table-condensed">
+                <thead>
+                    <tr>
+                        <th>Handler</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for handlerIdentifier, handler in handlers %}
+                        <tr>
+                            <td>
+                                <input id="handler-identifier-{{ handlerIdentifier }}" type="radio" name="handlerIdentifier" value="{{ handlerIdentifier }}">
+                                <label for="handler-identifier-{{ handlerIdentifier }}">{{ handler.name }}</label>
+                            </td>
+                            <td>
+                                {{ handler.description|raw|nl2br }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
         <div class="form-group">
             <label for="file">Fichier</label>
