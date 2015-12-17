@@ -39,7 +39,7 @@ handlers:
             name: Caisse d'Épargne - CSV
             # Description de la source. HTML autorisé.
             description: |-
-                Import CSV mono-compte.
+                Import CSV monocompte.
                 Destination : compte courant.
             # L'extension du fichier attendu par le handler d'import
             extension: csv

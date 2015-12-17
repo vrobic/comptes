@@ -64,10 +64,12 @@ au sein d'un des tableaux `pleins` ou `mouvements` :
         pleins:
             mycars.xml:
                name: MyCars - XML
+               description: |-
+                   Import XML depuis l'application Android MyCars.
                extension: xml
         mouvements:
             # ...
 
-Les paramètres `name` et `extension` sont obligatoires. Selon vos besoins, il est possible de rajouter d'autres paramètres au tableau `mycars.xml`.
+Les paramètres `name`, `description` et `extension` sont obligatoires. Selon vos besoins, il est possible de rajouter d'autres paramètres au tableau `mycars.xml`.
 
 Aucun risque risque de faire une mauvaise configuration. L'application utilise un service centralisé qui charge et vérifie la cohérence des configurations. Il ne manquera pas de vous rappeler à l'ordre !
