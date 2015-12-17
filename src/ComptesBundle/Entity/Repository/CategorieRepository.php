@@ -55,14 +55,15 @@ class CategorieRepository extends EntityRepository
     /**
      * Calcul le montant cumulé des mouvements d'une catégorie, entre deux dates.
      *
-     * @param Categorie $categorie La catégorie.
-     * @param \DateTime $dateStart Date de début, incluse.
-     * @param \DateTime $dateEnd   Date de fin, incluse.
-     * @param string    $order     'ASC' (par défaut) ou 'DESC'.
+     * @param Categorie   $categorie La catégorie.
+     * @param \DateTime   $dateStart Date de début, incluse.
+     * @param \DateTime   $dateEnd   Date de fin, incluse.
+     * @param string      $order     'ASC' (par défaut) ou 'DESC'.
+     * @param Compte|null $compte    Un compte, facultatif.
      *
      * @return float
      */
-    public function getMontantTotalByDate(Categorie $categorie, \DateTime $dateStart, \DateTime $dateEnd, $order = 'ASC')
+    public function getMontantTotalByDate(Categorie $categorie, \DateTime $dateStart, \DateTime $dateEnd, $order = 'ASC', $compte = null)
     {
         // Calcul du montant total des mouvements de la catégorie
         $queryBuilder = $this->getEntityManager()->createQueryBuilder();
@@ -72,6 +73,11 @@ class CategorieRepository extends EntityRepository
         $and->add($expressionBuilder->in('m.categorie', ':categories'));
         $and->add($expressionBuilder->gte('m.date', ':date_start'));
         $and->add($expressionBuilder->lte('m.date', ':date_end'));
+
+        if ($compte !== null) {
+            $and->add($expressionBuilder->eq('m.compte', ':compte'));
+            $queryBuilder->setParameter('compte', $compte);
+        }
 
         // La liste des catégories de mouvements
         $categorieID = $categorie->getId();

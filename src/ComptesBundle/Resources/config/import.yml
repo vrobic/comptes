@@ -9,7 +9,7 @@ handlers:
             name: CIC - Excel
             # Description de la source. HTML autorisé.
             description: |-
-                Import Excel multicompte.
+                Import multicompte.
                 Feuille 1 : livret A, feuille 2 : livret jeune, feuille 3 : compte courant.
             # L'extension du fichier attendu par le handler d'import
             extension: xlsm
@@ -26,7 +26,7 @@ handlers:
             name: CIC - CSV
             # Description de la source. HTML autorisé.
             description: |-
-                Import CSV monocompte, montants sur deux colonnes, dates au format JJ/MM/AAAA, séparateur : point-virgule, séparateur décimales : virgule.
+                Import monocompte, montants sur deux colonnes, dates au format JJ/MM/AAAA, séparateur : point-virgule, séparateur décimales : virgule.
                 Destination : compte courant.
             # L'extension du fichier attendu par le handler d'import
             extension: csv
@@ -39,7 +39,7 @@ handlers:
             name: Caisse d'Épargne - CSV
             # Description de la source. HTML autorisé.
             description: |-
-                Import CSV monocompte.
+                Import monocompte.
                 Destination : compte courant.
             # L'extension du fichier attendu par le handler d'import
             extension: csv
@@ -53,7 +53,7 @@ handlers:
             name: MyCars - XML
             # Description de la source. HTML autorisé.
             description: |-
-                Import XML depuis l'application Android <a href="https://play.google.com/store/apps/details?id=com.aguirre.android.mycar.activity">MyCars</a>.
+                Import depuis l'application Android <a href="https://play.google.com/store/apps/details?id=com.aguirre.android.mycar.activity">MyCars</a>.
             # L'extension du fichier attendu par le handler d'import
             extension: xml
             # Le fichier XML fait référence à des véhicules.
@@ -71,7 +71,7 @@ handlers:
             name: MyCars - CSV
             # Description de la source. HTML autorisé.
             description: |-
-                Import CSV depuis l'application Android <a href="https://play.google.com/store/apps/details?id=com.aguirre.android.mycar.activity">MyCars</a>.
+                Import depuis l'application Android <a href="https://play.google.com/store/apps/details?id=com.aguirre.android.mycar.activity">MyCars</a>.
             # L'extension du fichier attendu par le handler d'import
             extension: csv
             # Le fichier CSV fait référence à des véhicules.

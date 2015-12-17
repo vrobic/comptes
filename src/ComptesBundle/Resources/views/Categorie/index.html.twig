@@ -6,10 +6,10 @@
 
 {% import _self as macros %}
 
-{% macro categoriesFilles(categorie, montants, depth, date_filter) %}
+{% macro categoriesFilles(categorie, montants, depth, date_filter, compte_filter) %}
     <tr>
         <td style="padding-left: {{ (5 + depth * 20) ~ "px" }};">
-            <a href="{{ path('categories_categorie', {'categorie_id': categorie.id, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y')}) }}">{{ categorie }}</a>
+            <a href="{{ path('categories_categorie', {'categorie_id': categorie.id, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y'), 'compte_id': compte_filter is not null ? compte_filter.id : ''}) }}">{{ categorie }}</a>
         </td>
         <td>
             {{ montants[categorie.id].period|number_format(2, ".", "") ~ "€" }}
@@ -22,7 +22,7 @@
     {% if categorie.categoriesFilles is not empty %}
         {% set depth = depth + 1 %}
         {% for categorieFille in categorie.categoriesFilles %}
-            {{ _self.categoriesFilles(categorieFille, montants, depth, date_filter) }}
+            {{ _self.categoriesFilles(categorieFille, montants, depth, date_filter, compte_filter) }}
         {% endfor %}
     {% endif %}
 {% endmacro %}
@@ -37,9 +37,18 @@
                     <input class="form-control" type="text" name="date_filter[start]" value="{{ date_filter.start|date('d-m-Y') }}" placeholder="{{ date_filter.start|date('d-m-Y') }}">
                     <span class="input-group-addon middle">au</span>
                     <input class="form-control" type="text" name="date_filter[end]" value="{{ date_filter.end|date('d-m-Y') }}" placeholder="{{ date_filter.end|date('d-m-Y') }}">
+                    <span class="input-group-addon middle">sur le compte</span>
+                    <select class="form-control" name="compte_id">
+                        <option value=""></option>
+                        {% for compte in comptes %}
+                            <option value="{{ compte.id }}" {{ compte_filter is not null and compte_filter.id == compte.id ? "selected" }}>
+                                {{ compte.dateFermeture is null ? compte : compte ~ " (clôturé)" }}
+                            </option>
+                        {% endfor %}
+                    </select>
                     <span class="input-group-btn">
                         <button class="btn btn-default" type="submit">
-                            <span class="glyphicon glyphicon-time"></span> Appliquer
+                            <span class="glyphicon glyphicon-search"></span> Appliquer
                         </button>
                     </span>
                 </div>
@@ -73,14 +82,14 @@
                             {
                                 name: "Non catégorisé",
                                 y: {{ montant_total_non_categorise|abs|e('js') }},
-                                url: '{{ path('categories_categorie', {'categorie_id': 0, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y')})|e('js') }}'
+                                url: '{{ path('categories_categorie', {'categorie_id': 0, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y'), 'compte_id': compte_filter is not null ? compte_filter.id : ''})|e('js') }}'
                             },
                             {% for categorie in categories %}
                                 {% if not categorie.categorieParente and montants[categorie.id].period < 0 %}
                                     {
                                         name: "{{ categorie|e('js') }}",
                                         y: {{ montants[categorie.id].period|abs|e('js') }},
-                                        url: '{{ path('categories_categorie', {'categorie_id': categorie.id, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y')})|e('js') }}'
+                                        url: '{{ path('categories_categorie', {'categorie_id': categorie.id, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y'), 'compte_id': compte_filter is not null ? compte_filter.id : ''})|e('js') }}'
                                     }
                                     {{ not loop.last ? ','|e('js') }}
                                 {% endif %}
@@ -130,7 +139,7 @@
             </tr>
             {% for categorie in categories %}
                 {% if not categorie.categorieParente %}
-                    {{ macros.categoriesFilles(categorie, montants, 0, date_filter) }}
+                    {{ macros.categoriesFilles(categorie, montants, 0, date_filter, compte_filter) }}
                 {% endif %}
             {% endfor %}
         </tbody>

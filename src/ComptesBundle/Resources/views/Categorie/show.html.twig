@@ -2,7 +2,7 @@
 
 {% block modules 'forms;highcharts' %}
 
-{% block title %} - {{ categorie }}{% endblock %}
+{% block title %} - {{ categorie is not null ? categorie : "Mouvements non catégorisés" }}{% endblock %}
 
 {% block content %}
     <h1>{{ categorie is not null ? categorie : "Mouvements non catégorisés" }}</h1>
@@ -14,9 +14,18 @@
                     <input class="form-control" type="text" name="date_filter[start]" value="{{ date_filter.start|date('d-m-Y') }}" placeholder="{{ date_filter.start|date('d-m-Y') }}">
                     <span class="input-group-addon middle">au</span>
                     <input class="form-control" type="text" name="date_filter[end]" value="{{ date_filter.end|date('d-m-Y') }}" placeholder="{{ date_filter.end|date('d-m-Y') }}">
+                    <span class="input-group-addon middle">sur le compte</span>
+                    <select class="form-control" name="compte_id">
+                        <option value=""></option>
+                        {% for compte in comptes %}
+                            <option value="{{ compte.id }}" {{ compte_filter is not null and compte_filter.id == compte.id ? "selected" }}>
+                                {{ compte.dateFermeture is null ? compte : compte ~ " (clôturé)" }}
+                            </option>
+                        {% endfor %}
+                    </select>
                     <span class="input-group-btn">
                         <button class="btn btn-default" type="submit">
-                            <span class="glyphicon glyphicon-time"></span> Appliquer
+                            <span class="glyphicon glyphicon-search"></span> Appliquer
                         </button>
                     </span>
                 </div>
@@ -25,7 +34,7 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            <p>Moyenne mensuelle sur la période : {{ average|abs|number_format(2, ".", "") ~ "€" }}</p>
+            <p>Moyenne mensuelle sur la période : {{ average|number_format(2, ".", "") ~ "€" }}</p>
         </div>
         <div id="chart-1" class="chart col-md-12"></div>
         <script>

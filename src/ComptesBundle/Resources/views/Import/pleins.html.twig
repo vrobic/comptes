@@ -75,6 +75,7 @@
                 <thead>
                     <tr>
                         <th>Handler</th>
+                        <th>Type de fichier</th>
                         <th>Description</th>
                     </tr>
                 </thead>
@@ -84,6 +85,9 @@
                             <td>
                                 <input id="handler-identifier-{{ handlerIdentifier }}" type="radio" name="handlerIdentifier" value="{{ handlerIdentifier }}">
                                 <label for="handler-identifier-{{ handlerIdentifier }}">{{ handler.name }}</label>
+                            </td>
+                            <td>
+                                <code>{{ handler.extension }}</code>
                             </td>
                             <td>
                                 {{ handler.description|raw|nl2br }}

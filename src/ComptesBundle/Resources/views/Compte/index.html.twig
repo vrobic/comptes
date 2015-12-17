@@ -15,8 +15,8 @@
                             <span class="glyphicon glyphicon-euro"></span>
                         </div>
                         <h3>
-                            {{ compte.solde >= 0 ? "+" : "-" }} <strong>{{ compte.solde|abs|number_format(2, ".", "") ~ "€" }}</strong>
-                            <small>{{ compte }}</small>
+                            {{ compte.solde >= 0 ? "+" : "-" }} <{{ compte.dateFermeture is null ? 'strong' : 'del' }}>{{ compte.solde|abs|number_format(2, ".", "") ~ "€" }}</{{ compte.dateFermeture is null ? 'strong' : 'del' }}>
+                            <small>{{ compte.dateFermeture is null ? compte : compte ~ " (clôturé)" }}</small>
                         </h3>
                     </div>
                 </a>
@@ -37,9 +37,8 @@
                     },
                     xAxis: {
                         categories: [
-                            {% for compte in comptes %}
-                                "{{ compte|e('js') }}"
-                                {{ not loop.last ? ','|e('js') }}
+                            {% for compte in comptes if compte.dateFermeture is null %}
+                                "{{ compte|e('js') }}",
                             {% endfor %}
                         ],
                         title: {
@@ -64,12 +63,11 @@
                     series: [{
                         name: "Solde",
                         data: [
-                            {% for compte in comptes %}
+                            {% for compte in comptes if compte.dateFermeture is null %}
                                 {
                                     y: {{ compte.solde|e('js') }},
                                     url: '{{ path('comptes_compte', {'compte_id': compte.id})|e('js') }}'
-                                }
-                                {{ not loop.last ? ','|e('js') }}
+                                },
                             {% endfor %}
                         ],
                         events: {

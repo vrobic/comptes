@@ -28,6 +28,7 @@ class CategorieController extends Controller
         // Repositories
         $doctrine = $this->getDoctrine();
         $categorieRepository = $doctrine->getRepository('ComptesBundle:Categorie');
+        $compteRepository = $doctrine->getRepository('ComptesBundle:Compte');
         $mouvementRepository = $doctrine->getRepository('ComptesBundle:Mouvement');
 
         // Fournisseur de statistiques
@@ -35,6 +36,20 @@ class CategorieController extends Controller
 
         // Toutes les catégories
         $categories = $categorieRepository->findAll();
+
+        // Tous les comptes
+        $comptes = $compteRepository->findAll();
+
+        // Filtre sur le compte
+        if ($request->get('compte_id')) {
+            $compteID = $request->get('compte_id');
+            $compte = $compteRepository->find($compteID);
+            if (!$compte) {
+                throw $this->createNotFoundException("Le compte bancaire $compteID n'existe pas.");
+            }
+        } else {
+            $compte = null;
+        }
 
         // Filtre sur la période
         if ($request->get('date_filter')) {
@@ -71,20 +86,20 @@ class CategorieController extends Controller
         // Années de début et de fin pour les classements par années
         $yearStart = (int) date('Y');
         $yearEnd = $yearStart;
-        $firstMouvement = $mouvementRepository->findFirstOne();
+        $firstMouvement = $mouvementRepository->findFirstOne($compte);
         if ($firstMouvement !== null) {
             $firstMouvementDate = $firstMouvement->getDate();
             $yearStart = (int) $firstMouvementDate->format('Y');
         }
 
         // Montant total des mouvements, toutes catégories confondues
-        $yearlyMontants = $statsProvider->getYearlyMontants($yearStart, $yearEnd);
+        $yearlyMontants = $statsProvider->getYearlyMontants($yearStart, $yearEnd, $compte);
 
         // Montant total des mouvements par catégorie
         $montants = array();
 
         // Montant cumulé de tous les mouvements, et des mouvements catégorisés sur la période donnée
-        $montantTotalPeriode = $mouvementRepository->getMontantTotalByDate($dateFilter['start'], $dateFilter['end']);
+        $montantTotalPeriode = $mouvementRepository->getMontantTotalByDate($dateFilter['start'], $dateFilter['end'], 'ASC', $compte);
         $montantTotalPeriodeCategorise = 0;
 
         foreach ($categories as $categorie) {
@@ -92,7 +107,7 @@ class CategorieController extends Controller
             $categorieID = $categorie->getId();
 
             // Montant cumulé des mouvements de la catégorie sur la période donnée
-            $montantTotalPeriodeCategorie = $categorieRepository->getMontantTotalByDate($categorie, $dateFilter['start'], $dateFilter['end']);
+            $montantTotalPeriodeCategorie = $categorieRepository->getMontantTotalByDate($categorie, $dateFilter['start'], $dateFilter['end'], 'ASC', $compte);
 
             // Si la catégorie est de premier niveau, on la prend en compte dans le calcul du total des mouvements catégorisés
             if ($categorie->getCategorieParente() === null) {
@@ -100,10 +115,10 @@ class CategorieController extends Controller
             }
 
             // Montant cumulé des mouvements de la catégorie, année par année
-            $montantsAnnuelsCategorie = $statsProvider->getYearlyMontantsByCategorie($categorie, $yearStart, $yearEnd);
+            $montantsAnnuelsCategorie = $statsProvider->getYearlyMontantsByCategorie($categorie, $yearStart, $yearEnd, $compte);
 
             // Montant mensuel moyen des mouvements de la catégorie
-            $average = $statsProvider->getAverageMonthlyMontantsByCategorie($categorie, $dateFilter['start'], $dateFilter['end']);
+            $average = $statsProvider->getAverageMonthlyMontantsByCategorie($categorie, $dateFilter['start'], $dateFilter['end'], $compte);
 
             $montants[$categorieID] = array(
                 'period' => $montantTotalPeriodeCategorie,
@@ -119,6 +134,8 @@ class CategorieController extends Controller
             'ComptesBundle:Categorie:index.html.twig',
             array(
                 'categories' => $categories,
+                'comptes' => $comptes,
+                'compte_filter' => $compte,
                 'date_filter' => $dateFilter,
                 'montants' => $montants,
                 'montant_total' => $montantTotalPeriode, // Sur la période
@@ -140,6 +157,7 @@ class CategorieController extends Controller
         // Repositories
         $doctrine = $this->getDoctrine();
         $categorieRepository = $doctrine->getRepository('ComptesBundle:Categorie');
+        $compteRepository = $doctrine->getRepository('ComptesBundle:Compte');
         $mouvementRepository = $doctrine->getRepository('ComptesBundle:Mouvement');
 
         // La catégorie
@@ -152,6 +170,20 @@ class CategorieController extends Controller
             }
         } else {
             $categorie = null;
+        }
+
+        // Tous les comptes
+        $comptes = $compteRepository->findAll();
+
+        // Filtre sur le compte
+        if ($request->get('compte_id')) {
+            $compteID = $request->get('compte_id');
+            $compte = $compteRepository->find($compteID);
+            if (!$compte) {
+                throw $this->createNotFoundException("Le compte bancaire $compteID n'existe pas.");
+            }
+        } else {
+            $compte = null;
         }
 
         // Filtre sur la période
@@ -187,7 +219,7 @@ class CategorieController extends Controller
         );
 
         // Tous les mouvements de la catégorie sur la période donnée
-        $mouvements = $mouvementRepository->findByDateAndCategorie($categorie, $dateFilter['start'], $dateFilter['end']);
+        $mouvements = $mouvementRepository->findByDateAndCategorie($categorie, $dateFilter['start'], $dateFilter['end'], 'ASC', $compte);
 
         // Montant total et mensuel moyen de la catégorie
         $total = 0;
@@ -209,14 +241,16 @@ class CategorieController extends Controller
             $lastMouvementDate = $lastMouvement->getDate();
 
             $statsProvider = $this->container->get('comptes_bundle.stats.provider');
-            $monthlyMontants = $statsProvider->getMonthlyMontantsByCategorie($categorie, $firstMouvementDate, $lastMouvementDate);
-            $average = $statsProvider->getAverageMonthlyMontantsByCategorie($categorie, $dateFilter['start'], $dateFilter['end']);
+            $monthlyMontants = $statsProvider->getMonthlyMontantsByCategorie($categorie, $firstMouvementDate, $lastMouvementDate, $compte);
+            $average = $statsProvider->getAverageMonthlyMontantsByCategorie($categorie, $dateFilter['start'], $dateFilter['end'], $compte);
         }
 
         return $this->render(
             'ComptesBundle:Categorie:show.html.twig',
             array(
                 'categorie' => $categorie,
+                'comptes' => $comptes,
+                'compte_filter' => $compte,
                 'date_filter' => $dateFilter,
                 'mouvements' => $mouvements,
                 'total' => $total,

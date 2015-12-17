@@ -82,16 +82,6 @@ class CompteController extends Controller
             return $dateA > $dateB;
         });
 
-        // Suppression des comptes fermés
-        foreach ($comptes as $key => $compte) {
-
-            $dateFermeture = $compte->getDateFermeture();
-
-            if ($dateFermeture !== null) {
-                unset($comptes[$key]);
-            }
-        }
-
         return $this->render(
             'ComptesBundle:Compte:index.html.twig',
             array(
@@ -138,7 +128,12 @@ class CompteController extends Controller
             $dateStart = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateStartString 00:00:00");
             $dateEnd = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateEndString 23:59:59");
 
-        } else { // Par défaut, le mois courant en entier
+        } elseif ($compte->getDateFermeture() !== null) { // Si le compte est clôturé, du début à la fin de sa vie
+
+            $dateStart = $compte->getDateOuverture();
+            $dateEnd = $compte->getDateFermeture();
+
+        } else { // Sinon, le mois courant en entier
 
             list($year, $month, $lastDayOfMonth) = explode('-', date('Y-n-t'));
 

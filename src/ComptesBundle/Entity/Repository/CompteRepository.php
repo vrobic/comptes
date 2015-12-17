@@ -14,7 +14,13 @@ class CompteRepository extends EntityRepository
      */
     public function findAll()
     {
-        return $this->findBy(array(), array('rang' => 'ASC'));
+        return $this->findBy(
+            array(),
+            array(
+                'rang' => 'ASC',
+                'dateFermeture' => 'ASC',
+            )
+        );
     }
 
     /**

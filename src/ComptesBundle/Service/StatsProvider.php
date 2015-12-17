@@ -75,12 +75,13 @@ class StatsProvider
      * Calcule le montant total annuel des mouvements,
      * pour toutes les années incluses dans un intervalle.
      *
-     * @param int $yearStart Année de début, incluse.
-     * @param int $yearEnd   Année de fin, incluse.
+     * @param int         $yearStart Année de début, incluse.
+     * @param int         $yearEnd   Année de fin, incluse.
+     * @param Compte|null $compte    Un compte, facultatif.
      *
      * @return array Les montants des mouvements, classés par années.
      */
-    public function getYearlyMontants($yearStart, $yearEnd)
+    public function getYearlyMontants($yearStart, $yearEnd, $compte = null)
     {
         // Repositories
         $mouvementRepository = $this->doctrine->getRepository('ComptesBundle:Mouvement');
@@ -88,7 +89,7 @@ class StatsProvider
         $dateStart = \DateTime::createFromFormat('Y-m-d H:i:s', "$yearStart-01-01 00:00:00");
         $dateEnd = \DateTime::createFromFormat('Y-m-d H:i:s', "$yearEnd-12-31 23:59:59");
 
-        $mouvements = $mouvementRepository->findByDate($dateStart, $dateEnd);
+        $mouvements = $mouvementRepository->findByDate($dateStart, $dateEnd, 'ASC', $compte);
 
         $yearlyMontants = array();
 
@@ -115,16 +116,17 @@ class StatsProvider
      * @param Categorie|null $categorie
      * @param int            $yearStart Année de début, incluse.
      * @param int            $yearEnd   Année de fin, incluse.
+     * @param Compte|null    $compte    Un compte, facultatif.
      *
      * @return array Les montants des mouvements de la catégorie, classés par années.
      */
-    public function getYearlyMontantsByCategorie($categorie, $yearStart, $yearEnd)
+    public function getYearlyMontantsByCategorie($categorie, $yearStart, $yearEnd, $compte = null)
     {
         $dateStart = \DateTime::createFromFormat('Y-m-d H:i:s', "$yearStart-01-01 00:00:00");
         $dateEnd = \DateTime::createFromFormat('Y-m-d H:i:s', "$yearEnd-12-31 23:59:59");
 
         $yearlyMontants = array();
-        $monthlyMontants = $this->getMonthlyMontantsByCategorie($categorie, $dateStart, $dateEnd);
+        $monthlyMontants = $this->getMonthlyMontantsByCategorie($categorie, $dateStart, $dateEnd, $compte);
 
         foreach ($monthlyMontants as $year => $months) {
 
@@ -145,10 +147,11 @@ class StatsProvider
      * @param Categorie|null $categorie
      * @param \DateTime      $dateStart Date de début, incluse.
      * @param \DateTime      $dateEnd   Date de fin, incluse.
+     * @param Compte|null    $compte    Un compte, facultatif.
      *
      * @return array Les montants des mouvements de la catégorie, classés par mois.
      */
-    public function getMonthlyMontantsByCategorie($categorie, \DateTime $dateStart, \DateTime $dateEnd)
+    public function getMonthlyMontantsByCategorie($categorie, \DateTime $dateStart, \DateTime $dateEnd, $compte = null)
     {
         // Repositories
         $mouvementRepository = $this->doctrine->getRepository('ComptesBundle:Mouvement');
@@ -182,7 +185,7 @@ class StatsProvider
             ;
 
             // Mouvements du mois
-            $mouvements = $mouvementRepository->findByDateAndCategorie($categorie, $monthStartDate, $monthEndDate);
+            $mouvements = $mouvementRepository->findByDateAndCategorie($categorie, $monthStartDate, $monthEndDate, 'ASC', $compte);
 
             $montants[$year][$month] = 0;
 
@@ -202,12 +205,13 @@ class StatsProvider
      * @param Categorie|null $categorie
      * @param \DateTime      $dateStart Date de début, incluse.
      * @param \DateTime      $dateEnd   Date de fin, incluse.
+     * @param Compte|null    $compte    Un compte, facultatif.
      *
      * @return float Le montant mensuel moyen des mouvements de la catégorie
      */
-    public function getAverageMonthlyMontantsByCategorie($categorie, \DateTime $dateStart, \DateTime $dateEnd)
+    public function getAverageMonthlyMontantsByCategorie($categorie, \DateTime $dateStart, \DateTime $dateEnd, $compte = null)
     {
-        $monthlyMontants = $this->getMonthlyMontantsByCategorie($categorie, $dateStart, $dateEnd);
+        $monthlyMontants = $this->getMonthlyMontantsByCategorie($categorie, $dateStart, $dateEnd, $compte);
 
         $average = 0;
         $monthCount = 0;
