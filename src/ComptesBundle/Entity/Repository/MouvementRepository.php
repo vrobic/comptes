@@ -92,12 +92,10 @@ class MouvementRepository extends EntityRepository
     {
         $queryBuilder = $this->createQueryBuilder('m');
 
-        $compteID = $compte->getId();
-
         $queryBuilder
-            ->where('m.compte = :compte_id')
+            ->where('m.compte = :compte')
             ->orderBy('m.date', $order)
-            ->setParameter(':compte_id', $compteID);
+            ->setParameter(':compte', $compte);
 
         $mouvements = $queryBuilder->getQuery()->getResult();
 
@@ -121,16 +119,14 @@ class MouvementRepository extends EntityRepository
         $queryBuilder = $this->createQueryBuilder('m');
         $expressionBuilder = $this->getEntityManager()->getExpressionBuilder();
 
-        $compteID = $compte->getId();
-
         $and = $expressionBuilder->andX();
-        $and->add($expressionBuilder->eq('m.compte', ':compte_id'));
+        $and->add($expressionBuilder->eq('m.compte', ':compte'));
         $and->add($expressionBuilder->lte('m.date', ':date'));
 
         $queryBuilder
             ->where($and)
             ->orderBy('m.date', $order)
-            ->setParameter(':compte_id', $compteID)
+            ->setParameter(':compte', $compte)
             ->setParameter(':date', $date);
 
         $mouvements = $queryBuilder->getQuery()->getResult();
@@ -155,16 +151,14 @@ class MouvementRepository extends EntityRepository
         $queryBuilder = $this->createQueryBuilder('m');
         $expressionBuilder = $this->getEntityManager()->getExpressionBuilder();
 
-        $compteID = $compte->getId();
-
         $and = $expressionBuilder->andX();
-        $and->add($expressionBuilder->eq('m.compte', ':compte_id'));
+        $and->add($expressionBuilder->eq('m.compte', ':compte'));
         $and->add($expressionBuilder->gte('m.date', ':date'));
 
         $queryBuilder
             ->where($and)
             ->orderBy('m.date', $order)
-            ->setParameter(':compte_id', $compteID)
+            ->setParameter(':compte', $compte)
             ->setParameter(':date', $date);
 
         $mouvements = $queryBuilder->getQuery()->getResult();
@@ -187,16 +181,14 @@ class MouvementRepository extends EntityRepository
         $queryBuilder = $this->createQueryBuilder('m');
         $expressionBuilder = $this->getEntityManager()->getExpressionBuilder();
 
-        $compteID = $compte->getId();
-
         $and = $expressionBuilder->andX();
-        $and->add($queryBuilder->expr()->eq('m.compte', ':compte_id'));
+        $and->add($queryBuilder->expr()->eq('m.compte', ':compte'));
         $and->add($expressionBuilder->gte('m.date', ':date_start'));
         $and->add($expressionBuilder->lte('m.date', ':date_end'));
 
         $queryBuilder
             ->where($and)
-            ->setParameter('compte_id', $compteID)
+            ->setParameter('compte', $compte)
             ->setParameter('date_start', $dateStart)
             ->setParameter('date_end', $dateEnd)
             ->orderBy('m.date', $order);
@@ -319,12 +311,11 @@ class MouvementRepository extends EntityRepository
         if ($categorie !== null) {
 
             // La liste des catégories de mouvements
-            $categorieID = $categorie->getId();
-            $categories = array($categorieID);
+            $categories = array($categorie);
             $categoriesFilles = $categorie->getCategoriesFillesRecursive();
 
             foreach ($categoriesFilles as $categorieFille) {
-                $categories[] = $categorieFille->getId();
+                $categories[] = $categorieFille;
             }
 
             $and->add($expressionBuilder->in('m.categorie', ':categories'));
@@ -431,12 +422,11 @@ class MouvementRepository extends EntityRepository
         if ($categorie !== null) {
 
             // La liste des catégories de mouvements
-            $categorieID = $categorie->getId();
-            $categories = array($categorieID);
+            $categories = array($categorie);
             $categoriesFilles = $categorie->getCategoriesFillesRecursive();
 
             foreach ($categoriesFilles as $categorieFille) {
-                $categories[] = $categorieFille->getId();
+                $categories[] = $categorieFille;
             }
 
             $queryBuilder

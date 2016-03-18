@@ -7,7 +7,6 @@
 ## Core
 
 - Multi-utilisateur.
-- Après chaque find (dans les contrôleurs uniquement ?), faire un throw $this->createNotFoundException();
 - Traduction
     - tout piper avec trans
 - Comptes

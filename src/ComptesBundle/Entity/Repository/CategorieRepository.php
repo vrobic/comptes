@@ -31,12 +31,11 @@ class CategorieRepository extends EntityRepository
         $queryBuilder = $this->getEntityManager()->createQueryBuilder();
 
         // La liste des catégories de mouvements
-        $categorieID = $categorie->getId();
-        $categories = array($categorieID);
+        $categories = array($categorie);
         $categoriesFilles = $categorie->getCategoriesFillesRecursive();
 
         foreach ($categoriesFilles as $categorieFille) {
-            $categories[] = $categorieFille->getId();
+            $categories[] = $categorieFille;
         }
 
         $queryBuilder
@@ -80,12 +79,11 @@ class CategorieRepository extends EntityRepository
         }
 
         // La liste des catégories de mouvements
-        $categorieID = $categorie->getId();
-        $categories = array($categorieID);
+        $categories = array($categorie);
         $categoriesFilles = $categorie->getCategoriesFillesRecursive();
 
         foreach ($categoriesFilles as $categorieFille) {
-            $categories[] = $categorieFille->getId();
+            $categories[] = $categorieFille;
         }
 
         $queryBuilder

@@ -31,12 +31,10 @@ class PleinRepository extends EntityRepository
     {
         $queryBuilder = $this->createQueryBuilder('p');
 
-        $vehiculeID = $vehicule->getId();
-
         $queryBuilder
-            ->where('p.vehicule = :vehicule_id')
+            ->where('p.vehicule = :vehicule')
             ->orderBy('p.date', $order)
-            ->setParameter(':vehicule_id', $vehiculeID);
+            ->setParameter(':vehicule', $vehicule);
 
         $pleins = $queryBuilder->getQuery()->getResult();
 
