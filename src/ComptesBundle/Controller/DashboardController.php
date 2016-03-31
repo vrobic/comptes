@@ -20,14 +20,26 @@ class DashboardController extends Controller
         // Fournisseur de statistiques
         $statsProvider = $this->container->get('comptes_bundle.stats.provider');
 
-        // Période sur laquelle baser le calcul de la balance mensuelle
+        // Balance mensuelle sur le mois dernier
+        $dateStart = new \DateTime();
+        $dateStart->modify('first day of last month midnight');
+        $dateEnd = new \DateTime();
+        $dateEnd->modify('first day of this month midnight');
+        $monthlyBalanceOverLastMonth = $statsProvider->getMonthlyBalance($dateStart, $dateEnd);
+
+        // Balance mensuelle sur les trois derniers mois
+        $dateStart = new \DateTime();
+        $dateStart->modify('first day of -3 months midnight');
+        $dateEnd = new \DateTime();
+        $dateEnd->modify('first day of this month midnight');
+        $monthlyBalanceOverLastQuarter = $statsProvider->getMonthlyBalance($dateStart, $dateEnd);
+
+        // Balance mensuelle sur les douze derniers mois
         $dateStart = new \DateTime();
         $dateStart->modify('last year first day of this month midnight'); // Depuis un an, en début de mois
         $dateEnd = new \DateTime();
         $dateEnd->modify('first day of this month midnight'); // Jusqu'à la fin du mois dernier
-
-        // Balance mensuelle
-        $monthlyBalance = $statsProvider->getMonthlyBalance($dateStart, $dateEnd);
+        $monthlyBalanceOverLastYear = $statsProvider->getMonthlyBalance($dateStart, $dateEnd);
 
         // Période sur laquelle baser le calcul de la distance parcourue
         $dateStart = new \DateTime();
@@ -40,7 +52,9 @@ class DashboardController extends Controller
         return $this->render(
             'ComptesBundle:Dashboard:index.html.twig',
             array(
-                'monthly_balance' => $monthlyBalance,
+                'monthly_balance_over_last_month' => $monthlyBalanceOverLastMonth,
+                'monthly_balance_over_last_quarter' => $monthlyBalanceOverLastQuarter,
+                'monthly_balance_over_last_year' => $monthlyBalanceOverLastYear,
                 'distance_for_once_month' => $distanceForOneMonth,
             )
         );
