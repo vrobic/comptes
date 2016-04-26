@@ -34,7 +34,7 @@ class LoadCarburantData extends AbstractFixture implements OrderedFixtureInterfa
     {
         // Chargement de la configuration
         $configurationLoader = $this->container->get('comptes_bundle.configuration.loader');
-        $fixturesConfiguration = $configurationLoader->load('fixtures.yml');
+        $fixturesConfiguration = $configurationLoader->load('fixtures');
 
         // Tableau de données
         $carburantsContent = $fixturesConfiguration['carburants'];
@@ -49,7 +49,8 @@ class LoadCarburantData extends AbstractFixture implements OrderedFixtureInterfa
             $manager->persist($carburant);
 
             // Enregistre l'objet pour pouvoir le réutiliser dans les autres fixtures
-            $this->addReference("carburant-$key", $carburant);
+            $id = $key + 1; // Son identifiant
+            $this->addReference("carburant-$id", $carburant);
         }
 
         $manager->flush();

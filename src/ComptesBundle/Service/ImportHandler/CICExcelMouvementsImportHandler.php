@@ -21,7 +21,7 @@ final class CICExcelMouvementsImportHandler extends AbstractMouvementsImportHand
         $compteRepository = $this->em->getRepository('ComptesBundle:Compte');
 
         // Configuration du handler
-        $configuration = $this->configuration['cic.excel'];
+        $configuration = $this->configuration['cic.excel']['config'];
 
         // Tableau de correspondance entre l'index de la feuille et le compte bancaire
         $comptesBySheets = array();

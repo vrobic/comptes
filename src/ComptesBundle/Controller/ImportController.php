@@ -11,9 +11,9 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @todo Faire une fonction pour chaque action :
  *       - mouvementsParseAction
- *       - mouvementsImportParseAction
- *       - pleinsImportParseAction
- *       - pleinssImportParseAction
+ *       - mouvementsImportAction
+ *       - pleinsParseAction
+ *       - pleinsImportAction
  * @todo Utiliser un service pour mutualiser le reste.
  */
 class ImportController extends Controller
@@ -431,7 +431,7 @@ class ImportController extends Controller
     private function loadConfiguration()
     {
         $configurationLoader = $this->container->get('comptes_bundle.configuration.loader');
-        $configuration = $configurationLoader->load('import.yml');
+        $configuration = $configurationLoader->load('import');
         $this->handlers = $configuration['handlers'][$this->type];
     }
 

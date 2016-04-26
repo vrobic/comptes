@@ -1,6 +1,9 @@
 imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
+    - { resource: @ComptesBundle/Resources/config/fixtures.yml }
+    - { resource: @ComptesBundle/Resources/config/import.yml }
+    - { resource: @ComptesBundle/Resources/config/stats.yml }
 
 framework:
     #esi:             ~

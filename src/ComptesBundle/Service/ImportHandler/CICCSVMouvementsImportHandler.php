@@ -20,7 +20,7 @@ final class CICCSVMouvementsImportHandler extends AbstractMouvementsImportHandle
         $compteRepository = $this->em->getRepository('ComptesBundle:Compte');
 
         // Configuration du handler
-        $configuration = $this->configuration['cic.csv'];
+        $configuration = $this->configuration['cic.csv']['config'];
 
         // Le compte bancaire dans lequel importer les mouvements
         $compteID = $configuration['compte'];

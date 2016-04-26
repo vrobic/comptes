@@ -34,7 +34,7 @@ class StatsProvider
         $this->doctrine = $doctrine;
 
         // Chargement de la configuration
-        $configuration = $configurationLoader->load('stats.yml');
+        $configuration = $configurationLoader->load('stats');
         $this->configuration = $configuration;
     }
 

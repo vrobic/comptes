@@ -20,7 +20,7 @@ final class MyCarsCSVPleinsImportHandler extends AbstractPleinsImportHandler
         $vehiculeRepository = $this->em->getRepository('ComptesBundle:Vehicule');
 
         // Configuration du handler
-        $configuration = $this->configuration['mycars.csv'];
+        $configuration = $this->configuration['mycars.csv']['config'];
 
         // Tableau de correspondance entre le nom du véhicule dans MyCars et l'objet Vehicule
         $vehicules = array();

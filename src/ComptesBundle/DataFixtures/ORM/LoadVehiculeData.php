@@ -34,7 +34,7 @@ class LoadVehiculeData extends AbstractFixture implements OrderedFixtureInterfac
     {
         // Chargement de la configuration
         $configurationLoader = $this->container->get('comptes_bundle.configuration.loader');
-        $fixturesConfiguration = $configurationLoader->load('fixtures.yml');
+        $fixturesConfiguration = $configurationLoader->load('fixtures');
 
         // Tableau de données
         $vehiculesContent = $fixturesConfiguration['vehicules'];

@@ -20,7 +20,7 @@ final class CaisseEpargneMouvementsImportHandler extends AbstractMouvementsImpor
         $compteRepository = $this->em->getRepository('ComptesBundle:Compte');
 
         // Configuration du handler
-        $configuration = $this->configuration['caissedepargne.csv'];
+        $configuration = $this->configuration['caissedepargne.csv']['config'];
 
         // Le compte bancaire dans lequel importer les mouvements
         $compteID = $configuration['compte'];

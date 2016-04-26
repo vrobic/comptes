@@ -39,7 +39,7 @@ class LoadCategorieData extends AbstractFixture implements OrderedFixtureInterfa
     {
         // Chargement de la configuration
         $configurationLoader = $this->container->get('comptes_bundle.configuration.loader');
-        $fixturesConfiguration = $configurationLoader->load('fixtures.yml');
+        $fixturesConfiguration = $configurationLoader->load('fixtures');
 
         // Tableau de données
         $categoriesContent = $fixturesConfiguration['categories'];

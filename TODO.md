@@ -16,8 +16,6 @@
     - sur les graphiques de catégories, ajouter une courbe de moyenne lissée
 - Contrôleurs
     - utiliser OptionsResolver pour contrôler les données en entrée
-- Services
-    - remplacer ComptesBundle\Service\ConfigurationLoader par Symfony\Component\Config\Definition\ConfigurationInterface
 - Fixtures
     - utiliser Alice
 - Assets

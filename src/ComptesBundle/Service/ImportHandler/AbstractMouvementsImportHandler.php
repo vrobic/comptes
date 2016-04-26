@@ -122,7 +122,7 @@ abstract class AbstractMouvementsImportHandler implements ImportHandlerInterface
         $this->mouvementCategorizer = $mouvementCategorizer;
 
         // Chargement de la configuration
-        $configuration = $configurationLoader->load('import.yml');
+        $configuration = $configurationLoader->load('import');
         $this->configuration = $configuration['handlers']['mouvements'];
 
         // Tableaux de classification

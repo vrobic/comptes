@@ -19,10 +19,42 @@ class ComptesExtension extends Extension
      */
     public function load(array $configs, ContainerBuilder $container)
     {
-        $configuration = new Configuration();
-        $config = $this->processConfiguration($configuration, $configs);
+        /**
+         * @var array
+         */
+        $configuration = $this->processConfiguration(new Configuration(), $configs);
 
+        // Injecte la configuration dans les parameters
+        $rootName = 'comptes';
+        $container->setParameter($rootName, $configuration);
+        $this->setConfigAsParameters($container, $configuration, $rootName);
+
+        // Charge les fichiers de configuration personnalisés
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
+    }
+
+    /**
+     * Injecte la configuration dans les parameters.
+     * Permet d'accéder aux valeurs de la configuration
+     * comme si elles étaient définies dans les parameters.
+     *
+     * @param ContainerBuilder $container
+     * @param array $params
+     * @param string $rootName
+     *
+     * @return void
+     */
+    private function setConfigAsParameters(ContainerBuilder &$container, array $params, $rootName)
+    {
+        foreach ($params as $key => $value) {
+
+            $name = "$rootName.$key";
+            $container->setParameter($name, $value);
+
+            if (is_array($value)) {
+                $this->setConfigAsParameters($container, $value, $name);
+            }
+        }
     }
 }

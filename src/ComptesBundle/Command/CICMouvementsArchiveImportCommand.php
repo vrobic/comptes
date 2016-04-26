@@ -42,8 +42,6 @@ use ComptesBundle\Entity\Mouvement;
  *
  * 4. Le script gère la catégorisation automatique des mouvements,
  *    en fonction de mots-clés trouvés dans la description des mouvements.
- *    Pour utiliser cette fonctionnalité, un mapping entre mots-clés et catégories
- *    peut être défini dans le fichier de configuration import.yml.
  *    La liste des mots-clés les plus courants peut être obtenue en exécutant la commande suivante :
  *        php app/console comptes:import:mouvements:frequency comptes.txt > words.txt
  *    Le fichier words.txt obtenu contient la liste des mots utilisés,

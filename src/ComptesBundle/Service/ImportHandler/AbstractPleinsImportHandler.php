@@ -82,7 +82,7 @@ abstract class AbstractPleinsImportHandler implements ImportHandlerInterface
         $this->em = $entityManager;
 
         // Chargement de la configuration
-        $configuration = $configurationLoader->load('import.yml');
+        $configuration = $configurationLoader->load('import');
         $this->configuration = $configuration['handlers']['pleins'];
 
         // Tableaux de classification

@@ -20,7 +20,7 @@ final class MyCarsXMLPleinsImportHandler extends AbstractPleinsImportHandler
         $vehiculeRepository = $this->em->getRepository('ComptesBundle:Vehicule');
 
         // Configuration du handler
-        $configuration = $this->configuration['mycars.xml'];
+        $configuration = $this->configuration['mycars.xml']['config'];
 
         // Tableau de correspondance entre le nom du véhicule dans MyCars et l'objet Vehicule
         $vehicules = array();

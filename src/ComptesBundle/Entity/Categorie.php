@@ -167,7 +167,7 @@ class Categorie
      */
     public function addCategorieFille(Categorie $categorie)
     {
-        $this->categoriesFilles[] = $categorie;
+        $this->categoriesFilles->add($categorie);
 
         return $this;
     }
@@ -213,12 +213,15 @@ class Categorie
      *
      * @param Categorie[] $categoriesFilles
      *
-     * @return \Doctrine\Common\Collections\ArrayCollection
+     * @return Categorie[]
      */
     public function getCategoriesFillesRecursive($categoriesFilles = array())
     {
         foreach ($this->categoriesFilles as $categorieFille) {
-            $categoriesFilles = array_merge($categoriesFilles, $categorieFille->getCategoriesFillesRecursive(array($categorieFille)));
+            $categoriesFilles = array_merge(
+                $categoriesFilles,
+                $categorieFille->getCategoriesFillesRecursive(array($categorieFille))
+            );
         }
 
         return $categoriesFilles;

@@ -33,7 +33,7 @@ abstract class AbstractImportCommand extends ContainerAwareCommand
     /**
      * Définit le type d'import.
      *
-     * @param string Deux valeurs possibles : 'mouvements' ou 'pleins'.
+     * @param string $type Deux valeurs possibles : 'mouvements' ou 'pleins'.
      *
      * @throws \Exception Dans le cas où le type est invalide.
      */
@@ -52,7 +52,7 @@ abstract class AbstractImportCommand extends ContainerAwareCommand
     protected function loadConfiguration()
     {
         $configurationLoader = $this->getContainer()->get('comptes_bundle.configuration.loader');
-        $configuration = $configurationLoader->load('import.yml');
+        $configuration = $configurationLoader->load('import');
         $this->handlers = $configuration['handlers'][$this->type];
     }
 
