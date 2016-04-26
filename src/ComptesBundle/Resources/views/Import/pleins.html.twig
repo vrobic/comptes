@@ -19,11 +19,11 @@
                     </small>
                 </th>
                 <th>Date</th>
-                <th>Quantité</th>
-                <th>Prix au litre</th>
-                <th>Montant</th>
+                <th>Quantité <small>(en L)</small></th>
+                <th>Prix au litre <small>(en €)</small></th>
+                <th>Montant <small>(en €)</small></th>
                 <th>Véhicule</th>
-                <th>Distance parcourue</th>
+                <th>Distance parcourue <small>(en km)</small></th>
             </tr>
         </thead>
         <tbody>
@@ -38,11 +38,11 @@
                         <input id="date-{{ plein.hash }}" type="text" name="pleins[{{ plein.hash }}][date]" value="{{ plein.date|date('d-m-Y') }}" placeholder="{{ date()|date('d-m-Y') }}">
                     </td>
                     <td class="input-text">
-                        <label for="quantite-{{ plein.hash }}" class="sr-only">Quantité</label>
+                        <label for="quantite-{{ plein.hash }}" class="sr-only">Quantité <small>(en L)</small></label>
                         <input id="quantite-{{ plein.hash }}" type="text" name="pleins[{{ plein.hash }}][quantite]" value="{{ plein.quantite|number_format(2, ".", "") }}" placeholder="0.00">
                     </td>
                     <td class="input-text">
-                        <label for="prixLitre-{{ plein.hash }}" class="sr-only">Prix au litre</label>
+                        <label for="prixLitre-{{ plein.hash }}" class="sr-only">Prix au litre <small>(en €)</small></label>
                         <input id="prixLitre-{{ plein.hash }}" type="text" name="pleins[{{ plein.hash }}][prixLitre]" value="{{ plein.prixLitre|number_format(3, ".", "") }}" placeholder="0.000">
                     </td>
                     <td>
@@ -57,7 +57,7 @@
                         </select>
                     </td>
                     <td class="input-text">
-                        <label for="distanceParcourue-{{ plein.hash }}" class="sr-only">Distance parcourue</label>
+                        <label for="distanceParcourue-{{ plein.hash }}" class="sr-only">Distance parcourue <small>(en km)</small></label>
                         <input id="distanceParcourue-{{ plein.hash }}" type="text" name="pleins[{{ plein.hash }}][distanceParcourue]" value="{{ plein.distanceParcourue|number_format(2, ".", "") }}" placeholder="0.00">
                     </td>
                 </tr>

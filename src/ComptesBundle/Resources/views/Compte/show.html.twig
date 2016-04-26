@@ -113,7 +113,7 @@
                         </small>
                     </th>
                     <th class="col-md-1">Date</th>
-                    <th class="col-md-1">Montant</th>
+                    <th class="col-md-1">Montant <small>(en €)</small></th>
                     <th class="col-md-1">Solde</th>
                     <th class="col-md-5">Description</th>
                     <th class="col-md-3">Catégorie</th>
@@ -133,7 +133,7 @@
                             <input id="date-{{ mouvement.id }}" type="text" name="mouvements[{{ mouvement.id }}][date]" value="{{ mouvement.date|date('d-m-Y') }}" placeholder="{{ date()|date('d-m-Y') }}">
                         </td>
                         <td class="input-text">
-                            <label for="montant-{{ mouvement.id }}" class="sr-only">Montant</label>
+                            <label for="montant-{{ mouvement.id }}" class="sr-only">Montant <small>(en €)</small></label>
                             <input id="montant-{{ mouvement.id }}" type="text" name="mouvements[{{ mouvement.id }}][montant]" value="{{ mouvement.montant|number_format(2, ".", "") }}" placeholder="0.00">
                         </td>
                         <td>
@@ -167,7 +167,7 @@
                         <input id="date--1" type="text" name="mouvements[-1][date]" value="{{ date()|date('d-m-Y') }}" placeholder="{{ date()|date('d-m-Y') }}">
                     </td>
                     <td class="input-text">
-                        <label for="montant--1" class="sr-only">Montant</label>
+                        <label for="montant--1" class="sr-only">Montant <small>(en €)</small></label>
                         <input id="montant--1" type="text" name="mouvements[-1][montant]" value="0.00" placeholder="0.00">
                     </td>
                     <td></td>

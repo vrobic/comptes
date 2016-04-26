@@ -34,13 +34,13 @@
                             </small>
                         </th>
                         <th>Date</th>
-                        <th>Quantité</th>
-                        <th>Prix au litre</th>
+                        <th>Quantité <small>(en L)</small></th>
+                        <th>Prix au litre <small>(en €)</small></th>
                         <th>Montant</th>
                         <th>Véhicule</th>
-                        <th>Distance parcourue</th>
-                        <th>Consommation</th>
-                        <th>Autonomie estimée <small>(kilomètres restants)</small></th>
+                        <th>Distance parcourue <small>(en km)</small></th>
+                        <th>Consommation <small>(pour 100km)</small></th>
+                        <th>Autonomie estimée <small>(restant)</small></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -54,11 +54,11 @@
                             <input id="date--1" type="text" name="pleins[-1][date]" value="{{ date()|date('d-m-Y') }}" placeholder="{{ date()|date('d-m-Y') }}">
                         </td>
                         <td class="input-text">
-                            <label for="quantite--1" class="sr-only">Quantité</label>
+                            <label for="quantite--1" class="sr-only">Quantité <small>(en L)</small></label>
                             <input id="quantite--1" type="text" name="pleins[-1][quantite]" value="0.00" placeholder="0.00">
                         </td>
                         <td class="input-text">
-                            <label for="prixLitre--1" class="sr-only">Prix au litre</label>
+                            <label for="prixLitre--1" class="sr-only">Prix au litre <small>(en €)</small></label>
                             <input id="prixLitre--1" type="text" name="pleins[-1][prixLitre]" value="0.000" placeholder="0.000">
                         </td>
                         <td></td>
@@ -71,7 +71,7 @@
                             </select>
                         </td>
                         <td class="input-text">
-                            <label for="distanceParcourue--1" class="sr-only">Distance parcourue</label>
+                            <label for="distanceParcourue--1" class="sr-only">Distance parcourue <small>(en km)</small></label>
                             <input id="distanceParcourue--1" type="text" name="pleins[-1][distanceParcourue]" value="0.00" placeholder="0.00">
                         </td>
                         <td></td>
@@ -88,7 +88,7 @@
                                 <input id="date-{{ plein.id }}" type="text" name="pleins[{{ plein.id }}][date]" value="{{ plein.date|date('d-m-Y') }}" placeholder="{{ date()|date('d-m-Y') }}">
                             </td>
                             <td class="input-text">
-                                <label for="quantite-{{ plein.id }}" class="sr-only">Quantité</label>
+                                <label for="quantite-{{ plein.id }}" class="sr-only">Quantité <small>(en L)</small></label>
                                 <input id="quantite-{{ plein.id }}" type="text" name="pleins[{{ plein.id }}][quantite]" value="{{ plein.quantite|number_format(2, ".", "") }}" placeholder="0.00">
                             </td>
                             <td class="input-text">
@@ -107,7 +107,7 @@
                                 </select>
                             </td>
                             <td class="input-text">
-                                <label for="distanceParcourue-{{ plein.id }}" class="sr-only">Distance parcourue</label>
+                                <label for="distanceParcourue-{{ plein.id }}" class="sr-only">Distance parcourue <small>(en km)</small></label>
                                 <input id="distanceParcourue-{{ plein.id }}" type="text" name="pleins[{{ plein.id }}][distanceParcourue]" value="{{ plein.distanceParcourue|number_format(2, ".", "") }}" placeholder="0.00">
                             </td>
                             <td class="{{ plein.consommation <= plein.vehicule.consommation ? 'text-success' : 'text-danger' }}">

@@ -297,6 +297,9 @@ body {
 .content table caption {
     display: none;
 }
+.content table thead th small {
+    display: block;
+}
 
 /* Graphiques */
 .chart {

@@ -39,7 +39,7 @@
                 </th>
                 <th class="col-md-2">Compte</th>
                 <th class="col-md-1">Date</th>
-                <th class="col-md-1">Montant</th>
+                <th class="col-md-1">Montant <small>(en €)</small></th>
                 <th class="col-md-4">Description</th>
                 <th class="col-md-3">Catégorie</th>
             </tr>
@@ -65,7 +65,7 @@
                         <input id="date-{{ mouvement.hash }}" type="text" name="mouvements[{{ mouvement.hash }}][date]" value="{{ mouvement.date|date('d-m-Y') }}" placeholder="{{ date()|date('d-m-Y') }}">
                     </td>
                     <td class="input-text">
-                        <label for="montant-{{ mouvement.hash }}" class="sr-only">Montant</label>
+                        <label for="montant-{{ mouvement.hash }}" class="sr-only">Montant <small>(en €)</small></label>
                         <input id="montant-{{ mouvement.hash }}" type="text" name="mouvements[{{ mouvement.hash }}][montant]" value="{{ mouvement.montant|number_format(2, ".", "") }}" placeholder="0.00">
                     </td>
                     <td class="input-text">
