@@ -13,16 +13,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  */
 class Categorie
 {
-    /**
-     * Identifiant de la catégorie.
-     *
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    protected $id;
+    use IdentifiableTrait;
 
     /**
      * Nom de la catégorie.
@@ -98,16 +89,6 @@ class Categorie
     public function __toString()
     {
         return $this->getNom();
-    }
-
-    /**
-     * Récupère l'identifiant de la catégorie.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
     }
 
     /**

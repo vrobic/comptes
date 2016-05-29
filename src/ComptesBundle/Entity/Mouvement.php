@@ -13,16 +13,7 @@ use Symfony\Component\Validator\ExecutionContextInterface;
  */
 class Mouvement
 {
-    /**
-     * Identifiant du mouvement.
-     *
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    protected $id;
+    use IdentifiableTrait;
 
     /**
      * Date du mouvement.
@@ -110,16 +101,6 @@ class Mouvement
         $hash = md5($string);
 
         return $hash;
-    }
-
-    /**
-     * Récupère l'identifiant du mouvement.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
     }
 
     /**

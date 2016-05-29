@@ -12,16 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Keyword
 {
-    /**
-     * Identifiant du mot-clé.
-     *
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    protected $id;
+    use IdentifiableTrait;
 
     /**
      * Mot.
@@ -51,16 +42,6 @@ class Keyword
     public function __toString()
     {
         return $this->getWord();
-    }
-
-    /**
-     * Récupère l'identifiant du mot-clé.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
     }
 
     /**

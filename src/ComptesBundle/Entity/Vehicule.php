@@ -14,16 +14,7 @@ use Symfony\Component\Validator\ExecutionContextInterface;
  */
 class Vehicule
 {
-    /**
-     * Identifiant du véhicule.
-     *
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    protected $id;
+    use IdentifiableTrait;
 
     /**
      * Marque et modèle du véhicule.
@@ -133,16 +124,6 @@ class Vehicule
     public function __toString()
     {
         return $this->getNom();
-    }
-
-    /**
-     * Récupère l'identifiant du véhicule.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
     }
 
     /**

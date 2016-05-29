@@ -13,16 +13,7 @@ use Symfony\Component\Validator\ExecutionContextInterface;
  */
 class Compte
 {
-    /**
-     * Identifiant du compte.
-     *
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    protected $id;
+    use IdentifiableTrait;
 
     /**
      * Nom du compte.
@@ -123,16 +114,6 @@ class Compte
     public function __toString()
     {
         return $this->getNom();
-    }
-
-    /**
-     * Récupère l'identifiant du compte.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
     }
 
     /**

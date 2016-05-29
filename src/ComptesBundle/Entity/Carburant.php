@@ -13,16 +13,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  */
 class Carburant
 {
-    /**
-     * Identifiant du carburant.
-     *
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    protected $id;
+    use IdentifiableTrait;
 
     /**
      * Nom commercial du carburant.
@@ -68,16 +59,6 @@ class Carburant
     public function __toString()
     {
         return $this->getNom();
-    }
-
-    /**
-     * Récupère l'identifiant du carburant.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
     }
 
     /**
