@@ -6,7 +6,6 @@ use Doctrine\ORM\EntityManager;
 use ComptesBundle\Service\ConfigurationLoader;
 use ComptesBundle\Service\MouvementCategorizer;
 use ComptesBundle\Entity\Mouvement;
-use ComptesBundle\Service\ImportHandlerInterface;
 
 /**
  * Décrit un handler d'import de mouvements.
@@ -20,7 +19,7 @@ use ComptesBundle\Service\ImportHandlerInterface;
  *      - les ambigus,
  *      - ceux à valider.
  */
-abstract class AbstractMouvementsImportHandler implements ImportHandlerInterface
+abstract class AbstractMouvementsImportHandler
 {
     /**
      * @internal Flag de catégorisation d'un mouvement catégorisé,
@@ -131,6 +130,22 @@ abstract class AbstractMouvementsImportHandler implements ImportHandlerInterface
         $this->uncategorizedMouvements = array();
         $this->ambiguousMouvements = array();
         $this->waitingMouvements = array();
+    }
+
+    /**
+     * Parse le fichier et remplit différents tableaux
+     * de classification des mouvements :
+     * 		- tous les mouvements,
+     *      - les catégorisés,
+     *      - les non catégorisés,
+     *      - les ambigus,
+     *      - ceux à valider.
+     *
+     * @param \SplFileObject $file
+     */
+    public function parse(\SplFileObject $file)
+    {
+        throw new \Exception("Le handler d'import de mouvements doit implémenter la méthode parse.");
     }
 
     /**

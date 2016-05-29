@@ -5,19 +5,13 @@ namespace ComptesBundle\Service\ImportHandler;
 use Doctrine\ORM\EntityManager;
 use ComptesBundle\Service\ConfigurationLoader;
 use ComptesBundle\Entity\Plein;
-use ComptesBundle\Service\ImportHandlerInterface;
 
 /**
  * Décrit un handler d'import de pleins.
  *
  * Il doit être surchargé par une classe concrète implémentant la méthode parse.
- * Cette méthode doit parser le fichier d'entrée et remplir différents tableaux
- * de classification des pleins :
- *      - tous les pleins,
- *      - les valides,
- *      - ceux à valider.
  */
-abstract class AbstractPleinsImportHandler implements ImportHandlerInterface
+abstract class AbstractPleinsImportHandler
 {
     /**
      * @internal Flag de catégorisation d'un plein valide,
@@ -89,6 +83,20 @@ abstract class AbstractPleinsImportHandler implements ImportHandlerInterface
         $this->pleins = array();
         $this->validPleins = array();
         $this->waitingPleins = array();
+    }
+
+    /**
+     * Parse le fichier et remplit différents tableaux
+     * de classification des pleins :
+     *      - tous les pleins,
+     *      - les valides,
+     *      - ceux à valider.
+     *
+     * @param \SplFileObject $file
+     */
+    public function parse(\SplFileObject $file)
+    {
+        throw new \Exception("Le handler d'import de pleins doit implémenter la méthode parse.");
     }
 
     /**
