@@ -1,0 +1,109 @@
+ComptesBundle\Entity\Carburant:
+    properties:
+        nom:
+            - NotBlank: ~
+ComptesBundle\Entity\Categorie:
+    properties:
+        nom:
+            - NotBlank: ~
+ComptesBundle\Entity\Compte:
+    constraints:
+        - Callback: [validate]
+    properties:
+        nom:
+            - NotBlank: ~
+        numero:
+            - NotBlank: ~
+        banque:
+            - NotBlank: ~
+        plafond:
+            - NotBlank: ~
+        soldeInitial:
+            - Range: # En phase avec le mapping Doctrine
+                min: -999999.99
+                max: 999999.99
+        soldeInitial:
+            - NotBlank: ~
+        dateOuverture:
+            - NotBlank: ~
+            - Date: ~
+ComptesBundle\Entity\Keyword:
+    properties:
+        word:
+            - NotBlank: ~
+        categorie:
+            - NotBlank: ~
+ComptesBundle\Entity\Mouvement:
+    constraints:
+        - Callback: [validate]
+    properties:
+        date:
+            - NotBlank: ~
+            - Date: ~
+        compte:
+            - NotBlank: ~
+        montant:
+            - NotBlank: ~
+            - Range: # En phase avec le mapping Doctrine
+                min: -999999.99
+                max: 999999.99
+ComptesBundle\Entity\Plein:
+    constraints:
+        - Callback: [validate]
+    properties:
+        date:
+            - NotBlank: ~
+            - Date: ~
+        vehicule:
+            - NotBlank: ~
+        distanceParcourue:
+            - NotBlank: ~
+            - Range: # En phase avec le mapping Doctrine
+                min: -9999.99
+                max: 9999.99
+        quantite:
+            - NotBlank: ~
+            - Range: # En phase avec le mapping Doctrine
+                min: -999.99
+                max: 999.99
+        prixLitre:
+            - NotBlank: ~
+            - Range: # En phase avec le mapping Doctrine
+                min: -9.999
+                max: 9.999
+        montant:
+            - NotBlank: ~
+            - Range: # En phase avec le mapping Doctrine
+                min: -999999.99
+                max: 999999.99
+ComptesBundle\Entity\Vehicule:
+    constraints:
+        - Callback: [validate]
+    properties:
+        nom:
+            - NotBlank: ~
+        dateAchat:
+            - NotBlank: ~
+            - Date: ~
+        kilometrageAchat:
+            - NotBlank: ~
+            - Range: # En phase avec le mapping Doctrine
+                min: -999999.9
+                max: 999999.99
+        kilometrageInitial:
+            - NotBlank: ~
+            - Range: # En phase avec le mapping Doctrine
+                min: -999999.9
+                max: 999999.99
+        prixAchat:
+            - NotBlank: ~
+            - Range: # En phase avec le mapping Doctrine
+                min: -999999.99
+                max: 999999.99
+        carburant:
+            - NotBlank: ~
+        capaciteReservoir:
+            - NotBlank: ~
+            - Range: # En phase avec le mapping Doctrine
+                min: -999.99
+                max: 999.99

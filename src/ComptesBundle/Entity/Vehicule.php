@@ -4,6 +4,7 @@ namespace ComptesBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\ExecutionContextInterface;
 
 /**
  * Véhicule.
@@ -508,5 +509,41 @@ class Vehicule
     public function getRang()
     {
         return $this->rang;
+    }
+
+    /**
+     * Valide le véhicule pour le moteur de validation.
+     *
+     * @param ExecutionContextInterface $context
+     *
+     * @return void
+     */
+    public function validate(ExecutionContextInterface $context)
+    {
+        $violations = array();
+
+        if ($this->getDateAchat() > new \DateTime()) {
+            $violations[] = "La date d'achat du véhicule doit être située dans le passé.";
+        }
+
+        if ($this->getDateVente() !== null && $this->getDateVente() > new \DateTime()) {
+            $violations[] = "La date de vente du véhicule doit être située dans le passé.";
+        }
+
+        if ($this->getKilometrageAchat() < 0) {
+            $violations[] = "Le kilométrage à l'achat du véhicule doit être supérieur ou égal à 0.";
+        }
+
+        if ($this->getKilometrageInitial() < $this->getKilometrageAchat()) {
+            $violations[] = "Le kilométrage initial doit être supérieur ou égal au kilométrage à l'achat du véhicule.";
+        }
+
+        if ($this->getCapaciteReservoir() < 0) {
+            $violations[] = "La capacité du réservoir du véhicule doit être supérieure ou égale à 0.";
+        }
+
+        foreach ($violations as $violation) {
+            $context->addViolation($violation);
+        }
     }
 }

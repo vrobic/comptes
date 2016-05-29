@@ -3,6 +3,7 @@
 namespace ComptesBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\ExecutionContextInterface;
 
 /**
  * Plein de carburant.
@@ -306,5 +307,41 @@ class Plein
         $autonomie = $consommation > 0 ? $capacite * 100 / $consommation : 0;
 
         return $autonomie;
+    }
+
+    /**
+     * Valide le plein pour le moteur de validation.
+     *
+     * @param ExecutionContextInterface $context
+     *
+     * @return void
+     */
+    public function validate(ExecutionContextInterface $context)
+    {
+        $violations = array();
+
+        if ($this->getDate() > new \DateTime()) {
+            $violations[] = "La date du plein doit se situer dans le passé.";
+        }
+
+        if ($this->getDistanceParcourue() < 0) {
+            $violations[] = "La distance parcourue doit être supérieure ou égale à 0.";
+        }
+
+        if ($this->getQuantite() < 0) {
+            $violations[] = "La quantité de carburant doit être supérieure ou égale à 0.";
+        }
+
+        if ($this->getPrixLitre() < 0) {
+            $violations[] = "Le prix du litre de carburant doit être supérieur ou égal à 0.";
+        }
+
+        if ($this->getMontant() != round($this->getPrixLitre() * $this->getQuantite(), 2)) {
+            $violations[] = "Le montant du plein ne correspond pas aux prix du litre et quantité saisis.";
+        }
+
+        foreach ($violations as $violation) {
+            $context->addViolation($violation);
+        }
     }
 }

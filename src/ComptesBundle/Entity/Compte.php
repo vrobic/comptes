@@ -3,6 +3,7 @@
 namespace ComptesBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\ExecutionContextInterface;
 
 /**
  * Compte bancaire.
@@ -440,5 +441,38 @@ class Compte
     public function getRang()
     {
         return $this->rang;
+    }
+
+    /**
+     * Valide le compte pour le moteur de validation.
+     *
+     * @param ExecutionContextInterface $context
+     *
+     * @return void
+     */
+    public function validate(ExecutionContextInterface $context)
+    {
+        $violations = array();
+
+        if ($this->getPlafond() < 0) {
+            $violations[] = "Le plafond du compte doit être supérieur ou égal à 0. La valeur 0 indique l'absence de plafond.";
+        }
+
+        if ($this->getDateOuverture() > new \DateTime()) {
+            $violations[] = "La date d'ouverture du compte doit être située dans le passé.";
+        }
+
+        if ($this->getDateFermeture() !== null) {
+            if ($this->getDateFermeture() > new \DateTime()) {
+                $violations[] = "La date de fermeture du compte doit être située dans le passé.";
+            }
+            if ($this->getDateFermeture() < $this->getDateOuverture()) {
+                $violations[] = "La date de fermeture doit être postérieure ou égale à celle d'ouverture.";
+            }
+        }
+
+        foreach ($violations as $violation) {
+            $context->addViolation($violation);
+        }
     }
 }

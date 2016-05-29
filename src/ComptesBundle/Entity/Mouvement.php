@@ -3,6 +3,7 @@
 namespace ComptesBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\ExecutionContextInterface;
 
 /**
  * Mouvement bancaire.
@@ -239,5 +240,25 @@ class Mouvement
     public function getDescription()
     {
         return $this->description;
+    }
+
+    /**
+     * Valide le mouvement pour le moteur de validation.
+     *
+     * @param ExecutionContextInterface $context
+     *
+     * @return void
+     */
+    public function validate(ExecutionContextInterface $context)
+    {
+        $violations = array();
+
+        if ($this->getDate() > new \DateTime()) {
+            $violations[] = "La date du mouvement doit être située dans le passé.";
+        }
+
+        foreach ($violations as $violation) {
+            $context->addViolation($violation);
+        }
     }
 }

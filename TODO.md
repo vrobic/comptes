@@ -6,6 +6,9 @@
 
 ## Core
 
+- Validation
+    - utiliser des expressions plutôt que des callbacks
+    - la brancher au code
 - Multi-utilisateur.
 - Traduction
     - tout piper avec trans
