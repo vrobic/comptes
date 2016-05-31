@@ -1,0 +1,56 @@
+ComptesBundle\Entity\Vehicule:
+    type: entity
+    table: vehicules
+    repositoryClass: ComptesBundle\Entity\Repository\VehiculeRepository
+    id:
+        id:
+            type: integer
+            generator:
+                strategy: AUTO
+    fields:
+        nom:
+            type: string
+        dateAchat:
+            type: date
+            column: date_achat
+        dateVente:
+            type: date
+            nullable: true
+            column: date_vente
+        kilometrageAchat:
+            type: decimal
+            scale: 1
+            precision: 7
+            column: kilometrage_achat
+        kilometrageInitial:
+            type: decimal
+            scale: 1
+            precision: 7
+            column: kilometrage_initial
+        prixAchat:
+            type: decimal
+            scale: 2
+            precision: 8
+            column: prix_achat
+        capaciteReservoir:
+            type: decimal
+            scale: 2
+            precision: 5
+            column: capacite_reservoir
+        rang:
+            type: integer
+            nullable: true
+    manyToOne:
+        carburant:
+            targetEntity: ComptesBundle\Entity\Carburant
+            cascade:
+                - persist
+            inversedBy: vehicules
+            joinColumn:
+                nullable: false
+    oneToMany:
+        pleins:
+            targetEntity: ComptesBundle\Entity\Plein
+            cascade:
+                - persist
+            mappedBy: vehicule

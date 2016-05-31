@@ -2,13 +2,8 @@
 
 namespace ComptesBundle\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-
 /**
  * Mot-clé de catégorie.
- *
- * @ORM\Table(name="keywords")
- * @ORM\Entity(repositoryClass="ComptesBundle\Entity\Repository\KeywordRepository")
  */
 class Keyword
 {
@@ -18,8 +13,6 @@ class Keyword
      * Mot.
      *
      * @var string
-     *
-     * @ORM\Column(name="word", type="string", length=255, unique=true)
      */
     protected $word;
 
@@ -27,10 +20,6 @@ class Keyword
      * Catégorie utilisant ce mot-clé.
      *
      * @var Categorie
-     *
-     * @ORM\ManyToOne(targetEntity="Categorie", inversedBy="keywords", cascade={"persist"})
-     * @ORM\JoinColumn(nullable=false)
-     * @ORM\OrderBy({"rang" = "ASC"})
      */
     protected $categorie;
 

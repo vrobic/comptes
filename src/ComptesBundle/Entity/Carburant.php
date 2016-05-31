@@ -2,14 +2,10 @@
 
 namespace ComptesBundle\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Carburant.
- *
- * @ORM\Table(name="carburants")
- * @ORM\Entity(repositoryClass="ComptesBundle\Entity\Repository\CarburantRepository")
  */
 class Carburant
 {
@@ -19,8 +15,6 @@ class Carburant
      * Nom commercial du carburant.
      *
      * @var string
-     *
-     * @ORM\Column(name="nom", type="string", length=255)
      */
     protected $nom;
 
@@ -28,9 +22,6 @@ class Carburant
      * Véhicules utilisant ce carburant.
      *
      * @var \Doctrine\Common\Collections\ArrayCollection
-     *
-     * @ORM\OneToMany(targetEntity="Vehicule", mappedBy="carburant", cascade={"persist"})
-     * @ORM\OrderBy({"rang" = "ASC"})
      */
     protected $vehicules;
 
@@ -38,8 +29,6 @@ class Carburant
      * Rang d'affichage du carburant.
      *
      * @var int
-     *
-     * @ORM\Column(name="rang", type="integer", nullable=true)
      */
     protected $rang;
 

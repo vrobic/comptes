@@ -2,14 +2,10 @@
 
 namespace ComptesBundle\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\ExecutionContextInterface;
 
 /**
  * Compte bancaire.
- *
- * @ORM\Table(name="comptes")
- * @ORM\Entity(repositoryClass="ComptesBundle\Entity\Repository\CompteRepository")
  */
 class Compte
 {
@@ -19,8 +15,6 @@ class Compte
      * Nom du compte.
      *
      * @var string
-     *
-     * @ORM\Column(name="nom", type="string", length=255)
      */
     protected $nom;
 
@@ -28,8 +22,6 @@ class Compte
      * Numéro du compte.
      *
      * @var string
-     *
-     * @ORM\Column(name="numero", type="string", length=255)
      */
     protected $numero;
 
@@ -37,8 +29,6 @@ class Compte
      * Domiciliation du compte.
      *
      * @var string
-     *
-     * @ORM\Column(name="banque", type="string", length=255)
      */
     protected $banque;
 
@@ -46,8 +36,6 @@ class Compte
      * Plafond du compte, en euros.
      *
      * @var int
-     *
-     * @ORM\Column(name="plafond", type="integer")
      */
     protected $plafond;
 
@@ -55,9 +43,6 @@ class Compte
      * Mouvements bancaires du compte.
      *
      * @var \Doctrine\Common\Collections\ArrayCollection
-     *
-     * @ORM\OneToMany(targetEntity="Mouvement", mappedBy="compte", cascade={"persist"})
-     * @ORM\OrderBy({"date"="ASC"})
      */
     protected $mouvements;
 
@@ -65,8 +50,6 @@ class Compte
      * Solde initial du compte en euros, avant le premier mouvement rentré dans l'application.
      *
      * @var string
-     *
-     * @ORM\Column(name="solde_initial", type="decimal", precision=8, scale=2)
      */
     protected $soldeInitial;
 
@@ -74,8 +57,6 @@ class Compte
      * Date d'ouverture du compte.
      *
      * @var \DateTime
-     *
-     * @ORM\Column(name="date_ouverture", type="date")
      */
     protected $dateOuverture;
 
@@ -83,8 +64,6 @@ class Compte
      * Date de fermeture éventuelle du compte.
      *
      * @var \DateTime
-     *
-     * @ORM\Column(name="date_fermeture", type="date", nullable=true)
      */
     protected $dateFermeture;
 
@@ -92,8 +71,6 @@ class Compte
      * Rang d'affichage du compte.
      *
      * @var int
-     *
-     * @ORM\Column(name="rang", type="integer", nullable=true)
      */
     protected $rang;
 

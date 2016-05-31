@@ -2,14 +2,10 @@
 
 namespace ComptesBundle\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\ExecutionContextInterface;
 
 /**
  * Plein de carburant.
- *
- * @ORM\Table(name="pleins")
- * @ORM\Entity(repositoryClass="ComptesBundle\Entity\Repository\PleinRepository")
  */
 class Plein
 {
@@ -19,8 +15,6 @@ class Plein
      * Date du plein.
      *
      * @var \DateTime
-     *
-     * @ORM\Column(name="date", type="date")
      */
     protected $date;
 
@@ -28,9 +22,6 @@ class Plein
      * Véhicule.
      *
      * @var Vehicule
-     *
-     * @ORM\ManyToOne(targetEntity="Vehicule", inversedBy="pleins", cascade={"persist"})
-     * @ORM\JoinColumn(nullable=false)
      */
     protected $vehicule;
 
@@ -38,8 +29,6 @@ class Plein
      * Distance parcourue depuis le plein précédent.
      *
      * @var string
-     *
-     * @ORM\Column(name="distance_parcourue", type="decimal", precision=6, scale=2)
      */
     protected $distanceParcourue;
 
@@ -47,8 +36,6 @@ class Plein
      * Volume du plein, en litres de carburant.
      *
      * @var string
-     *
-     * @ORM\Column(name="quantite", type="decimal", precision=5, scale=2)
      */
     protected $quantite;
 
@@ -56,8 +43,6 @@ class Plein
      * Prix du litre de carburant, en euros.
      *
      * @var string
-     *
-     * @ORM\Column(name="prix_litre", type="decimal", precision=4, scale=3)
      */
     protected $prixLitre;
 
@@ -65,8 +50,6 @@ class Plein
      * Montant du plein, en euros.
      *
      * @var string
-     *
-     * @ORM\Column(name="montant", type="decimal", precision=8, scale=2)
      */
     protected $montant;
 

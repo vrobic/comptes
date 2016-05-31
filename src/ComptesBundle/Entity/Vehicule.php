@@ -2,15 +2,11 @@
 
 namespace ComptesBundle\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\ExecutionContextInterface;
 
 /**
  * Véhicule.
- *
- * @ORM\Table(name="vehicules")
- * @ORM\Entity(repositoryClass="ComptesBundle\Entity\Repository\VehiculeRepository")
  */
 class Vehicule
 {
@@ -20,8 +16,6 @@ class Vehicule
      * Marque et modèle du véhicule.
      *
      * @var string
-     *
-     * @ORM\Column(name="nom", type="string", length=255)
      */
     protected $nom;
 
@@ -29,8 +23,6 @@ class Vehicule
      * Date d'achat du véhicule.
      *
      * @var \DateTime
-     *
-     * @ORM\Column(name="date_achat", type="date")
      */
     protected $dateAchat;
 
@@ -38,8 +30,6 @@ class Vehicule
      * Date de revente du véhicule.
      *
      * @var \DateTime
-     *
-     * @ORM\Column(name="date_vente", type="date", nullable=true)
      */
     protected $dateVente;
 
@@ -47,8 +37,6 @@ class Vehicule
      * Kilométrage du véhicule à son achat.
      *
      * @var string
-     *
-     * @ORM\Column(name="kilometrage_achat", type="decimal", precision=7, scale=1)
      */
     protected $kilometrageAchat;
 
@@ -56,8 +44,6 @@ class Vehicule
      * Kilométrage du véhicule après le premier plein rentré dans l'application.
      *
      * @var string
-     *
-     * @ORM\Column(name="kilometrage_initial", type="decimal", precision=7, scale=1)
      */
     protected $kilometrageInitial;
 
@@ -65,8 +51,6 @@ class Vehicule
      * Prix d'achat du véhicule, en euros.
      *
      * @var string
-     *
-     * @ORM\Column(name="prix_achat", type="decimal", precision=8, scale=2)
      */
     protected $prixAchat;
 
@@ -74,9 +58,6 @@ class Vehicule
      * Carburant.
      *
      * @var Carburant
-     *
-     * @ORM\ManyToOne(targetEntity="Carburant", inversedBy="vehicules", cascade={"persist"})
-     * @ORM\JoinColumn(nullable=false)
      */
     protected $carburant;
 
@@ -84,8 +65,6 @@ class Vehicule
      * Capacité du réservoir, en litres.
      *
      * @var string
-     *
-     * @ORM\Column(name="capacite_reservoir", type="decimal", precision=5, scale=2))
      */
     protected $capaciteReservoir;
 
@@ -93,9 +72,6 @@ class Vehicule
      * Pleins de carburant.
      *
      * @var \Doctrine\Common\Collections\ArrayCollection
-     *
-     * @ORM\OneToMany(targetEntity="Plein", mappedBy="vehicule", cascade={"persist"})
-     * @ORM\OrderBy({"date"="ASC"})
      */
     protected $pleins;
 
@@ -103,8 +79,6 @@ class Vehicule
      * Rang d'affichage du véhicule.
      *
      * @var int
-     *
-     * @ORM\Column(name="rang", type="integer", nullable=true)
      */
     protected $rang;
 

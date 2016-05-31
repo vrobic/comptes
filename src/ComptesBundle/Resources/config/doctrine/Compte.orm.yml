@@ -1,0 +1,41 @@
+ComptesBundle\Entity\Compte:
+    type: entity
+    table: comptes
+    repositoryClass: ComptesBundle\Entity\Repository\CompteRepository
+    id:
+        id:
+            type: integer
+            generator:
+                strategy: AUTO
+    fields:
+        nom:
+            type: string
+        numero:
+            type: string
+        banque:
+            type: string
+        plafond:
+            type: integer
+        soldeInitial:
+            type: decimal
+            scale: 2
+            precision: 8
+            column: solde_initial
+        dateOuverture:
+            type: date
+            column: date_ouverture
+        dateFermeture:
+            type: date
+            nullable: true;
+            column: date_fermeture
+        rang:
+            type: integer
+            nullable: true
+    oneToMany:
+        mouvements:
+            targetEntity: ComptesBundle\Entity\Mouvement
+            cascade:
+                - persist
+            mappedBy: compte
+            orderBy:
+                date: ASC

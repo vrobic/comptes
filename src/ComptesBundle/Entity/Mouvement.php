@@ -2,14 +2,10 @@
 
 namespace ComptesBundle\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\ExecutionContextInterface;
 
 /**
  * Mouvement bancaire.
- *
- * @ORM\Table(name="mouvements")
- * @ORM\Entity(repositoryClass="ComptesBundle\Entity\Repository\MouvementRepository")
  */
 class Mouvement
 {
@@ -19,8 +15,6 @@ class Mouvement
      * Date du mouvement.
      *
      * @var \DateTime
-     *
-     * @ORM\Column(name="date", type="date")
      */
     protected $date;
 
@@ -28,8 +22,6 @@ class Mouvement
      * Catégorie du mouvement.
      *
      * @var Categorie
-     *
-     * @ORM\ManyToOne(targetEntity="Categorie", inversedBy="mouvements", cascade={"persist"})
      */
     protected $categorie;
 
@@ -37,9 +29,6 @@ class Mouvement
      * Compte bancaire.
      *
      * @var Compte
-     *
-     * @ORM\ManyToOne(targetEntity="Compte", inversedBy="mouvements", cascade={"persist"})
-     * @ORM\JoinColumn(nullable=false)
      */
     protected $compte;
 
@@ -47,8 +36,6 @@ class Mouvement
      * Montant du mouvement en euros, positif (crédit) ou négatif (débit).
      *
      * @var string
-     *
-     * @ORM\Column(name="montant", type="decimal", precision=8, scale=2)
      */
     protected $montant;
 
@@ -56,8 +43,6 @@ class Mouvement
      * Description rapide du mouvement.
      *
      * @var string
-     *
-     * @ORM\Column(name="description", type="string", length=255)
      */
     protected $description;
 

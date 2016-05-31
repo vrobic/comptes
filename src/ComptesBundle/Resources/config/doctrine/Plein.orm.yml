@@ -1,0 +1,38 @@
+ComptesBundle\Entity\Plein:
+    type: entity
+    table: pleins
+    repositoryClass: ComptesBundle\Entity\Repository\PleinRepository
+    id:
+        id:
+            type: integer
+            generator:
+                strategy: AUTO
+    fields:
+        date:
+            type: date
+        distanceParcourue:
+            type: decimal
+            scale: 2
+            precision: 6
+            column: distance_parcourue
+        quantite:
+            type: decimal
+            scale: 2
+            precision: 5
+        prixLitre:
+            type: decimal
+            scale: 3
+            precision: 4
+            column: prix_litre
+        montant:
+            type: decimal
+            scale: 2
+            precision: 8
+    manyToOne:
+        vehicule:
+            targetEntity: ComptesBundle\Entity\Vehicule
+            cascade:
+                - persist
+            inversedBy: pleins
+            joinColumn:
+                nullable: false

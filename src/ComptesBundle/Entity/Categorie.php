@@ -2,14 +2,10 @@
 
 namespace ComptesBundle\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Catégorie de mouvements.
- *
- * @ORM\Table(name="categories")
- * @ORM\Entity(repositoryClass="ComptesBundle\Entity\Repository\CategorieRepository")
  */
 class Categorie
 {
@@ -19,8 +15,6 @@ class Categorie
      * Nom de la catégorie.
      *
      * @var string
-     *
-     * @ORM\Column(name="nom", type="string", length=255)
      */
     protected $nom;
 
@@ -28,9 +22,6 @@ class Categorie
      * Catégorie parente.
      *
      * @var Categorie
-     *
-     * @ORM\ManyToOne(targetEntity="Categorie", inversedBy="categoriesFilles", cascade={"persist"})
-     * @ORM\JoinColumn(name="categorie_parente_id", onDelete="SET NULL")
      **/
     protected $categorieParente;
 
@@ -38,9 +29,6 @@ class Categorie
      * Catégories filles.
      *
      * @var Categorie
-     *
-     * @ORM\OneToMany(targetEntity="Categorie", mappedBy="categorieParente")
-     * @ORM\OrderBy({"rang" = "ASC"})
      **/
     protected $categoriesFilles;
 
@@ -48,9 +36,6 @@ class Categorie
      * Mouvements bancaires de la catégorie.
      *
      * @var \Doctrine\Common\Collections\ArrayCollection
-     *
-     * @ORM\OneToMany(targetEntity="Mouvement", mappedBy="categorie", cascade={"persist"})
-     * @ORM\OrderBy({"date"="ASC"})
      */
     protected $mouvements;
 
@@ -58,8 +43,6 @@ class Categorie
      * Mots-clés de la catégorie.
      *
      * @var \Doctrine\Common\Collections\ArrayCollection
-     *
-     * @ORM\OneToMany(targetEntity="Keyword", mappedBy="categorie", cascade={"persist"})
      */
     protected $keywords;
 
@@ -67,8 +50,6 @@ class Categorie
      * Rang d'affichage de la catégorie.
      *
      * @var int
-     *
-     * @ORM\Column(name="rang", type="integer", nullable=true)
      */
     protected $rang;
 
