@@ -73,7 +73,7 @@ comptes:
                             Varadero: 1
                             Bandit: 2
                             Renault 25: 3
-                            406 coupé: 4
+                            406: 4
                             NC700X: 5
                 # Identifiant du service d'import, ici "comptes_bundle.import.pleins.mycars.csv".
                 mycars.csv:
@@ -93,5 +93,5 @@ comptes:
                             Varadero: 1
                             Bandit: 2
                             Renault 25: 3
-                            406 coupé: 4
+                            406: 4
                             NC700X: 5
