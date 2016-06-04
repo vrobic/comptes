@@ -6,6 +6,7 @@
 
 ## Core
 
+- Migration Symony : implémenter les nouvelles bonnes pratiques (emplacement des templates, des fichiers de configuration, ...)
 - Validation
     - utiliser des expressions plutôt que des callbacks
     - la brancher au code

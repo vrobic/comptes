@@ -1,4 +1,3 @@
 comptes_bundle:
     resource: "@ComptesBundle/Resources/config/routing.yml"
     prefix:   /
-
