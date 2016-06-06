@@ -4,8 +4,121 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "5ab7dc4fa9428b53331ddc6ca3a3fbf8",
+    "hash": "8f63993b32df7006e534718cdec4eacc",
     "packages": [
+        {
+            "name": "ddeboer/data-import",
+            "version": "0.18.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ddeboer/data-import.git",
+                "reference": "cbae2f570192b738c5cec835fbf583a75c52d535"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ddeboer/data-import/zipball/cbae2f570192b738c5cec835fbf583a75c52d535",
+                "reference": "cbae2f570192b738c5cec835fbf583a75c52d535",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0",
+                "psr/log": "~1.0"
+            },
+            "require-dev": {
+                "doctrine/dbal": "*",
+                "doctrine/orm": "*",
+                "ext-iconv": "*",
+                "ext-mbstring": "*",
+                "ext-sqlite3": "*",
+                "phpoffice/phpexcel": "*",
+                "symfony/console": "~2.5.0",
+                "symfony/property-access": "*",
+                "symfony/validator": "~2.3.0"
+            },
+            "suggest": {
+                "doctrine/dbal": "If you want to use the DbalReader",
+                "ext-iconv": "For the CharsetValueConverter",
+                "ext-mbstring": "For the CharsetValueConverter",
+                "phpoffice/phpexcel": "If you want to use the ExcelReader",
+                "symfony/console": "If you want to use the ConsoleProgressWriter",
+                "symfony/property-access": "If you want to use the ObjectConverter",
+                "symfony/validator": "to use the ValidatorFilter"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Ddeboer\\DataImport": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "The community",
+                    "homepage": "https://github.com/ddeboer/data-import/graphs/contributors"
+                },
+                {
+                    "name": "David de Boer",
+                    "email": "david@ddeboer.nl"
+                }
+            ],
+            "description": "Import data from, and export data to, a range of file formats and media",
+            "keywords": [
+                "csv",
+                "data",
+                "doctrine",
+                "excel",
+                "export",
+                "import"
+            ],
+            "time": "2015-04-21 14:06:20"
+        },
+        {
+            "name": "ddeboer/data-import-bundle",
+            "version": "0.1.0",
+            "target-dir": "Ddeboer/DataImportBundle",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ddeboer/DdeboerDataImportBundle.git",
+                "reference": "653961354e541380feef085791cb8368da3160db"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ddeboer/DdeboerDataImportBundle/zipball/653961354e541380feef085791cb8368da3160db",
+                "reference": "653961354e541380feef085791cb8368da3160db",
+                "shasum": ""
+            },
+            "require": {
+                "ddeboer/data-import": "*",
+                "php": ">=5.3.0"
+            },
+            "type": "symfony-bundle",
+            "autoload": {
+                "psr-0": {
+                    "Ddeboer\\DataImportBundle": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "David de Boer",
+                    "email": "david@ddeboer.nl",
+                    "homepage": "http://ddeboer.nl"
+                }
+            ],
+            "description": "A Symfony2 bundle for the ddeboer/data-import library",
+            "homepage": "https://github.com/ddeboer/DdeboerDataImportBundle",
+            "keywords": [
+                "csv",
+                "import"
+            ],
+            "time": "2014-04-04 11:01:36"
+        },
         {
             "name": "doctrine/annotations",
             "version": "v1.2.7",

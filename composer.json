@@ -23,7 +23,8 @@
         "incenteev/composer-parameter-handler": "~2.0",
         "symfony/assetic-bundle": "~2.8",
         "phpoffice/phpexcel": "~1.8",
-        "doctrine/doctrine-fixtures-bundle": "~2.3"
+        "doctrine/doctrine-fixtures-bundle": "~2.3",
+        "ddeboer/data-import-bundle": "0.1.*"
     },
     "require-dev": {
         "sensio/generator-bundle": "~3.0",
