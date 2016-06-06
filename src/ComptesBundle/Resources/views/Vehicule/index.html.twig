@@ -41,7 +41,15 @@
                                             {{ kilometrage_total|e('js') }}
                                         ]{{ not loop.last ? ','|e('js') }}
                                     {% endfor %}
-                                ]
+                                ],
+                                events: {
+                                    mouseOver: function() {
+                                        $('.table tr[data-vehicule="{{ vehicule.id }}"] td').css("background-color", this.color);
+                                    },
+                                    mouseOut: function() {
+                                        $('.table tr[data-vehicule="{{ vehicule.id }}"] td').css("background-color", "");
+                                    }
+                                }
                             }{{ not loop.last ? ','|e('js') }}
                         {% endfor %}
                     ]
@@ -66,7 +74,7 @@
                 </thead>
                 <tbody>
                     {% for vehicule in vehicules %}
-                        <tr>
+                        <tr data-vehicule="{{ vehicule.id }}">
                             <td>{{ vehicule.id }}</td>
                             <td>{{ vehicule }}</td>
                             <td>{{ vehicule.kilometrage|number_format(0, ".", "") ~ "km" }}</td>
