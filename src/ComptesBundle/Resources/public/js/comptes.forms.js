@@ -1,7 +1,9 @@
 window.forms = function()
 {
     // Select2
-    var select2Options = {};
+    var select2Options = {
+        language: "fr"
+    };
     $('form table.table td.input-select2 select').css('width', '100%').select2(select2Options);
 
     // Mots-clés
