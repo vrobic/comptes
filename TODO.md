@@ -6,7 +6,7 @@
 
 ## Core
 
-- Migration Symony : implémenter les nouvelles bonnes pratiques (emplacement des templates, des fichiers de configuration, ...)
+- Migration Symfony : implémenter les nouvelles bonnes pratiques (emplacement des templates, des fichiers de configuration, ...)
 - Validation
     - utiliser des expressions plutôt que des callbacks
     - la brancher au code
@@ -16,6 +16,7 @@
 - Comptes
     - permettre d'éditer les comptes ?
 - Catégories
+    - sur la vue d'une catégorie, ajouter un formulaire pour modifier les mouvements
     - à la mise à jour ou création d'une catégorie et s'il y a un mot-clé, proposer de recatégoriser les mouvements existants
     - sur les graphiques de catégories, ajouter une courbe de moyenne lissée
 - Contrôleurs
