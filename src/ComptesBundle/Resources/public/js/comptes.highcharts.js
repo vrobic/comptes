@@ -53,17 +53,22 @@ window.highcharts = function()
         },
         credits: {
             enabled: false
-        }
+        },
+        colors: [
+            '#1BBAE1',
+            '#50B432',
+            '#ED561B',
+            '#DDDF00',
+            '#24CBE5',
+            '#64E572',
+            '#FF9655',
+            '#FFF263',
+            '#6AF9C4'
+        ]
     });
 
-    // Palette de couleurs
-    Highcharts.theme = {
-        colors: ['#1BBAE1', '#50B432', '#ED561B', '#DDDF00', '#24CBE5', '#64E572', '#FF9655', '#FFF263', '#6AF9C4']
-    };
-    Highcharts.setOptions(Highcharts.theme);
-
     // Ajout d'un nouveau type de graph (sparkline) inspiré de http://www.highcharts.com/demo/sparkline
-    Highcharts.sparkline = function (options, callback) {
+    Highcharts.Sparkline = function (options, callback) {
         var defaultOptions = {
                 chart: {
                     type: 'area',

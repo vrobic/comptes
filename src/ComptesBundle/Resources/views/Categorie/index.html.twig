@@ -148,8 +148,8 @@
         $(function() {
             $('td[data-sparkline]').each(function()
             {
-                var td = $(this),
-                    stringData = td.data('sparkline'), // "2012:1890.36,2013:2559.62"
+                var td = this,
+                    stringData = $(td).data('sparkline'), // "2012:1890.36,2013:2559.62"
                     arrayData = stringData.split(','), // ["2012:1890.36", "2013:2559.62"]
                     seriesData = [];
 
@@ -165,7 +165,10 @@
                     });
                 }
 
-                td.highcharts('sparkline', {
+                Highcharts.Sparkline({
+                    chart: {
+                        renderTo: td
+                    },
                     series: [{
                         data: seriesData,
                         pointStart: 1
