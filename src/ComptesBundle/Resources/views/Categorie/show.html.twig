@@ -51,19 +51,66 @@
             </form>
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-12">
-            <p>Moyenne mensuelle sur la période : {{ average|number_format(2, ".", "") ~ "€" }}</p>
+    {% if categorie.categoriesFilles is not empty %}
+        <div class="row">
+            <div id="chart-1" class="chart col-md-12"></div>
+            <script>
+                $(function(){
+                    $('#chart-1').highcharts({
+                        title: {
+                            text: "Répartition des dépenses par sous catégorie"
+                        },
+                        tooltip: {
+                            pointFormat: "{point.y:.0f}€"
+                        },
+                        plotOptions: {
+                            pie: {
+                                allowPointSelect: false,
+                                cursor: 'pointer',
+                                dataLabels: {
+                                    format: "<strong>{point.name}</strong>: {point.percentage:.1f}%"
+                                }
+                            }
+                        },
+                        series: [{
+                            type: 'pie',
+                            name: "Répartition des dépenses par sous catégorie",
+                            data: [
+                                {% for categorieFille in categorie.categoriesFilles %}
+                                    {
+                                        name: "{{ categorieFille|e('js') }}",
+                                        y: {{ montants[categorieFille.id]|abs|e('js') }},
+                                        url: '{{ path('categories_categorie', {'categorie_id': categorieFille.id, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y'), 'compte_id': compte_filter is not null ? compte_filter.id : ''})|e('js') }}'
+                                    }
+                                    {{ not loop.last ? ','|e('js') }}
+                                {% endfor %}
+                            ],
+                            events: {
+                                click: function(e) {
+                                    e.preventDefault();
+                                    window.location.href = e.point.url;
+                                }
+                            }
+                        }]
+                    });
+                });
+            </script>
         </div>
-        <div id="chart-1" class="chart col-md-12"></div>
+    {% endif %}
+    <div class="row">
+        <div id="chart-2" class="chart col-md-12"></div>
         <script>
             $(function(){
-                $('#chart-1').highcharts({
+                $('#chart-2').highcharts({
                     chart: {
                         type: 'spline'
                     },
                     title: {
                         text: "Évolution mensuelle",
+                        x: -20 // centrage
+                    },
+                    subtitle: {
+                        text: "Moyenne mensuelle sur la période : {{ average|number_format(2, ".", "") ~ "€" }}",
                         x: -20 // centrage
                     },
                     xAxis: {

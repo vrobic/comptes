@@ -96,7 +96,7 @@ class CategorieController extends Controller
         $yearlyMontants = $statsProvider->getYearlyMontants($yearStart, $yearEnd, $compte);
 
         // Montant total des mouvements par catégorie
-        $montants = array();
+        $montants = array(); // @todo : expliciter le nom de la variable
 
         // Montant cumulé de tous les mouvements, et des mouvements catégorisés sur la période donnée
         $montantTotalPeriode = $mouvementRepository->getMontantTotalByDate($dateFilter['start'], $dateFilter['end'], 'ASC', $compte);
@@ -231,6 +231,9 @@ class CategorieController extends Controller
         // Total des mouvements par mois
         $monthlyMontants = array();
 
+        // Total des mouvements par catégorie (la courante et ses filles éventuelles)
+        $montants = array(); // @todo : expliciter le nom de la variable
+
         if ($mouvements) {
 
             foreach ($mouvements as $mouvement) {
@@ -246,6 +249,20 @@ class CategorieController extends Controller
             $statsProvider = $this->container->get('comptes_bundle.stats.provider');
             $monthlyMontants = $statsProvider->getMonthlyMontantsByCategorie($categorie, $firstMouvementDate, $lastMouvementDate, $compte);
             $average = $statsProvider->getAverageMonthlyMontantsByCategorie($categorie, $dateFilter['start'], $dateFilter['end'], $compte);
+
+            // Le total des mouvements de la catégorie
+            if ($categorieID > 0) {
+                $montants[$categorieID] = $total;
+            }
+
+            // Le total des mouvements des catégories filles
+            foreach ($categorie->getCategoriesFilles() as $categorieFille) {
+
+                $categorieFilleID = $categorieFille->getId();
+
+                // Montant cumulé des mouvements de la catégorie fille sur la période donnée
+                $montants[$categorieFilleID] = $categorieRepository->getMontantTotalByDate($categorieFille, $dateFilter['start'], $dateFilter['end'], 'ASC', $compte);
+            }
         }
 
         return $this->render(
@@ -260,6 +277,7 @@ class CategorieController extends Controller
                 'total' => $total,
                 'average' => $average,
                 'monthly_montants' => $monthlyMontants,
+                'montants' => $montants,
             )
         );
     }

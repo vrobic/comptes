@@ -4,27 +4,29 @@
 
 - rajouter l'entité Keyword et Compte > dateFermeture dans le MLD Dia
 
-## Core
+## Core et refactoring
 
-- Migration Symfony : implémenter les nouvelles bonnes pratiques (emplacement des templates, des fichiers de configuration, ...)
+- Architecture
+    - implémenter les bonnes pratiques concernant l'emplacement des templates et des fichiers de configuration
 - Validation
     - utiliser des expressions plutôt que des callbacks
     - la brancher au code
-- Multi-utilisateur.
 - Traduction
-    - tout piper avec trans
-- Comptes
-    - permettre d'éditer les comptes ?
-- Catégories
-    - sur la vue d'une catégorie, ajouter un formulaire pour modifier les mouvements
-    - à la mise à jour ou création d'une catégorie et s'il y a un mot-clé, proposer de recatégoriser les mouvements existants
-    - sur les graphiques de catégories, ajouter une courbe de moyenne lissée
+    - piper tous les libellés avec trans
 - Contrôleurs
     - utiliser OptionsResolver pour contrôler les données en entrée
+- Repositories
+    - passer l'ordre en paramètre des méthodes est inutile lorsque celles-ci ne renvoient pas de listes d'entités
 - Fixtures
     - utiliser Alice
-- Assets
-    - mettre à jour les librairies : TWBS, jQuery, Highcharts et Select2
+- Formulaires
+    - utiliser des form types
+
+## Features
+
+- multi-utilisateur
+- édition des comptes, véhicules et carburants
+- permettre de lancer manuellement une recatégorisation automatique des mouvements
 
 ## Imports
 
@@ -43,7 +45,7 @@
 - comptes
     - économies / intervalle de dates
 
-## Évolutions
+## Évolutions à long terme
 
 - intégrer dépenses véhicules + coût assurance
 - intégrer gestion des congés ?
