@@ -172,6 +172,9 @@ class CategorieController extends Controller
             $categorie = null;
         }
 
+        // Toutes les catégories
+        $categories = $categorieRepository->findAll();
+
         // Tous les comptes
         $comptes = $compteRepository->findAll();
 
@@ -249,6 +252,7 @@ class CategorieController extends Controller
             'ComptesBundle:Categorie:show.html.twig',
             array(
                 'categorie' => $categorie,
+                'categories' => $categories,
                 'comptes' => $comptes,
                 'compte_filter' => $compte,
                 'date_filter' => $dateFilter,

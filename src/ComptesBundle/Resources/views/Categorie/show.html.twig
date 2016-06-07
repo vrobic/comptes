@@ -4,6 +4,25 @@
 
 {% block title %} - {{ categorie is not null ? categorie : "Mouvements non catégorisés" }}{% endblock %}
 
+{% import _self as macros %}
+
+{% macro categoriesFilles(categorie, mouvement, depth) %}
+
+    {% set optgroup = not categorie.categorieParente %}
+    {% if optgroup %}<optgroup label="{{ categorie }}">{% endif %}
+
+        <option value="{{ categorie.id }}" style="padding-left: {{ (depth * 20) ~ "px" }};" {{ mouvement is not null and mouvement.categorie is not null and mouvement.categorie.id == categorie.id ? "selected" }}>{{ categorie }}</option>
+        {% if categorie.categoriesFilles is not empty %}
+            {% set depth = depth + 1 %}
+            {% for categorieFille in categorie.categoriesFilles %}
+                {{ _self.categoriesFilles(categorieFille, mouvement, depth) }}
+            {% endfor %}
+        {% endif %}
+
+    {% if optgroup %}</optgroup>{% endif %}
+
+{% endmacro %}
+
 {% block content %}
     <h1>{{ categorie is not null ? categorie : "Mouvements non catégorisés" }}</h1>
     <div class="row">
@@ -79,35 +98,70 @@
             });
         </script>
     </div>
-    <table class="table table-condensed table-striped table-hover">
-        <caption>Liste des mouvements</caption>
-        <thead>
-            <tr>
-                <th class="col-md-2">Date</th>
-                <th class="col-md-2">Montant</th>
-                <th class="col-md-6">Description</th>
-                <th class="col-md-2">Compte</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for mouvement in mouvements %}
+    <form action="{{ path('mouvements_edit') }}" method="POST">
+        <table class="table table-condensed table-striped table-hover">
+            <caption>Liste des mouvements</caption>
+            <thead>
                 <tr>
-                    <td>{{ mouvement.date|date('d-m-Y') }}</td>
-                    <td>{{ mouvement.montant ~ "€" }}</td>
-                    <td>{{ mouvement.description }}</td>
-                    <td>
-                        <a href="{{ path('comptes_compte', {'compte_id': mouvement.compte.id, 'date_filter[start]': mouvement.date|date('d-m-Y'), 'date_filter[end]': mouvement.date|date('d-m-Y')}) }}">
-                            {{ mouvement.compte }}
-                        </a>
-                    </td>
+                    <th class="col-md-1">
+                        Action par lot
+                        <small>
+                            <span class="glyphicon glyphicon-check trigger" data-trigger="check-all" data-target-name="batch[]" title="Cocher tout"></span>
+                            <span class="glyphicon glyphicon-unchecked trigger" data-trigger="uncheck-all" data-target-name="batch[]" title="Décocher tout"></span>
+                        </small>
+                    </th>
+                    <th class="col-md-1">Date</th>
+                    <th class="col-md-1">Montant</th>
+                    <th class="col-md-4">Description</th>
+                    <th class="col-md-2">Compte</th>
+                    <th class="col-md-3">Catégorie</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-        <tfoot>
-            <tr>
-                <th>Total</th>
-                <td colspan="3">{{ total|number_format(2, ".", "") ~ "€" }}</td>
-            </tr>
-        </tfoot>
-    </table>
+            </thead>
+            <tbody>
+                {% for mouvement in mouvements %}
+                    <tr>
+                        <td>
+                            <label for="batch-{{ mouvement.id }}" class="sr-only">Éditer</label>
+                            <input id="batch-{{ mouvement.id }}" type="checkbox" name="batch[]" value="{{ mouvement.id }}">
+                        </td>
+                        <td>{{ mouvement.date|date('d-m-Y') }}</td>
+                        <td>{{ mouvement.montant ~ "€" }}</td>
+                        <td>{{ mouvement.description }}</td>
+                        <td>
+                            <a href="{{ path('comptes_compte', {'compte_id': mouvement.compte.id, 'date_filter[start]': mouvement.date|date('d-m-Y'), 'date_filter[end]': mouvement.date|date('d-m-Y')}) }}">
+                                {{ mouvement.compte }}
+                            </a>
+                        </td>
+                        <td class="input-select2">
+                            <label for="categorie-{{ mouvement.id }}" class="sr-only">Catégorie</label>
+                            <select id="categorie-{{ mouvement.id }}" name="mouvements[{{ mouvement.id }}][categorie]">
+                                <option value="">&nbsp;</option>
+                                {% for categorie in categories %}
+                                    {% if not categorie.categorieParente %}
+                                        {{ macros.categoriesFilles(categorie, mouvement, 0) }}
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th>Total</th>
+                    <td colspan="5">{{ total|number_format(2, ".", "") ~ "€" }}</td>
+                </tr>
+            </tfoot>
+        </table>
+        <input type="hidden" name="redirect_url" value="{{ path(app.request.get('_route'), {'categorie_id': categorie.id, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y')}) }}">
+        <div class="btn-group">
+            <button class="btn btn-default" type="submit" name="action" value="save">
+                <span class="glyphicon glyphicon-floppy-disk"></span> Enregistrer
+            </button>
+            <div class="clearfix"></div>
+            <p class="help-block">
+                <span class="glyphicon glyphicon-info-sign"></span> N'oublie pas de cocher les mouvements que tu veux modifier.
+            </p>
+        </div>
+    </form>
 {% endblock %}
