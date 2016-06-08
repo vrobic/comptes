@@ -318,6 +318,9 @@ form .form-control {
 form .input-group .form-control {
     min-height: 37px;
 }
+form .input-group-addon {
+    font-family: "ubunturegular";
+}
 form .input-group-addon.middle {
     border-width: 1px 0;
 }

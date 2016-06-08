@@ -16,7 +16,7 @@
                         </div>
                         <h3>
                             {{ compte.solde >= 0 ? "+" : "-" }} <{{ compte.dateFermeture is null ? 'strong' : 'del' }}>{{ compte.solde|abs|number_format(2, ".", "") ~ "€" }}</{{ compte.dateFermeture is null ? 'strong' : 'del' }}>
-                            <small>{{ compte.dateFermeture is null ? compte : compte ~ " (clôturé)" }}</small>
+                            <small>{{ compte.dateFermeture is null ? compte : "%s (clôturé)"|format(compte) }}</small>
                         </h3>
                     </div>
                 </a>

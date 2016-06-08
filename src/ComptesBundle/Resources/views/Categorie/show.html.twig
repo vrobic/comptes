@@ -26,19 +26,19 @@
 {% block content %}
     <h1>{{ categorie is not null ? categorie : "Mouvements non catégorisés" }}</h1>
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-8">
             <form action="{{ path('categories_categorie', {'categorie_id': categorie is not null ? categorie.id : 0}) }}" method="GET">
                 <div class="input-group">
-                    <span class="input-group-addon">Du</span>
-                    <input class="form-control" type="text" name="date_filter[start]" value="{{ date_filter.start|date('d-m-Y') }}" placeholder="{{ date_filter.start|date('d-m-Y') }}">
-                    <span class="input-group-addon middle">au</span>
-                    <input class="form-control" type="text" name="date_filter[end]" value="{{ date_filter.end|date('d-m-Y') }}" placeholder="{{ date_filter.end|date('d-m-Y') }}">
-                    <span class="input-group-addon middle">sur le compte</span>
-                    <select class="form-control" name="compte_id">
+                    <label for="date-filter-start" class="input-group-addon">Du</label>
+                    <input id="date-filter-start"class="form-control" type="text" name="date_filter[start]" value="{{ date_filter.start|date('d-m-Y') }}" placeholder="{{ date_filter.start|date('d-m-Y') }}">
+                    <label for="date-filter-end" class="input-group-addon middle">au</label>
+                    <input id="date-filter-end"class="form-control" type="text" name="date_filter[end]" value="{{ date_filter.end|date('d-m-Y') }}" placeholder="{{ date_filter.end|date('d-m-Y') }}">
+                    <label for="compte-id" class="input-group-addon middle">sur le compte</label>
+                    <select id="compte-id" class="form-control" name="compte_id">
                         <option value=""></option>
                         {% for compte in comptes %}
                             <option value="{{ compte.id }}" {{ compte_filter is not null and compte_filter.id == compte.id ? "selected" }}>
-                                {{ compte.dateFermeture is null ? compte : compte ~ " (clôturé)" }}
+                                {{ compte.dateFermeture is null ? compte : "%s (clôturé)"|format(compte) }}
                             </option>
                         {% endfor %}
                     </select>

@@ -122,10 +122,10 @@
                 </tbody>
                 <tfoot>
                     <tr>
-                        <th>Totaux</th>
+                        <th colspan="2">Totaux</th>
                         <td colspan="2">{{ total_quantite|number_format(2, ".", "") ~ "L" }}</td>
                         <td colspan="2">{{ total_montant|number_format(2, ".", "") ~ "€" }}</td>
-                        <td colspan="4">{{ total_distance|number_format(2, ".", "") ~ "km" }}</td>
+                        <td colspan="3">{{ total_distance|number_format(2, ".", "") ~ "km" }}</td>
                     </tr>
                 </tfoot>
             </table>

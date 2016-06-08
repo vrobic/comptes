@@ -18,7 +18,7 @@ class CompteRepository extends EntityRepository
             array(),
             array(
                 'rang' => 'ASC',
-                'dateFermeture' => 'ASC',
+                'dateFermeture' => 'DESC',
             )
         );
     }

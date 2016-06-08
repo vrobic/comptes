@@ -106,8 +106,10 @@
                     {% for handlerIdentifier, handler in handlers %}
                         <tr>
                             <td>
-                                <input id="handler-identifier-{{ handlerIdentifier }}" type="radio" name="handlerIdentifier" value="{{ handlerIdentifier }}">
-                                <label for="handler-identifier-{{ handlerIdentifier }}">{{ handler.name }}</label>
+                                <label for="handler-identifier-{{ handlerIdentifier }}">
+                                    <input id="handler-identifier-{{ handlerIdentifier }}" type="radio" name="handlerIdentifier" value="{{ handlerIdentifier }}">
+                                    {{ handler.name }}
+                                </label>
                             </td>
                             <td>
                                 <code>{{ handler.extension }}</code>

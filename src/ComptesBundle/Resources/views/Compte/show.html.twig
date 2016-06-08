@@ -44,13 +44,13 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-8">
             <form action="{{ path('comptes_compte', {'compte_id': compte.id}) }}" method="GET">
                 <div class="input-group">
-                    <span class="input-group-addon">Du</span>
-                    <input class="form-control" type="text" name="date_filter[start]" value="{{ date_filter.start|date('d-m-Y') }}" placeholder="{{ date_filter.start|date('d-m-Y') }}">
-                    <span class="input-group-addon middle">au</span>
-                    <input class="form-control" type="text" name="date_filter[end]" value="{{ date_filter.end|date('d-m-Y') }}" placeholder="{{ date_filter.end|date('d-m-Y') }}">
+                    <label for="date-filter-start" class="input-group-addon">Du</label>
+                    <input id="date-filter-start" class="form-control" type="text" name="date_filter[start]" value="{{ date_filter.start|date('d-m-Y') }}" placeholder="{{ date_filter.start|date('d-m-Y') }}">
+                    <label for="date-filter-end" class="input-group-addon middle">au</label>
+                    <input id="date-filter-end" class="form-control" type="text" name="date_filter[end]" value="{{ date_filter.end|date('d-m-Y') }}" placeholder="{{ date_filter.end|date('d-m-Y') }}">
                     <span class="input-group-btn">
                         <button class="btn btn-default" type="submit">
                             <span class="glyphicon glyphicon-search"></span> Appliquer
