@@ -120,7 +120,7 @@
         <tbody>
             <tr>
                 <td>
-                    Non catégorisé
+                    <a href="{{ path('categories_categorie', {'categorie_id': 0, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y'), 'compte_id': compte_filter is not null ? compte_filter.id : ''}) }}">Non catégorisé</a>
                 </td>
                 <td>
                     {{ montant_total_non_categorise|number_format(2, ".", "") ~ "€" }}

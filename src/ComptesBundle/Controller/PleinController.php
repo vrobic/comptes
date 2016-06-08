@@ -20,8 +20,9 @@ class PleinController extends Controller
     public function indexAction()
     {
         // Repositories
-        $pleinRepository = $this->getDoctrine()->getRepository('ComptesBundle:Plein');
-        $vehiculeRepository = $this->getDoctrine()->getRepository('ComptesBundle:Vehicule');
+        $doctrine = $this->getDoctrine();
+        $pleinRepository = $doctrine->getRepository('ComptesBundle:Plein');
+        $vehiculeRepository = $doctrine->getRepository('ComptesBundle:Vehicule');
 
         // Tous les pleins
         $pleins = $pleinRepository->findAll();

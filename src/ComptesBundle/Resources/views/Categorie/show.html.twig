@@ -51,7 +51,7 @@
             </form>
         </div>
     </div>
-    {% if categorie.categoriesFilles is not empty %}
+    {% if categorie is not null and categorie.categoriesFilles is not empty %}
         <div class="row">
             <div id="chart-1" class="chart col-md-12"></div>
             <script>
@@ -77,12 +77,15 @@
                             name: "Répartition des dépenses par sous catégorie",
                             data: [
                                 {% for categorieFille in categorie.categoriesFilles %}
-                                    {
-                                        name: "{{ categorieFille|e('js') }}",
-                                        y: {{ montants[categorieFille.id]|abs|e('js') }},
-                                        url: '{{ path('categories_categorie', {'categorie_id': categorieFille.id, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y'), 'compte_id': compte_filter is not null ? compte_filter.id : ''})|e('js') }}'
-                                    }
-                                    {{ not loop.last ? ','|e('js') }}
+                                    {% if montants[categorieFille.id] < 0 %}
+                                        {
+                                            name: "{{ categorieFille|e('js') }}",
+                                            y: {{ montants[categorieFille.id]|abs|e('js') }},
+                                            url: '{{ path('categories_categorie', {'categorie_id': categorieFille.id, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y'), 'compte_id': compte_filter is not null ? compte_filter.id : ''})|e('js') }}'
+                                        }
+                                        {# @todo : le compteur est faussé car dans une condition #}
+                                        {{ not loop.last ? ','|e('js') }}
+                                    {% endif %}
                                 {% endfor %}
                             ],
                             events: {
@@ -200,7 +203,7 @@
                 </tr>
             </tfoot>
         </table>
-        <input type="hidden" name="redirect_url" value="{{ path(app.request.get('_route'), {'categorie_id': categorie.id, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y')}) }}">
+        <input type="hidden" name="redirect_url" value="{{ path(app.request.get('_route'), {'categorie_id': categorie is null ? 0 : categorie.id, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y')}) }}">
         <div class="btn-group">
             <button class="btn btn-default" type="submit" name="action" value="save">
                 <span class="glyphicon glyphicon-floppy-disk"></span> Enregistrer

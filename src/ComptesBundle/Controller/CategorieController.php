@@ -256,12 +256,11 @@ class CategorieController extends Controller
             }
 
             // Le total des mouvements des catégories filles
-            foreach ($categorie->getCategoriesFilles() as $categorieFille) {
-
-                $categorieFilleID = $categorieFille->getId();
-
-                // Montant cumulé des mouvements de la catégorie fille sur la période donnée
-                $montants[$categorieFilleID] = $categorieRepository->getMontantTotalByDate($categorieFille, $dateFilter['start'], $dateFilter['end'], 'ASC', $compte);
+            if ($categorie !== null) {
+                foreach ($categorie->getCategoriesFilles() as $categorieFille) {
+                    $categorieFilleID = $categorieFille->getId();
+                    $montants[$categorieFilleID] = $categorieRepository->getMontantTotalByDate($categorieFille, $dateFilter['start'], $dateFilter['end'], 'ASC', $compte);
+                }
             }
         }
 
