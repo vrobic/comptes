@@ -21,6 +21,8 @@
     - utiliser Alice
 - Formulaires
     - utiliser des form types
+- Commandes
+    - utiliser http://symfony.com/doc/current/components/console/helpers/questionhelper.html
 
 ## Features
 

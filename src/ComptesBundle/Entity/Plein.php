@@ -9,14 +9,8 @@ use Symfony\Component\Validator\ExecutionContextInterface;
  */
 class Plein
 {
-    use IdentifiableTrait;
-
-    /**
-     * Date du plein.
-     *
-     * @var \DateTime
-     */
-    protected $date;
+    use IdentifiableTrait,
+        DateTrait;
 
     /**
      * Véhicule.
@@ -56,7 +50,7 @@ class Plein
     /**
      * Constructeur.
      *
-     * @return Mouvement
+     * @return Plein
      */
     public function __construct()
     {
@@ -93,30 +87,6 @@ class Plein
         $hash = md5($string);
 
         return $hash;
-    }
-
-    /**
-     * Définit la date du plein.
-     *
-     * @param \DateTime $date
-     *
-     * @return Mouvement
-     */
-    public function setDate($date)
-    {
-        $this->date = $date;
-
-        return $this;
-    }
-
-    /**
-     * Récupère la date du plein.
-     *
-     * @return \DateTime
-     */
-    public function getDate()
-    {
-        return $this->date;
     }
 
     /**

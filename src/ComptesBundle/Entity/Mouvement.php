@@ -9,14 +9,8 @@ use Symfony\Component\Validator\ExecutionContextInterface;
  */
 class Mouvement
 {
-    use IdentifiableTrait;
-
-    /**
-     * Date du mouvement.
-     *
-     * @var \DateTime
-     */
-    protected $date;
+    use IdentifiableTrait,
+        DateTrait;
 
     /**
      * Catégorie du mouvement.
@@ -86,30 +80,6 @@ class Mouvement
         $hash = md5($string);
 
         return $hash;
-    }
-
-    /**
-     * Définit la date du mouvement.
-     *
-     * @param \DateTime $date
-     *
-     * @return Mouvement
-     */
-    public function setDate($date)
-    {
-        $this->date = $date;
-
-        return $this;
-    }
-
-    /**
-     * Récupère la date du mouvement.
-     *
-     * @return \DateTime
-     */
-    public function getDate()
-    {
-        return $this->date;
     }
 
     /**

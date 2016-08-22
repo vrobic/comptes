@@ -353,7 +353,13 @@ class Vehicule
      */
     public function getPleins()
     {
-        return $this->pleins;
+        $pleins = $this->pleins->toArray();
+
+        usort($pleins, function (Plein $a, Plein $b) {
+            return $a->getDate() > $b->getDate();
+        });
+
+        return new ArrayCollection($pleins);
     }
 
     /**
