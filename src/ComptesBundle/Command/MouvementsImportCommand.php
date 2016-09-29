@@ -28,7 +28,6 @@ class MouvementsImportCommand extends AbstractImportCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $dialog = $this->getHelperSet()->get('dialog');
-        $verbose = $input->getOption('verbose');
         $interaction = !$input->getOption('no-interaction');
         $filename = $input->getArgument('filename');
         $handlerIdentifier = $input->getArgument('handler');
@@ -56,7 +55,7 @@ class MouvementsImportCommand extends AbstractImportCommand
 
         if ($categorizedMouvements) {
 
-            $verbose && $output->writeln("<info>Mouvements catégorisés</info>");
+            $output->writeln("<info>Mouvements catégorisés</info>", OutputInterface::VERBOSITY_VERBOSE);
 
             foreach ($categorizedMouvements as $mouvement) {
 
@@ -76,11 +75,50 @@ class MouvementsImportCommand extends AbstractImportCommand
 
         if ($uncategorizedMouvements) {
 
-            $verbose && $output->writeln("<info>Mouvements non catégorisés</info>");
+            $output->writeln("<info>Mouvements non catégorisés</info>", OutputInterface::VERBOSITY_VERBOSE);
+
+            $categorieRepository = $em->getRepository('ComptesBundle:Categorie');
+            $categories = $categorieRepository->findAll();
 
             foreach ($uncategorizedMouvements as $mouvement) {
 
                 $output->writeln("<comment>$mouvement</comment>");
+
+                if ($interaction && $categories) {
+
+                    $question = "<question>Catégories disponibles :\n";
+
+                    foreach ($categories as $key => $categorie) {
+                        if ($categorie->getCategorieParente() === null) {
+
+                            $categorieId = $categorie->getId();
+                            $categoriesLine = $this->getCategoriesLine($categorie, array($categorie));
+                            $question .= "\t($categorieId) : " . implode(" / ", $categoriesLine) . "\n";
+
+                            foreach ($categorie->getCategoriesFillesRecursive() as $categorieFille) {
+                                $categorieFilleId = $categorieFille->getId();
+                                $categoriesLine = $this->getCategoriesLine($categorieFille, array($categorieFille));
+                                $question .= "\t($categorieFilleId) : " . implode(" / ", $categoriesLine) . "\n";
+                            }
+                        }
+                    }
+
+                    $question .= "\t(n) : Ne pas catégoriser\n";
+
+                    $question .= "Quel est votre choix (0, 1, ..., n) ?</question>";
+
+                    // L'identifiant de la catégorie
+                    $categorieId = null; // Réponse obligatoire
+
+                    while (strtolower($categorieId) !== "n" && ($categorieId === null || $categorieRepository->find($categorieId) === null)) {
+                        $categorieId = $dialog->ask($output, $question);
+                    }
+
+                    if (strtolower($categorieId) !== "n") { // Réponse insensible à la casse
+                        $categorie = $categorieRepository->find($categorieId);
+                        $mouvement->setCategorie($categorie);
+                    }
+                }
 
                 // Indicateurs
                 $i++;
@@ -96,7 +134,7 @@ class MouvementsImportCommand extends AbstractImportCommand
 
         if ($ambiguousMouvements) {
 
-            $verbose && $output->writeln("<info>Mouvements ambigus</info>");
+            $output->writeln("<info>Mouvements ambigus</info>", OutputInterface::VERBOSITY_VERBOSE);
 
             // Service de catégorisation automatique des mouvements
             $mouvementCategorizer = $this->getContainer()->get('comptes_bundle.mouvement.categorizer');
@@ -152,7 +190,7 @@ class MouvementsImportCommand extends AbstractImportCommand
 
             foreach ($waitingMouvements as $mouvement) {
 
-                $verbose && $output->writeln("<info>Mouvements à valider</info>");
+                $output->writeln("<info>Mouvements à valider</info>", OutputInterface::VERBOSITY_VERBOSE);
 
                 $output->writeln("<comment>$mouvement</comment>");
 
@@ -177,5 +215,26 @@ class MouvementsImportCommand extends AbstractImportCommand
         $mouvements = $handler->getMouvements();
         $mouvementsCount = count($mouvements);
         $output->writeln("<info>$i mouvements importés sur $mouvementsCount pour une balance de $balance</info>");
+    }
+
+    /**
+     * Récupère la lignée d'une catégorie, récursivement.
+     *
+     * @param Categorie|null $categorie
+     * @param array $array
+     *
+     * @return array
+     */
+    private function getCategoriesLine($categorie, $array)
+    {
+        if ($categorie !== null) {
+            $categorieParente = $categorie->getCategorieParente();
+            if ($categorieParente !== null) {
+                array_unshift($array, $categorieParente);
+                $array = $this->getCategoriesLine($categorieParente, $array);
+            }
+        }
+
+        return $array;
     }
 }

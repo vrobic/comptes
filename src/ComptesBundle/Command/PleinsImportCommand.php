@@ -28,7 +28,6 @@ class PleinsImportCommand extends AbstractImportCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $dialog = $this->getHelperSet()->get('dialog');
-        $verbose = $input->getOption('verbose');
         $interaction = !$input->getOption('no-interaction');
         $filename = $input->getArgument('filename');
         $handlerIdentifier = $input->getArgument('handler');
@@ -55,7 +54,7 @@ class PleinsImportCommand extends AbstractImportCommand
 
         if ($validPleins) {
 
-            $verbose && $output->writeln("<info>Pleins valides</info>");
+            $output->writeln("<info>Pleins valides</info>", OutputInterface::VERBOSITY_VERBOSE);
 
             foreach ($validPleins as $plein) {
 
@@ -76,7 +75,7 @@ class PleinsImportCommand extends AbstractImportCommand
 
             foreach ($waitingPleins as $plein) {
 
-                $verbose && $output->writeln("<info>Pleins à valider</info>");
+                $output->writeln("<info>Pleins à valider</info>", OutputInterface::VERBOSITY_VERBOSE);
 
                 $output->writeln("<comment>$plein</comment>");
 
