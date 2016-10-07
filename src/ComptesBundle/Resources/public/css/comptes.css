@@ -154,7 +154,7 @@ h2 a:hover,
 h2 a:focus,
 .h2 a:focus {
     display: block;
-    color: #5dc0dE;
+    color: #510477;
     text-decoration: none;
 }
 
@@ -191,7 +191,7 @@ dd strong {
     font-family: "bebasneue_regular";
     line-height: 1;
     font-size: 20px;
-    color: #5dc0de;
+    color: #510477;
     padding: 6px 12px;
     border-radius: 2px;
     border: 1px solid #dddddd;
@@ -203,7 +203,7 @@ dd strong {
 }
 .btn:hover,
 .btn:focus {
-    color: #5dc0de;
+    color: #510477;
     background-color: #eeeeee;
 }
 .btn.disabled,
@@ -239,7 +239,7 @@ body {
 .sidebar .nav-sidebar > li > a {
     font-family: "bebasneue_regular";
     padding: 5px;
-    color: #5dc0dE;
+    color: #510477;
     border-radius: 0;
     font-size: 30px;
     line-height: 0.9;
@@ -269,7 +269,7 @@ body {
 }
 .content .widget .widget-content h3 {
     text-align: right;
-    color: #1bbae1;
+    color: #510477;
     margin: 12px 0;
     letter-spacing: -2px;
 }
@@ -289,7 +289,7 @@ body {
     line-height: 64px;
     font-size: 28px;
     text-align: center;
-    background-color: #1bbae1;
+    background-color: #510477;
     color: #fff;
 }
 
@@ -363,7 +363,7 @@ form table.table td.input-select2 .select2-selection {
 }
 .tag-editor li .tag-editor-tag,
 .tag-editor li .tag-editor-delete {
-    background: #5dc0de;
+    background: #510477;
     color: white;
 }
 .tag-editor li .tag-editor-tag.active {

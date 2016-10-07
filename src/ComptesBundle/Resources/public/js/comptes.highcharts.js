@@ -55,15 +55,15 @@ window.highcharts = function()
             enabled: false
         },
         colors: [
-            '#1BBAE1',
-            '#50B432',
-            '#ED561B',
-            '#DDDF00',
-            '#24CBE5',
-            '#64E572',
-            '#FF9655',
-            '#FFF263',
-            '#6AF9C4'
+            '#510477',
+            '#50b432',
+            '#ed561b',
+            '#dddf00',
+            '#24cbe5',
+            '#64e572',
+            '#ff9655',
+            '#fff263',
+            '#6af9c4'
         ]
     });
 

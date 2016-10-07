@@ -84,16 +84,12 @@
                                 y: {{ montant_total_non_categorise|abs|e('js') }},
                                 url: '{{ path('categories_categorie', {'categorie_id': 0, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y'), 'compte_id': compte_filter is not null ? compte_filter.id : ''})|e('js') }}'
                             },
-                            {% for categorie in categories %}
-                                {% if not categorie.categorieParente and montants[categorie.id].period < 0 %}
-                                    {
-                                        name: "{{ categorie|e('js') }}",
-                                        y: {{ montants[categorie.id].period|abs|e('js') }},
-                                        url: '{{ path('categories_categorie', {'categorie_id': categorie.id, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y'), 'compte_id': compte_filter is not null ? compte_filter.id : ''})|e('js') }}'
-                                    }
-                                    {# @todo : le compteur est faussé car dans une condition #}
-                                    {{ not loop.last ? ','|e('js') }}
-                                {% endif %}
+                            {% for categorie in categories if not categorie.categorieParente and montants[categorie.id].period < 0 %}
+                                {
+                                    name: "{{ categorie|e('js') }}",
+                                    y: {{ montants[categorie.id].period|abs|e('js') }},
+                                    url: '{{ path('categories_categorie', {'categorie_id': categorie.id, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y'), 'compte_id': compte_filter is not null ? compte_filter.id : ''})|e('js') }}'
+                                },
                             {% endfor %}
                         ],
                         events: {

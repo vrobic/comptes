@@ -115,9 +115,7 @@
                                     [
                                         Date.UTC({{ mouvement.date|date('Y')|e('js') }}, {{ (mouvement.date|date('m')-1)|e('js') }}, {{ mouvement.date|date('d')|e('js') }}),
                                         {{ solde_total|e('js') }}
-                                    ]
-                                    {# @todo : le compteur est faussé car dans une condition #}
-                                    {{ not loop.last ? ','|e('js') }}
+                                    ],
                                 {% endif %}
                             {% endfor %}
                         ]
