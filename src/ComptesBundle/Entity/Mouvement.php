@@ -65,7 +65,7 @@ class Mouvement
         $description = $this->getDescription();
         $montant = $this->getMontant();
 
-        return "$compte $date $montant $description";
+        return "$compte $date {$montant}€ $description";
     }
 
     /**

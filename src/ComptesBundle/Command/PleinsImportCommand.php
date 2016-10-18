@@ -5,6 +5,7 @@ namespace ComptesBundle\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question;
 
 /**
  * Script d'import de pleins de carburant depuis un fichier.
@@ -27,7 +28,7 @@ class PleinsImportCommand extends AbstractImportCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $dialog = $this->getHelperSet()->get('dialog');
+        $questionHelper = $this->getHelper('question');
         $interaction = !$input->getOption('no-interaction');
         $filename = $input->getArgument('filename');
         $handlerIdentifier = $input->getArgument('handler');
@@ -79,7 +80,11 @@ class PleinsImportCommand extends AbstractImportCommand
 
                 $output->writeln("<comment>$plein</comment>");
 
-                $confirm = $dialog->askConfirmation($output, "<question>Un plein similaire existe déjà :\n\t$plein\nImporter (y/N) ?</question>", false);
+                $confirm = $questionHelper->ask(
+                    $input,
+                    $output,
+                    new Question\ConfirmationQuestion("<question>Un plein similaire existe déjà :\n\t$plein\nImporter (y/N) ?</question>", false)
+                );
 
                 if ($confirm) {
 

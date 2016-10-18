@@ -5,6 +5,7 @@ namespace ComptesBundle\Command;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question;
 
 /**
  * Script à usage unique pour définir la catégorie de tous les mouvements
@@ -26,7 +27,7 @@ class MouvementsCategorizerFromPleinsCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $dialog = $this->getHelperSet()->get('dialog');
+        $questionHelper = $this->getHelper('question');
 
         $em = $this->getContainer()->get('doctrine')->getManager();
         $pleinRepository = $em->getRepository('ComptesBundle:Plein');
@@ -37,7 +38,8 @@ class MouvementsCategorizerFromPleinsCommand extends ContainerAwareCommand
         $pleins = $pleinRepository->findAll();
 
         // La catégorie "Carburant"
-        $categorie = $categorieRepository->find(9);
+        $categorieId = 9; // @todo : rendre paramétrable
+        $categorie = $categorieRepository->find($categorieId);
 
         // Indicateurs
         $i = 0; // Nombre de mouvements modifiés
@@ -62,8 +64,18 @@ class MouvementsCategorizerFromPleinsCommand extends ContainerAwareCommand
 
                 foreach ($mouvements as $mouvement) {
 
+                    // Si le mouvement n'est pas déjà dans la bonne catégorie
+                    $previousCategorie = $mouvement->getCategorie();
+                    if ($previousCategorie !== null && $previousCategorie->getId() === $categorieId) {
+                        continue;
+                    }
+
                     $output->writeln("<comment>\tMouvement : $mouvement</comment>");
-                    $confirm = $dialog->askConfirmation($output, "<question>\tModifier la catégorie (Y/n) ?</question>");
+                    $confirm = $questionHelper->ask(
+                        $input,
+                        $output,
+                        new Question\ConfirmationQuestion("<question>\tRecatégoriser en \"$categorie\" (y/N) ?</question>", false)
+                    );
 
                     if ($confirm) {
 

@@ -5,6 +5,7 @@ namespace ComptesBundle\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question;
 
 /**
  * Script d'import de mouvements bancaires depuis un fichier.
@@ -27,7 +28,7 @@ class MouvementsImportCommand extends AbstractImportCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $dialog = $this->getHelperSet()->get('dialog');
+        $questionHelper = $this->getHelper('question');
         $interaction = !$input->getOption('no-interaction');
         $filename = $input->getArgument('filename');
         $handlerIdentifier = $input->getArgument('handler');
@@ -110,8 +111,13 @@ class MouvementsImportCommand extends AbstractImportCommand
                     // L'identifiant de la catégorie
                     $categorieId = null; // Réponse obligatoire
 
+                    // @todo : utiliser http://symfony.com/doc/current/components/console/helpers/questionhelper.html#let-the-user-choose-from-a-list-of-answers
                     while (strtolower($categorieId) !== "n" && ($categorieId === null || $categorieRepository->find($categorieId) === null)) {
-                        $categorieId = $dialog->ask($output, $question);
+                        $categorieId = $questionHelper->ask(
+                            $input,
+                            $output,
+                            new Question\Question($question)
+                        );
                     }
 
                     if (strtolower($categorieId) !== "n") { // Réponse insensible à la casse
@@ -163,8 +169,13 @@ class MouvementsImportCommand extends AbstractImportCommand
                         // La clé de la catégorie au sein du tableau $categories
                         $categorieKey = null; // Réponse obligatoire
 
+                        // @todo : utiliser http://symfony.com/doc/current/components/console/helpers/questionhelper.html#let-the-user-choose-from-a-list-of-answers
                         while (strtolower($categorieKey) !== "n" && !isset($categories[$categorieKey])) {
-                            $categorieKey = $dialog->ask($output, $question);
+                            $categorieKey = $questionHelper->ask(
+                                $input,
+                                $output,
+                                new Question\Question($question)
+                            );
                         }
 
                         if (strtolower($categorieKey) !== "n") { // Réponse insensible à la casse
@@ -194,7 +205,11 @@ class MouvementsImportCommand extends AbstractImportCommand
 
                 $output->writeln("<comment>$mouvement</comment>");
 
-                $confirm = $dialog->askConfirmation($output, "<question>Un mouvement similaire existe déjà :\n\t$mouvement\nImporter (y/N) ?</question>", false);
+                $confirm = $questionHelper->ask(
+                    $input,
+                    $output,
+                    new Question\ConfirmationQuestion("<question>Un mouvement similaire existe déjà :\n\t$mouvement\nImporter (y/N) ?</question>", false)
+                );
 
                 if ($confirm) {
 

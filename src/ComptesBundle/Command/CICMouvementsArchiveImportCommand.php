@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question;
 use ComptesBundle\Entity\Mouvement;
 
 /**
@@ -66,7 +67,7 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $dialog = $this->getHelperSet()->get('dialog');
+        $questionHelper = $this->getHelper('question');
         $filename = $input->getArgument('filename');
 
         if (!file_exists($filename)) {
@@ -204,8 +205,13 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
             // Réponse obligatoire
             $signe = null;
 
+            // @todo : utiliser http://symfony.com/doc/current/components/console/helpers/questionhelper.html#let-the-user-choose-from-a-list-of-answers
             while (!in_array(strtolower($signe), array("c", "d"))) {
-                $signe = $dialog->ask($output, "<question>S'agit-il d'un crédit ou d'un débit (c/D) ?</question>", "d");
+                $signe = $questionHelper->ask(
+                    $input,
+                    $output,
+                    new Question\Question("<question>S'agit-il d'un crédit ou d'un débit (c/D) ?</question>", 'd')
+                );
             }
 
             if (strtolower($signe) === "d") { // Réponse insensible à la casse
@@ -237,8 +243,13 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
                     // Réponse obligatoire
                     $categorieKey = null;
 
+                    // @todo : utiliser http://symfony.com/doc/current/components/console/helpers/questionhelper.html#let-the-user-choose-from-a-list-of-answers
                     while (strtolower($categorieKey) !== "n" && !isset($categories[$categorieKey])) {
-                        $categorieKey = $dialog->ask($output, $question);
+                        $categorieKey = $questionHelper->ask(
+                            $input,
+                            $output,
+                            new Question\Question($question)
+                        );
                     }
                 }
 

@@ -9,7 +9,6 @@
 - Architecture
     - implémenter les bonnes pratiques concernant l'emplacement des templates et des fichiers de configuration
 - Validation
-    - utiliser des expressions plutôt que des callbacks
     - la brancher au code
 - Traduction
     - piper tous les libellés avec trans
@@ -21,8 +20,6 @@
     - utiliser Alice
 - Formulaires
     - utiliser des form types
-- Commandes
-    - utiliser http://symfony.com/doc/current/components/console/helpers/questionhelper.html
 
 ## Features
 
