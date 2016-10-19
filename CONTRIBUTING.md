@@ -6,10 +6,14 @@ Un handler d'import est un service de prise en charge d'un fichier, en vue d'imp
 
 Techniquement, le handler n'est qu'une des briques du moteur d'import et ce n'est pas lui qui enregistre les objets en base de données. Il se contente de lire le fichier et d'en extraire chaque mouvement.
 
-L'application n'embarque qu'une poignée de handlers :
+L'application n'embarque qu'une poignée de handlers. Pour les mouvements de comptes bancaires :
 
 - relevé de comptes de la banque CIC, aux formats Excel et CSV
+- relevé de comptes de la banque Crédit Mutuel, aux formats Excel et CSV
 - relevé de comptes de la banque Caisse d'Épargne, au format CSV
+
+Et pour les pleins de carburant :
+
 - données de l'application Android MyCars, aux formats XML et CSV
 
 Le moteur d'import, par sa généricité, rend le développement d'un handler très simple. Il se résume à un service Symfony2 et quelques lignes de configuration.
@@ -28,7 +32,7 @@ selon le schéma suivant :
 
 où `mycars.xml` est l'identifiant du handler.
 
-Le service doit étendre une des deux classes abstraites suivantes : `PleinsImportHandler` ou `MouvementsImportHandler` et implémenter la méthode :
+Le service doit étendre une des deux classes abstraites suivantes : `ComptesBundle\Service\ImportHandler\AbstractPleinsImportHandler` ou `ComptesBundle\Service\ImportHandler\AbstractMouvementsImportHandler` et implémenter la méthode :
 
     public function parse(\SplFileObject $file) {}
 
@@ -62,14 +66,19 @@ au sein d'un des tableaux `pleins` ou `mouvements` :
 
     handlers:
         pleins:
+            # Identifiant du service d'import, ici "comptes_bundle.import.pleins.mycars.xml".
             mycars.xml:
-               name: MyCars - XML
-               description: |-
-                   Import XML depuis l'application Android MyCars.
-               extension: xml
+                # Nom de la source
+                name: MyCars - XML
+                # Description de la source. HTML autorisé.
+                description: |-
+                    Import XML depuis l'application Android MyCars.
+                # L'extension du fichier attendu par le handler d'import
+                extension: xml
+                config: ~
         mouvements:
             # ...
 
-Les paramètres `name`, `description` et `extension` sont obligatoires. Selon vos besoins, il est possible de rajouter d'autres paramètres au tableau `mycars.xml`.
+Les paramètres `name`, `description`, `extension` et `config` sont obligatoires. Si les besoins du handler le justifient, des paramètres peuvent être rajoutés librement sous le nœud `config`.
 
 Aucun risque risque de faire une mauvaise configuration. L'application utilise un service centralisé qui charge et vérifie la cohérence des configurations. Il ne manquera pas de vous rappeler à l'ordre !
