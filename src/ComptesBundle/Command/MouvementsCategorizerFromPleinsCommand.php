@@ -46,7 +46,7 @@ class MouvementsCategorizerFromPleinsCommand extends ContainerAwareCommand
 
         foreach ($pleins as $plein) {
 
-            $output->writeln("<comment>Plein : $plein</comment>");
+            $output->writeln("<comment>Plein : {$plein}</comment>");
 
             // Recherche du mouvement correspondant au plein
             $montant = -$plein->getMontant();
@@ -70,10 +70,10 @@ class MouvementsCategorizerFromPleinsCommand extends ContainerAwareCommand
                         continue;
                     }
 
-                    $output->writeln("<comment>\tMouvement : $mouvement</comment>");
+                    $output->writeln("<comment>\tMouvement : {$mouvement}</comment>");
 
                     // Question à l'utilisateur
-                    $question = new Question\ConfirmationQuestion("<question>\tRecatégoriser en \"$categorie\" (y/N) ?</question>", false);
+                    $question = new Question\ConfirmationQuestion("<question>\tRecatégoriser en \"{$categorie}\" (y/N) ?</question>", false);
 
                     $confirm = $questionHelper->ask($input, $output, $question);
 
@@ -97,6 +97,6 @@ class MouvementsCategorizerFromPleinsCommand extends ContainerAwareCommand
 
         // Indicateurs
         $pleinsCount = count($pleins);
-        $output->writeln("<info>$i mouvements modifiés sur $pleinsCount pleins</info>");
+        $output->writeln("<info>{$i} mouvements modifiés sur {$pleinsCount} pleins</info>");
     }
 }

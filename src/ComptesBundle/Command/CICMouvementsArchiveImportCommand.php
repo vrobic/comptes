@@ -200,7 +200,7 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
             $mouvement->setDescription($description);
             $mouvement->setMontant($montant);
 
-            $output->writeln("<comment>$compte $mouvement</comment>");
+            $output->writeln("<comment>{$compte} {$mouvement}</comment>");
 
             // Question à l'utilisateur
             $question = new Question\Question("<question>S'agit-il d'un crédit ou d'un débit (c/D) ?</question>", 'd');
@@ -259,6 +259,6 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
             $balance += $montant;
         }
 
-        $output->writeln("<info>$i mouvements importés pour une balance de $balance€</info>");
+        $output->writeln("<info>{$i} mouvements importés pour une balance de {$balance}€</info>");
     }
 }

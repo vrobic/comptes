@@ -60,7 +60,7 @@ class MouvementsImportCommand extends AbstractImportCommand
 
             foreach ($categorizedMouvements as $mouvement) {
 
-                $output->writeln("<comment>$mouvement</comment>");
+                $output->writeln("<comment>{$mouvement}</comment>");
 
                 // Indicateurs
                 $i++;
@@ -83,7 +83,7 @@ class MouvementsImportCommand extends AbstractImportCommand
 
             foreach ($uncategorizedMouvements as $mouvement) {
 
-                $output->writeln("<comment>$mouvement</comment>");
+                $output->writeln("<comment>{$mouvement}</comment>");
 
                 if ($interaction && $categories) {
 
@@ -141,7 +141,7 @@ class MouvementsImportCommand extends AbstractImportCommand
 
             foreach ($ambiguousMouvements as $mouvement) {
 
-                $output->writeln("<comment>$mouvement</comment>");
+                $output->writeln("<comment>{$mouvement}</comment>");
 
                 if ($interaction) {
 
@@ -191,11 +191,11 @@ class MouvementsImportCommand extends AbstractImportCommand
 
                 $output->writeln("<info>Mouvements à valider</info>", OutputInterface::VERBOSITY_VERBOSE);
 
-                $output->writeln("<comment>$mouvement</comment>");
+                $output->writeln("<comment>{$mouvement}</comment>");
 
                 // Question à l'utilisateur
-                $question = new Question\ConfirmationQuestion("<question>Un mouvement similaire existe déjà :\n\t$mouvement\nImporter (y/N) ?</question>", false);
-                
+                $question = new Question\ConfirmationQuestion("<question>Un mouvement similaire existe déjà :\n\t{$mouvement}\nImporter (y/N) ?</question>", false);
+
                 $confirm = $questionHelper->ask($input, $output, $question);
 
                 if ($confirm) {
@@ -216,7 +216,7 @@ class MouvementsImportCommand extends AbstractImportCommand
         // Indicateurs
         $mouvements = $handler->getMouvements();
         $mouvementsCount = count($mouvements);
-        $output->writeln("<info>$i mouvements importés sur $mouvementsCount pour une balance de $balance€</info>");
+        $output->writeln("<info>{$i} mouvements importés sur {$mouvementsCount} pour une balance de {$balance}€</info>");
     }
 
     /**

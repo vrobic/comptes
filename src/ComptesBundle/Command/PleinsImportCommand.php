@@ -59,7 +59,7 @@ class PleinsImportCommand extends AbstractImportCommand
 
             foreach ($validPleins as $plein) {
 
-                $output->writeln("<comment>$plein</comment>");
+                $output->writeln("<comment>{$plein}</comment>");
 
                 // Indicateurs
                 $i++;
@@ -78,11 +78,11 @@ class PleinsImportCommand extends AbstractImportCommand
 
                 $output->writeln("<info>Pleins à valider</info>", OutputInterface::VERBOSITY_VERBOSE);
 
-                $output->writeln("<comment>$plein</comment>");
+                $output->writeln("<comment>{$plein}</comment>");
 
                 // Question à l'utilisateur
                 $question = new Question\ConfirmationQuestion("<question>Un plein similaire existe déjà :\n\t$plein\nImporter (y/N) ?</question>", false);
-                
+
                 $confirm = $questionHelper->ask($input, $output, $question);
 
                 if ($confirm) {
@@ -102,6 +102,6 @@ class PleinsImportCommand extends AbstractImportCommand
         // Indicateurs
         $pleins = $handler->getPleins();
         $pleinsCount = count($pleins);
-        $output->writeln("<info>$i pleins importés sur $pleinsCount</info>");
+        $output->writeln("<info>{$i} pleins importés sur {$pleinsCount}</info>");
     }
 }

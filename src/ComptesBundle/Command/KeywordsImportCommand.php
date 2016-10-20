@@ -79,6 +79,6 @@ class KeywordsImportCommand extends ContainerAwareCommand
         $em->flush();
 
         // Indicateurs
-        $output->writeln("<info>$i mots-clés importés</info>");
+        $output->writeln("<info>{$i} mots-clés importés</info>");
     }
 }

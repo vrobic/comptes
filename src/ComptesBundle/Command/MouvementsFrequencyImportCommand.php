@@ -40,7 +40,7 @@ class MouvementsFrequencyImportCommand extends ContainerAwareCommand
 
         foreach ($words as $word => $count) {
             if ($count > 1) {
-                $output->writeln("$count => $word");
+                $output->writeln("{$count} => {$word}");
             }
         }
     }
