@@ -202,19 +202,18 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
 
             $output->writeln("<comment>$compte $mouvement</comment>");
 
-            // Réponse obligatoire
-            $signe = null;
+            // Question à l'utilisateur
+            $question = new Question\Question("<question>S'agit-il d'un crédit ou d'un débit (c/D) ?</question>", 'd');
+            $question->setValidator(function ($answer) {
+                if (!in_array(strtolower($answer), array('c', 'd'))) {
+                    throw new \RuntimeException("Réponse invalide");
+                }
+                return $answer;
+            });
 
-            // @todo : utiliser http://symfony.com/doc/current/components/console/helpers/questionhelper.html#let-the-user-choose-from-a-list-of-answers
-            while (!in_array(strtolower($signe), array("c", "d"))) {
-                $signe = $questionHelper->ask(
-                    $input,
-                    $output,
-                    new Question\Question("<question>S'agit-il d'un crédit ou d'un débit (c/D) ?</question>", 'd')
-                );
-            }
+            $signe = $questionHelper->ask($input, $output, $question);
 
-            if (strtolower($signe) === "d") { // Réponse insensible à la casse
+            if (strtolower($signe) === 'd') { // Réponse insensible à la casse
                 $montant = -$montant;
                 $mouvement->setMontant($montant);
             }
@@ -230,30 +229,23 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
                 // S'il y a plus d'une catégorie, on laisse le choix
                 if (count($categories) > 1) {
 
-                    $question = "<question>Proposition de catégories :\n";
+                    $answers = array(
+                        'n' => "Ne pas catégoriser",
+                    );
 
                     foreach ($categories as $key => $categorie) {
-                        $question .= "\t($key) : $categorie\n";
+                        $answers[$key] = $categorie;
                     }
 
-                    $question .= "\t(n) : Ne pas catégoriser\n";
+                    // Question à l'utilisateur
+                    $question = new Question\ChoiceQuestion("<question>Proposition de catégories</question>", $answers);
+                    $question->setAutocompleterValues(array());
+                    $question->setPrompt("<question>Catégorie ? ></question> ");
 
-                    $question .= "Quel est votre choix (0, 1, ..., n) ?</question>";
-
-                    // Réponse obligatoire
-                    $categorieKey = null;
-
-                    // @todo : utiliser http://symfony.com/doc/current/components/console/helpers/questionhelper.html#let-the-user-choose-from-a-list-of-answers
-                    while (strtolower($categorieKey) !== "n" && !isset($categories[$categorieKey])) {
-                        $categorieKey = $questionHelper->ask(
-                            $input,
-                            $output,
-                            new Question\Question($question)
-                        );
-                    }
+                    $categorieKey = $questionHelper->ask($input, $output, $question);
                 }
 
-                if (strtolower($categorieKey) !== "n") { // Réponse insensible à la casse
+                if (strtolower($categorieKey) !== 'n') { // Réponse insensible à la casse
                     $categorie = $categories[$categorieKey];
                     $mouvement->setCategorie($categorie);
                 }
@@ -267,6 +259,6 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
             $balance += $montant;
         }
 
-        $output->writeln("<info>$i mouvements importés pour une balance de $balance</info>");
+        $output->writeln("<info>$i mouvements importés pour une balance de $balance€</info>");
     }
 }

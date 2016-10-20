@@ -80,11 +80,10 @@ class PleinsImportCommand extends AbstractImportCommand
 
                 $output->writeln("<comment>$plein</comment>");
 
-                $confirm = $questionHelper->ask(
-                    $input,
-                    $output,
-                    new Question\ConfirmationQuestion("<question>Un plein similaire existe déjà :\n\t$plein\nImporter (y/N) ?</question>", false)
-                );
+                // Question à l'utilisateur
+                $question = new Question\ConfirmationQuestion("<question>Un plein similaire existe déjà :\n\t$plein\nImporter (y/N) ?</question>", false);
+                
+                $confirm = $questionHelper->ask($input, $output, $question);
 
                 if ($confirm) {
 

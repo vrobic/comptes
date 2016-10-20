@@ -71,11 +71,11 @@ class MouvementsCategorizerFromPleinsCommand extends ContainerAwareCommand
                     }
 
                     $output->writeln("<comment>\tMouvement : $mouvement</comment>");
-                    $confirm = $questionHelper->ask(
-                        $input,
-                        $output,
-                        new Question\ConfirmationQuestion("<question>\tRecatégoriser en \"$categorie\" (y/N) ?</question>", false)
-                    );
+
+                    // Question à l'utilisateur
+                    $question = new Question\ConfirmationQuestion("<question>\tRecatégoriser en \"$categorie\" (y/N) ?</question>", false);
+
+                    $confirm = $questionHelper->ask($input, $output, $question);
 
                     if ($confirm) {
 

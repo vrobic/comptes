@@ -87,40 +87,34 @@ class MouvementsImportCommand extends AbstractImportCommand
 
                 if ($interaction && $categories) {
 
-                    $question = "<question>Catégories disponibles :\n";
+                    $answers = array(
+                        'n' => "Ne pas catégoriser",
+                    );
 
                     foreach ($categories as $key => $categorie) {
                         if ($categorie->getCategorieParente() === null) {
 
                             $categorieId = $categorie->getId();
                             $categoriesLine = $this->getCategoriesLine($categorie, array($categorie));
-                            $question .= "\t($categorieId) : " . implode(" / ", $categoriesLine) . "\n";
+                            $answers[$categorieId] = implode(" / ", $categoriesLine);
 
                             foreach ($categorie->getCategoriesFillesRecursive() as $categorieFille) {
                                 $categorieFilleId = $categorieFille->getId();
                                 $categoriesLine = $this->getCategoriesLine($categorieFille, array($categorieFille));
-                                $question .= "\t($categorieFilleId) : " . implode(" / ", $categoriesLine) . "\n";
+                                $answers[$categorieFilleId] = implode(" / ", $categoriesLine);
                             }
                         }
                     }
 
-                    $question .= "\t(n) : Ne pas catégoriser\n";
-
-                    $question .= "Quel est votre choix (0, 1, ..., n) ?</question>";
+                    // Question à l'utilisateur
+                    $question = new Question\ChoiceQuestion("<question>Catégories disponibles</question>", $answers);
+                    $question->setAutocompleterValues(array());
+                    $question->setPrompt("<question>Catégorie ? ></question> ");
 
                     // L'identifiant de la catégorie
-                    $categorieId = null; // Réponse obligatoire
+                    $categorieId = $questionHelper->ask($input, $output, $question);
 
-                    // @todo : utiliser http://symfony.com/doc/current/components/console/helpers/questionhelper.html#let-the-user-choose-from-a-list-of-answers
-                    while (strtolower($categorieId) !== "n" && ($categorieId === null || $categorieRepository->find($categorieId) === null)) {
-                        $categorieId = $questionHelper->ask(
-                            $input,
-                            $output,
-                            new Question\Question($question)
-                        );
-                    }
-
-                    if (strtolower($categorieId) !== "n") { // Réponse insensible à la casse
+                    if (strtolower($categorieId) !== 'n') { // Réponse insensible à la casse
                         $categorie = $categorieRepository->find($categorieId);
                         $mouvement->setCategorie($categorie);
                     }
@@ -156,29 +150,23 @@ class MouvementsImportCommand extends AbstractImportCommand
 
                     if ($categories) {
 
-                        $question = "<question>Proposition de catégories :\n";
+                        $answers = array(
+                            'n' => "Ne pas catégoriser",
+                        );
 
                         foreach ($categories as $key => $categorie) {
-                            $question .= "\t($key) : $categorie\n";
+                            $answers[$key] = $categorie;
                         }
 
-                        $question .= "\t(n) : Ne pas catégoriser\n";
-
-                        $question .= "Quel est votre choix (0, 1, ..., n) ?</question>";
+                        // Question à l'utilisateur
+                        $question = new Question\ChoiceQuestion("<question>Proposition de catégories</question>", $answers);
+                        $question->setAutocompleterValues([]);
+                        $question->setPrompt("<question>Catégorie ? ></question> ");
 
                         // La clé de la catégorie au sein du tableau $categories
-                        $categorieKey = null; // Réponse obligatoire
+                        $categorieKey = $questionHelper->ask($input, $output, $question);
 
-                        // @todo : utiliser http://symfony.com/doc/current/components/console/helpers/questionhelper.html#let-the-user-choose-from-a-list-of-answers
-                        while (strtolower($categorieKey) !== "n" && !isset($categories[$categorieKey])) {
-                            $categorieKey = $questionHelper->ask(
-                                $input,
-                                $output,
-                                new Question\Question($question)
-                            );
-                        }
-
-                        if (strtolower($categorieKey) !== "n") { // Réponse insensible à la casse
+                        if (strtolower($categorieKey) !== 'n') { // Réponse insensible à la casse
                             $categorie = $categories[$categorieKey];
                             $mouvement->setCategorie($categorie);
                         }
@@ -205,11 +193,10 @@ class MouvementsImportCommand extends AbstractImportCommand
 
                 $output->writeln("<comment>$mouvement</comment>");
 
-                $confirm = $questionHelper->ask(
-                    $input,
-                    $output,
-                    new Question\ConfirmationQuestion("<question>Un mouvement similaire existe déjà :\n\t$mouvement\nImporter (y/N) ?</question>", false)
-                );
+                // Question à l'utilisateur
+                $question = new Question\ConfirmationQuestion("<question>Un mouvement similaire existe déjà :\n\t$mouvement\nImporter (y/N) ?</question>", false);
+                
+                $confirm = $questionHelper->ask($input, $output, $question);
 
                 if ($confirm) {
 
@@ -229,7 +216,7 @@ class MouvementsImportCommand extends AbstractImportCommand
         // Indicateurs
         $mouvements = $handler->getMouvements();
         $mouvementsCount = count($mouvements);
-        $output->writeln("<info>$i mouvements importés sur $mouvementsCount pour une balance de $balance</info>");
+        $output->writeln("<info>$i mouvements importés sur $mouvementsCount pour une balance de $balance€</info>");
     }
 
     /**
