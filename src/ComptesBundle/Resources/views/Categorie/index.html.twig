@@ -17,7 +17,7 @@
         <td>
             {{ montants[categorie.id].average|number_format(2, ".", "") ~ "€" }}
         </td>
-        <td data-sparkline="{% for year, montant in montants[categorie.id].yearly %}{{ year ~ ':' ~ montant|abs ~ (not loop.last ? ',') | e('js') }}{% endfor %}"></td>
+        <td data-sparkline="{% for year, montant in montants[categorie.id].yearly %}{{ year ~ ':' ~ montant ~ (not loop.last ? ',') | e('js') }}{% endfor %}"></td>
     </tr>
     {% if categorie.categoriesFilles is not empty %}
         {% set depth = depth + 1 %}
