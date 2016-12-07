@@ -71,10 +71,11 @@ comptes:
                         # dans MyCars et les identifiants des véhicules correspondants.
                         vehicules:
                             Varadero: 1
-                            Bandit: 2
+                            Bandit 600: 2
                             Renault 25: 3
                             406: 4
                             NC700X: 5
+                            Bandit 1200: 6
                 # Identifiant du service d'import, ici "comptes_bundle.import.pleins.mycars.csv".
                 mycars.csv:
                     # Nom de la source
@@ -91,7 +92,8 @@ comptes:
                         # dans MyCars et les identifiants des véhicules correspondants.
                         vehicules:
                             Varadero: 1
-                            Bandit: 2
+                            Bandit 600: 2
                             Renault 25: 3
                             406: 4
                             NC700X: 5
+                            Bandit 1200: 6

@@ -20,7 +20,7 @@ comptes:
                 prix_achat: 2615
                 carburant: 2
                 capacite_reservoir: 17.7
-                rang: 5
+                rang: 6
             -
                 nom: Suzuki Bandit
                 date_achat: 2012-05-05
@@ -30,7 +30,7 @@ comptes:
                 prix_achat: 2325
                 carburant: 2
                 capacite_reservoir: 19
-                rang: 4
+                rang: 5
             -
                 nom: Renault 25
                 date_achat: 2010-01-01
@@ -40,17 +40,17 @@ comptes:
                 prix_achat: 1000
                 carburant: 1
                 capacite_reservoir: 66
-                rang: 3
+                rang: 4
             -
                 nom: Peugeot 406 coupé
                 date_achat: 2013-07-06
-                date_vente:
+                date_vente: 2016-04-23
                 kilometrage_achat: 246743
                 kilometrage_initial: 246755
                 prix_achat: 2290
                 carburant: 2
                 capacite_reservoir: 70
-                rang: 2
+                rang: 3
             -
                 nom: Honda NC700X
                 date_achat: 2013-10-31
@@ -61,6 +61,16 @@ comptes:
                 carburant: 2
                 capacite_reservoir: 14.1
                 rang: 1
+            -
+                nom: Suzuki Bandit 1200
+                date_achat: 2016-10-30
+                date_vente:
+                kilometrage_achat: 100495.8
+                kilometrage_initial: 100495.8
+                prix_achat: 1000
+                carburant: 2
+                capacite_reservoir: 19
+                rang: 2
         comptes:
             -
                 nom: Compte courant
