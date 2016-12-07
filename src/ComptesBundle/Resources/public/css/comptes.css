@@ -258,14 +258,22 @@ body {
 .content .widget {
     margin-bottom: 15px;
 }
-.content .widget > a:hover,
+.content .widget > a {
+    display: block;
+    border: 1px solid #eee;
+}
 .content .widget > a:hover {
     text-decoration: none;
+    border-width: 0;
 }
 .content .widget .widget-content {
-    border: 1px solid #eee;
+    border: 1px solid #fff;
     background-color: #fff;
     padding: 15px;
+}
+.content .widget > a:hover .widget-content {
+    border-width: 2px;
+    border-color: #eee;
 }
 .content .widget .widget-content h3 {
     text-align: right;
