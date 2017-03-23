@@ -23,9 +23,11 @@
 
 ## Features
 
+- afficher des colonnes débit/crédit dans les listes de mouvements
 - multi-utilisateur
 - édition des comptes, véhicules et carburants
 - permettre de lancer manuellement une recatégorisation automatique des mouvements
+- possibilité de désactiver gestion des mouvements ou des pleins
 
 ## Imports
 
@@ -34,6 +36,7 @@
 ## Stats
 
 - dashboard
+    - afficher le débit/crédit en plus de la balance
     - créer une classe DashboardWidget
     - permettre de choisir quels widgets afficher
 - pleins
