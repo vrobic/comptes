@@ -23,7 +23,7 @@ Son architecture Symfony2 la rend très modulable et son intérêt réside dans 
 Ce paragraphe sera bref puisqu'il s'agit d'une installation Symfony2 classique.
 
 1. Clôner le projet
-2. Renseigner le fichier `app/config/parameters.yml.dist`
+2. Renseigner le fichier `app/config/parameters.yml`
 3. Configurer un hôte virtuel, modifier le fichier `hosts` puis redémarrer le serveur web
 4. Installer _Composer_ et lancer l'installation des dépendances : `php composer.phar install`
 5. Relier les assets au le répertoire `web` : `php app/console assets:install --symlink`
