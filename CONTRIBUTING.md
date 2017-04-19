@@ -28,7 +28,7 @@ selon le schéma suivant :
 
     comptes_bundle.import.pleins.mycars.xml:
         class: ComptesBundle\Service\ImportHandler\MyCarsXMLPleinsImportHandler
-        arguments: [ @service_container ]
+        parent: comptes_bundle.import.pleins
 
 où `mycars.xml` est l'identifiant du handler.
 

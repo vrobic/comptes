@@ -7,7 +7,7 @@ use ComptesBundle\Entity\Mouvement;
 /**
  * Implémente un handler CSV d'import de mouvements de la banque Caisse d'Épargne.
  */
-final class CaisseEpargneMouvementsImportHandler extends AbstractMouvementsImportHandler
+class CaisseEpargneCSVMouvementsImportHandler extends AbstractMouvementsImportHandler
 {
     /**
      * Parse les mouvements et remplit les tableaux de classification du handler.

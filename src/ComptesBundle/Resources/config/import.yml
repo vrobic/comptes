@@ -39,6 +39,40 @@ comptes:
                         # Le fichier CSV ne contient les mouvements que d'un seul compte.
                         # Ce paramètre indique l'identifiant du compte sur lequel les importer.
                         compte: 1
+                # Identifiant du service d'import, ici "comptes_bundle.import.mouvements.cm.excel".
+                cm.excel:
+                    # Nom de la source
+                    name: Crédit Mutuel - Excel
+                    # Description de la source. HTML autorisé.
+                    description: |-
+                        Import multicompte.
+                        Feuille 2 : livret A, feuille 3 : compte courant.
+                    # L'extension du fichier attendu par le handler d'import
+                    extension: xlsm
+                    # Autres paramètres propres à ce handler
+                    config:
+                        # Le fichier Excel contient un compte par feuille.
+                        # Ce paramètre établit la correspondance entre les numéros de feuille
+                        # et les identifiants des comptes bancaires correspondants.
+                        # La numérotation des feuilles commence à zéro.
+                        sheets:
+                            2: 3
+                            3: 1
+                # Identifiant du service d'import, ici "comptes_bundle.import.mouvements.cm.csv".
+                cm.csv:
+                    # Nom de la source
+                    name: Crédit Mutuel - CSV
+                    # Description de la source. HTML autorisé.
+                    description: |-
+                        Import monocompte, montants sur deux colonnes, dates au format JJ/MM/AAAA, séparateur : point-virgule, séparateur décimales : virgule.
+                        Destination : compte courant.
+                    # L'extension du fichier attendu par le handler d'import
+                    extension: csv
+                    # Autres paramètres propres à ce handler
+                    config:
+                        # Le fichier CSV ne contient les mouvements que d'un seul compte.
+                        # Ce paramètre indique l'identifiant du compte sur lequel les importer.
+                        compte: 1
                 # Identifiant du service d'import, ici "comptes_bundle.import.mouvements.caissedepargne.csv".
                 caissedepargne.csv:
                     # Nom de la source

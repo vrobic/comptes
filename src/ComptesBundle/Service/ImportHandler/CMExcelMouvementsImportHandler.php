@@ -8,7 +8,7 @@ use ComptesBundle\Entity\Mouvement;
 /**
  * Implémente un handler Excel d'import de mouvements de la banque Crédit Mutuel.
  */
-final class CMExcelMouvementsImportHandler extends AbstractMouvementsImportHandler
+class CMExcelMouvementsImportHandler extends AbstractMouvementsImportHandler
 {
     /**
      * Parse les mouvements et remplit les tableaux de classification du handler.

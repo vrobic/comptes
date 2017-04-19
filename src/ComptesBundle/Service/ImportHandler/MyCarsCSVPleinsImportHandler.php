@@ -7,7 +7,7 @@ use ComptesBundle\Entity\Plein;
 /**
  * Implémente un handler CSV d'import de pleins pour l'application MyCars.
  */
-final class MyCarsCSVPleinsImportHandler extends AbstractPleinsImportHandler
+class MyCarsCSVPleinsImportHandler extends AbstractPleinsImportHandler
 {
     /**
      * Parse les pleins et remplit le tableau $pleins.
