@@ -108,19 +108,19 @@ class PleinController extends Controller
 
                         // Distance parcourue
                         if (isset($pleinArray['distanceParcourue'])) {
-                            $distanceParcourue = $pleinArray['distanceParcourue'];
+                            $distanceParcourue = str_replace(',', '.', $pleinArray['distanceParcourue']);
                             $plein->setDistanceParcourue($distanceParcourue);
                         }
 
                         // Quantité
                         if (isset($pleinArray['quantite'])) {
-                            $quantite = $pleinArray['quantite'];
+                            $quantite = str_replace(',', '.', $pleinArray['quantite']);
                             $plein->setQuantite($quantite);
                         }
 
                         // Prix au litre
                         if (isset($pleinArray['prixLitre'])) {
-                            $prixLitre = $pleinArray['prixLitre'];
+                            $prixLitre = str_replace(',', '.', $pleinArray['prixLitre']);
                             $plein->setPrixLitre($prixLitre);
                         }
 

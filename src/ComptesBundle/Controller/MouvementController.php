@@ -69,7 +69,7 @@ class MouvementController extends Controller
 
                         // Montant
                         if (isset($mouvementArray['montant'])) {
-                            $montant = $mouvementArray['montant'];
+                            $montant = str_replace(',', '.', $mouvementArray['montant']);
                             $mouvement->setMontant($montant);
                         }
 
