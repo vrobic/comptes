@@ -45,7 +45,7 @@ class CMExcelMouvementsImportHandler extends AbstractMouvementsImportHandler
 
                 // Date, Excel la stocke comme un integer. 0 = 01/01/1900, 25569 = 01/01/1970
                 $date = new \DateTime();
-                $daysSince1970 = $row["Opération"] - 25569;
+                $daysSince1970 = $row["Date"] - 25569;
                 $timestamp = strtotime("+$daysSince1970 days", 0);
                 $date->setTimestamp($timestamp);
                 $mouvement->setDate($date);

@@ -110,6 +110,7 @@ comptes:
                             406: 4
                             NC700X: 5
                             Bandit 1200: 6
+                            Citroen C5: 7
                 # Identifiant du service d'import, ici "comptes_bundle.import.pleins.mycars.csv".
                 mycars.csv:
                     # Nom de la source
@@ -131,3 +132,4 @@ comptes:
                             406: 4
                             NC700X: 5
                             Bandit 1200: 6
+                            Citroen C5: 7

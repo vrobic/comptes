@@ -20,7 +20,7 @@ comptes:
                 prix_achat: 2615
                 carburant: 2
                 capacite_reservoir: 17.7
-                rang: 6
+                rang: 7
             -
                 nom: Suzuki Bandit 600
                 date_achat: 2012-05-05
@@ -30,7 +30,7 @@ comptes:
                 prix_achat: 2325
                 carburant: 2
                 capacite_reservoir: 19
-                rang: 5
+                rang: 6
             -
                 nom: Renault 25
                 date_achat: 2010-01-01
@@ -40,7 +40,7 @@ comptes:
                 prix_achat: 1000
                 carburant: 1
                 capacite_reservoir: 66
-                rang: 4
+                rang: 5
             -
                 nom: Peugeot 406 coupé
                 date_achat: 2013-07-06
@@ -50,17 +50,17 @@ comptes:
                 prix_achat: 2290
                 carburant: 2
                 capacite_reservoir: 70
-                rang: 3
+                rang: 4
             -
                 nom: Honda NC700X
                 date_achat: 2013-10-31
-                date_vente:
+                date_vente: 2017-09-05
                 kilometrage_achat: 24650
                 kilometrage_initial: 24686
                 prix_achat: 4790
                 carburant: 2
                 capacite_reservoir: 14.1
-                rang: 1
+                rang: 3
             -
                 nom: Suzuki Bandit 1200
                 date_achat: 2016-10-30
@@ -69,6 +69,16 @@ comptes:
                 kilometrage_initial: 100495.8
                 prix_achat: 1000
                 carburant: 2
+                capacite_reservoir: 19
+                rang: 1
+            -
+                nom: Citroën C5
+                date_achat: 2017-10-10
+                date_vente:
+                kilometrage_achat: 260535
+                kilometrage_initial: 260596
+                prix_achat: 1000
+                carburant: 1
                 capacite_reservoir: 19
                 rang: 2
         comptes:
