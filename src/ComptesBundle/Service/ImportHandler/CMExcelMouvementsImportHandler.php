@@ -2,7 +2,7 @@
 
 namespace ComptesBundle\Service\ImportHandler;
 
-use Ddeboer\DataImport\Reader\ExcelReader;
+use PhpOffice\PhpSpreadsheet;
 use ComptesBundle\Entity\Mouvement;
 
 /**
@@ -10,6 +10,12 @@ use ComptesBundle\Entity\Mouvement;
  */
 class CMExcelMouvementsImportHandler extends AbstractMouvementsImportHandler
 {
+    const START_ROW_NUMBER = 6;
+    const DATE_COLUMN_ID = 'A';
+    const DESCRIPTION_COLUMN_ID = 'C';
+    const DEBIT_COLUMN_ID = 'D';
+    const CREDIT_COLUMN_ID = 'E';
+
     /**
      * Parse les mouvements et remplit les tableaux de classification du handler.
      *
@@ -30,36 +36,40 @@ class CMExcelMouvementsImportHandler extends AbstractMouvementsImportHandler
             $comptesBySheets[$sheetIndex] = $compteRepository->find($compteID);
         }
 
+        $reader = PhpSpreadsheet\IOFactory::load($file->getRealPath());
+
         foreach ($comptesBySheets as $sheetIndex => $compte) {
 
-            $reader = new ExcelReader($file, 4, $sheetIndex);
+            $sheet = $reader->getSheet($sheetIndex);
+            $rowIterator = $sheet->getRowIterator(self::START_ROW_NUMBER);
 
-            foreach ($reader as $row) {
+            foreach ($rowIterator as $row) {
+
+                $rowIndex = $row->getRowIndex();
+                $date = $sheet->getCell(self::DATE_COLUMN_ID . $rowIndex)->getValue();
+                $debit = $sheet->getCell(self::DEBIT_COLUMN_ID . $rowIndex)->getValue();
+                $credit = $sheet->getCell(self::CREDIT_COLUMN_ID . $rowIndex)->getValue();
+                $description = $sheet->getCell(self::DESCRIPTION_COLUMN_ID . $rowIndex)->getValue();
 
                 // Arrivée à la fin du tableau des mouvements
-                if ($row["Solde"] === null) {
+                if (null === $debit && null === $credit) {
                     break;
                 }
 
                 $mouvement = new Mouvement();
 
-                // Date, Excel la stocke comme un integer. 0 = 01/01/1900, 25569 = 01/01/1970
-                $date = new \DateTime();
-                $daysSince1970 = $row["Date"] - 25569;
-                $timestamp = strtotime("+$daysSince1970 days", 0);
-                $date->setTimestamp($timestamp);
-                $mouvement->setDate($date);
+                // Date
+                $mouvement->setDate(PhpSpreadsheet\Shared\Date::excelToDateTimeObject($date));
 
                 // Compte
                 $mouvement->setCompte($compte);
 
                 // Montant
-                $montant = $row["Débit"] !== null ? $row["Débit"] : $row["Crédit"];
+                $montant = $debit !== null ? $debit : $credit;
                 $montant = sprintf('%0.2f', $montant);
                 $mouvement->setMontant($montant);
 
                 // Description
-                $description = $row["Libellé"];
                 $mouvement->setDescription($description);
 
                 // Classification
