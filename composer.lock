@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "f8a8345a3f1698c827213196f7627ba7",
+    "content-hash": "f76803ec0fe44b5eef8850fbb1646f82",
     "packages": [
         {
             "name": "composer/ca-bundle",
@@ -61,122 +61,6 @@
                 "tls"
             ],
             "time": "2017-11-29T09:37:33+00:00"
-        },
-        {
-            "name": "ddeboer/data-import",
-            "version": "0.20.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/ddeboer/data-import.git",
-                "reference": "8fe7e731bb52df0298707eb8fb8b9b8098395437"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/ddeboer/data-import/zipball/8fe7e731bb52df0298707eb8fb8b9b8098395437",
-                "reference": "8fe7e731bb52df0298707eb8fb8b9b8098395437",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.4.0",
-                "psr/log": "~1.0"
-            },
-            "require-dev": {
-                "doctrine/dbal": "~2.4",
-                "doctrine/orm": "~2.4",
-                "ext-iconv": "*",
-                "ext-mbstring": "*",
-                "ext-sqlite3": "*",
-                "henrikbjorn/phpspec-code-coverage": "~1.0",
-                "phpoffice/phpexcel": "*",
-                "phpspec/phpspec": "~2.1",
-                "symfony/console": "~2.8|~3.0",
-                "symfony/property-access": "~2.5",
-                "symfony/validator": "~2.8|~3.0"
-            },
-            "suggest": {
-                "doctrine/dbal": "If you want to use the DbalReader",
-                "ext-iconv": "For the CharsetValueConverter",
-                "ext-mbstring": "For the CharsetValueConverter",
-                "phpoffice/phpexcel": "If you want to use the ExcelReader",
-                "symfony/console": "If you want to use the ConsoleProgressWriter",
-                "symfony/property-access": "If you want to use the ObjectConverter",
-                "symfony/validator": "to use the ValidatorFilter"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Ddeboer\\DataImport\\": "src/",
-                    "Ddeboer\\DataImport\\Tests\\": "tests/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "The community",
-                    "homepage": "https://github.com/ddeboer/data-import/graphs/contributors"
-                },
-                {
-                    "name": "David de Boer",
-                    "email": "david@ddeboer.nl"
-                }
-            ],
-            "description": "Import data from, and export data to, a range of file formats and media",
-            "keywords": [
-                "csv",
-                "data",
-                "doctrine",
-                "excel",
-                "export",
-                "import"
-            ],
-            "time": "2016-06-23T06:26:02+00:00"
-        },
-        {
-            "name": "ddeboer/data-import-bundle",
-            "version": "0.1.0",
-            "target-dir": "Ddeboer/DataImportBundle",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/ddeboer/DdeboerDataImportBundle.git",
-                "reference": "653961354e541380feef085791cb8368da3160db"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/ddeboer/DdeboerDataImportBundle/zipball/653961354e541380feef085791cb8368da3160db",
-                "reference": "653961354e541380feef085791cb8368da3160db",
-                "shasum": ""
-            },
-            "require": {
-                "ddeboer/data-import": "*",
-                "php": ">=5.3.0"
-            },
-            "type": "symfony-bundle",
-            "autoload": {
-                "psr-0": {
-                    "Ddeboer\\DataImportBundle": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "David de Boer",
-                    "email": "david@ddeboer.nl",
-                    "homepage": "http://ddeboer.nl"
-                }
-            ],
-            "description": "A Symfony2 bundle for the ddeboer/data-import library",
-            "homepage": "https://github.com/ddeboer/DdeboerDataImportBundle",
-            "keywords": [
-                "csv",
-                "import"
-            ],
-            "time": "2014-04-04T11:01:36+00:00"
         },
         {
             "name": "doctrine/annotations",
@@ -1412,63 +1296,6 @@
                 "random"
             ],
             "time": "2017-09-27T21:40:39+00:00"
-        },
-        {
-            "name": "phpoffice/phpexcel",
-            "version": "1.8.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/PHPOffice/PHPExcel.git",
-                "reference": "372c7cbb695a6f6f1e62649381aeaa37e7e70b32"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PHPExcel/zipball/372c7cbb695a6f6f1e62649381aeaa37e7e70b32",
-                "reference": "372c7cbb695a6f6f1e62649381aeaa37e7e70b32",
-                "shasum": ""
-            },
-            "require": {
-                "ext-xml": "*",
-                "ext-xmlwriter": "*",
-                "php": ">=5.2.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "PHPExcel": "Classes/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "LGPL"
-            ],
-            "authors": [
-                {
-                    "name": "Maarten Balliauw",
-                    "homepage": "http://blog.maartenballiauw.be"
-                },
-                {
-                    "name": "Mark Baker"
-                },
-                {
-                    "name": "Franck Lefevre",
-                    "homepage": "http://blog.rootslabs.net"
-                },
-                {
-                    "name": "Erik Tilt"
-                }
-            ],
-            "description": "PHPExcel - OpenXML - Read, Create and Write Spreadsheet documents in PHP - Spreadsheet engine",
-            "homepage": "http://phpexcel.codeplex.com",
-            "keywords": [
-                "OpenXML",
-                "excel",
-                "php",
-                "spreadsheet",
-                "xls",
-                "xlsx"
-            ],
-            "time": "2015-05-01T07:00:55+00:00"
         },
         {
             "name": "phpoffice/phpspreadsheet",
@@ -2905,8 +2732,5 @@
     "platform": {
         "php": ">=5.3.9"
     },
-    "platform-dev": [],
-    "platform-overrides": {
-        "php": "5.6"
-    }
+    "platform-dev": []
 }

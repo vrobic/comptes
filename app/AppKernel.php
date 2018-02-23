@@ -17,7 +17,6 @@ class AppKernel extends Kernel
             new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
             new Symfony\Bundle\AsseticBundle\AsseticBundle(),
-            new Ddeboer\DataImportBundle\DdeboerDataImportBundle(), // Le bundle pour utiliser PHPExcel
             new ComptesBundle\ComptesBundle(),
         );
 
