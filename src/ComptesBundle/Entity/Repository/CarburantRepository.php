@@ -14,6 +14,8 @@ class CarburantRepository extends EntityRepository
      */
     public function findAll()
     {
-        return $this->findBy(array(), array('rang' => 'ASC'));
+        return $this->findBy([], [
+            'rang' => 'ASC',
+        ]);
     }
 }

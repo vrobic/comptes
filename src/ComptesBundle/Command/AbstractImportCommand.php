@@ -39,7 +39,7 @@ abstract class AbstractImportCommand extends ContainerAwareCommand
      */
     protected function setType($type)
     {
-        if (!in_array($type, array('mouvements', 'pleins'))) {
+        if (!in_array($type, ['mouvements', 'pleins'])) {
             throw new \Exception("Type d'import invalide.");
         }
 

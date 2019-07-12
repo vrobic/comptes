@@ -27,10 +27,10 @@ class CaisseEpargneCSVMouvementsImportHandler extends AbstractMouvementsImportHa
         $compte = $compteRepository->find($compteID);
 
         // Lignes du fichier CSV qui représentent des mouvements
-        $rows = array();
+        $rows = [];
 
         // Les en-têtes de colonnes
-        $headers = array(
+        $headers = [
             'date',
             'numero_operation',
             'libelle',
@@ -38,7 +38,7 @@ class CaisseEpargneCSVMouvementsImportHandler extends AbstractMouvementsImportHa
             'credit',
             'detail',
             '',
-        );
+        ];
 
         // Numéros de ligne
         $currentLine = 0;

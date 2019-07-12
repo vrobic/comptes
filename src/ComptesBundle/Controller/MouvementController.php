@@ -32,8 +32,8 @@ class MouvementController extends Controller
 
         // Valeurs postées
         $action = $request->get('action');
-        $batchArray = $request->get('batch', array());
-        $mouvementsArray = $request->get('mouvements', array());
+        $batchArray = $request->get('batch', []);
+        $mouvementsArray = $request->get('mouvements', []);
 
         foreach ($batchArray as $mouvementID) {
             if (isset($mouvementsArray[$mouvementID])) {

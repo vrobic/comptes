@@ -15,7 +15,9 @@ class CategorieRepository extends EntityRepository
      */
     public function findAll()
     {
-        return $this->findBy(array(), array('rang' => 'ASC'));
+        return $this->findBy([], [
+            'rang' => 'ASC',
+        ]);
     }
 
     /**
@@ -31,7 +33,7 @@ class CategorieRepository extends EntityRepository
         $queryBuilder = $this->getEntityManager()->createQueryBuilder();
 
         // La liste des catégories de mouvements
-        $categories = array($categorie);
+        $categories = [$categorie];
         $categoriesFilles = $categorie->getCategoriesFillesRecursive();
 
         foreach ($categoriesFilles as $categorieFille) {
@@ -79,7 +81,7 @@ class CategorieRepository extends EntityRepository
         }
 
         // La liste des catégories de mouvements
-        $categories = array($categorie);
+        $categories = [$categorie];
         $categoriesFilles = $categorie->getCategoriesFillesRecursive();
 
         foreach ($categoriesFilles as $categorieFille) {

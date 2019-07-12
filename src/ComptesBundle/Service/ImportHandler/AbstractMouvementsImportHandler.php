@@ -125,11 +125,11 @@ abstract class AbstractMouvementsImportHandler
         $this->configuration = $configuration['handlers']['mouvements'];
 
         // Tableaux de classification
-        $this->mouvements = array();
-        $this->categorizedMouvements = array();
-        $this->uncategorizedMouvements = array();
-        $this->ambiguousMouvements = array();
-        $this->waitingMouvements = array();
+        $this->mouvements = [];
+        $this->categorizedMouvements = [];
+        $this->uncategorizedMouvements = [];
+        $this->ambiguousMouvements = [];
+        $this->waitingMouvements = [];
     }
 
     /**
@@ -305,11 +305,11 @@ abstract class AbstractMouvementsImportHandler
         }
 
         // Recherche d'un éventuel doublon
-        $criteria = array(
+        $criteria = [
             'date' => $mouvement->getDate(),
             'compte' => $mouvement->getCompte(),
             'montant' => $mouvement->getMontant(),
-        );
+        ];
         $mouvementRepository = $this->em->getRepository('ComptesBundle:Mouvement');
         $similarMouvement = $mouvementRepository->findOneBy($criteria);
 

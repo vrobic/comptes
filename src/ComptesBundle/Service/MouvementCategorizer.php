@@ -44,7 +44,7 @@ class MouvementCategorizer
         $description = $mouvement->getDescription();
 
         // Les catégories probables du mouvement
-        $categories = array();
+        $categories = [];
 
         foreach ($keywords as $keyword) {
             $word = $keyword->getWord();

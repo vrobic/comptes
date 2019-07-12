@@ -82,19 +82,19 @@ class MouvementsImportCommand extends AbstractImportCommand
                 $output->writeln("<comment>{$mouvement}</comment>");
 
                 if ($interaction && $categories) {
-                    $answers = array(
+                    $answers = [
                         'n' => "Ne pas catégoriser",
-                    );
+                    ];
 
                     foreach ($categories as $key => $categorie) {
                         if ($categorie->getCategorieParente() === null) {
                             $categorieId = $categorie->getId();
-                            $categoriesLine = $this->getCategoriesLine($categorie, array($categorie));
+                            $categoriesLine = $this->getCategoriesLine($categorie, [$categorie]);
                             $answers[$categorieId] = implode(" / ", $categoriesLine);
 
                             foreach ($categorie->getCategoriesFillesRecursive() as $categorieFille) {
                                 $categorieFilleId = $categorieFille->getId();
-                                $categoriesLine = $this->getCategoriesLine($categorieFille, array($categorieFille));
+                                $categoriesLine = $this->getCategoriesLine($categorieFille, [$categorieFille]);
                                 $answers[$categorieFilleId] = implode(" / ", $categoriesLine);
                             }
                         }
@@ -102,7 +102,7 @@ class MouvementsImportCommand extends AbstractImportCommand
 
                     // Question à l'utilisateur
                     $question = new Question\ChoiceQuestion("<question>Catégories disponibles</question>", $answers);
-                    $question->setAutocompleterValues(array());
+                    $question->setAutocompleterValues([]);
                     $question->setPrompt("<question>Catégorie ? ></question> ");
 
                     // L'identifiant de la catégorie
@@ -140,9 +140,9 @@ class MouvementsImportCommand extends AbstractImportCommand
                     $categories = $mouvementCategorizer->getCategories($mouvement);
 
                     if ($categories) {
-                        $answers = array(
+                        $answers = [
                             'n' => "Ne pas catégoriser",
-                        );
+                        ];
 
                         foreach ($categories as $key => $categorie) {
                             $answers[$key] = $categorie;

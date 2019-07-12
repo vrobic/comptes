@@ -91,7 +91,7 @@ class StatsProvider
 
         $mouvements = $mouvementRepository->findByDate($dateStart, $dateEnd, 'ASC', $compte);
 
-        $yearlyMontants = array();
+        $yearlyMontants = [];
 
         foreach ($mouvements as $mouvement) {
             $montant = $mouvement->getMontant();
@@ -124,7 +124,7 @@ class StatsProvider
         $dateStart = \DateTime::createFromFormat('Y-m-d H:i:s', "$yearStart-01-01 00:00:00");
         $dateEnd = \DateTime::createFromFormat('Y-m-d H:i:s', "$yearEnd-12-31 23:59:59");
 
-        $yearlyMontants = array();
+        $yearlyMontants = [];
         $monthlyMontants = $this->getMonthlyMontantsByCategorie($categorie, $dateStart, $dateEnd, $compte);
 
         foreach ($monthlyMontants as $year => $months) {
@@ -155,7 +155,7 @@ class StatsProvider
         $mouvementRepository = $this->doctrine->getRepository('ComptesBundle:Mouvement');
 
         // Les montants totaux mensuels des mouvements de la catégorie
-        $montants = array();
+        $montants = [];
 
         // Tous les mois entre et sur les deux dates
         $interval = \DateInterval::createFromDateString('1 month');
@@ -245,7 +245,7 @@ class StatsProvider
         $pleins = $pleinRepository->findByDate($dateStart, $dateEnd, 'ASC');
 
         // Les pleins classés par véhicule, ne sert que de flag
-        $pleinsByVehicule = array();
+        $pleinsByVehicule = [];
 
         // Distance parcourue
         $distance = 0;

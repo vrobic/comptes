@@ -80,9 +80,9 @@ abstract class AbstractPleinsImportHandler
         $this->configuration = $configuration['handlers']['pleins'];
 
         // Tableaux de classification
-        $this->pleins = array();
-        $this->validPleins = array();
-        $this->waitingPleins = array();
+        $this->pleins = [];
+        $this->validPleins = [];
+        $this->waitingPleins = [];
     }
 
     /**
@@ -188,10 +188,10 @@ abstract class AbstractPleinsImportHandler
     protected function getClassification(Plein $plein)
     {
         // Recherche d'un éventuel doublon
-        $criteria = array(
+        $criteria = [
             'date' => $plein->getDate(),
             'vehicule' => $plein->getVehicule(),
-        );
+        ];
         $pleinRepository = $this->em->getRepository('ComptesBundle:Plein');
         $similarPlein = $pleinRepository->findOneBy($criteria);
 

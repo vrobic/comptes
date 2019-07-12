@@ -12,11 +12,11 @@ class ConfigurationLoader
     /**
      * @internal Les clés de configuration disponibles.
      */
-    const KEYS = array(
+    const KEYS = [
         'fixtures',
         'import',
         'stats',
-    );
+    ];
 
     /**
      * La clé de configuration chargée parmi celles disponibles.
@@ -49,7 +49,7 @@ class ConfigurationLoader
     public function __construct(Container $container)
     {
         $this->key = null;
-        $this->configuration = array();
+        $this->configuration = [];
         $this->container = $container;
     }
 
@@ -75,7 +75,7 @@ class ConfigurationLoader
         $valid = $this->validateConfiguration();
 
         if (!$valid) {
-            $this->configuration = array();
+            $this->configuration = [];
             throw new \Exception("Configuration invalide.");
         }
 
@@ -92,11 +92,11 @@ class ConfigurationLoader
     public function validateConfiguration()
     {
         // Méthodes de validation
-        $validators = array(
+        $validators = [
             'fixtures' => 'validateFixturesConfiguration',
             'import' => 'validateImportConfiguration',
             'stats' => 'validateStatsConfiguration',
-        );
+        ];
 
         if (isset($validators[$this->key])) {
             $validator = $validators[$this->key];
@@ -134,7 +134,7 @@ class ConfigurationLoader
                 $hasService = $this->container->has("comptes_bundle.import.$type.$identifier");
                 if (!$hasService) {
                     throw new \Exception($this->getExceptionMessage(
-                        array('handlers', $type, $identifier),
+                        ['handlers', $type, $identifier],
                         "Aucun service n'est enregistré sous l'identifiant [comptes_bundle.import.$type.$identifier]."
                     ));
                 }

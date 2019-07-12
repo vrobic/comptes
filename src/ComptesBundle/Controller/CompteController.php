@@ -28,12 +28,12 @@ class CompteController extends Controller
         $comptes = $compteRepository->findAll();
 
         // Tous les mouvements
-        $mouvements = $mouvementRepository->findBy(array(), array('date' => 'ASC'));
+        $mouvements = $mouvementRepository->findBy([], array('date' => 'ASC'));
         $firstMouvement = reset($mouvements) ?: null;
         $lastMouvement = end($mouvements) ?: null;
 
         // Versements initiaux, à prendre en compte pour le calcul du solde cumulé
-        $versementsInitiaux = array();
+        $versementsInitiaux = [];
 
         foreach ($comptes as $key => $compte) {
             $soldeInitial = $compte->getSoldeInitial();
@@ -80,12 +80,12 @@ class CompteController extends Controller
 
         return $this->render(
             'ComptesBundle:Compte:index.html.twig',
-            array(
+            [
                 'comptes' => $comptes,
                 'mouvements' => $mouvements,
                 'first_mouvement' => $firstMouvement,
                 'last_mouvement' => $lastMouvement,
-            )
+            ]
         );
     }
 
@@ -140,10 +140,10 @@ class CompteController extends Controller
             throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException("La période de dates est invalide.");
         }
 
-        $dateFilter = array(
+        $dateFilter = [
             'start' => $dateStart,
             'end' => $dateEnd,
-        );
+        ];
 
         // Tous les mouvements de la période
         $mouvements = $mouvementRepository->findByCompteAndDate($compte, $dateFilter['start'], $dateFilter['end']);
@@ -165,14 +165,14 @@ class CompteController extends Controller
 
         return $this->render(
             'ComptesBundle:Compte:show.html.twig',
-            array(
+            [
                 'compte' => $compte,
                 'date_filter' => $dateFilter,
                 'mouvements' => $mouvements,
                 'categories' => $categories,
                 'solde_start' => $soldeStart,
                 'balance' => $balance,
-            )
+            ]
         );
     }
 }

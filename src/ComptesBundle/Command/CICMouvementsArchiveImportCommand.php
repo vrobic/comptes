@@ -100,7 +100,7 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
                 continue;
             }
 
-            $compte = $compteRepository->findOneBy(array('numero' => $numeroCompte));
+            $compte = $compteRepository->findOneBy(['numero' => $numeroCompte]);
 
             if (!$compte) {
                 throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException("Le compte n°$numeroCompte est inconnu.");
@@ -125,7 +125,7 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
             $descriptionPos = $datePos + 22; // 22 => "00-00-0000 00-00-0000 "
 
             // Recherche de la description et du montant sur la ligne de la date (0) et les 4 du dessous
-            $descriptionRows = array();
+            $descriptionRows = [];
             $montant = null;
 
             for ($nextLineOffset = 0; $nextLineOffset <= 4; $nextLineOffset++) {
@@ -202,7 +202,7 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
             // Question à l'utilisateur
             $question = new Question\Question("<question>S'agit-il d'un crédit ou d'un débit (c/D) ?</question>", 'd');
             $question->setValidator(function ($answer) {
-                if (!in_array(strtolower($answer), array('c', 'd'))) {
+                if (!in_array(strtolower($answer), ['c', 'd'])) {
                     throw new \RuntimeException("Réponse invalide");
                 }
 
@@ -225,9 +225,9 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
 
                 // S'il y a plus d'une catégorie, on laisse le choix
                 if (count($categories) > 1) {
-                    $answers = array(
+                    $answers = [
                         'n' => "Ne pas catégoriser",
-                    );
+                    ];
 
                     foreach ($categories as $key => $categorie) {
                         $answers[$key] = $categorie;
@@ -235,7 +235,7 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
 
                     // Question à l'utilisateur
                     $question = new Question\ChoiceQuestion("<question>Proposition de catégories</question>", $answers);
-                    $question->setAutocompleterValues(array());
+                    $question->setAutocompleterValues([]);
                     $question->setPrompt("<question>Catégorie ? ></question> ");
 
                     $categorieKey = $questionHelper->ask($input, $output, $question);

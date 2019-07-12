@@ -16,7 +16,9 @@ class PleinRepository extends EntityRepository
      */
     public function findAll()
     {
-        return $this->findBy(array(), array('date' => 'DESC'));
+        return $this->findBy([], [
+            'date' => 'DESC',
+        ]);
     }
 
     /**

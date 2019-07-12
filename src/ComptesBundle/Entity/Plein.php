@@ -252,7 +252,7 @@ class Plein
      */
     public function validate(ExecutionContextInterface $context)
     {
-        $violations = array();
+        $violations = [];
 
         if ($this->getDate() > new \DateTime()) {
             $violations[] = "La date du plein doit se situer dans le passé.";

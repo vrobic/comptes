@@ -30,7 +30,7 @@ class CMExcelMouvementsImportHandler extends AbstractMouvementsImportHandler
         $configuration = $this->configuration['cm.excel']['config'];
 
         // Tableau de correspondance entre l'index de la feuille et le compte bancaire
-        $comptesBySheets = array();
+        $comptesBySheets = [];
 
         foreach ($configuration['sheets'] as $sheetIndex => $compteID) {
             $comptesBySheets[$sheetIndex] = $compteRepository->find($compteID);

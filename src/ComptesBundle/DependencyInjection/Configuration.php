@@ -117,7 +117,7 @@ class Configuration implements ConfigurationInterface
                                     // @todo : déclarer récursivement la structure des sous-catégories
                                     ->variableNode('subcategories')
                                         ->info("Liste éventuelle de sous-catégories. Laisser vide si la catégorie n'a pas de sous-catégories. Le format attendu est le même que pour les catégories de premier niveau.")
-                                        ->defaultValue(array())
+                                        ->defaultValue([])
                                     ->end()
                                 ->end()
                             ->end()

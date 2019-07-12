@@ -93,7 +93,7 @@ class CategorieController extends Controller
         $yearlyMontants = $statsProvider->getYearlyMontants($yearStart, $yearEnd, $compte);
 
         // Montant total des mouvements par catégorie
-        $montants = array(); // @todo : expliciter le nom de la variable
+        $montants = []; // @todo : expliciter le nom de la variable
 
         // Montant cumulé de tous les mouvements, et des mouvements catégorisés sur la période donnée
         $montantTotalPeriode = $mouvementRepository->getMontantTotalByDate($dateFilter['start'], $dateFilter['end'], 'ASC', $compte);
@@ -128,7 +128,7 @@ class CategorieController extends Controller
 
         return $this->render(
             'ComptesBundle:Categorie:index.html.twig',
-            array(
+            [
                 'categories' => $categories,
                 'comptes' => $comptes,
                 'compte_filter' => $compte,
@@ -137,7 +137,7 @@ class CategorieController extends Controller
                 'montant_total' => $montantTotalPeriode, // Sur la période
                 'montant_total_non_categorise' => $montantTotalPeriodeNonCategorise, // Sur la période
                 'yearly_montants' => $yearlyMontants, // Depuis toujours
-            )
+            ]
         );
     }
 
@@ -209,10 +209,10 @@ class CategorieController extends Controller
             throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException("La période de dates est invalide.");
         }
 
-        $dateFilter = array(
+        $dateFilter = [
             'start' => $dateStart,
             'end' => $dateEnd,
-        );
+        ];
 
         // Tous les mouvements de la catégorie sur la période donnée
         $mouvements = $mouvementRepository->findByDateAndCategorie($categorie, $dateFilter['start'], $dateFilter['end'], 'ASC', $compte);
@@ -222,10 +222,10 @@ class CategorieController extends Controller
         $average = 0;
 
         // Total des mouvements par mois
-        $monthlyMontants = array();
+        $monthlyMontants = [];
 
         // Total des mouvements par catégorie (la courante et ses filles éventuelles)
-        $montants = array(); // @todo : expliciter le nom de la variable
+        $montants = []; // @todo : expliciter le nom de la variable
 
         if ($mouvements) {
             foreach ($mouvements as $mouvement) {
@@ -258,7 +258,7 @@ class CategorieController extends Controller
 
         return $this->render(
             'ComptesBundle:Categorie:show.html.twig',
-            array(
+            [
                 'categorie' => $categorie,
                 'categories' => $categories,
                 'comptes' => $comptes,
@@ -269,7 +269,7 @@ class CategorieController extends Controller
                 'average' => $average,
                 'monthly_montants' => $monthlyMontants,
                 'montants' => $montants,
-            )
+            ]
         );
     }
 
@@ -295,8 +295,8 @@ class CategorieController extends Controller
 
         // Valeurs postées
         $action = $request->get('action');
-        $batchArray = $request->get('batch', array());
-        $categoriesArray = $request->get('categories', array());
+        $batchArray = $request->get('batch', []);
+        $categoriesArray = $request->get('categories', []);
 
         foreach ($batchArray as $categorieID) {
             if (isset($categoriesArray[$categorieID])) {
@@ -325,7 +325,7 @@ class CategorieController extends Controller
 
                         // Mots-clés
                         if (isset($categorieArray['keywords'])) {
-                            $words = array_diff(explode('|', $categorieArray['keywords']), array(''));
+                            $words = array_diff(explode('|', $categorieArray['keywords']), ['']);
                             $keywords = $categorie->getKeywords();
 
                             // Supprime les mots-clés qui ne sont plus sélectionnés
@@ -341,7 +341,7 @@ class CategorieController extends Controller
                             // Ajoute les mots-clés sélectionnés
                             foreach ($words as $word) {
                                 // Ce mot-clé existe-il déjà ?
-                                $keyword = $keywordRepository->findOneBy(array('word' => $word));
+                                $keyword = $keywordRepository->findOneBy(['word' => $word]);
 
                                 if (null === $keyword) { // Si non, on le crée
                                     $keyword = new Keyword();
@@ -399,10 +399,10 @@ class CategorieController extends Controller
 
         return $this->render(
             'ComptesBundle:Categorie:edit.html.twig',
-            array(
+            [
                 'categories' => $categories,
                 'keywords' => $keywords,
-            )
+            ]
         );
     }
 }

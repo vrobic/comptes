@@ -480,7 +480,7 @@ class Vehicule
      */
     public function validate(ExecutionContextInterface $context)
     {
-        $violations = array();
+        $violations = [];
 
         if ($this->getDateAchat() > new \DateTime()) {
             $violations[] = "La date d'achat du véhicule doit être située dans le passé.";

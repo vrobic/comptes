@@ -23,7 +23,7 @@ class MyCarsXMLPleinsImportHandler extends AbstractPleinsImportHandler
         $configuration = $this->configuration['mycars.xml']['config'];
 
         // Tableau de correspondance entre le nom du véhicule dans MyCars et l'objet Vehicule
-        $vehicules = array();
+        $vehicules = [];
 
         foreach ($configuration['vehicules'] as $vehiculeLabel => $vehiculeID) {
             $vehicules[$vehiculeLabel] = $vehiculeRepository->find($vehiculeID);

@@ -409,7 +409,7 @@ class Compte
      */
     public function validate(ExecutionContextInterface $context)
     {
-        $violations = array();
+        $violations = [];
 
         if ($this->getPlafond() < 0) {
             $violations[] = "Le plafond du compte doit être supérieur ou égal à 0. La valeur 0 indique l'absence de plafond.";

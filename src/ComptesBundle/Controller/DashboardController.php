@@ -51,12 +51,12 @@ class DashboardController extends Controller
 
         return $this->render(
             'ComptesBundle:Dashboard:index.html.twig',
-            array(
+            [
                 'monthly_balance_over_last_month' => $monthlyBalanceOverLastMonth,
                 'monthly_balance_over_last_quarter' => $monthlyBalanceOverLastQuarter,
                 'monthly_balance_over_last_year' => $monthlyBalanceOverLastYear,
                 'distance_for_once_month' => $distanceForOneMonth,
-            )
+            ]
         );
     }
 }

@@ -23,17 +23,17 @@ class MyCarsCSVPleinsImportHandler extends AbstractPleinsImportHandler
         $configuration = $this->configuration['mycars.csv']['config'];
 
         // Tableau de correspondance entre le nom du véhicule dans MyCars et l'objet Vehicule
-        $vehicules = array();
+        $vehicules = [];
 
         foreach ($configuration['vehicules'] as $vehiculeLabel => $vehiculeID) {
             $vehicules[$vehiculeLabel] = $vehiculeRepository->find($vehiculeID);
         }
 
         // Lignes du fichier CSV qui représentent des pleins
-        $refuels = array();
+        $refuels = [];
 
         // Les en-têtes de colonnes
-        $headers = array();
+        $headers = [];
 
         // Numéros de ligne
         $currentLine = 0;

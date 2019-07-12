@@ -18,7 +18,7 @@ class KeywordRepository extends EntityRepository
      */
     public function findAllSortedByCategories()
     {
-        $keywords = array();
+        $keywords = [];
         $unsortedKeywords = $this->findAll();
 
         foreach ($unsortedKeywords as $keyword) {
@@ -26,7 +26,7 @@ class KeywordRepository extends EntityRepository
             $categorieID = $categorie->getId();
 
             if (!isset($keywords[$categorieID])) {
-                $keywords[$categorieID] = array();
+                $keywords[$categorieID] = [];
             }
 
             $keywords[$categorieID][] = $keyword;

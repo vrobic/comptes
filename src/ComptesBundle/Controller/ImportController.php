@@ -81,10 +81,10 @@ class ImportController extends Controller
         $latestMouvement = $mouvementRepository->findLatestOne();
 
         // Classification des mouvements
-        $categorizedMouvements = array();
-        $uncategorizedMouvements = array();
-        $ambiguousMouvements = array();
-        $waitingMouvements = array();
+        $categorizedMouvements = [];
+        $uncategorizedMouvements = [];
+        $ambiguousMouvements = [];
+        $waitingMouvements = [];
 
         // Action : parsing ou import
         $action = $request->get('action');
@@ -141,10 +141,10 @@ class ImportController extends Controller
                 $balance = 0; // Balance des mouvements (crédit ou débit)
 
                 // Hash des mouvements à importer
-                $mouvementsHashToImport = $request->get('mouvements_hash_to_import', array());
+                $mouvementsHashToImport = $request->get('mouvements_hash_to_import', []);
 
                 // Données de mouvements à modifier
-                $mouvementsData = $request->get('mouvements', array());
+                $mouvementsData = $request->get('mouvements', []);
 
                 // Récupération des mouvements
                 $mouvements = $session->get('mouvements');
@@ -210,7 +210,7 @@ class ImportController extends Controller
 
         return $this->render(
             'ComptesBundle:Import:mouvements.html.twig',
-            array(
+            [
                 'handlers' => $this->handlers,
                 'comptes' => $comptes,
                 'categories' => $categories,
@@ -218,7 +218,7 @@ class ImportController extends Controller
                 'uncategorized_mouvements' => $uncategorizedMouvements,
                 'ambiguous_mouvements' => $ambiguousMouvements,
                 'waiting_mouvements' => $waitingMouvements,
-            )
+            ]
         );
     }
 
@@ -260,8 +260,8 @@ class ImportController extends Controller
         $latestPlein = $pleinRepository->findLatestOne();
 
         // Classification des pleins
-        $validPleins = array();
-        $waitingPleins = array();
+        $validPleins = [];
+        $waitingPleins = [];
 
         // Action : parsing ou import
         $action = $request->get('action');
@@ -313,10 +313,10 @@ class ImportController extends Controller
                 $i = 0; // Nombre de pleins importés
 
                 // Hash des pleins à importer
-                $pleinsHashToImport = $request->get('pleins_hash_to_import', array());
+                $pleinsHashToImport = $request->get('pleins_hash_to_import', []);
 
                 // Données de pleins à modifier
-                $pleinsData = $request->get('pleins', array());
+                $pleinsData = $request->get('pleins', []);
 
                 // Récupération des pleins
                 $pleins = $session->get('pleins');
@@ -386,12 +386,12 @@ class ImportController extends Controller
 
         return $this->render(
             'ComptesBundle:Import:pleins.html.twig',
-            array(
+            [
                 'handlers' => $this->handlers,
                 'vehicules' => $vehicules,
                 'valid_pleins' => $validPleins,
                 'waiting_pleins' => $waitingPleins,
-            )
+            ]
         );
     }
 

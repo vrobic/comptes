@@ -187,7 +187,7 @@ class Mouvement
      */
     public function validate(ExecutionContextInterface $context)
     {
-        $violations = array();
+        $violations = [];
 
         if ($this->getDate() > new \DateTime()) {
             $violations[] = "La date du mouvement doit être située dans le passé.";

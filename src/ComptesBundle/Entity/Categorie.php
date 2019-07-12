@@ -177,12 +177,12 @@ class Categorie
      *
      * @return Categorie[]
      */
-    public function getCategoriesFillesRecursive($categoriesFilles = array())
+    public function getCategoriesFillesRecursive($categoriesFilles = [])
     {
         foreach ($this->categoriesFilles as $categorieFille) {
             $categoriesFilles = array_merge(
                 $categoriesFilles,
-                $categorieFille->getCategoriesFillesRecursive(array($categorieFille))
+                $categorieFille->getCategoriesFillesRecursive([$categorieFille])
             );
         }
 

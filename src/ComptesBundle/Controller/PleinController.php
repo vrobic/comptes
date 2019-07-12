@@ -48,13 +48,13 @@ class PleinController extends Controller
 
         return $this->render(
             'ComptesBundle:Plein:index.html.twig',
-            array(
+            [
                 'pleins' => $pleins,
                 'vehicules' => $vehicules,
                 'total_quantite' => $totalQuantite,
                 'total_montant' => $totalMontant,
                 'total_distance' => $totalDistance,
-            )
+            ]
         );
     }
 
@@ -77,8 +77,8 @@ class PleinController extends Controller
 
         // Valeurs postées
         $action = $request->get('action');
-        $batchArray = $request->get('batch', array());
-        $pleinsArray = $request->get('pleins', array());
+        $batchArray = $request->get('batch', []);
+        $pleinsArray = $request->get('pleins', []);
 
         foreach ($batchArray as $pleinID) {
             if (isset($pleinsArray[$pleinID])) {

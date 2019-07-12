@@ -24,9 +24,9 @@ class VehiculeController extends Controller
 
         return $this->render(
             'ComptesBundle:Vehicule:index.html.twig',
-            array(
+            [
                 'vehicules' => $vehicules,
-            )
+            ]
         );
     }
 }

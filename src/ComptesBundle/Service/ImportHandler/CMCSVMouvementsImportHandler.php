@@ -27,17 +27,17 @@ class CMCSVMouvementsImportHandler extends AbstractMouvementsImportHandler
         $compte = $compteRepository->find($compteID);
 
         // Lignes du fichier CSV qui représentent des mouvements
-        $rows = array();
+        $rows = [];
 
         // Les en-têtes de colonnes
-        $headers = array(
+        $headers = [
             'date_operation',
             'date_valeur',
             'debit',
             'credit',
             'libelle',
             'solde',
-        );
+        ];
 
         // Numéros de ligne
         $currentLine = 0;

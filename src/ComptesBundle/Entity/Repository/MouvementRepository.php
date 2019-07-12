@@ -17,7 +17,9 @@ class MouvementRepository extends EntityRepository
      */
     public function findAll()
     {
-        return $this->findBy(array(), array('date' => 'DESC'));
+        return $this->findBy([], [
+            'date' => 'DESC',
+        ]);
     }
 
     /**
@@ -310,7 +312,7 @@ class MouvementRepository extends EntityRepository
 
         if (null !== $categorie) {
             // La liste des catégories de mouvements
-            $categories = array($categorie);
+            $categories = [$categorie];
             $categoriesFilles = $categorie->getCategoriesFillesRecursive();
 
             foreach ($categoriesFilles as $categorieFille) {
@@ -417,7 +419,7 @@ class MouvementRepository extends EntityRepository
 
         if (null !== $categorie) {
             // La liste des catégories de mouvements
-            $categories = array($categorie);
+            $categories = [$categorie];
             $categoriesFilles = $categorie->getCategoriesFillesRecursive();
 
             foreach ($categoriesFilles as $categorieFille) {
