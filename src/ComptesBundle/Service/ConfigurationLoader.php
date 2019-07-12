@@ -67,7 +67,7 @@ class ConfigurationLoader
     public function load($key)
     {
         if (!in_array($key, self::KEYS)) {
-            throw new \Exception("La clé de configuration [$key] n'existe pas. Sont disponibles : [".implode(', ', self::KEYS)."].");
+            throw new \Exception(sprintf("La clé de configuration [%s] n'existe pas. Sont disponibles : [%s].", $key, implode(', ', self::KEYS)));
         }
 
         $this->configuration = $this->container->getParameter("comptes.$key");

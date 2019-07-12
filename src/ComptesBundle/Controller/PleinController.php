@@ -36,7 +36,6 @@ class PleinController extends Controller
         $totalDistance = 0;
 
         foreach ($pleins as $plein) {
-
             $quantite = $plein->getQuantite();
             $totalQuantite += $quantite;
 
@@ -82,16 +81,12 @@ class PleinController extends Controller
         $pleinsArray = $request->get('pleins', array());
 
         foreach ($batchArray as $pleinID) {
-
             if (isset($pleinsArray[$pleinID])) {
-
                 $pleinArray = $pleinsArray[$pleinID];
                 $plein = $pleinID > 0 ? $pleinRepository->find($pleinID) : new Plein();
 
                 switch ($action) {
-
                     case 'save': // Création et édition
-
                         // Date
                         if (isset($pleinArray['date'])) {
                             $dateString = $pleinArray['date'];
@@ -135,7 +130,6 @@ class PleinController extends Controller
                         break;
 
                     case 'delete': // Suppression
-
                         $manager->remove($plein);
 
                         break;

@@ -39,17 +39,15 @@ class CMExcelMouvementsImportHandler extends AbstractMouvementsImportHandler
         $reader = PhpSpreadsheet\IOFactory::load($file->getRealPath());
 
         foreach ($comptesBySheets as $sheetIndex => $compte) {
-
             $sheet = $reader->getSheet($sheetIndex);
             $rowIterator = $sheet->getRowIterator(self::START_ROW_NUMBER);
 
             foreach ($rowIterator as $row) {
-
                 $rowIndex = $row->getRowIndex();
-                $date = $sheet->getCell(self::DATE_COLUMN_ID . $rowIndex)->getValue();
-                $debit = $sheet->getCell(self::DEBIT_COLUMN_ID . $rowIndex)->getValue();
-                $credit = $sheet->getCell(self::CREDIT_COLUMN_ID . $rowIndex)->getValue();
-                $description = $sheet->getCell(self::DESCRIPTION_COLUMN_ID . $rowIndex)->getValue();
+                $date = $sheet->getCell(sprintf('%d%d', self::DATE_COLUMN_ID, $rowIndex))->getValue();
+                $debit = $sheet->getCell(sprintf('%d%d', self::DEBIT_COLUMN_ID, $rowIndex))->getValue();
+                $credit = $sheet->getCell(sprintf('%d%d', self::CREDIT_COLUMN_ID, $rowIndex))->getValue();
+                $description = $sheet->getCell(sprintf('%d%d', self::DESCRIPTION_COLUMN_ID, $rowIndex))->getValue();
 
                 // Arrivée à la fin du tableau des mouvements
                 if (null === $debit && null === $credit) {

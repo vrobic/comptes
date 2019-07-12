@@ -47,12 +47,10 @@ class MouvementCategorizer
         $categories = array();
 
         foreach ($keywords as $keyword) {
-
             $word = $keyword->getWord();
 
             // Si le mot-clé est présent dans la description
             if (preg_match("/\b$word\b/i", $description)) {
-
                 $categorie = $keyword->getCategorie();
                 $categorieID = $categorie->getId();
 

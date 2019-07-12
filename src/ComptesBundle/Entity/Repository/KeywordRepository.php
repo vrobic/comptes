@@ -22,7 +22,6 @@ class KeywordRepository extends EntityRepository
         $unsortedKeywords = $this->findAll();
 
         foreach ($unsortedKeywords as $keyword) {
-
             $categorie = $keyword->getCategorie();
             $categorieID = $categorie->getId();
 

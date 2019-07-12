@@ -45,7 +45,6 @@ class MouvementsCategorizerFromPleinsCommand extends ContainerAwareCommand
         $i = 0; // Nombre de mouvements modifiés
 
         foreach ($pleins as $plein) {
-
             $output->writeln("<comment>Plein : {$plein}</comment>");
 
             // Recherche du mouvement correspondant au plein
@@ -61,12 +60,10 @@ class MouvementsCategorizerFromPleinsCommand extends ContainerAwareCommand
             $mouvements = $mouvementRepository->findByMontantBetweenDates($montant, $dateStart, $dateEnd);
 
             if ($mouvements) {
-
                 foreach ($mouvements as $mouvement) {
-
                     // Si le mouvement n'est pas déjà dans la bonne catégorie
                     $previousCategorie = $mouvement->getCategorie();
-                    if ($previousCategorie !== null && $previousCategorie->getId() === $categorieId) {
+                    if (null !== $previousCategorie && $previousCategorie->getId() === $categorieId) {
                         continue;
                     }
 
@@ -78,7 +75,6 @@ class MouvementsCategorizerFromPleinsCommand extends ContainerAwareCommand
                     $confirm = $questionHelper->ask($input, $output, $question);
 
                     if ($confirm) {
-
                         // Enregistrement
                         $mouvement->setCategorie($categorie);
                         $em->persist($mouvement);

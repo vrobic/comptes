@@ -418,7 +418,6 @@ class Vehicule
         $consommations = 0;
 
         foreach ($pleins as $plein) {
-
             $distanceParcourue = $plein->getDistanceParcourue();
             $quantite = $plein->getQuantite();
 

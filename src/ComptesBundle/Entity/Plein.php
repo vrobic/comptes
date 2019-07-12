@@ -270,7 +270,7 @@ class Plein
             $violations[] = "Le prix du litre de carburant doit être supérieur ou égal à 0.";
         }
 
-        if ($this->getMontant() != round($this->getPrixLitre() * $this->getQuantite(), 2)) {
+        if ($this->getMontant() != round($this->getPrixLitre() * $this->getQuantite(), 2)) { // @codingStandardsIgnoreLine
             $violations[] = "Le montant du plein ne correspond pas aux prix du litre et quantité saisis.";
         }
 

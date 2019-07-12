@@ -36,11 +36,9 @@ class CompteController extends Controller
         $versementsInitiaux = array();
 
         foreach ($comptes as $key => $compte) {
-
             $soldeInitial = $compte->getSoldeInitial();
 
             if ($soldeInitial > 0) {
-
                 $compteID = $compte->getId();
                 $dateOuverture = $compte->getDateOuverture();
 
@@ -53,13 +51,11 @@ class CompteController extends Controller
 
         // On intercale les versements initiaux sous forme de faux mouvements
         foreach ($mouvements as $key => $mouvement) {
-
             $date = $mouvement->getDate();
             $compte = $mouvement->getCompte();
             $compteID = $compte->getId();
 
             if (isset($versementsInitiaux[$compteID]) && $date >= $versementsInitiaux[$compteID]['date']) {
-
                 $fakeMouvement = new Mouvement();
                 $fakeMouvement->setCompte($compte);
                 $fakeMouvement->setDate($versementsInitiaux[$compteID]['date']);
@@ -120,21 +116,16 @@ class CompteController extends Controller
 
         // Filtre sur la période
         if ($request->get('date_filter')) {
-
             $dateFilterString = $request->get('date_filter');
             $dateStartString = $dateFilterString['start'];
             $dateEndString = $dateFilterString['end'];
 
             $dateStart = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateStartString 00:00:00");
             $dateEnd = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateEndString 23:59:59");
-
         } elseif ($compte->getDateFermeture() !== null) { // Si le compte est clôturé, du début à la fin de sa vie
-
             $dateStart = $compte->getDateOuverture();
             $dateEnd = $compte->getDateFermeture();
-
         } else { // Sinon, le mois courant en entier
-
             list($year, $month, $lastDayOfMonth) = explode('-', date('Y-n-t'));
 
             $month = (int) $month;

@@ -36,7 +36,6 @@ class InstallCommand extends ContainerAwareCommand
         $dropDatabase = $input->getOption('drop-database');
 
         if ($dropDatabase) {
-
             $output->writeln("<comment>Exécution de doctrine:database:drop</comment>");
 
             // Exécution dans un autre thread pour éviter un problème avec les autres commandes
@@ -48,8 +47,7 @@ class InstallCommand extends ContainerAwareCommand
         }
 
         // 2. Création de la base de données
-        if ($returnCode === 0) {
-
+        if (0 === $returnCode) {
             $output->writeln("<comment>Exécution de doctrine:database:create</comment>");
             $command = $this->getApplication()->find('doctrine:database:create');
             $in = new ArrayInput(
@@ -61,8 +59,7 @@ class InstallCommand extends ContainerAwareCommand
         }
 
         // 3. Création du schéma de la base de données
-        if ($returnCode === 0) {
-
+        if (0 === $returnCode) {
             $output->writeln("<comment>Exécution de doctrine:schema:create</comment>");
             $command = $this->getApplication()->find('doctrine:schema:create');
             $in = new ArrayInput(
@@ -76,8 +73,7 @@ class InstallCommand extends ContainerAwareCommand
         // 4. Chargement éventuel des fixtures
         $loadFixtures = $input->getOption('load-fixtures');
 
-        if ($loadFixtures && $returnCode === 0) {
-
+        if ($loadFixtures && 0 === $returnCode) {
             $output->writeln("<comment>Exécution de doctrine:fixtures:load</comment>");
             $command = $this->getApplication()->find('doctrine:fixtures:load');
             $in = new ArrayInput(

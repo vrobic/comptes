@@ -55,11 +55,9 @@ class MouvementsImportCommand extends AbstractImportCommand
         $categorizedMouvements = $handler->getCategorizedMouvements();
 
         if ($categorizedMouvements) {
-
             $output->writeln("<info>Mouvements catégorisés</info>", OutputInterface::VERBOSITY_VERBOSE);
 
             foreach ($categorizedMouvements as $mouvement) {
-
                 $output->writeln("<comment>{$mouvement}</comment>");
 
                 // Indicateurs
@@ -75,25 +73,21 @@ class MouvementsImportCommand extends AbstractImportCommand
         $uncategorizedMouvements = $handler->getUncategorizedMouvements();
 
         if ($uncategorizedMouvements) {
-
             $output->writeln("<info>Mouvements non catégorisés</info>", OutputInterface::VERBOSITY_VERBOSE);
 
             $categorieRepository = $em->getRepository('ComptesBundle:Categorie');
             $categories = $categorieRepository->findAll();
 
             foreach ($uncategorizedMouvements as $mouvement) {
-
                 $output->writeln("<comment>{$mouvement}</comment>");
 
                 if ($interaction && $categories) {
-
                     $answers = array(
                         'n' => "Ne pas catégoriser",
                     );
 
                     foreach ($categories as $key => $categorie) {
                         if ($categorie->getCategorieParente() === null) {
-
                             $categorieId = $categorie->getId();
                             $categoriesLine = $this->getCategoriesLine($categorie, array($categorie));
                             $answers[$categorieId] = implode(" / ", $categoriesLine);
@@ -133,23 +127,19 @@ class MouvementsImportCommand extends AbstractImportCommand
         $ambiguousMouvements = $handler->getAmbiguousMouvements();
 
         if ($ambiguousMouvements) {
-
             $output->writeln("<info>Mouvements ambigus</info>", OutputInterface::VERBOSITY_VERBOSE);
 
             // Service de catégorisation automatique des mouvements
             $mouvementCategorizer = $this->getContainer()->get('comptes_bundle.mouvement.categorizer');
 
             foreach ($ambiguousMouvements as $mouvement) {
-
                 $output->writeln("<comment>{$mouvement}</comment>");
 
                 if ($interaction) {
-
                     // Catégorisation automatique du mouvement
                     $categories = $mouvementCategorizer->getCategories($mouvement);
 
                     if ($categories) {
-
                         $answers = array(
                             'n' => "Ne pas catégoriser",
                         );
@@ -184,11 +174,9 @@ class MouvementsImportCommand extends AbstractImportCommand
 
         // 4. Les mouvements suspectés comme doublons, qui nécessitent une confirmation manuelle
         if ($interaction) {
-
             $waitingMouvements = $handler->getWaitingMouvements();
 
             foreach ($waitingMouvements as $mouvement) {
-
                 $output->writeln("<info>Mouvements à valider</info>", OutputInterface::VERBOSITY_VERBOSE);
 
                 $output->writeln("<comment>{$mouvement}</comment>");
@@ -199,7 +187,6 @@ class MouvementsImportCommand extends AbstractImportCommand
                 $confirm = $questionHelper->ask($input, $output, $question);
 
                 if ($confirm) {
-
                     // Indicateurs
                     $i++;
                     $balance += $mouvement->getMontant();
@@ -223,15 +210,15 @@ class MouvementsImportCommand extends AbstractImportCommand
      * Récupère la lignée d'une catégorie, récursivement.
      *
      * @param Categorie|null $categorie
-     * @param array $array
+     * @param array          $array
      *
      * @return array
      */
     private function getCategoriesLine($categorie, $array)
     {
-        if ($categorie !== null) {
+        if (null !== $categorie) {
             $categorieParente = $categorie->getCategorieParente();
-            if ($categorieParente !== null) {
+            if (null !== $categorieParente) {
                 array_unshift($array, $categorieParente);
                 $array = $this->getCategoriesLine($categorieParente, $array);
             }

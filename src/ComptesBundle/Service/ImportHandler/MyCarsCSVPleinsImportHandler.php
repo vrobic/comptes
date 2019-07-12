@@ -40,20 +40,17 @@ class MyCarsCSVPleinsImportHandler extends AbstractPleinsImportHandler
         $headersLine = false;
 
         while (($cols = $file->fgetcsv()) !== null) {
-
             // Recherche de la ligne d'en-têtes
-            if ($cols[0] == '#entity: refuel') {
+            if ($cols[0] === '#entity: refuel') {
                 $headersLine = $currentLine + 1;
             }
 
             // Si la ligne d'en-têtes a été trouvée et qu'on l'a dépassée
-            if ($headersLine !== false && $currentLine > $headersLine) {
-
+            if (false !== $headersLine && $currentLine > $headersLine) {
                 // La ligne en cours est un plein
                 $refuel = array_combine($headers, $cols);
                 $refuels[] = $refuel;
-
-            } elseif ($currentLine == $headersLine) {
+            } elseif ($currentLine === $headersLine) {
                 $headers = $cols;
             }
 
@@ -61,7 +58,6 @@ class MyCarsCSVPleinsImportHandler extends AbstractPleinsImportHandler
         }
 
         foreach ($refuels as $refuel) {
-
             $plein = new Plein();
 
             // Véhicule

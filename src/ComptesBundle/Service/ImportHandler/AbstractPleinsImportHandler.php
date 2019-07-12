@@ -195,7 +195,7 @@ abstract class AbstractPleinsImportHandler
         $pleinRepository = $this->em->getRepository('ComptesBundle:Plein');
         $similarPlein = $pleinRepository->findOneBy($criteria);
 
-        if ($similarPlein !== null) {
+        if (null !== $similarPlein) {
             $classification = self::WAITING;
         } else {
             $classification = self::VALID;
@@ -214,7 +214,6 @@ abstract class AbstractPleinsImportHandler
     {
         // Classification du plein
         switch ($classification) {
-
             case self::VALID:
                 $this->addValidPlein($plein);
                 break;

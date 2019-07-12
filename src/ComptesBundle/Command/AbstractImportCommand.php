@@ -70,7 +70,7 @@ abstract class AbstractImportCommand extends ContainerAwareCommand
         $handlerIdentifiers = array_keys($this->handlers);
 
         if (!in_array($handlerIdentifier, $handlerIdentifiers)) {
-            throw new \Exception("Le handler [$handlerIdentifier] n'existe pas. Sont disponibles : [".implode(', ', $handlerIdentifiers)."].");
+            throw new \Exception(sprintf("Le handler [%s] n'existe pas. Sont disponibles : [%s].", $handlerIdentifier, implode(', ', $handlerIdentifiers)));
         }
 
         $this->handlerIdentifier = $handlerIdentifier;

@@ -135,7 +135,7 @@ abstract class AbstractMouvementsImportHandler
     /**
      * Parse le fichier et remplit différents tableaux
      * de classification des mouvements :
-     * 		- tous les mouvements,
+     *      - tous les mouvements,
      *      - les catégorisés,
      *      - les non catégorisés,
      *      - les ambigus,
@@ -294,14 +294,12 @@ abstract class AbstractMouvementsImportHandler
         $categories = $this->mouvementCategorizer->getCategories($mouvement);
 
         if ($categories) {
-
             if (count($categories) > 1) {
                 $classification = self::AMBIGUOUS;
             } else {
                 $mouvement->setCategorie($categories[0]);
                 $classification = self::CATEGORIZED;
             }
-
         } else {
             $classification = self::UNCATEGORIZED;
         }
@@ -315,7 +313,7 @@ abstract class AbstractMouvementsImportHandler
         $mouvementRepository = $this->em->getRepository('ComptesBundle:Mouvement');
         $similarMouvement = $mouvementRepository->findOneBy($criteria);
 
-        if ($similarMouvement !== null) {
+        if (null !== $similarMouvement) {
             $classification = self::WAITING;
         }
 
@@ -332,7 +330,6 @@ abstract class AbstractMouvementsImportHandler
     {
         // Classification du mouvement
         switch ($classification) {
-
             case self::CATEGORIZED:
                 $this->addCategorizedMouvement($mouvement);
                 break;

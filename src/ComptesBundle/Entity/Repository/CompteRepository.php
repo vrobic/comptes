@@ -58,12 +58,11 @@ class CompteRepository extends EntityRepository
         $mouvementRepository = $this->getEntityManager()->getRepository('ComptesBundle:Mouvement');
 
         foreach ($comptes as $compte) {
-
-            if ($dateStart !== null && $dateEnd !== null) {
+            if (null !== $dateStart && null !== $dateEnd) {
                 $mouvements = $mouvementRepository->findByCompteAndDate($compte, $dateStart, $dateEnd);
-            } elseif ($dateStart !== null) {
+            } elseif (null !== $dateStart) {
                 $mouvements = $mouvementRepository->findByCompteSinceDate($compte, $dateStart);
-            } elseif ($dateEnd !== null) {
+            } elseif (null !== $dateEnd) {
                 $mouvements = $mouvementRepository->findByCompteUntilDate($compte, $dateEnd);
             } else {
                 $mouvements = $mouvementRepository->findByCompte($compte);

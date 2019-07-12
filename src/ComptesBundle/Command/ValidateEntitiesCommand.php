@@ -34,7 +34,6 @@ class ValidateEntitiesCommand extends AbstractImportCommand
         $classes = $em->getConfiguration()->getMetadataDriverImpl()->getAllClassNames();
 
         foreach ($classes as $class) {
-
             $entityRepository = $em->getRepository($class);
             $entities = $entityRepository->findAll();
 

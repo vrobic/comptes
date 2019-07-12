@@ -40,15 +40,14 @@ class ComptesExtension extends Extension
      * comme si elles étaient définies dans les parameters.
      *
      * @param ContainerBuilder $container
-     * @param array $params
-     * @param string $rootName
+     * @param array            $params
+     * @param string           $rootName
      *
      * @return void
      */
     private function setConfigAsParameters(ContainerBuilder &$container, array $params, $rootName)
     {
         foreach ($params as $key => $value) {
-
             $name = "$rootName.$key";
             $container->setParameter($name, $value);
 

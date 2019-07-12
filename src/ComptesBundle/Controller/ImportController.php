@@ -90,9 +90,7 @@ class ImportController extends Controller
         $action = $request->get('action');
 
         switch ($action) {
-
             case 'parse': // Parsing du fichier uploadé
-
                 // Parsing du fichier
                 $handler = $this->getHandler($request);
                 $splFile = $this->getFile($request);
@@ -112,16 +110,13 @@ class ImportController extends Controller
                  * Ils sont identifiés par leur hash car leur id ne sera disponible
                  * qu'une fois qu'ils auront été persistés. */
                 foreach ($mouvements as $hash => $mouvement) {
-
                     /* Si on doit ignorer les mouvements anciens,
                      * alors on n'importe le mouvement que s'il est plus récent que le dernier présent en base. */
-                    if ($skipOldOnes !== false && $latestMouvement !== null) {
-
+                    if (false !== $skipOldOnes && null !== $latestMouvement) {
                         $date = $mouvement->getDate();
                         $latestMouvementDate = $latestMouvement->getDate();
 
                         if ($date < $latestMouvementDate) {
-
                             unset($mouvements[$hash]);
                             unset($categorizedMouvements[$hash]);
                             unset($uncategorizedMouvements[$hash]);
@@ -141,7 +136,6 @@ class ImportController extends Controller
                 break;
 
             case 'import': // Import des mouvements après ajustements manuels
-
                 // Indicateurs
                 $i = 0; // Nombre de mouvements importés
                 $balance = 0; // Balance des mouvements (crédit ou débit)
@@ -156,7 +150,6 @@ class ImportController extends Controller
                 $mouvements = $session->get('mouvements');
 
                 foreach ($mouvements as $mouvement) {
-
                     // Identification du mouvement par son hash
                     $hash = $mouvement->getHash();
 
@@ -274,9 +267,7 @@ class ImportController extends Controller
         $action = $request->get('action');
 
         switch ($action) {
-
             case 'parse': // Parsing du fichier uploadé
-
                 // Parsing du fichier
                 $handler = $this->getHandler($request);
                 $splFile = $this->getFile($request);
@@ -294,16 +285,13 @@ class ImportController extends Controller
                  * Ils sont identifiés par leur hash car leur id ne sera disponible
                  * qu'une fois qu'ils auront été persistés. */
                 foreach ($pleins as $hash => $plein) {
-
                     /* Si on doit importer les pleins anciens,
                      * alors on n'importe le plein que s'il est plus récent que le dernier présent en base. */
-                    if ($skipOldOnes !== false && $latestPlein !== null) {
-
+                    if (false !== $skipOldOnes && null !== $latestPlein) {
                         $date = $plein->getDate();
                         $latestPleinDate = $latestPlein->getDate();
 
                         if ($date < $latestPleinDate) {
-
                             unset($validPleins[$hash]);
                             unset($waitingPleins[$hash]);
                             unset($pleins[$hash]);
@@ -321,7 +309,6 @@ class ImportController extends Controller
                 break;
 
             case 'import': // Import des pleins après ajustements manuels
-
                 // Indicateurs
                 $i = 0; // Nombre de pleins importés
 
@@ -335,7 +322,6 @@ class ImportController extends Controller
                 $pleins = $session->get('pleins');
 
                 foreach ($pleins as $plein) {
-
                     // Identification du plein par son hash
                     $hash = $plein->getHash();
 
@@ -412,7 +398,7 @@ class ImportController extends Controller
     /**
      * Définit le type d'import.
      *
-     * @param string Deux valeurs possibles : 'mouvements' ou 'pleins'.
+     * @param string $type Deux valeurs possibles : 'mouvements' ou 'pleins'.
      *
      * @throws \Exception Dans le cas où le type est invalide.
      */
@@ -448,10 +434,11 @@ class ImportController extends Controller
     {
         $handlerIdentifier = $request->get('handlerIdentifier');
 
-        if ($handlerIdentifier === null) {
+        if (null === $handlerIdentifier) {
             throw new \Exception("Handler manquant.");
-        } elseif (!in_array($handlerIdentifier, array_keys($this->handlers))) {
-            throw new \Exception("Le handler [$handlerIdentifier] n'existe pas.");
+        }
+        if (!in_array($handlerIdentifier, array_keys($this->handlers))) {
+            throw new \Exception(sprintf("Le handler [%s] n'existe pas.", $handlerIdentifier));
         }
 
         $this->handlerIdentifier = $handlerIdentifier;
@@ -474,9 +461,10 @@ class ImportController extends Controller
     {
         $file = $request->files->get('file');
 
-        if ($file === null) {
+        if (null === $file) {
             throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException("Fichier manquant.");
-        } elseif (!$file->isValid()) {
+        }
+        if (!$file->isValid()) {
             throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException("Échec de l'upload du fichier.");
         }
 

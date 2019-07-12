@@ -40,7 +40,6 @@ class LoadCompteData extends AbstractFixture implements OrderedFixtureInterface,
         $comptesContent = $fixturesConfiguration['comptes'];
 
         foreach ($comptesContent as $compteContent) {
-
             $compte = new Compte();
 
             // Date d'ouverture

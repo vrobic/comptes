@@ -94,7 +94,6 @@ class StatsProvider
         $yearlyMontants = array();
 
         foreach ($mouvements as $mouvement) {
-
             $montant = $mouvement->getMontant();
             $date = $mouvement->getDate();
             $year = $date->format('Y');
@@ -129,7 +128,6 @@ class StatsProvider
         $monthlyMontants = $this->getMonthlyMontantsByCategorie($categorie, $dateStart, $dateEnd, $compte);
 
         foreach ($monthlyMontants as $year => $months) {
-
             $yearlyMontants[$year] = 0;
 
             foreach ($months as $monthlyMontant) {
@@ -165,7 +163,6 @@ class StatsProvider
 
         // Chaque mois de la période
         foreach ($periods as $date) {
-
             $year = $date->format('Y');
             $month = $date->format('m');
             $day = $date->format('d');
@@ -254,7 +251,6 @@ class StatsProvider
         $distance = 0;
 
         foreach ($pleins as $plein) {
-
             $vehicule = $plein->getVehicule();
             $vehiculeID = $vehicule->getId();
 

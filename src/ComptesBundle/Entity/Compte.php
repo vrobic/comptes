@@ -315,7 +315,6 @@ class Compte
         $mouvements = $this->getMouvements();
 
         foreach ($mouvements as $mouvement) {
-
             $mouvementDate = $mouvement->getDate();
 
             if ($mouvementDate >= $date) {

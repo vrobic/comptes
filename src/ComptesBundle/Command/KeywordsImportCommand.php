@@ -50,7 +50,6 @@ class KeywordsImportCommand extends ContainerAwareCommand
         $file = new \SplFileObject($filename);
 
         while (!$file->eof()) {
-
             $line = $file->fgets();
 
             list($word, $categorieID) = explode(':', $line);
@@ -60,8 +59,8 @@ class KeywordsImportCommand extends ContainerAwareCommand
 
             $categorie = $categorieRepository->find($categorieID);
 
-            if ($categorie === null) {
-                throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException("La catégorie n°$categorieID est inconnue.");
+            if (null === $categorie) {
+                throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException(sprintf("La catégorie n°%d est inconnue.", $categorieID));
             }
 
             $keyword = new Keyword();

@@ -60,7 +60,7 @@ class MouvementRepository extends EntityRepository
         $and->add($expressionBuilder->gte('m.date', ':date_start'));
         $and->add($expressionBuilder->lte('m.date', ':date_end'));
 
-        if ($compte !== null) {
+        if (null !== $compte) {
             $and->add($expressionBuilder->eq('m.compte', ':compte'));
             $queryBuilder->setParameter('compte', $compte);
         }
@@ -267,7 +267,7 @@ class MouvementRepository extends EntityRepository
         $and->add($expressionBuilder->gte('m.date', ':date_start'));
         $and->add($expressionBuilder->lte('m.date', ':date_end'));
 
-        if ($compte !== null) {
+        if (null !== $compte) {
             $and->add($expressionBuilder->eq('m.compte', ':compte'));
             $queryBuilder->setParameter('compte', $compte);
         }
@@ -303,13 +303,12 @@ class MouvementRepository extends EntityRepository
         $and->add($expressionBuilder->gte('m.date', ':date_start'));
         $and->add($expressionBuilder->lte('m.date', ':date_end'));
 
-        if ($compte !== null) {
+        if (null !== $compte) {
             $and->add($expressionBuilder->eq('m.compte', ':compte'));
             $queryBuilder->setParameter('compte', $compte);
         }
 
-        if ($categorie !== null) {
-
+        if (null !== $categorie) {
             // La liste des catégories de mouvements
             $categories = array($categorie);
             $categoriesFilles = $categorie->getCategoriesFillesRecursive();
@@ -322,12 +321,9 @@ class MouvementRepository extends EntityRepository
             $queryBuilder
                 ->where($and)
                 ->setParameter('categories', $categories);
-
         } else {
-
             $and->add($expressionBuilder->isNull('m.categorie'));
             $queryBuilder->where($and);
-
         }
 
         $queryBuilder
@@ -353,7 +349,7 @@ class MouvementRepository extends EntityRepository
     {
         $queryBuilder = $this->createQueryBuilder('m');
 
-        if ($compte !== null) {
+        if (null !== $compte) {
             $expressionBuilder = $this->getEntityManager()->getExpressionBuilder();
             $queryBuilder
                 ->where($expressionBuilder->eq('m.compte', ':compte'))
@@ -386,7 +382,7 @@ class MouvementRepository extends EntityRepository
     {
         $queryBuilder = $this->createQueryBuilder('m');
 
-        if ($compte !== null) {
+        if (null !== $compte) {
             $expressionBuilder = $this->getEntityManager()->getExpressionBuilder();
             $queryBuilder
                 ->where($expressionBuilder->eq('m.compte', ':compte'))
@@ -419,8 +415,7 @@ class MouvementRepository extends EntityRepository
         $queryBuilder = $this->createQueryBuilder('m');
         $expressionBuilder = $this->getEntityManager()->getExpressionBuilder();
 
-        if ($categorie !== null) {
-
+        if (null !== $categorie) {
             // La liste des catégories de mouvements
             $categories = array($categorie);
             $categoriesFilles = $categorie->getCategoriesFillesRecursive();
@@ -432,7 +427,6 @@ class MouvementRepository extends EntityRepository
             $queryBuilder
                 ->where($expressionBuilder->in('m.categorie', ':categories'))
                 ->setParameter('categories', $categories);
-
         } else {
             $queryBuilder->where($expressionBuilder->isNull('m.categorie'));
         }

@@ -40,7 +40,6 @@ class LoadVehiculeData extends AbstractFixture implements OrderedFixtureInterfac
         $vehiculesContent = $fixturesConfiguration['vehicules'];
 
         foreach ($vehiculesContent as $vehiculeContent) {
-
             $vehicule = new Vehicule();
 
             // Date d'achat

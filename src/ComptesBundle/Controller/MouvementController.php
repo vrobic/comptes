@@ -36,16 +36,12 @@ class MouvementController extends Controller
         $mouvementsArray = $request->get('mouvements', array());
 
         foreach ($batchArray as $mouvementID) {
-
             if (isset($mouvementsArray[$mouvementID])) {
-
                 $mouvementArray = $mouvementsArray[$mouvementID];
                 $mouvement = $mouvementID > 0 ? $mouvementRepository->find($mouvementID) : new Mouvement();
 
                 switch ($action) {
-
                     case 'save': // Création et édition
-
                         // Date
                         if (isset($mouvementArray['date'])) {
                             $dateString = $mouvementArray['date'];
@@ -84,7 +80,6 @@ class MouvementController extends Controller
                         break;
 
                     case 'delete': // Suppression
-
                         $manager->remove($mouvement);
 
                         break;

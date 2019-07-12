@@ -44,10 +44,8 @@ class CMCSVMouvementsImportHandler extends AbstractMouvementsImportHandler
         $headersLine = 0;
 
         while (($cols = $file->fgetcsv(';')) !== null) {
-
             // Si on a dépassé la ligne d'en-têtes
             if ($currentLine > $headersLine) {
-
                 // Si la date est valide et sans month shifting
                 $date = \DateTime::createFromFormat('d/m/Y', $cols[0]);
                 $isValidDate = $date !== false && !array_sum($date->getLastErrors());
@@ -63,7 +61,6 @@ class CMCSVMouvementsImportHandler extends AbstractMouvementsImportHandler
         }
 
         foreach ($rows as $row) {
-
             $mouvement = new Mouvement();
 
             // Date

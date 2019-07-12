@@ -73,7 +73,7 @@ class CategorieRepository extends EntityRepository
         $and->add($expressionBuilder->gte('m.date', ':date_start'));
         $and->add($expressionBuilder->lte('m.date', ':date_end'));
 
-        if ($compte !== null) {
+        if (null !== $compte) {
             $and->add($expressionBuilder->eq('m.compte', ':compte'));
             $queryBuilder->setParameter('compte', $compte);
         }

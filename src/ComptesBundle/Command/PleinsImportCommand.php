@@ -54,11 +54,9 @@ class PleinsImportCommand extends AbstractImportCommand
         $validPleins = $handler->getValidPleins();
 
         if ($validPleins) {
-
             $output->writeln("<info>Pleins valides</info>", OutputInterface::VERBOSITY_VERBOSE);
 
             foreach ($validPleins as $plein) {
-
                 $output->writeln("<comment>{$plein}</comment>");
 
                 // Indicateurs
@@ -71,11 +69,9 @@ class PleinsImportCommand extends AbstractImportCommand
 
         // 2. Les pleins suspectés comme doublons, qui nécessitent une confirmation manuelle
         if ($interaction) {
-
             $waitingPleins = $handler->getWaitingPleins();
 
             foreach ($waitingPleins as $plein) {
-
                 $output->writeln("<info>Pleins à valider</info>", OutputInterface::VERBOSITY_VERBOSE);
 
                 $output->writeln("<comment>{$plein}</comment>");
@@ -86,7 +82,6 @@ class PleinsImportCommand extends AbstractImportCommand
                 $confirm = $questionHelper->ask($input, $output, $question);
 
                 if ($confirm) {
-
                     // Indicateurs
                     $i++;
 

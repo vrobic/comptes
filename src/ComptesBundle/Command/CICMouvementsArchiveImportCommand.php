@@ -87,7 +87,6 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
         $numeroCompte = null;
 
         foreach ($lines as $lineNumber => $line) {
-
             // Recherche la présence du numéro de compte, signalé par "€ N° ###########"
             preg_match('/€.+[N°|N˚]\s(\d{11})/', $line, $matches);
 
@@ -97,7 +96,7 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
             }
 
             // Si le numéro de compte n'est pas déterminé, la ligne ne sera pas exploitable
-            if ($numeroCompte === null) {
+            if (null === $numeroCompte) {
                 continue;
             }
 
@@ -130,7 +129,6 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
             $montant = null;
 
             for ($nextLineOffset = 0; $nextLineOffset <= 4; $nextLineOffset++) {
-
                 $nextLineNumber = $lineNumber + $nextLineOffset;
 
                 if (!isset($lines[$nextLineNumber])) {
@@ -141,7 +139,6 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
 
                 // Les lignes suivantes ne peuvent contenir que des espaces avant la description
                 if ($nextLineOffset > 0) {
-
                     $nextLineLength = strlen($nextLine);
 
                     if ($nextLineLength < $descriptionPos) {
@@ -170,8 +167,7 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
 
                 /* Le montant n'est présent que sur une des lignes.
                  * Donc s'il n'a pas encore été défini... */
-                if ($montant === null) {
-
+                if (null === $montant) {
                     $descriptionLength = strlen($descriptionRaw);
 
                     // Il se trouve en fin de ligne, après une série d'espaces
@@ -188,7 +184,8 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
 
             if (!$descriptionRows) {
                 throw new \Exception("La description n'a pas été trouvée à la ligne n°$lineNumber.");
-            } elseif ($montant === null) {
+            }
+            if (null === $montant) {
                 throw new \Exception("Le montant n'a pas été trouvé à la ligne n°$lineNumber.");
             }
 
@@ -208,12 +205,13 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
                 if (!in_array(strtolower($answer), array('c', 'd'))) {
                     throw new \RuntimeException("Réponse invalide");
                 }
+
                 return $answer;
             });
 
             $signe = $questionHelper->ask($input, $output, $question);
 
-            if (strtolower($signe) === 'd') { // Réponse insensible à la casse
+            if ('d' === strtolower($signe)) { // Réponse insensible à la casse
                 $montant = -$montant;
                 $mouvement->setMontant($montant);
             }
@@ -223,12 +221,10 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
             $categories = $mouvementCategorizer->getCategories($mouvement);
 
             if ($categories) {
-
                 $categorieKey = 0; // La clé de la catégorie au sein du tableau $categories
 
                 // S'il y a plus d'une catégorie, on laisse le choix
                 if (count($categories) > 1) {
-
                     $answers = array(
                         'n' => "Ne pas catégoriser",
                     );

@@ -33,11 +33,10 @@ class MyCarsXMLPleinsImportHandler extends AbstractPleinsImportHandler
         $xml = simplexml_load_file($filename);
 
         foreach ($xml->refuel as $refuel) {
-
             $plein = new Plein();
 
             // Véhicule
-            $vehiculeName = (string) $refuel->car_name;
+            $vehiculeName = (string) $refuel->car_name; // @codingStandardsIgnoreLine
             $vehicule = $vehicules[$vehiculeName];
             $plein->setVehicule($vehicule);
 
