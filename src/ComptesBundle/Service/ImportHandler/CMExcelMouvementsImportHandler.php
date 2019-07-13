@@ -44,10 +44,10 @@ class CMExcelMouvementsImportHandler extends AbstractMouvementsImportHandler
 
             foreach ($rowIterator as $row) {
                 $rowIndex = $row->getRowIndex();
-                $date = $sheet->getCell(sprintf('%d%d', self::DATE_COLUMN_ID, $rowIndex))->getValue();
-                $debit = $sheet->getCell(sprintf('%d%d', self::DEBIT_COLUMN_ID, $rowIndex))->getValue();
-                $credit = $sheet->getCell(sprintf('%d%d', self::CREDIT_COLUMN_ID, $rowIndex))->getValue();
-                $description = $sheet->getCell(sprintf('%d%d', self::DESCRIPTION_COLUMN_ID, $rowIndex))->getValue();
+                $date = $sheet->getCell(sprintf('%s%d', self::DATE_COLUMN_ID, $rowIndex))->getValue();
+                $debit = $sheet->getCell(sprintf('%s%d', self::DEBIT_COLUMN_ID, $rowIndex))->getValue();
+                $credit = $sheet->getCell(sprintf('%s%d', self::CREDIT_COLUMN_ID, $rowIndex))->getValue();
+                $description = $sheet->getCell(sprintf('%s%d', self::DESCRIPTION_COLUMN_ID, $rowIndex))->getValue();
 
                 // Arrivée à la fin du tableau des mouvements
                 if (null === $debit && null === $credit) {
