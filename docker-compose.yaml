@@ -5,7 +5,7 @@ networks:
     driver: bridge
   proxy:
     external:
-      name: proprietes-privees
+      name: local-network
 
 volumes:
   data:
@@ -35,7 +35,7 @@ services:
     labels:
       # These labels are used by Traefik reverse proxy
       - traefik.frontend.rule=Host:comptes.loc
-      - traefik.docker.network=proprietes-privees
+      - traefik.docker.network=local-network
     depends_on:
       - php
     networks:
@@ -64,7 +64,7 @@ services:
     labels:
       # These labels are used by Traefik reverse proxy
       - traefik.frontend.rule=Host:adminer.comptes.loc
-      - traefik.docker.network=proprietes-privees
+      - traefik.docker.network=local-network
     depends_on:
       - mysql
     networks:
