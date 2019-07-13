@@ -14,7 +14,8 @@ use ComptesBundle\Entity\Mouvement;
  *
  * 1. Télécharger le relevé de comptes sur le site web du CIC
  * 2. En extraire le texte : pdftotext comptes.pdf -layout
- * 3. Nettoyer le fichier comptes.txt obtenu de ses données inutiles,
+ *    ou docker run --rm -i kalledk/pdftotext < comptes.pdf > comptes.txt
+ * 3. Nettoyer éventuellement le fichier comptes.txt obtenu de ses données inutiles,
  *    et ne garder que deux types de lignes :
  *        - les lignes qui signalent un compte
  *        - les mouvements
@@ -36,6 +37,7 @@ use ComptesBundle\Entity\Mouvement;
  *        - il recherche "€ N° ###########" pour identifier le numéro du compte sur 11 chiffres
  *        - et "00-00-0000 00-00-0000" pour identifier un mouvement
  *        - l'ordre des dates est le suivant : date d'opération, date de valeur
+ *        - les dates doivent être alignées sur le signe "€" annonçant le compte
  *        - la description d'un mouvement doit débuter un espace après les dates
  *        - la description peut s'étendre sur 5 lignes qui doivent toutes être alignées par la gauche
  *        - les montants n'ont pas besoin d'être alignés dans une colonne
@@ -197,7 +199,7 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
             $mouvement->setDescription($description);
             $mouvement->setMontant($montant);
 
-            $output->writeln("<comment>{$compte} {$mouvement}</comment>");
+            $output->writeln("<comment>{$mouvement}</comment>");
 
             // Question à l'utilisateur
             $question = new Question\Question("<question>S'agit-il d'un crédit ou d'un débit (c/D) ?</question>", 'd');
