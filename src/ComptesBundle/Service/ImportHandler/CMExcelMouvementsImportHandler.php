@@ -10,6 +10,8 @@ use ComptesBundle\Entity\Mouvement;
  */
 class CMExcelMouvementsImportHandler extends AbstractMouvementsImportHandler
 {
+    const HANDLER_ID = 'cm.excel';
+
     const START_ROW_NUMBER = 6;
     const DATE_COLUMN_ID = 'A';
     const DESCRIPTION_COLUMN_ID = 'C';
@@ -27,7 +29,7 @@ class CMExcelMouvementsImportHandler extends AbstractMouvementsImportHandler
         $compteRepository = $this->em->getRepository('ComptesBundle:Compte');
 
         // Configuration du handler
-        $configuration = $this->configuration['cm.excel']['config'];
+        $configuration = $this->configuration[self::HANDLER_ID]['config'];
 
         // Tableau de correspondance entre l'index de la feuille et le compte bancaire
         $comptesBySheets = [];

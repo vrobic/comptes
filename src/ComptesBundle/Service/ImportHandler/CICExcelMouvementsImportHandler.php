@@ -9,4 +9,5 @@ namespace ComptesBundle\Service\ImportHandler;
  */
 class CICExcelMouvementsImportHandler extends CMExcelMouvementsImportHandler
 {
+    const HANDLER_ID = 'cic.excel';
 }

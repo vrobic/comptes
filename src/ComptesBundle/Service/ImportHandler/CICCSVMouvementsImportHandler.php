@@ -9,4 +9,5 @@ namespace ComptesBundle\Service\ImportHandler;
  */
 class CICCSVMouvementsImportHandler extends CMCSVMouvementsImportHandler
 {
+    const HANDLER_ID = 'cic.csv';
 }

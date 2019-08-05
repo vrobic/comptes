@@ -9,6 +9,8 @@ use ComptesBundle\Entity\Plein;
  */
 class MyCarsXMLPleinsImportHandler extends AbstractPleinsImportHandler
 {
+    const HANDLER_ID = 'mycars.xml';
+
     /**
      * Parse les pleins et remplit le tableau $pleins.
      *
@@ -20,7 +22,7 @@ class MyCarsXMLPleinsImportHandler extends AbstractPleinsImportHandler
         $vehiculeRepository = $this->em->getRepository('ComptesBundle:Vehicule');
 
         // Configuration du handler
-        $configuration = $this->configuration['mycars.xml']['config'];
+        $configuration = $this->configuration[self::HANDLER_ID]['config'];
 
         // Tableau de correspondance entre le nom du véhicule dans MyCars et l'objet Vehicule
         $vehicules = [];

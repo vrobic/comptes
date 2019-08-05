@@ -9,6 +9,8 @@ use ComptesBundle\Entity\Mouvement;
  */
 class CMCSVMouvementsImportHandler extends AbstractMouvementsImportHandler
 {
+    const HANDLER_ID = 'cm.csv';
+
     /**
      * Parse les mouvements et remplit les tableaux de classification du handler.
      *
@@ -20,7 +22,7 @@ class CMCSVMouvementsImportHandler extends AbstractMouvementsImportHandler
         $compteRepository = $this->em->getRepository('ComptesBundle:Compte');
 
         // Configuration du handler
-        $configuration = $this->configuration['cm.csv']['config'];
+        $configuration = $this->configuration[self::HANDLER_ID]['config'];
 
         // Le compte bancaire dans lequel importer les mouvements
         $compteID = $configuration['compte'];

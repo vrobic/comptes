@@ -58,8 +58,8 @@ comptes:
                         # La numérotation des feuilles commence à zéro.
                         sheets:
                             1: 8
-                            3: 3
-                            4: 1
+                            2: 3
+                            3: 1
                 # Identifiant du service d'import, ici "comptes_bundle.import.mouvements.cm.csv".
                 cm.csv:
                     # Nom de la source
