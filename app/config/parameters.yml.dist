@@ -1,6 +1,6 @@
 parameters:
     database_driver: pdo_mysql
-    database_host: comptes_mysql
+    database_host: mysql
     database_port: null
     database_name: comptes
     database_user: root
