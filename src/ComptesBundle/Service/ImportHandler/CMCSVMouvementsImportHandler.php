@@ -22,7 +22,7 @@ class CMCSVMouvementsImportHandler extends AbstractMouvementsImportHandler
         $compteRepository = $this->em->getRepository('ComptesBundle:Compte');
 
         // Configuration du handler
-        $configuration = $this->configuration[self::HANDLER_ID]['config'];
+        $configuration = $this->configuration[$this::HANDLER_ID]['config'];
 
         // Le compte bancaire dans lequel importer les mouvements
         $compteID = $configuration['compte'];

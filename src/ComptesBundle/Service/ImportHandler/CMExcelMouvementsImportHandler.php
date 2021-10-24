@@ -29,7 +29,7 @@ class CMExcelMouvementsImportHandler extends AbstractMouvementsImportHandler
         $compteRepository = $this->em->getRepository('ComptesBundle:Compte');
 
         // Configuration du handler
-        $configuration = $this->configuration[self::HANDLER_ID]['config'];
+        $configuration = $this->configuration[$this::HANDLER_ID]['config'];
 
         // Tableau de correspondance entre l'index de la feuille et le compte bancaire
         $comptesBySheets = [];
@@ -42,14 +42,14 @@ class CMExcelMouvementsImportHandler extends AbstractMouvementsImportHandler
 
         foreach ($comptesBySheets as $sheetIndex => $compte) {
             $sheet = $reader->getSheet($sheetIndex);
-            $rowIterator = $sheet->getRowIterator(self::START_ROW_NUMBER);
+            $rowIterator = $sheet->getRowIterator($this::START_ROW_NUMBER);
 
             foreach ($rowIterator as $row) {
                 $rowIndex = $row->getRowIndex();
-                $date = $sheet->getCell(sprintf('%s%d', self::DATE_COLUMN_ID, $rowIndex))->getValue();
-                $debit = $sheet->getCell(sprintf('%s%d', self::DEBIT_COLUMN_ID, $rowIndex))->getValue();
-                $credit = $sheet->getCell(sprintf('%s%d', self::CREDIT_COLUMN_ID, $rowIndex))->getValue();
-                $description = $sheet->getCell(sprintf('%s%d', self::DESCRIPTION_COLUMN_ID, $rowIndex))->getValue();
+                $date = $sheet->getCell(sprintf('%s%d', $this::DATE_COLUMN_ID, $rowIndex))->getValue();
+                $debit = $sheet->getCell(sprintf('%s%d', $this::DEBIT_COLUMN_ID, $rowIndex))->getValue();
+                $credit = $sheet->getCell(sprintf('%s%d', $this::CREDIT_COLUMN_ID, $rowIndex))->getValue();
+                $description = $sheet->getCell(sprintf('%s%d', $this::DESCRIPTION_COLUMN_ID, $rowIndex))->getValue();
 
                 // Arrivée à la fin du tableau des mouvements
                 if (null === $debit && null === $credit) {
