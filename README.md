@@ -40,7 +40,7 @@ Les fixtures sont les jeux de données nécessaires au fonctionnement de l'appli
 
 Une fois les données saisies, vous pouvez créer la base de données et importer les fixtures :
 
-    php app/console comptes:install --load-fixtures
+    make install
 
 L'application peut maintenant être ouverte dans un navigateur web !
 
