@@ -35,9 +35,10 @@ use ComptesBundle\Entity\Mouvement;
  *    A noter :
  *        - le script ne tient pas compte des lignes vides
  *        - il recherche "€ N° ###########" pour identifier le numéro du compte sur 11 chiffres
- *        - et "00-00-0000 00-00-0000" pour identifier un mouvement
+ *        - et "00/00/0000 00/00/0000" pour identifier un mouvement
  *        - l'ordre des dates est le suivant : date d'opération, date de valeur
  *        - les dates doivent être alignées sur le signe "€" annonçant le compte
+ *        - il n'y a qu'un espace entre ces deux dates
  *        - la description d'un mouvement doit débuter un espace après les dates
  *        - la description peut s'étendre sur 5 lignes qui doivent toutes être alignées par la gauche
  *        - les montants n'ont pas besoin d'être alignés dans une colonne
@@ -108,7 +109,7 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
                 throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException("Le compte n°$numeroCompte est inconnu.");
             }
 
-            // Recherche la présence des dates d'opération et de valeur, format "00-00-0000 00-00-0000"
+            // Recherche la présence des dates d'opération et de valeur, format "00/00/0000 00/00/0000"
             preg_match('/(\d{2}\/\d{2}\/\d{4})\s{1}\d{2}\/\d{2}\/\d{4}/', $line, $matches, PREG_OFFSET_CAPTURE);
 
             // S'il n'y en a pas, la ligne ne concerne pas un mouvement
@@ -124,7 +125,7 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
             $date = \DateTime::createFromFormat('d/m/Y', $dateRaw);
 
             // La description démarre 22 caractères après la date
-            $descriptionPos = $datePos + 22; // 22 => "00-00-0000 00-00-0000 "
+            $descriptionPos = $datePos + 22; // 22 => "00/00/0000 00/00/0000 "
 
             // Recherche de la description et du montant sur la ligne de la date (0) et les 4 du dessous
             $descriptionRows = [];
