@@ -1,4 +1,4 @@
-DOCKER=docker-compose exec php
+DOCKER_PHP=docker compose exec php
 
 .PHONY: help
 help: ## Affiche cette aide
@@ -6,17 +6,17 @@ help: ## Affiche cette aide
 
 .PHONY: install
 install: ## Installe la base de données
-	$(DOCKER) app/console doctrine:database:create
-	$(DOCKER) app/console doctrine:schema:create
+	$(DOCKER_PHP) app/console doctrine:database:create
+	$(DOCKER_PHP) app/console doctrine:schema:create
 	make fixtures
 
 .PHONY: reinstall
 reinstall: ## Réinstalle la base de données
 	@echo "⚠️ réinstallation dans 20 secondes… 🛑 CTRL+C pour annuler"
 	@sleep 20
-	$(DOCKER) app/console doctrine:database:drop --force
+	$(DOCKER_PHP) app/console doctrine:database:drop --force
 	make install
 
 .PHONY: fixtures
 fixtures: ## Charge les fixtures
-	$(DOCKER) app/console doctrine:fixtures:load --no-interaction
+	$(DOCKER_PHP) app/console doctrine:fixtures:load --no-interaction

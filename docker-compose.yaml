@@ -1,9 +1,7 @@
-version: '3.7'
-
 networks:
   web:
-    external:
-      name: web
+    name: web
+    external: true
   project:
     driver: bridge
 
@@ -11,6 +9,7 @@ services:
   php:
     image: proprietesprivees/web:7.2
     container_name: comptes_php
+    hostname: comptes_php
     restart: on-failure
     volumes:
       - ./:/var/www/html:cached
@@ -24,6 +23,7 @@ services:
   nginx:
     image: nginx:1-alpine
     container_name: comptes_nginx
+    hostname: comptes_nginx
     restart: on-failure
     volumes:
       - ./:/var/www/html:cached
