@@ -299,6 +299,8 @@ class CategorieController extends Controller
         $categoriesArray = $request->get('categories', []);
 
         foreach ($batchArray as $categorieID) {
+            $categorieID = (int) $categorieID;
+
             if (isset($categoriesArray[$categorieID])) {
                 $categorieArray = $categoriesArray[$categorieID];
                 $categorie = $categorieID > 0 ? $categorieRepository->find($categorieID) : new Categorie();
