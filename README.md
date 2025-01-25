@@ -22,11 +22,13 @@ Son architecture Symfony2 la rend très modulable et son intérêt réside dans 
 
 Ce paragraphe sera bref puisqu'il s'agit d'une installation Symfony2 classique.
 
-1. Clôner le projet
-2. Renseigner le fichier `app/config/parameters.yml`
-3. Configurer un hôte virtuel, modifier le fichier `hosts` puis redémarrer le serveur web
-4. Installer _Composer_ et lancer l'installation des dépendances : `php composer.phar install`
-5. Relier les assets au le répertoire `web` : `php app/console assets:install --symlink`
+1. Clôner https://github.com/vrobic/mysql et https://github.com/vrobic/traefik et les démarrer avec `docker compose up -d`
+2. Clôner https://github.com/vrobic/comptes
+3. Depuis le répertoire du projet :
+  3.1. lancer un `make up` pour démarrer la stack
+  3.2. puis un `make install` pour installer la base de données
+5. Modifier `/etc/hosts` pour faire pointer `comptes.loc` vers `127.0.0.1`
+6. Accéder à l'application via http://comptes.loc/app_dev.php
 
 ### Paramétrage de l'application
 
