@@ -14,7 +14,7 @@ comptes:
                         Import multicompte.
                         Feuille 2 : livret A, feuille 3 : compte courant.
                     # L'extension du fichier attendu par le handler d'import
-                    extension: xlsm
+                    extension: xlsx
                     # Autres paramètres propres à ce handler
                     config:
                         # Le fichier Excel contient un compte par feuille.
@@ -22,9 +22,9 @@ comptes:
                         # et les identifiants des comptes bancaires correspondants.
                         # La numérotation des feuilles commence à zéro.
                         sheets:
-                            1: 8
-                            2: 3
-                            3: 1
+                            2: 11
+                            3: 3
+                            4: 1
                 # Identifiant du service d'import, ici "comptes_bundle.import.mouvements.cic.csv".
                 cic.csv:
                     # Nom de la source
@@ -49,7 +49,7 @@ comptes:
                         Import multicompte.
                         Feuille 2 : livret A, feuille 3 : compte courant.
                     # L'extension du fichier attendu par le handler d'import
-                    extension: xlsm
+                    extension: xlsx
                     # Autres paramètres propres à ce handler
                     config:
                         # Le fichier Excel contient un compte par feuille.
@@ -57,9 +57,9 @@ comptes:
                         # et les identifiants des comptes bancaires correspondants.
                         # La numérotation des feuilles commence à zéro.
                         sheets:
-                            1: 8
-                            2: 3
-                            3: 1
+                            2: 11
+                            3: 3
+                            4: 1
                 # Identifiant du service d'import, ici "comptes_bundle.import.mouvements.cm.csv".
                 cm.csv:
                     # Nom de la source
