@@ -56,6 +56,10 @@ Il vous faut modifier le tableau `handlers` pour ajuster les identifiants de com
 
 Le moteur d'import est capable de catégoriser automatiquement les mouvements importés, en analysant les mots-clés contenus dans leur description. Si vous souhaitez bénéficier de cette fonctionnalité, il vous faudra vous rendre sur la page d'édition des catégories et renseigner les mots-clés associés à chaque catégorie de mouvement.
 
+#### Export des données
+
+    docker compose exec mysql mysqldump -uroot -proot comptes > ~/Downloads/comptes.sql
+
 ## Utilisation
 
 ### Import
