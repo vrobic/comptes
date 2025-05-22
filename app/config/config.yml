@@ -4,7 +4,6 @@ imports:
     - { resource: services.yml }
     - { resource: @ComptesBundle/Resources/config/fixtures.yml }
     - { resource: @ComptesBundle/Resources/config/import.yml }
-    - { resource: @ComptesBundle/Resources/config/stats.yml }
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration

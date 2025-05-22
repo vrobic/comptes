@@ -154,11 +154,6 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
-                ->arrayNode('stats')
-                    ->children()
-                        // @todo
-                    ->end()
-                ->end()
             ->end()
         ;
 
