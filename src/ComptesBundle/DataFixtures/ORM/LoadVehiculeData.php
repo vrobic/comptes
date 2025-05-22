@@ -2,6 +2,8 @@
 
 namespace ComptesBundle\DataFixtures\ORM;
 
+use ComptesBundle\Entity\Carburant;
+use ComptesBundle\Service\ConfigurationLoader;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
@@ -22,7 +24,7 @@ class LoadVehiculeData extends AbstractFixture implements OrderedFixtureInterfac
     /**
      * {@inheritdoc}
      */
-    public function setContainer(ContainerInterface $container = null)
+    public function setContainer(ContainerInterface $container = null): void
     {
         $this->container = $container;
     }
@@ -30,9 +32,9 @@ class LoadVehiculeData extends AbstractFixture implements OrderedFixtureInterfac
     /**
      * {@inheritdoc}
      */
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
-        // Chargement de la configuration
+        /** @var ConfigurationLoader $configurationLoader */
         $configurationLoader = $this->container->get('comptes_bundle.configuration.loader');
         $fixturesConfiguration = $configurationLoader->load('fixtures');
 
@@ -43,7 +45,7 @@ class LoadVehiculeData extends AbstractFixture implements OrderedFixtureInterfac
             $vehicule = new Vehicule();
 
             // Date d'achat
-            if ($vehiculeContent['date_achat'] !== null) {
+            if (is_int($vehiculeContent['date_achat'])) {
                 $dateAchat = new \DateTime();
                 $dateAchat->setTimestamp($vehiculeContent['date_achat']);
             } else {
@@ -51,7 +53,7 @@ class LoadVehiculeData extends AbstractFixture implements OrderedFixtureInterfac
             }
 
             // Date de vente
-            if ($vehiculeContent['date_vente'] !== null) {
+            if (is_int($vehiculeContent['date_vente'])) {
                 $dateVente = new \DateTime();
                 $dateVente->setTimestamp($vehiculeContent['date_vente']);
             } else {
@@ -60,6 +62,7 @@ class LoadVehiculeData extends AbstractFixture implements OrderedFixtureInterfac
 
             // Carburant
             $carburantID = $vehiculeContent['carburant'];
+            /** @var Carburant $carburant */
             $carburant = $this->getReference("carburant-$carburantID");
 
             $vehicule->setNom($vehiculeContent['nom']);
@@ -81,7 +84,7 @@ class LoadVehiculeData extends AbstractFixture implements OrderedFixtureInterfac
     /**
      * {@inheritdoc}
      */
-    public function getOrder()
+    public function getOrder(): int
     {
         return 2;
     }

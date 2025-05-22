@@ -2,6 +2,7 @@
 
 namespace ComptesBundle\Service\ImportHandler;
 
+use ComptesBundle\Entity\Repository\MouvementRepository;
 use Doctrine\ORM\EntityManager;
 use ComptesBundle\Service\ConfigurationLoader;
 use ComptesBundle\Service\MouvementCategorizer;
@@ -19,7 +20,7 @@ use ComptesBundle\Entity\Mouvement;
  *      - les ambigus,
  *      - ceux à valider.
  */
-abstract class AbstractMouvementsImportHandler
+abstract class AbstractMouvementsImportHandler implements MouvementsImportHandlerInterface
 {
     /**
      * @internal Flag de catégorisation d'un mouvement catégorisé,
@@ -52,6 +53,11 @@ abstract class AbstractMouvementsImportHandler
     protected $em;
 
     /**
+     * @var MouvementCategorizer
+     */
+    protected $mouvementCategorizer;
+
+    /**
      * Configuration des imports.
      *
      * @var array
@@ -61,7 +67,7 @@ abstract class AbstractMouvementsImportHandler
     /**
      * Tous les mouvements parsés.
      *
-     * @var array
+     * @var array<string, Mouvement>
      */
     private $mouvements;
 
@@ -70,7 +76,7 @@ abstract class AbstractMouvementsImportHandler
      *
      * Les mouvements parsés et catégorisés.
      *
-     * @var array
+     * @var array<string, Mouvement>
      */
     private $categorizedMouvements;
 
@@ -79,7 +85,7 @@ abstract class AbstractMouvementsImportHandler
      *
      * Les mouvements parsés et non catégorisés.
      *
-     * @var array
+     * @var array<string, Mouvement>
      */
     private $uncategorizedMouvements;
 
@@ -92,7 +98,7 @@ abstract class AbstractMouvementsImportHandler
      * aux catégories "loyer" et "charges".
      * Ces cas nécessitent un choix manuel avant de procéder à leur import.
      *
-     * @var array
+     * @var array<string, Mouvement>
      */
     private $ambiguousMouvements;
 
@@ -103,16 +109,12 @@ abstract class AbstractMouvementsImportHandler
      * avant de procéder à leur import, dans le cas d'une suspicion de doublon
      * par exemple.
      *
-     * @var array
+     * @var array<string, Mouvement>
      */
     private $waitingMouvements;
 
     /**
      * Constructeur.
-     *
-     * @param EntityManager        $entityManager
-     * @param ConfigurationLoader  $configurationLoader
-     * @param MouvementCategorizer $mouvementCategorizer
      */
     public function __construct(EntityManager $entityManager, ConfigurationLoader $configurationLoader, MouvementCategorizer $mouvementCategorizer)
     {
@@ -140,22 +142,16 @@ abstract class AbstractMouvementsImportHandler
      *      - les non catégorisés,
      *      - les ambigus,
      *      - ceux à valider.
-     *
-     * @param \SplFileObject $file
      */
-    public function parse(\SplFileObject $file)
+    public function parse(\SplFileObject $file): void
     {
         throw new \Exception("Le handler d'import de mouvements doit implémenter la méthode parse.");
     }
 
     /**
      * Ajoute un mouvement à la liste de tous les mouvements parsés.
-     *
-     * @param Mouvement $mouvement
-     *
-     * @return self
      */
-    public function addMouvement(Mouvement $mouvement)
+    public function addMouvement(Mouvement $mouvement): self
     {
         $hash = $mouvement->getHash();
         $this->mouvements[$hash] = $mouvement;
@@ -166,21 +162,17 @@ abstract class AbstractMouvementsImportHandler
     /**
      * Récupère tous les mouvements parsés.
      *
-     * @return array
+     * @return array<string, Mouvement>
      */
-    public function getMouvements()
+    public function getMouvements(): array
     {
         return $this->mouvements;
     }
 
     /**
      * Ajoute un mouvement à la liste des mouvements parsés et catégorisés.
-     *
-     * @param Mouvement $mouvement
-     *
-     * @return self
      */
-    public function addCategorizedMouvement(Mouvement $mouvement)
+    public function addCategorizedMouvement(Mouvement $mouvement): self
     {
         $hash = $mouvement->getHash();
         $this->categorizedMouvements[$hash] = $mouvement;
@@ -191,21 +183,17 @@ abstract class AbstractMouvementsImportHandler
     /**
      * Récupère les mouvements parsés et catégorisés.
      *
-     * @return array
+     * @return array<string, Mouvement>
      */
-    public function getCategorizedMouvements()
+    public function getCategorizedMouvements(): array
     {
         return $this->categorizedMouvements;
     }
 
     /**
      * Ajoute un mouvement à la liste des mouvements parsés et non catégorisés.
-     *
-     * @param Mouvement $mouvement
-     *
-     * @return self
      */
-    public function addUncategorizedMouvement(Mouvement $mouvement)
+    public function addUncategorizedMouvement(Mouvement $mouvement): self
     {
         $hash = $mouvement->getHash();
         $this->uncategorizedMouvements[$hash] = $mouvement;
@@ -216,9 +204,9 @@ abstract class AbstractMouvementsImportHandler
     /**
      * Récupère les mouvements parsés et non catégorisés.
      *
-     * @return array
+     * @return array<string, Mouvement>
      */
-    public function getUncategorizedMouvements()
+    public function getUncategorizedMouvements(): array
     {
         return $this->uncategorizedMouvements;
     }
@@ -226,12 +214,8 @@ abstract class AbstractMouvementsImportHandler
     /**
      * Ajoute un mouvement à la liste des mouvements parsés pour lesquels
      * la catégorie n'a pas pu être formellement déterminée.
-     *
-     * @param Mouvement $mouvement
-     *
-     * @return self
      */
-    public function addAmbiguousMouvement(Mouvement $mouvement)
+    public function addAmbiguousMouvement(Mouvement $mouvement): self
     {
         $hash = $mouvement->getHash();
         $this->ambiguousMouvements[$hash] = $mouvement;
@@ -243,9 +227,9 @@ abstract class AbstractMouvementsImportHandler
      * Récupère les mouvements parsés pour lesquels
      * la catégorie n'a pas pu être formellement déterminée.
      *
-     * @return array
+     * @return array<string, Mouvement>
      */
-    public function getAmbiguousMouvements()
+    public function getAmbiguousMouvements(): array
     {
         return $this->ambiguousMouvements;
     }
@@ -253,12 +237,8 @@ abstract class AbstractMouvementsImportHandler
     /**
      * Ajoute un mouvement à la liste des mouvements parsés pour lesquels
      * une vérification manuelle est nécessaire.
-     *
-     * @param Mouvement $mouvement
-     *
-     * @return self
      */
-    public function addWaitingMouvement(Mouvement $mouvement)
+    public function addWaitingMouvement(Mouvement $mouvement): self
     {
         $hash = $mouvement->getHash();
         $this->waitingMouvements[$hash] = $mouvement;
@@ -270,9 +250,9 @@ abstract class AbstractMouvementsImportHandler
      * Récupère les mouvements parsés pour lesquels
      * une vérification manuelle est nécessaire.
      *
-     * @return array
+     * @return array<string, Mouvement>
      */
-    public function getWaitingMouvements()
+    public function getWaitingMouvements(): array
     {
         return $this->waitingMouvements;
     }
@@ -283,12 +263,8 @@ abstract class AbstractMouvementsImportHandler
      *      - self::UNCATEGORIZED
      *      - self::AMBIGUOUS
      *      - self::WAITING
-     *
-     * @param Mouvement $mouvement
-     *
-     * @return int
      */
-    protected function getClassification(Mouvement $mouvement)
+    protected function getClassification(Mouvement $mouvement): int
     {
         // Service de catégorisation automatique des mouvements
         $categories = $this->mouvementCategorizer->getCategories($mouvement);
@@ -310,10 +286,11 @@ abstract class AbstractMouvementsImportHandler
             'compte' => $mouvement->getCompte(),
             'montant' => $mouvement->getMontant(),
         ];
+        /** @var MouvementRepository $mouvementRepository */
         $mouvementRepository = $this->em->getRepository('ComptesBundle:Mouvement');
         $similarMouvement = $mouvementRepository->findOneBy($criteria);
 
-        if (null !== $similarMouvement) {
+        if ($similarMouvement instanceof Mouvement) {
             $classification = self::WAITING;
         }
 
@@ -322,11 +299,8 @@ abstract class AbstractMouvementsImportHandler
 
     /**
      * Insère le mouvement dans les tableaux de classification.
-     *
-     * @param Mouvement $mouvement
-     * @param int       $classification
      */
-    protected function classify(Mouvement $mouvement, $classification)
+    protected function classify(Mouvement $mouvement, int $classification): void
     {
         // Classification du mouvement
         switch ($classification) {

@@ -15,7 +15,7 @@ class Mouvement
     /**
      * Catégorie du mouvement.
      *
-     * @var Categorie
+     * @var ?Categorie
      */
     protected $categorie;
 
@@ -29,7 +29,7 @@ class Mouvement
     /**
      * Montant du mouvement en euros, positif (crédit) ou négatif (débit).
      *
-     * @var string
+     * @var float
      */
     protected $montant;
 
@@ -42,23 +42,17 @@ class Mouvement
 
     /**
      * Constructeur.
-     *
-     * @return Mouvement
      */
     public function __construct()
     {
         // Date du jour par défaut
         $this->date = new \DateTime();
-
-        return $this;
     }
 
     /**
      * Méthode toString.
-     *
-     * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         $compte = $this->getCompte();
         $date = $this->getDate()->format('d/m/Y');
@@ -71,10 +65,8 @@ class Mouvement
     /**
      * Renvoie un hash MD5 de l'objet, utilisé pour l'identifier
      * dans les imports tant que son id n'est pas encore défini.
-     *
-     * @return string
      */
-    public function getHash()
+    public function getHash(): string
     {
         $string = (string) $this;
         $hash = md5($string);
@@ -84,12 +76,8 @@ class Mouvement
 
     /**
      * Définit la catégorie du mouvement.
-     *
-     * @param Categorie $categorie
-     *
-     * @return Mouvement
      */
-    public function setCategorie(Categorie $categorie = null)
+    public function setCategorie(?Categorie $categorie = null): self
     {
         $this->categorie = $categorie;
 
@@ -98,22 +86,16 @@ class Mouvement
 
     /**
      * Récupère la catégorie du mouvement.
-     *
-     * @return Categorie
      */
-    public function getCategorie()
+    public function getCategorie(): ?Categorie
     {
         return $this->categorie;
     }
 
     /**
      * Définit le compte bancaire.
-     *
-     * @param Compte $compte
-     *
-     * @return Mouvement
      */
-    public function setCompte(Compte $compte)
+    public function setCompte(Compte $compte): self
     {
         $this->compte = $compte;
 
@@ -122,22 +104,16 @@ class Mouvement
 
     /**
      * Récupère le compte bancaire.
-     *
-     * @return Compte
      */
-    public function getCompte()
+    public function getCompte(): Compte
     {
         return $this->compte;
     }
 
     /**
      * Définit le montant du mouvement en euros, positif (crédit) ou négatif (débit).
-     *
-     * @param string $montant
-     *
-     * @return Mouvement
      */
-    public function setMontant($montant)
+    public function setMontant(float $montant): self
     {
         $this->montant = $montant;
 
@@ -146,22 +122,16 @@ class Mouvement
 
     /**
      * Récupère le montant du mouvement en euros, positif (crédit) ou négatif (débit).
-     *
-     * @return string
      */
-    public function getMontant()
+    public function getMontant(): float
     {
         return $this->montant;
     }
 
     /**
      * Définit la description du mouvement.
-     *
-     * @param string $description
-     *
-     * @return Mouvement
      */
-    public function setDescription($description)
+    public function setDescription(string $description): self
     {
         $this->description = $description;
 
@@ -170,22 +140,16 @@ class Mouvement
 
     /**
      * Récupère la description du mouvement.
-     *
-     * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->description;
     }
 
     /**
      * Valide le mouvement pour le moteur de validation.
-     *
-     * @param ExecutionContextInterface $context
-     *
-     * @return void
      */
-    public function validate(ExecutionContextInterface $context)
+    public function validate(ExecutionContextInterface $context): void
     {
         $violations = [];
 

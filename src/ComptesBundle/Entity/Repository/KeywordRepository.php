@@ -2,6 +2,7 @@
 
 namespace ComptesBundle\Entity\Repository;
 
+use ComptesBundle\Entity\Keyword;
 use Doctrine\ORM\EntityRepository;
 
 /**
@@ -14,11 +15,13 @@ class KeywordRepository extends EntityRepository
      *
      * @todo Utiliser une requête SQL.
      *
-     * @return array
+     * @return array<int, Keyword[]>
      */
-    public function findAllSortedByCategories()
+    public function findAllSortedByCategories(): array
     {
         $keywords = [];
+
+        /** @var Keyword[] $unsortedKeywords */
         $unsortedKeywords = $this->findAll();
 
         foreach ($unsortedKeywords as $keyword) {

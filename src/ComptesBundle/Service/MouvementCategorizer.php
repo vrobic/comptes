@@ -2,6 +2,9 @@
 
 namespace ComptesBundle\Service;
 
+use ComptesBundle\Entity\Categorie;
+use ComptesBundle\Entity\Mouvement;
+use ComptesBundle\Entity\Repository\KeywordRepository;
 use Doctrine\ORM\EntityManager;
 
 /**
@@ -17,8 +20,6 @@ class MouvementCategorizer
 
     /**
      * Constructeur.
-     *
-     * @param EntityManager $em
      */
     public function __construct(EntityManager $em)
     {
@@ -29,12 +30,11 @@ class MouvementCategorizer
     /**
      * Trouve les catégories probables d'un mouvement.
      *
-     * @param Mouvement $mouvement
-     *
      * @return Categorie[] Liste de catégories.
      */
-    public function getCategories($mouvement)
+    public function getCategories(Mouvement $mouvement): array
     {
+        /** @var KeywordRepository $keywordRepository */
         $keywordRepository = $this->em->getRepository('ComptesBundle:Keyword');
 
         // Tous les mots-clés de description

@@ -4,7 +4,6 @@ namespace ComptesBundle\Entity\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use ComptesBundle\Entity\Plein;
-use ComptesBundle\Entity\Vehicule;
 
 /**
  * Repository des pleins de carburant.
@@ -12,9 +11,9 @@ use ComptesBundle\Entity\Vehicule;
 class PleinRepository extends EntityRepository
 {
     /**
-     * {@inheritdoc}
+     * @return Plein[]
      */
-    public function findAll()
+    public function findAll(): array
     {
         return $this->findBy([], [
             'date' => 'DESC',
@@ -22,37 +21,17 @@ class PleinRepository extends EntityRepository
     }
 
     /**
-     * Récupère les pleins d'un véhicule.
-     *
-     * @param Vehicule $vehicule
-     * @param string   $order    'ASC' (par défaut) ou 'DESC'.
-     *
-     * @return \Doctrine\Common\Collections\ArrayCollection
-     */
-    public function findByVehicule(Vehicule $vehicule, $order = 'ASC')
-    {
-        $queryBuilder = $this->createQueryBuilder('p');
-
-        $queryBuilder
-            ->where('p.vehicule = :vehicule')
-            ->orderBy('p.date', $order)
-            ->setParameter(':vehicule', $vehicule);
-
-        $pleins = $queryBuilder->getQuery()->getResult();
-
-        return $pleins;
-    }
-
-    /**
      * Récupère les pleins entre deux dates.
+     *
+     * @todo : $order peut venir une enum
      *
      * @param \DateTime $dateStart Date de début, incluse.
      * @param \DateTime $dateEnd   Date de fin, incluse.
      * @param string    $order     'ASC' (par défaut) ou 'DESC'.
      *
-     * @return \Doctrine\Common\Collections\ArrayCollection
+     * @return Plein[]
      */
-    public function findByDate(\DateTime $dateStart, \DateTime $dateEnd, $order = 'ASC')
+    public function findByDate(\DateTime $dateStart, \DateTime $dateEnd, string $order = 'ASC'): array
     {
         $queryBuilder = $this->createQueryBuilder('p');
         $expressionBuilder = $this->getEntityManager()->getExpressionBuilder();
@@ -74,10 +53,8 @@ class PleinRepository extends EntityRepository
 
     /**
      * Récupère le plein le plus récent.
-     *
-     * @return Plein
      */
-    public function findLatestOne()
+    public function findLatestOne(): ?Plein
     {
         $queryBuilder = $this->createQueryBuilder('p');
 

@@ -2,6 +2,8 @@
 
 namespace ComptesBundle\Command;
 
+use ComptesBundle\Service\ConfigurationLoader;
+use ComptesBundle\Service\ImportHandler\ImportHandlerInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 
 /**
@@ -33,11 +35,13 @@ abstract class AbstractImportCommand extends ContainerAwareCommand
     /**
      * Définit le type d'import.
      *
+     * @todo : $type peut devenir une enum
+     *
      * @param string $type Deux valeurs possibles : 'mouvements' ou 'pleins'.
      *
      * @throws \Exception Dans le cas où le type est invalide.
      */
-    protected function setType($type)
+    protected function setType(string $type): void
     {
         if (!in_array($type, ['mouvements', 'pleins'])) {
             throw new \Exception("Type d'import invalide.");
@@ -49,8 +53,9 @@ abstract class AbstractImportCommand extends ContainerAwareCommand
     /**
      * Charge la configuration adaptée au type d'import.
      */
-    protected function loadConfiguration()
+    protected function loadConfiguration(): void
     {
+        /** @var ConfigurationLoader $configurationLoader */
         $configurationLoader = $this->getContainer()->get('comptes_bundle.configuration.loader');
         $configuration = $configurationLoader->load('import');
         $this->handlers = $configuration['handlers'][$this->type];
@@ -59,13 +64,9 @@ abstract class AbstractImportCommand extends ContainerAwareCommand
     /**
      * Renvoie une instance du handler d'import.
      *
-     * @param string $handlerIdentifier
-     *
-     * @return Une implémentation de l'interface ImportHandlerInterface.
-     *
      * @throws \Exception Si le handler demandé est invalide.
      */
-    protected function getHandler($handlerIdentifier)
+    protected function getHandler(string $handlerIdentifier): ImportHandlerInterface
     {
         $handlerIdentifiers = array_keys($this->handlers);
 
@@ -74,6 +75,7 @@ abstract class AbstractImportCommand extends ContainerAwareCommand
         }
 
         $this->handlerIdentifier = $handlerIdentifier;
+        /** @var ImportHandlerInterface $handler */
         $handler = $this->getContainer()->get("comptes_bundle.import.$this->type.$handlerIdentifier");
 
         return $handler;
@@ -82,14 +84,12 @@ abstract class AbstractImportCommand extends ContainerAwareCommand
     /**
      * Renvoie le fichier dont le chemin est passé en paramètre.
      *
-     * @param string $filename Chemin du fichier.
-     *
-     * @return SplFileObject
+     * @todo : ne pas renvoyer des exceptions HTTP
      *
      * @throws \Symfony\Component\HttpKernel\Exception\BadRequestHttpException           En cas d'erreur d'accès au fichier.
      * @throws \Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException Si le type de fichier n'est pas celui attendu.
      */
-    protected function getFile($filename)
+    protected function getFile(string $filename): \SplFileObject
     {
         if (!file_exists($filename)) {
             throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException("Le fichier $filename n'existe pas.");

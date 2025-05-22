@@ -29,28 +29,28 @@ class Vehicule
     /**
      * Date de revente du véhicule.
      *
-     * @var \DateTime
+     * @var ?\DateTime
      */
     protected $dateVente;
 
     /**
      * Kilométrage du véhicule à son achat.
      *
-     * @var string
+     * @var float
      */
     protected $kilometrageAchat;
 
     /**
      * Kilométrage du véhicule après le premier plein rentré dans l'application.
      *
-     * @var string
+     * @var float
      */
     protected $kilometrageInitial;
 
     /**
      * Prix d'achat du véhicule, en euros.
      *
-     * @var string
+     * @var float
      */
     protected $prixAchat;
 
@@ -64,21 +64,21 @@ class Vehicule
     /**
      * Capacité du réservoir, en litres.
      *
-     * @var string
+     * @var float
      */
     protected $capaciteReservoir;
 
     /**
      * Pleins de carburant.
      *
-     * @var \Doctrine\Common\Collections\ArrayCollection
+     * @var Plein[]|ArrayCollection
      */
     protected $pleins;
 
     /**
      * Rang d'affichage du véhicule.
      *
-     * @var int
+     * @var ?int
      */
     protected $rang;
 
@@ -92,22 +92,16 @@ class Vehicule
 
     /**
      * Méthode toString.
-     *
-     * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getNom();
     }
 
     /**
      * Définit les marque et modèle du véhicule.
-     *
-     * @param string $nom
-     *
-     * @return Vehicule
      */
-    public function setNom($nom)
+    public function setNom(string $nom): self
     {
         $this->nom = $nom;
 
@@ -116,22 +110,16 @@ class Vehicule
 
     /**
      * Récupère les marque et modèle du véhicule.
-     *
-     * @return string
      */
-    public function getNom()
+    public function getNom(): string
     {
         return $this->nom;
     }
 
     /**
      * Définit la date d'achat du véhicule.
-     *
-     * @param \DateTime $dateAchat
-     *
-     * @return Vehicule
      */
-    public function setDateAchat($dateAchat)
+    public function setDateAchat(\DateTime $dateAchat): self
     {
         $this->dateAchat = $dateAchat;
 
@@ -140,22 +128,16 @@ class Vehicule
 
     /**
      * Récupère la date d'achat du véhicule.
-     *
-     * @return \DateTime
      */
-    public function getDateAchat()
+    public function getDateAchat(): \DateTime
     {
         return $this->dateAchat;
     }
 
     /**
      * Définit la date de revente du véhicule.
-     *
-     * @param \DateTime $dateVente
-     *
-     * @return Vehicule
      */
-    public function setDateVente($dateVente)
+    public function setDateVente(?\DateTime $dateVente): self
     {
         $this->dateVente = $dateVente;
 
@@ -164,36 +146,28 @@ class Vehicule
 
     /**
      * Récupère la date de revente du véhicule.
-     *
-     * @return \DateTime
      */
-    public function getDateVente()
+    public function getDateVente(): ?\DateTime
     {
         return $this->dateVente;
     }
 
     /**
      * Indique si le véhicule est revendu.
-     *
-     * @return bool
      */
-    public function isVendu()
+    public function isVendu(): bool
     {
         $dateVente = $this->getDateVente();
 
-        $vendu = $dateVente !== null;
+        $vendu = $dateVente instanceof \DateTime;
 
         return $vendu;
     }
 
     /**
      * Définit le kilométrage du véhicule à son achat.
-     *
-     * @param string $kilometrageAchat
-     *
-     * @return Vehicule
      */
-    public function setKilometrageAchat($kilometrageAchat)
+    public function setKilometrageAchat(float $kilometrageAchat): self
     {
         $this->kilometrageAchat = $kilometrageAchat;
 
@@ -202,22 +176,16 @@ class Vehicule
 
     /**
      * Récupère le kilométrage du véhicule à son achat.
-     *
-     * @return string
      */
-    public function getKilometrageAchat()
+    public function getKilometrageAchat(): float
     {
         return $this->kilometrageAchat;
     }
 
     /**
      * Définit le kilométrage du véhicule après le premier plein rentré dans l'application.
-     *
-     * @param string $kilometrageInitial
-     *
-     * @return Vehicule
      */
-    public function setKilometrageInitial($kilometrageInitial)
+    public function setKilometrageInitial(float $kilometrageInitial): self
     {
         $this->kilometrageInitial = $kilometrageInitial;
 
@@ -226,22 +194,16 @@ class Vehicule
 
     /**
      * Récupère le kilométrage du véhicule après le premier plein rentré dans l'application.
-     *
-     * @return string
      */
-    public function getKilometrageInitial()
+    public function getKilometrageInitial(): float
     {
         return $this->kilometrageInitial;
     }
 
     /**
      * Définit le prix d'achat du véhicule, en euros.
-     *
-     * @param string $prixAchat
-     *
-     * @return Vehicule
      */
-    public function setPrixAchat($prixAchat)
+    public function setPrixAchat(float $prixAchat): self
     {
         $this->prixAchat = $prixAchat;
 
@@ -250,22 +212,16 @@ class Vehicule
 
     /**
      * Récupère le prix d'achat du véhicule, en euros.
-     *
-     * @return string
      */
-    public function getPrixAchat()
+    public function getPrixAchat(): float
     {
         return $this->prixAchat;
     }
 
     /**
      * Définit le carburant utilisé par le véhicule.
-     *
-     * @param Carburant $carburant
-     *
-     * @return Vehicule
      */
-    public function setCarburant(Carburant $carburant)
+    public function setCarburant(Carburant $carburant): self
     {
         $this->carburant = $carburant;
 
@@ -274,22 +230,16 @@ class Vehicule
 
     /**
      * Récupère le carburant utilisé par le véhicule.
-     *
-     * @return Carburant
      */
-    public function getCarburant()
+    public function getCarburant(): Carburant
     {
         return $this->carburant;
     }
 
     /**
      * Définit la capacité du réservoir, en litres.
-     *
-     * @param string $capaciteReservoir
-     *
-     * @return Vehicule
      */
-    public function setCapaciteReservoir($capaciteReservoir)
+    public function setCapaciteReservoir(float $capaciteReservoir): self
     {
         $this->capaciteReservoir = $capaciteReservoir;
 
@@ -298,22 +248,16 @@ class Vehicule
 
     /**
      * Récupère la capacité du réservoir, en litres.
-     *
-     * @return string
      */
-    public function getCapaciteReservoir()
+    public function getCapaciteReservoir(): float
     {
         return $this->capaciteReservoir;
     }
 
     /**
      * Associe un plein de carburant au véhicule.
-     *
-     * @param Plein $plein
-     *
-     * @return Vehicule
      */
-    public function addPlein(Plein $plein)
+    public function addPlein(Plein $plein): self
     {
         $this->pleins[] = $plein;
 
@@ -322,12 +266,8 @@ class Vehicule
 
     /**
      * Dissocie un plein de carburant du véhicule.
-     *
-     * @param Plein $plein
-     *
-     * @return Vehicule
      */
-    public function removePlein(Plein $plein)
+    public function removePlein(Plein $plein): self
     {
         $this->pleins->removeElement($plein);
 
@@ -336,10 +276,8 @@ class Vehicule
 
     /**
      * Dissocie tous les pleins de carburant du véhicule.
-     *
-     * @return Vehicule
      */
-    public function removePleins()
+    public function removePleins(): self
     {
         $this->pleins->clear();
 
@@ -349,25 +287,25 @@ class Vehicule
     /**
      * Récupère les pleins de carburant du véhicule.
      *
-     * @return \Doctrine\Common\Collections\ArrayCollection
+     * @todo : typer le retour directement dans le code
+     *
+     * @return Plein[]
      */
     public function getPleins()
     {
         $pleins = $this->pleins->toArray();
 
-        usort($pleins, function (Plein $a, Plein $b) {
-            return $a->getDate() > $b->getDate();
+        usort($pleins, function (Plein $a, Plein $b): int {
+            return $a->getDate() > $b->getDate() ? 1 : -1;
         });
 
-        return new ArrayCollection($pleins);
+        return $pleins;
     }
 
     /**
      * Calcule le kilométrage du véhicule.
-     *
-     * @return float
      */
-    public function getKilometrage()
+    public function getKilometrage(): float
     {
         $kilometrage = $this->getKilometrageInitial();
 
@@ -383,10 +321,8 @@ class Vehicule
 
     /**
      * Calcule le kilométrage annuel moyen du véhicule.
-     *
-     * @return float
      */
-    public function getKilometrageAnnuel()
+    public function getKilometrageAnnuel(): float
     {
         // Le kilométrage parcouru
         $kilometrageAchat = $this->getKilometrageAchat();
@@ -406,10 +342,8 @@ class Vehicule
 
     /**
      * Calcule la consommation moyenne du véhicule, en litres au 100km.
-     *
-     * @return float
      */
-    public function getConsommation()
+    public function getConsommation(): float
     {
         $pleins = $this->getPleins();
         $pleinsCount = count($pleins);
@@ -431,10 +365,8 @@ class Vehicule
 
     /**
      * Calcule l'autonomie estimée moyenne du véhicule, en km.
-     *
-     * @return float
      */
-    public function getAutonomie()
+    public function getAutonomie(): float
     {
         // Consommation moyenne du véhicule, au 100km
         $consommation = $this->getConsommation();
@@ -449,12 +381,8 @@ class Vehicule
 
     /**
      * Définit le rang d'affichage du véhicule.
-     *
-     * @param int $rang
-     *
-     * @return Vehicule
      */
-    public function setRang($rang)
+    public function setRang(?int $rang): self
     {
         $this->rang = $rang;
 
@@ -463,22 +391,16 @@ class Vehicule
 
     /**
      * Récupère le rang d'affichage du véhicule.
-     *
-     * @return int
      */
-    public function getRang()
+    public function getRang(): ?int
     {
         return $this->rang;
     }
 
     /**
      * Valide le véhicule pour le moteur de validation.
-     *
-     * @param ExecutionContextInterface $context
-     *
-     * @return void
      */
-    public function validate(ExecutionContextInterface $context)
+    public function validate(ExecutionContextInterface $context): void
     {
         $violations = [];
 
@@ -486,7 +408,7 @@ class Vehicule
             $violations[] = "La date d'achat du véhicule doit être située dans le passé.";
         }
 
-        if ($this->getDateVente() !== null && $this->getDateVente() > new \DateTime()) {
+        if ($this->getDateVente() instanceof \DateTime && $this->getDateVente() > new \DateTime()) {
             $violations[] = "La date de vente du véhicule doit être située dans le passé.";
         }
 

@@ -2,6 +2,9 @@
 
 namespace ComptesBundle\Controller;
 
+use ComptesBundle\Entity\Repository\PleinRepository;
+use ComptesBundle\Entity\Repository\VehiculeRepository;
+use ComptesBundle\Entity\Vehicule;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,14 +17,14 @@ class PleinController extends Controller
 {
     /**
      * Liste des pleins.
-     *
-     * @return Response
      */
-    public function indexAction()
+    public function indexAction(): Response
     {
         // Repositories
         $doctrine = $this->getDoctrine();
+        /** @var PleinRepository $pleinRepository */
         $pleinRepository = $doctrine->getRepository('ComptesBundle:Plein');
+        /** @var VehiculeRepository $vehiculeRepository */
         $vehiculeRepository = $doctrine->getRepository('ComptesBundle:Vehicule');
 
         // Tous les pleins
@@ -62,17 +65,15 @@ class PleinController extends Controller
      * Édition de pleins par lots.
      *
      * @todo Utiliser un formulaire Symfony.
-     *
-     * @param Request $request
-     *
-     * @return Response
      */
-    public function editAction(Request $request)
+    public function editAction(Request $request): Response
     {
         // Entity manager et repositories
         $doctrine = $this->getDoctrine();
         $manager = $doctrine->getManager();
+        /** @var PleinRepository $pleinRepository */
         $pleinRepository = $doctrine->getRepository('ComptesBundle:Plein');
+        /** @var VehiculeRepository $vehiculeRepository */
         $vehiculeRepository = $doctrine->getRepository('ComptesBundle:Vehicule');
 
         // Valeurs postées
@@ -83,7 +84,8 @@ class PleinController extends Controller
         foreach ($batchArray as $pleinID) {
             if (isset($pleinsArray[$pleinID])) {
                 $pleinArray = $pleinsArray[$pleinID];
-                $plein = $pleinID > 0 ? $pleinRepository->find($pleinID) : new Plein();
+                /** @var ?Plein $plein */
+                $plein = $pleinID > 0 ? $pleinRepository->find($pleinID) : new Plein(); // @todo : voir que faire du null
 
                 switch ($action) {
                     case 'save': // Création et édition
@@ -91,31 +93,35 @@ class PleinController extends Controller
                         if (isset($pleinArray['date'])) {
                             $dateString = $pleinArray['date'];
                             $date = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateString 00:00:00");
+                            if (!($date instanceof \DateTime)) {
+                                throw new \Exception("Date du plein invalide : $dateString");
+                            }
                             $plein->setDate($date);
                         }
 
                         // Véhicule
                         if (isset($pleinArray['vehicule'])) {
                             $vehiculeID = $pleinArray['vehicule'];
+                            /** @var ?Vehicule $vehicule */
                             $vehicule = $vehiculeID !== '' ? $vehiculeRepository->find($vehiculeID) : null;
                             $plein->setVehicule($vehicule);
                         }
 
                         // Distance parcourue
                         if (isset($pleinArray['distanceParcourue'])) {
-                            $distanceParcourue = str_replace(',', '.', $pleinArray['distanceParcourue']);
+                            $distanceParcourue = (float) str_replace(',', '.', $pleinArray['distanceParcourue']);
                             $plein->setDistanceParcourue($distanceParcourue);
                         }
 
                         // Quantité
                         if (isset($pleinArray['quantite'])) {
-                            $quantite = str_replace(',', '.', $pleinArray['quantite']);
+                            $quantite = (float) str_replace(',', '.', $pleinArray['quantite']);
                             $plein->setQuantite($quantite);
                         }
 
                         // Prix au litre
                         if (isset($pleinArray['prixLitre'])) {
-                            $prixLitre = str_replace(',', '.', $pleinArray['prixLitre']);
+                            $prixLitre = (float) str_replace(',', '.', $pleinArray['prixLitre']);
                             $plein->setPrixLitre($prixLitre);
                         }
 

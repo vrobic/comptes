@@ -21,14 +21,14 @@ class Carburant
     /**
      * Véhicules utilisant ce carburant.
      *
-     * @var \Doctrine\Common\Collections\ArrayCollection
+     * @var Vehicule[]|ArrayCollection
      */
     protected $vehicules;
 
     /**
      * Rang d'affichage du carburant.
      *
-     * @var int
+     * @var ?int
      */
     protected $rang;
 
@@ -42,22 +42,16 @@ class Carburant
 
     /**
      * Méthode toString.
-     *
-     * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getNom();
     }
 
     /**
      * Définit le nom commercial du carburant.
-     *
-     * @param string $nom
-     *
-     * @return Carburant
      */
-    public function setNom($nom)
+    public function setNom(string $nom): self
     {
         $this->nom = $nom;
 
@@ -66,22 +60,16 @@ class Carburant
 
     /**
      * Récupère le nom commercial du carburant.
-     *
-     * @return string
      */
-    public function getNom()
+    public function getNom(): string
     {
         return $this->nom;
     }
 
     /**
      * Associe un véhicule au carburant.
-     *
-     * @param Vehicule $vehicule
-     *
-     * @return Carburant
      */
-    public function addVehicule(Vehicule $vehicule)
+    public function addVehicule(Vehicule $vehicule): self
     {
         $this->vehicules[] = $vehicule;
 
@@ -90,12 +78,8 @@ class Carburant
 
     /**
      * Dissocie un véhicule du carburant.
-     *
-     * @param Vehicule $vehicule
-     *
-     * @return Carburant
      */
-    public function removeVehicule(Vehicule $vehicule)
+    public function removeVehicule(Vehicule $vehicule): self
     {
         $this->vehicules->removeElement($vehicule);
 
@@ -104,10 +88,8 @@ class Carburant
 
     /**
      * Dissocie tous les véhicules du carburant.
-     *
-     * @return Carburant
      */
-    public function removeVehicules()
+    public function removeVehicules(): self
     {
         $this->vehicules->clear();
 
@@ -117,7 +99,9 @@ class Carburant
     /**
      * Récupère les véhicules utilisant ce carburant.
      *
-     * @return \Doctrine\Common\Collections\ArrayCollection
+     * @todo : typer le retour directement dans le code
+     *
+     * @return Vehicule[]|ArrayCollection
      */
     public function getVehicules()
     {
@@ -126,12 +110,8 @@ class Carburant
 
     /**
      * Définit le rang d'affichage du carburant.
-     *
-     * @param int $rang
-     *
-     * @return Carburant
      */
-    public function setRang($rang)
+    public function setRang(?int $rang): self
     {
         $this->rang = $rang;
 
@@ -140,10 +120,8 @@ class Carburant
 
     /**
      * Récupère le rang d'affichage du carburant.
-     *
-     * @return int
      */
-    public function getRang()
+    public function getRang(): ?int
     {
         return $this->rang;
     }

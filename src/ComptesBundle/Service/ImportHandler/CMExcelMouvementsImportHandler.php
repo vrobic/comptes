@@ -2,6 +2,8 @@
 
 namespace ComptesBundle\Service\ImportHandler;
 
+use ComptesBundle\Entity\Compte;
+use ComptesBundle\Entity\Repository\CompteRepository;
 use PhpOffice\PhpSpreadsheet;
 use ComptesBundle\Entity\Mouvement;
 
@@ -23,19 +25,30 @@ class CMExcelMouvementsImportHandler extends AbstractMouvementsImportHandler
      *
      * @param \SplFileObject $file Fichier Excel fourni par le Crédit Mutuel.
      */
-    public function parse(\SplFileObject $file)
+    public function parse(\SplFileObject $file): void
     {
-        // Repository
+        /** @var CompteRepository $compteRepository */
         $compteRepository = $this->em->getRepository('ComptesBundle:Compte');
 
         // Configuration du handler
         $configuration = $this->configuration[$this::HANDLER_ID]['config'];
 
-        // Tableau de correspondance entre l'index de la feuille et le compte bancaire
+        /**
+         * Tableau de correspondance entre l'index de la feuille et le compte bancaire.
+         *
+         * @var array<int, Compte> $comptesBySheets
+         */
         $comptesBySheets = [];
 
         foreach ($configuration['sheets'] as $sheetIndex => $compteID) {
-            $comptesBySheets[$sheetIndex] = $compteRepository->find($compteID);
+            /** @var ?Compte $compte */
+            $compte = $compteRepository->find($compteID);
+
+            if (!($compte instanceof Compte)) {
+                throw new \Exception("Compte $compteID introuvable.");
+            }
+
+            $comptesBySheets[$sheetIndex] = $compte;
         }
 
         $reader = PhpSpreadsheet\IOFactory::load($file->getRealPath());
@@ -67,6 +80,7 @@ class CMExcelMouvementsImportHandler extends AbstractMouvementsImportHandler
                 // Montant
                 $montant = $debit !== null ? $debit : $credit;
                 $montant = sprintf('%0.2f', $montant);
+                $montant = (float) $montant;
                 $mouvement->setMontant($montant);
 
                 // Description

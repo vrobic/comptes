@@ -2,8 +2,12 @@
 
 namespace ComptesBundle\Service;
 
-use Doctrine\Bundle\DoctrineBundle\Registry;
+use ComptesBundle\Entity\Compte;
+use ComptesBundle\Entity\Repository\CompteRepository;
+use ComptesBundle\Entity\Repository\MouvementRepository;
+use ComptesBundle\Entity\Repository\PleinRepository;
 use ComptesBundle\Entity\Categorie;
+use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
  * Fournisseur de statistiques.
@@ -11,7 +15,7 @@ use ComptesBundle\Entity\Categorie;
 class StatsProvider
 {
     /**
-     * @var Registry
+     * @var RegistryInterface
      */
     protected $doctrine;
 
@@ -24,11 +28,8 @@ class StatsProvider
 
     /**
      * Constructeur.
-     *
-     * @param Registry            $doctrine
-     * @param ConfigurationLoader $configurationLoader
      */
-    public function __construct(Registry $doctrine, ConfigurationLoader $configurationLoader)
+    public function __construct(RegistryInterface $doctrine, ConfigurationLoader $configurationLoader)
     {
         // Injection de dépendances
         $this->doctrine = $doctrine;
@@ -44,13 +45,13 @@ class StatsProvider
      *
      * @param \DateTime $dateStart Date de début, incluse.
      * @param \DateTime $dateEnd   Date de fin, incluse.
-     *
-     * @return float
      */
-    public function getMonthlyBalance(\DateTime $dateStart, \DateTime $dateEnd)
+    public function getMonthlyBalance(\DateTime $dateStart, \DateTime $dateEnd): float
     {
-        // Repositories
+        /** @var CompteRepository $compteRepository */
         $compteRepository = $this->doctrine->getRepository('ComptesBundle:Compte');
+
+        /** @var MouvementRepository $mouvementRepository */
         $mouvementRepository = $this->doctrine->getRepository('ComptesBundle:Mouvement');
 
         // Nombre de mois entre les deux dates
@@ -63,6 +64,7 @@ class StatsProvider
 
         // Tous les mouvements entre ces deux dates, et leur balance
         $mouvements = $mouvementRepository->findByDate($dateStart, $dateEnd);
+
         $balance = $compteRepository->getBalanceByMouvements($mouvements);
 
         // Balance mensuelle moyenne
@@ -75,19 +77,23 @@ class StatsProvider
      * Calcule le montant total annuel des mouvements,
      * pour toutes les années incluses dans un intervalle.
      *
-     * @param int         $yearStart Année de début, incluse.
-     * @param int         $yearEnd   Année de fin, incluse.
-     * @param Compte|null $compte    Un compte, facultatif.
+     * @param int     $yearStart Année de début, incluse.
+     * @param int     $yearEnd   Année de fin, incluse.
+     * @param ?Compte $compte    Un compte, facultatif.
      *
-     * @return array Les montants des mouvements, classés par années.
+     * @return array<int, float> Les montants des mouvements, classés par années.
      */
-    public function getYearlyMontants($yearStart, $yearEnd, $compte = null)
+    public function getYearlyMontants(int $yearStart, int $yearEnd, ?Compte $compte = null): array
     {
-        // Repositories
+        /** @var MouvementRepository $mouvementRepository */
         $mouvementRepository = $this->doctrine->getRepository('ComptesBundle:Mouvement');
 
         $dateStart = \DateTime::createFromFormat('Y-m-d H:i:s', "$yearStart-01-01 00:00:00");
         $dateEnd = \DateTime::createFromFormat('Y-m-d H:i:s', "$yearEnd-12-31 23:59:59");
+
+        if (!($dateStart instanceof \DateTime) || !($dateEnd instanceof \DateTime)) {
+            throw new \Exception("Intervalle de dates invalide.");
+        }
 
         $mouvements = $mouvementRepository->findByDate($dateStart, $dateEnd, 'ASC', $compte);
 
@@ -96,10 +102,10 @@ class StatsProvider
         foreach ($mouvements as $mouvement) {
             $montant = $mouvement->getMontant();
             $date = $mouvement->getDate();
-            $year = $date->format('Y');
+            $year = (int) $date->format('Y');
 
             if (!isset($yearlyMontants[$year])) {
-                $yearlyMontants[$year] = 0;
+                $yearlyMontants[$year] = 0.;
             }
 
             $yearlyMontants[$year] += $montant;
@@ -112,23 +118,27 @@ class StatsProvider
      * Calcule le montant total annuel des mouvements d'une catégorie,
      * pour toutes les années incluses dans un intervalle.
      *
-     * @param Categorie|null $categorie
-     * @param int            $yearStart Année de début, incluse.
-     * @param int            $yearEnd   Année de fin, incluse.
-     * @param Compte|null    $compte    Un compte, facultatif.
+     * @param ?Categorie $categorie
+     * @param int        $yearStart Année de début, incluse.
+     * @param int        $yearEnd   Année de fin, incluse.
+     * @param ?Compte    $compte    Un compte, facultatif.
      *
-     * @return array Les montants des mouvements de la catégorie, classés par années.
+     * @return array<int, float> Les montants des mouvements de la catégorie, classés par années.
      */
-    public function getYearlyMontantsByCategorie($categorie, $yearStart, $yearEnd, $compte = null)
+    public function getYearlyMontantsByCategorie(?Categorie $categorie, int $yearStart, int $yearEnd, ?Compte $compte = null): array
     {
         $dateStart = \DateTime::createFromFormat('Y-m-d H:i:s', "$yearStart-01-01 00:00:00");
         $dateEnd = \DateTime::createFromFormat('Y-m-d H:i:s', "$yearEnd-12-31 23:59:59");
+
+        if (!($dateStart instanceof \DateTime) || !($dateEnd instanceof \DateTime)) {
+            throw new \Exception("Intervalle de dates invalide.");
+        }
 
         $yearlyMontants = [];
         $monthlyMontants = $this->getMonthlyMontantsByCategorie($categorie, $dateStart, $dateEnd, $compte);
 
         foreach ($monthlyMontants as $year => $months) {
-            $yearlyMontants[$year] = 0;
+            $yearlyMontants[$year] = 0.;
 
             foreach ($months as $monthlyMontant) {
                 $yearlyMontants[$year] += $monthlyMontant;
@@ -142,16 +152,16 @@ class StatsProvider
      * Calcule le montant mensuel total des mouvements d'une catégorie,
      * compris entre deux dates incluses.
      *
-     * @param Categorie|null $categorie
-     * @param \DateTime      $dateStart Date de début, incluse.
-     * @param \DateTime      $dateEnd   Date de fin, incluse.
-     * @param Compte|null    $compte    Un compte, facultatif.
+     * @param ?Categorie $categorie
+     * @param \DateTime  $dateStart Date de début, incluse.
+     * @param \DateTime  $dateEnd   Date de fin, incluse.
+     * @param ?Compte    $compte    Un compte, facultatif.
      *
-     * @return array Les montants des mouvements de la catégorie, classés par mois.
+     * @return array<int, array<int, float>> Les montants des mouvements de la catégorie, classés par mois.
      */
-    public function getMonthlyMontantsByCategorie($categorie, \DateTime $dateStart, \DateTime $dateEnd, $compte = null)
+    public function getMonthlyMontantsByCategorie(?Categorie $categorie, \DateTime $dateStart, \DateTime $dateEnd, ?Compte $compte = null): array
     {
-        // Repositories
+        /** @var MouvementRepository $mouvementRepository */
         $mouvementRepository = $this->doctrine->getRepository('ComptesBundle:Mouvement');
 
         // Les montants totaux mensuels des mouvements de la catégorie
@@ -163,9 +173,9 @@ class StatsProvider
 
         // Chaque mois de la période
         foreach ($periods as $date) {
-            $year = $date->format('Y');
-            $month = $date->format('m');
-            $day = $date->format('d');
+            $year = (int) $date->format('Y');
+            $month = (int) $date->format('m');
+            $day = (int) $date->format('d');
 
             $monthStartDate = new \DateTime();
             $monthStartDate
@@ -199,14 +209,14 @@ class StatsProvider
      * Calcule le montant mensuel moyen des mouvements d'une catégorie,
      * compris entre deux dates incluses.
      *
-     * @param Categorie|null $categorie
-     * @param \DateTime      $dateStart Date de début, incluse.
-     * @param \DateTime      $dateEnd   Date de fin, incluse.
-     * @param Compte|null    $compte    Un compte, facultatif.
+     * @param ?Categorie $categorie
+     * @param \DateTime  $dateStart Date de début, incluse.
+     * @param \DateTime  $dateEnd   Date de fin, incluse.
+     * @param ?Compte    $compte    Un compte, facultatif.
      *
      * @return float Le montant mensuel moyen des mouvements de la catégorie
      */
-    public function getAverageMonthlyMontantsByCategorie($categorie, \DateTime $dateStart, \DateTime $dateEnd, $compte = null)
+    public function getAverageMonthlyMontantsByCategorie(?Categorie $categorie, \DateTime $dateStart, \DateTime $dateEnd, ?Compte $compte = null): float
     {
         $monthlyMontants = $this->getMonthlyMontantsByCategorie($categorie, $dateStart, $dateEnd, $compte);
 
@@ -233,12 +243,10 @@ class StatsProvider
      *
      * @param \DateTime $dateStart Date de début, incluse.
      * @param \DateTime $dateEnd   Date de fin, incluse.
-     *
-     * @return float
      */
-    public function getDistanceByDate(\DateTime $dateStart, \DateTime $dateEnd)
+    public function getDistanceByDate(\DateTime $dateStart, \DateTime $dateEnd): float
     {
-        // Repositories
+        /** @var PleinRepository $pleinRepository */
         $pleinRepository = $this->doctrine->getRepository('ComptesBundle:Plein');
 
         // Tous les pleins entre ces deux dates

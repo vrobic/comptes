@@ -2,6 +2,11 @@
 
 namespace ComptesBundle\Command;
 
+use ComptesBundle\Entity\Categorie;
+use ComptesBundle\Entity\Repository\CategorieRepository;
+use ComptesBundle\Entity\Repository\MouvementRepository;
+use ComptesBundle\Entity\Repository\PleinRepository;
+use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -16,7 +21,7 @@ class MouvementsCategorizerFromPleinsCommand extends ContainerAwareCommand
     /**
      * {@inheritdoc}
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('comptes:mouvements:categorizer:from:pleins');
         $this->setDescription("Définit la catégorie de tous les mouvements correspondants à des pleins.");
@@ -29,9 +34,14 @@ class MouvementsCategorizerFromPleinsCommand extends ContainerAwareCommand
     {
         $questionHelper = $this->getHelper('question');
 
-        $em = $this->getContainer()->get('doctrine')->getManager();
+        /** @var RegistryInterface $doctrine */
+        $doctrine = $this->getContainer()->get('doctrine');
+        $em = $doctrine->getManager();
+        /** @var PleinRepository $pleinRepository */
         $pleinRepository = $em->getRepository('ComptesBundle:Plein');
+        /** @var MouvementRepository $mouvementRepository */
         $mouvementRepository = $em->getRepository('ComptesBundle:Mouvement');
+        /** @var CategorieRepository $categorieRepository */
         $categorieRepository = $em->getRepository('ComptesBundle:Categorie');
 
         // Tous les pleins
@@ -39,7 +49,8 @@ class MouvementsCategorizerFromPleinsCommand extends ContainerAwareCommand
 
         // La catégorie "Carburant"
         $categorieId = 9; // @todo : rendre paramétrable
-        $categorie = $categorieRepository->find($categorieId);
+        /** @var ?Categorie $categorie */
+        $categorie = $categorieRepository->find($categorieId); // @todo : voir que faire du null
 
         // Indicateurs
         $i = 0; // Nombre de mouvements modifiés
@@ -63,7 +74,7 @@ class MouvementsCategorizerFromPleinsCommand extends ContainerAwareCommand
                 foreach ($mouvements as $mouvement) {
                     // Si le mouvement n'est pas déjà dans la bonne catégorie
                     $previousCategorie = $mouvement->getCategorie();
-                    if (null !== $previousCategorie && $previousCategorie->getId() === $categorieId) {
+                    if ($previousCategorie instanceof Categorie && $previousCategorie->getId() === $categorieId) {
                         continue;
                     }
 
@@ -94,5 +105,7 @@ class MouvementsCategorizerFromPleinsCommand extends ContainerAwareCommand
         // Indicateurs
         $pleinsCount = count($pleins);
         $output->writeln("<info>{$i} mouvements modifiés sur {$pleinsCount} pleins</info>");
+
+        return 0;
     }
 }

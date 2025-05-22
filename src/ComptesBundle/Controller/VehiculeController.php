@@ -2,6 +2,7 @@
 
 namespace ComptesBundle\Controller;
 
+use ComptesBundle\Entity\Repository\VehiculeRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -12,11 +13,10 @@ class VehiculeController extends Controller
 {
     /**
      * Liste des véhicules.
-     *
-     * @return Response
      */
-    public function indexAction()
+    public function indexAction(): Response
     {
+        /** @var VehiculeRepository $vehiculeRepository */
         $vehiculeRepository = $this->getDoctrine()->getRepository('ComptesBundle:Vehicule');
 
         // Tous les véhicules

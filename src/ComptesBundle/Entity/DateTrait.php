@@ -16,12 +16,8 @@ trait DateTrait
 
     /**
      * Définit la date.
-     *
-     * @param \DateTime $date
-     *
-     * @return self
      */
-    public function setDate($date)
+    public function setDate(\DateTime $date): self
     {
         $this->date = $date;
 
@@ -30,10 +26,8 @@ trait DateTrait
 
     /**
      * Récupère la date.
-     *
-     * @return \DateTime
      */
-    public function getDate()
+    public function getDate(): \DateTime
     {
         return $this->date;
     }

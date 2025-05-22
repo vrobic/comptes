@@ -16,7 +16,7 @@ class MouvementsFrequencyImportCommand extends ContainerAwareCommand
     /**
      * {@inheritdoc}
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('comptes:import:mouvements:frequency');
         $this->setDescription("Compte le nombre d'occurences des mots d'un fichier.");
@@ -25,6 +25,8 @@ class MouvementsFrequencyImportCommand extends ContainerAwareCommand
 
     /**
      * {@inheritdoc}
+     *
+     * @todo : ne pas renvoyer des exceptions HTTP
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -35,6 +37,11 @@ class MouvementsFrequencyImportCommand extends ContainerAwareCommand
         }
 
         $string = file_get_contents($filename);
+
+        if (!is_string($string)) {
+            throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException("Échec de lecture du fichier $filename.");
+        }
+
         $words = array_count_values(str_word_count($string, 1));
         arsort($words);
 
@@ -43,5 +50,7 @@ class MouvementsFrequencyImportCommand extends ContainerAwareCommand
                 $output->writeln("{$count} => {$word}");
             }
         }
+
+        return 0;
     }
 }

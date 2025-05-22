@@ -22,50 +22,44 @@ class Plein
     /**
      * Distance parcourue depuis le plein précédent.
      *
-     * @var string
+     * @var float
      */
     protected $distanceParcourue;
 
     /**
      * Volume du plein, en litres de carburant.
      *
-     * @var string
+     * @var float
      */
     protected $quantite;
 
     /**
      * Prix du litre de carburant, en euros.
      *
-     * @var string
+     * @var float
      */
     protected $prixLitre;
 
     /**
      * Montant du plein, en euros.
      *
-     * @var string
+     * @var float
      */
     protected $montant;
 
     /**
      * Constructeur.
-     *
-     * @return Plein
      */
     public function __construct()
     {
         // Date du jour par défaut
         $this->date = new \DateTime();
-
-        return $this;
     }
 
     /**
      * Méthode toString.
-     *
-     * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         $date = $this->getDate()->format('d/m/Y');
         $vehicule = $this->getVehicule();
@@ -78,10 +72,8 @@ class Plein
     /**
      * Renvoie un hash MD5 de l'objet, utilisé pour l'identifier
      * dans les imports tant que son id n'est pas encore défini.
-     *
-     * @return string
      */
-    public function getHash()
+    public function getHash(): string
     {
         $string = (string) $this;
         $hash = md5($string);
@@ -91,12 +83,8 @@ class Plein
 
     /**
      * Définit le véhicule.
-     *
-     * @param Vehicule $vehicule
-     *
-     * @return Plein
      */
-    public function setVehicule(Vehicule $vehicule)
+    public function setVehicule(Vehicule $vehicule): self
     {
         $this->vehicule = $vehicule;
 
@@ -105,22 +93,16 @@ class Plein
 
     /**
      * Récupère le véhicule.
-     *
-     * @return Vehicule
      */
-    public function getVehicule()
+    public function getVehicule(): Vehicule
     {
         return $this->vehicule;
     }
 
     /**
      * Définit la distance parcourue depuis le plein précédent.
-     *
-     * @param string $distanceParcourue
-     *
-     * @return Plein
      */
-    public function setDistanceParcourue($distanceParcourue)
+    public function setDistanceParcourue(float $distanceParcourue): self
     {
         $this->distanceParcourue = $distanceParcourue;
 
@@ -129,22 +111,16 @@ class Plein
 
     /**
      * Récupère la distance parcourue depuis le plein précédent.
-     *
-     * @return string
      */
-    public function getDistanceParcourue()
+    public function getDistanceParcourue(): float
     {
         return $this->distanceParcourue;
     }
 
     /**
      * Définit le volume du plein, en litres de carburant.
-     *
-     * @param string $quantite
-     *
-     * @return Plein
      */
-    public function setQuantite($quantite)
+    public function setQuantite(float $quantite): self
     {
         $this->quantite = $quantite;
 
@@ -153,22 +129,16 @@ class Plein
 
     /**
      * Récupère le volume du plein, en litres de carburant.
-     *
-     * @return string
      */
-    public function getQuantite()
+    public function getQuantite(): float
     {
         return $this->quantite;
     }
 
     /**
      * Définit le prix du litre du carburant, en euros.
-     *
-     * @param string $prixLitre
-     *
-     * @return Plein
      */
-    public function setPrixLitre($prixLitre)
+    public function setPrixLitre(float $prixLitre): self
     {
         $this->prixLitre = $prixLitre;
 
@@ -177,22 +147,16 @@ class Plein
 
     /**
      * Récupère le prix du litre du carburant, en euros.
-     *
-     * @return string
      */
-    public function getPrixLitre()
+    public function getPrixLitre(): float
     {
         return $this->prixLitre;
     }
 
     /**
      * Définit le montant du plein, en euros.
-     *
-     * @param string $montant
-     *
-     * @return Plein
      */
-    public function setMontant($montant)
+    public function setMontant(float $montant): self
     {
         $this->montant = $montant;
 
@@ -201,20 +165,16 @@ class Plein
 
     /**
      * Récupère le montant du plein, en euros.
-     *
-     * @return float
      */
-    public function getMontant()
+    public function getMontant(): float
     {
         return $this->montant;
     }
 
     /**
      * Calcule la consommation en carburant du plein, en litres au 100km.
-     *
-     * @return float
      */
-    public function getConsommation()
+    public function getConsommation(): float
     {
         $quantite = $this->getQuantite();
         $distanceParcourue = $this->getDistanceParcourue();
@@ -226,10 +186,8 @@ class Plein
 
     /**
      * Calcule l'autonomie estimée du véhicule pour le plein.
-     *
-     * @return float
      */
-    public function getAutonomie()
+    public function getAutonomie(): float
     {
         // Consommation en carburant du plein, au 100km
         $consommation = $this->getConsommation();
@@ -245,12 +203,8 @@ class Plein
 
     /**
      * Valide le plein pour le moteur de validation.
-     *
-     * @param ExecutionContextInterface $context
-     *
-     * @return void
      */
-    public function validate(ExecutionContextInterface $context)
+    public function validate(ExecutionContextInterface $context): void
     {
         $violations = [];
 
@@ -270,6 +224,7 @@ class Plein
             $violations[] = "Le prix du litre de carburant doit être supérieur ou égal à 0.";
         }
 
+        // @todo : supprimer ce @codingStandardsIgnoreLine
         if ($this->getMontant() != round($this->getPrixLitre() * $this->getQuantite(), 2)) { // @codingStandardsIgnoreLine
             $violations[] = "Le montant du plein ne correspond pas aux prix du litre et quantité saisis.";
         }

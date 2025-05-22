@@ -2,8 +2,11 @@
 
 namespace ComptesBundle\Command;
 
+use ComptesBundle\Service\ImportHandler\PleinsImportHandlerInterface;
+use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question;
 
@@ -15,7 +18,7 @@ class PleinsImportCommand extends AbstractImportCommand
     /**
      * {@inheritdoc}
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('comptes:import:pleins');
         $this->setDescription("Importe des pleins de carburant depuis un fichier.");
@@ -29,7 +32,6 @@ class PleinsImportCommand extends AbstractImportCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $questionHelper = $this->getHelper('question');
-        $interaction = !$input->getOption('no-interaction');
         $filename = $input->getArgument('filename');
         $handlerIdentifier = $input->getArgument('handler');
 
@@ -39,13 +41,14 @@ class PleinsImportCommand extends AbstractImportCommand
         // Chargement de la configuration
         $this->loadConfiguration();
 
-        // Parsing du fichier
+        /** @var PleinsImportHandlerInterface $handler */
         $handler = $this->getHandler($handlerIdentifier);
         $splFile = $this->getFile($filename);
         $handler->parse($splFile);
 
-        // Le manager d'entités qui va nous servir à persister les pleins
-        $em = $this->getContainer()->get('doctrine')->getManager();
+        /** @var RegistryInterface $doctrine */
+        $doctrine = $this->getContainer()->get('doctrine');
+        $em = $doctrine->getManager();
 
         // Indicateurs
         $i = 0; // Nombre de pleins importés
@@ -68,26 +71,24 @@ class PleinsImportCommand extends AbstractImportCommand
         }
 
         // 2. Les pleins suspectés comme doublons, qui nécessitent une confirmation manuelle
-        if ($interaction) {
-            $waitingPleins = $handler->getWaitingPleins();
+        $waitingPleins = $handler->getWaitingPleins();
 
-            foreach ($waitingPleins as $plein) {
-                $output->writeln("<info>Pleins à valider</info>", OutputInterface::VERBOSITY_VERBOSE);
+        foreach ($waitingPleins as $plein) {
+            $output->writeln("<info>Pleins à valider</info>", OutputInterface::VERBOSITY_VERBOSE);
 
-                $output->writeln("<comment>{$plein}</comment>");
+            $output->writeln("<comment>{$plein}</comment>");
 
-                // Question à l'utilisateur
-                $question = new Question\ConfirmationQuestion("<question>Un plein similaire existe déjà :\n\t$plein\nImporter (y/N) ?</question>", false);
+            // Question à l'utilisateur
+            $question = new Question\ConfirmationQuestion("<question>Un plein similaire existe déjà :\n\t$plein\nImporter (y/N) ?</question>", false);
 
-                $confirm = $questionHelper->ask($input, $output, $question);
+            $confirm = $questionHelper->ask($input, $output, $question);
 
-                if ($confirm) {
-                    // Indicateurs
-                    $i++;
+            if ($confirm) {
+                // Indicateurs
+                $i++;
 
-                    // Enregistrement
-                    $em->persist($plein);
-                }
+                // Enregistrement
+                $em->persist($plein);
             }
         }
 
@@ -98,5 +99,7 @@ class PleinsImportCommand extends AbstractImportCommand
         $pleins = $handler->getPleins();
         $pleinsCount = count($pleins);
         $output->writeln("<info>{$i} pleins importés sur {$pleinsCount}</info>");
+
+        return 0;
     }
 }

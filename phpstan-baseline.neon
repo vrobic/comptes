@@ -1,0 +1,41 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Property ComptesBundle\\\\Command\\\\AbstractImportCommand\\:\\:\\$handlers type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/ComptesBundle/Command/AbstractImportCommand.php
+
+		-
+			message: "#^Property ComptesBundle\\\\Controller\\\\ImportController\\:\\:\\$handlers type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/ComptesBundle/Controller/ImportController.php
+
+		-
+			message: "#^Method ComptesBundle\\\\DependencyInjection\\\\ComptesExtension\\:\\:load\\(\\) has parameter \\$configs with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/ComptesBundle/DependencyInjection/ComptesExtension.php
+
+		-
+			message: "#^Method ComptesBundle\\\\Service\\\\ConfigurationLoader\\:\\:load\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/ComptesBundle/Service/ConfigurationLoader.php
+
+		-
+			message: "#^Property ComptesBundle\\\\Service\\\\ConfigurationLoader\\:\\:\\$configuration type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/ComptesBundle/Service/ConfigurationLoader.php
+
+		-
+			message: "#^Property ComptesBundle\\\\Service\\\\ImportHandler\\\\AbstractMouvementsImportHandler\\:\\:\\$configuration type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/ComptesBundle/Service/ImportHandler/AbstractMouvementsImportHandler.php
+
+		-
+			message: "#^Property ComptesBundle\\\\Service\\\\ImportHandler\\\\AbstractPleinsImportHandler\\:\\:\\$configuration type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/ComptesBundle/Service/ImportHandler/AbstractPleinsImportHandler.php
+
+		-
+			message: "#^Property ComptesBundle\\\\Service\\\\StatsProvider\\:\\:\\$configuration type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/ComptesBundle/Service/StatsProvider.php

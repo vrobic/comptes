@@ -2,6 +2,9 @@
 
 namespace ComptesBundle\Command;
 
+use ComptesBundle\Entity\Categorie;
+use ComptesBundle\Entity\Repository\CategorieRepository;
+use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
@@ -23,7 +26,7 @@ class KeywordsImportCommand extends ContainerAwareCommand
     /**
      * {@inheritdoc}
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('comptes:import:keywords');
         $this->setDescription("Importe une liste de mots-clés en les liant à des catégories.");
@@ -32,6 +35,8 @@ class KeywordsImportCommand extends ContainerAwareCommand
 
     /**
      * {@inheritdoc}
+     *
+     * @todo : ne pas renvoyer des exceptions HTTP
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -44,7 +49,10 @@ class KeywordsImportCommand extends ContainerAwareCommand
         // Indicateurs
         $i = 0; // Nombre de mots-clés importés
 
-        $em = $this->getContainer()->get('doctrine')->getManager();
+        /** @var RegistryInterface $doctrine */
+        $doctrine = $this->getContainer()->get('doctrine');
+        $em = $doctrine->getManager();
+        /** @var CategorieRepository $categorieRepository */
         $categorieRepository = $em->getRepository('ComptesBundle:Categorie');
 
         $file = new \SplFileObject($filename);
@@ -57,9 +65,10 @@ class KeywordsImportCommand extends ContainerAwareCommand
             $word = trim($word);
             $categorieID = (int) $categorieID;
 
+            /** @var ?Categorie $categorie */
             $categorie = $categorieRepository->find($categorieID);
 
-            if (null === $categorie) {
+            if (!($categorie instanceof Categorie)) {
                 throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException(sprintf("La catégorie n°%d est inconnue.", $categorieID));
             }
 
@@ -79,5 +88,7 @@ class KeywordsImportCommand extends ContainerAwareCommand
 
         // Indicateurs
         $output->writeln("<info>{$i} mots-clés importés</info>");
+
+        return 0;
     }
 }

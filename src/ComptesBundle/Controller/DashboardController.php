@@ -2,6 +2,7 @@
 
 namespace ComptesBundle\Controller;
 
+use ComptesBundle\Service\StatsProvider;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -12,12 +13,14 @@ class DashboardController extends Controller
 {
     /**
      * Affichage du dashboard.
-     *
-     * @return Response
      */
-    public function indexAction()
+    public function indexAction(): Response
     {
-        // Fournisseur de statistiques
+        /**
+         * Fournisseur de statistiques.
+         *
+         * @var StatsProvider $statsProvider
+         */
         $statsProvider = $this->container->get('comptes_bundle.stats.provider');
 
         // Balance mensuelle sur le mois dernier

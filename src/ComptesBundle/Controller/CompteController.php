@@ -2,6 +2,9 @@
 
 namespace ComptesBundle\Controller;
 
+use ComptesBundle\Entity\Compte;
+use ComptesBundle\Entity\Repository\CompteRepository;
+use ComptesBundle\Entity\Repository\MouvementRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,14 +17,14 @@ class CompteController extends Controller
 {
     /**
      * Liste des comptes bancaires.
-     *
-     * @return Response
      */
-    public function indexAction()
+    public function indexAction(): Response
     {
         // Repositories
         $doctrine = $this->getDoctrine();
+        /** @var CompteRepository $compteRepository */
         $compteRepository = $doctrine->getRepository('ComptesBundle:Compte');
+        /** @var MouvementRepository $mouvementRepository */
         $mouvementRepository = $doctrine->getRepository('ComptesBundle:Mouvement');
 
         // Tous les comptes
@@ -70,12 +73,12 @@ class CompteController extends Controller
         }
 
         // Les faux mouvements peuvent avoir été intercalés au mauvais endroit
-        usort($mouvements, function ($mouvementA, $mouvementB) {
+        usort($mouvements, function (Mouvement $mouvementA, Mouvement $mouvementB): int {
 
             $dateA = $mouvementA->getDate();
             $dateB = $mouvementB->getDate();
 
-            return $dateA > $dateB;
+            return $dateA > $dateB ? 1 : -1;
         });
 
         return $this->render(
@@ -92,25 +95,25 @@ class CompteController extends Controller
     /**
      * Affichage d'un compte bancaire.
      *
-     * @param Request $request
-     *
-     * @return Response
-     *
      * @throws \Symfony\Component\HttpKernel\Exception\BadRequestHttpException Si la période de dates est invalide.
      */
-    public function showAction(Request $request)
+    public function showAction(Request $request): Response
     {
         // Repositories
         $doctrine = $this->getDoctrine();
+        /** @var CompteRepository $compteRepository */
         $compteRepository = $doctrine->getRepository('ComptesBundle:Compte');
+        /** @var MouvementRepository $mouvementRepository */
         $mouvementRepository = $doctrine->getRepository('ComptesBundle:Mouvement');
+        /** @var CompteRepository $categorieRepository */
         $categorieRepository = $doctrine->getRepository('ComptesBundle:Categorie');
 
         // Le compte bancaire
         $compteID = $request->get('compte_id');
+        /** @var ?Compte $compte */
         $compte = $compteRepository->find($compteID);
 
-        if (!$compte) {
+        if (!($compte instanceof Compte)) {
             throw $this->createNotFoundException("Le compte bancaire $compteID n'existe pas.");
         }
 
@@ -122,7 +125,7 @@ class CompteController extends Controller
 
             $dateStart = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateStartString 00:00:00");
             $dateEnd = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateEndString 23:59:59");
-        } elseif ($compte->getDateFermeture() !== null) { // Si le compte est clôturé, du début à la fin de sa vie
+        } elseif ($compte->getDateFermeture() instanceof \DateTime) { // Si le compte est clôturé, du début à la fin de sa vie
             $dateStart = $compte->getDateOuverture();
             $dateEnd = $compte->getDateFermeture();
         } else { // Sinon, le mois courant en entier
@@ -136,7 +139,7 @@ class CompteController extends Controller
             $dateEnd = \DateTime::createFromFormat('Y-n-j H:i:s', "$year-$month-$lastDayOfMonth 23:59:59");
         }
 
-        if (!$dateStart || !$dateEnd || $dateStart > $dateEnd) {
+        if (!($dateStart instanceof \DateTime) || !($dateEnd instanceof \DateTime) || $dateStart > $dateEnd) {
             throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException("La période de dates est invalide.");
         }
 

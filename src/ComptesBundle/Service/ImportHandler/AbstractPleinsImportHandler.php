@@ -2,6 +2,7 @@
 
 namespace ComptesBundle\Service\ImportHandler;
 
+use ComptesBundle\Entity\Repository\PleinRepository;
 use Doctrine\ORM\EntityManager;
 use ComptesBundle\Service\ConfigurationLoader;
 use ComptesBundle\Entity\Plein;
@@ -11,7 +12,7 @@ use ComptesBundle\Entity\Plein;
  *
  * Il doit être surchargé par une classe concrète implémentant la méthode parse.
  */
-abstract class AbstractPleinsImportHandler
+abstract class AbstractPleinsImportHandler implements PleinsImportHandlerInterface
 {
     /**
      * @internal Flag de catégorisation d'un plein valide,
@@ -40,7 +41,7 @@ abstract class AbstractPleinsImportHandler
     /**
      * Tous les pleins parsés.
      *
-     * @var array
+     * @var array<string, Plein>
      */
     private $pleins;
 
@@ -49,7 +50,7 @@ abstract class AbstractPleinsImportHandler
      *
      * Les pleins parsés valides.
      *
-     * @var array
+     * @var array<string, Plein>
      */
     private $validPleins;
 
@@ -60,15 +61,12 @@ abstract class AbstractPleinsImportHandler
      * avant de procéder à leur import, dans le cas d'une suspicion de doublon
      * par exemple.
      *
-     * @var array
+     * @var array<string, Plein>
      */
     private $waitingPleins;
 
     /**
      * Constructeur.
-     *
-     * @param EntityManager       $entityManager
-     * @param ConfigurationLoader $configurationLoader
      */
     public function __construct(EntityManager $entityManager, ConfigurationLoader $configurationLoader)
     {
@@ -91,22 +89,16 @@ abstract class AbstractPleinsImportHandler
      *      - tous les pleins,
      *      - les valides,
      *      - ceux à valider.
-     *
-     * @param \SplFileObject $file
      */
-    public function parse(\SplFileObject $file)
+    public function parse(\SplFileObject $file): void
     {
         throw new \Exception("Le handler d'import de pleins doit implémenter la méthode parse.");
     }
 
     /**
      * Ajoute un plein à la liste de tous les pleins parsés.
-     *
-     * @param Plein $plein
-     *
-     * @return self
      */
-    public function addPlein(Plein $plein)
+    private function addPlein(Plein $plein): self
     {
         $hash = $plein->getHash();
         $this->pleins[$hash] = $plein;
@@ -117,21 +109,17 @@ abstract class AbstractPleinsImportHandler
     /**
      * Récupère tous les pleins parsés.
      *
-     * @return array
+     * @return array<string, Plein>
      */
-    public function getPleins()
+    public function getPleins(): array
     {
         return $this->pleins;
     }
 
     /**
      * Ajoute un plein à la liste des pleins parsés valides.
-     *
-     * @param Plein $plein
-     *
-     * @return self
      */
-    public function addValidPlein(Plein $plein)
+    private function addValidPlein(Plein $plein): self
     {
         $hash = $plein->getHash();
         $this->validPleins[$hash] = $plein;
@@ -142,9 +130,9 @@ abstract class AbstractPleinsImportHandler
     /**
      * Récupère les pleins parsés valides.
      *
-     * @return array
+     * @return array<string, Plein>
      */
-    public function getValidPleins()
+    public function getValidPleins(): array
     {
         return $this->validPleins;
     }
@@ -152,12 +140,8 @@ abstract class AbstractPleinsImportHandler
     /**
      * Ajoute un plein à la liste des pleins parsés pour lesquels
      * une vérification manuelle est nécessaire.
-     *
-     * @param Plein $plein
-     *
-     * @return self
      */
-    public function addWaitingPlein(Plein $plein)
+    private function addWaitingPlein(Plein $plein): self
     {
         $hash = $plein->getHash();
         $this->waitingPleins[$hash] = $plein;
@@ -169,9 +153,9 @@ abstract class AbstractPleinsImportHandler
      * Récupère les pleins parsés pour lesquels
      * une vérification manuelle est nécessaire.
      *
-     * @return array
+     * @return array<string, Plein>
      */
-    public function getWaitingPleins()
+    public function getWaitingPleins(): array
     {
         return $this->waitingPleins;
     }
@@ -180,22 +164,19 @@ abstract class AbstractPleinsImportHandler
      * Détermine la classification d'un plein, parmi :
      *      - self::VALID
      *      - self::WAITING
-     *
-     * @param Plein $plein
-     *
-     * @return int
      */
-    protected function getClassification(Plein $plein)
+    protected function getClassification(Plein $plein): int
     {
         // Recherche d'un éventuel doublon
         $criteria = [
             'date' => $plein->getDate(),
             'vehicule' => $plein->getVehicule(),
         ];
+        /** @var PleinRepository $pleinRepository */
         $pleinRepository = $this->em->getRepository('ComptesBundle:Plein');
         $similarPlein = $pleinRepository->findOneBy($criteria);
 
-        if (null !== $similarPlein) {
+        if ($similarPlein instanceof Plein) {
             $classification = self::WAITING;
         } else {
             $classification = self::VALID;
@@ -206,11 +187,8 @@ abstract class AbstractPleinsImportHandler
 
     /**
      * Insère le plein dans les tableaux de classification.
-     *
-     * @param Plein $plein
-     * @param int   $classification
      */
-    protected function classify(Plein $plein, $classification)
+    protected function classify(Plein $plein, int $classification): void
     {
         // Classification du plein
         switch ($classification) {
