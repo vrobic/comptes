@@ -13,7 +13,6 @@ services:
         class: ComptesBundle\Service\StatsProvider
         arguments:
             - @doctrine
-            - @comptes_bundle.configuration.loader
 
     # Service d'import : catégorisation automatique des mouvements
     comptes_bundle.mouvement.categorizer:

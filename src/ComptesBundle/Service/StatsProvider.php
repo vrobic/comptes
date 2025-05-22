@@ -20,23 +20,12 @@ class StatsProvider
     protected $doctrine;
 
     /**
-     * Configuration des statistiques.
-     *
-     * @var array
-     */
-    protected $configuration;
-
-    /**
      * Constructeur.
      */
-    public function __construct(RegistryInterface $doctrine, ConfigurationLoader $configurationLoader)
+    public function __construct(RegistryInterface $doctrine)
     {
         // Injection de dépendances
         $this->doctrine = $doctrine;
-
-        // Chargement de la configuration
-        $configuration = $configurationLoader->load('stats');
-        $this->configuration = $configuration;
     }
 
     /**

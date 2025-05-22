@@ -91,7 +91,6 @@ class ConfigurationLoader
         $validators = [
             'fixtures' => 'validateFixturesConfiguration',
             'import' => 'validateImportConfiguration',
-            'stats' => 'validateStatsConfiguration',
         ];
 
         if (isset($validators[$this->key])) {
@@ -133,16 +132,6 @@ class ConfigurationLoader
             }
         }
 
-        return true;
-    }
-
-    /**
-     * Valide la configuration des statistiques.
-     *
-     * @throws \Exception En cas d'erreur de configuration.
-     */
-    private function validateStatsConfiguration(): bool
-    {
         return true;
     }
 

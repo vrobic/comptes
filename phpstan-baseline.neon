@@ -34,8 +34,3 @@ parameters:
 			message: "#^Property ComptesBundle\\\\Service\\\\ImportHandler\\\\AbstractPleinsImportHandler\\:\\:\\$configuration type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/ComptesBundle/Service/ImportHandler/AbstractPleinsImportHandler.php
-
-		-
-			message: "#^Property ComptesBundle\\\\Service\\\\StatsProvider\\:\\:\\$configuration type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/ComptesBundle/Service/StatsProvider.php
