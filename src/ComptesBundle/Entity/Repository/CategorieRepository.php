@@ -2,6 +2,7 @@
 
 namespace ComptesBundle\Entity\Repository;
 
+use ComptesBundle\Entity\Compte;
 use Doctrine\ORM\EntityRepository;
 use ComptesBundle\Entity\Categorie;
 
@@ -11,9 +12,9 @@ use ComptesBundle\Entity\Categorie;
 class CategorieRepository extends EntityRepository
 {
     /**
-     * {@inheritdoc}
+     * @return Categorie[]
      */
-    public function findAll()
+    public function findAll(): array
     {
         return $this->findBy([], [
             'rang' => 'ASC',
@@ -21,50 +22,17 @@ class CategorieRepository extends EntityRepository
     }
 
     /**
-     * Calcul le montant cumulé des mouvements d'une catégorie.
-     *
-     * @param Categorie $categorie La catégorie.
-     *
-     * @return float
-     */
-    public function getMontantTotal(Categorie $categorie)
-    {
-        // Calcul du montant total des mouvements de la catégorie
-        $queryBuilder = $this->getEntityManager()->createQueryBuilder();
-
-        // La liste des catégories de mouvements
-        $categories = [$categorie];
-        $categoriesFilles = $categorie->getCategoriesFillesRecursive();
-
-        foreach ($categoriesFilles as $categorieFille) {
-            $categories[] = $categorieFille;
-        }
-
-        $queryBuilder
-            ->select('SUM(m.montant) AS total')
-            ->from('ComptesBundle:Mouvement', 'm')
-            ->where('m.categorie in (:categories)')
-            ->setParameter('categories', $categories);
-
-        $result = $queryBuilder->getQuery()->getSingleResult();
-
-        $montant = $result['total'] !== null ? $result['total'] : 0;
-
-        return $montant;
-    }
-
-    /**
      * Calcul le montant cumulé des mouvements d'une catégorie, entre deux dates.
      *
-     * @param Categorie   $categorie La catégorie.
-     * @param \DateTime   $dateStart Date de début, incluse.
-     * @param \DateTime   $dateEnd   Date de fin, incluse.
-     * @param string      $order     'ASC' (par défaut) ou 'DESC'.
-     * @param Compte|null $compte    Un compte, facultatif.
+     * @todo : $order peut venir une enum
      *
-     * @return float
+     * @param Categorie $categorie La catégorie.
+     * @param \DateTime $dateStart Date de début, incluse.
+     * @param \DateTime $dateEnd   Date de fin, incluse.
+     * @param string    $order     'ASC' (par défaut) ou 'DESC'.
+     * @param ?Compte   $compte    Un compte, facultatif.
      */
-    public function getMontantTotalByDate(Categorie $categorie, \DateTime $dateStart, \DateTime $dateEnd, $order = 'ASC', $compte = null)
+    public function getMontantTotalByDate(Categorie $categorie, \DateTime $dateStart, \DateTime $dateEnd, string $order = 'ASC', ?Compte $compte = null): float
     {
         // Calcul du montant total des mouvements de la catégorie
         $queryBuilder = $this->getEntityManager()->createQueryBuilder();
@@ -75,7 +43,7 @@ class CategorieRepository extends EntityRepository
         $and->add($expressionBuilder->gte('m.date', ':date_start'));
         $and->add($expressionBuilder->lte('m.date', ':date_end'));
 
-        if (null !== $compte) {
+        if ($compte instanceof Compte) {
             $and->add($expressionBuilder->eq('m.compte', ':compte'));
             $queryBuilder->setParameter('compte', $compte);
         }
@@ -99,7 +67,7 @@ class CategorieRepository extends EntityRepository
 
         $result = $queryBuilder->getQuery()->getSingleResult();
 
-        $montant = $result['total'] !== null ? $result['total'] : 0;
+        $montant = (float) ($result['total'] ?? 0);
 
         return $montant;
     }

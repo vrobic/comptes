@@ -28,3 +28,7 @@ reinstall: ## Réinstalle la base de données
 .PHONY: fixtures
 fixtures: ## Charge les fixtures
 	$(DOCKER_PHP) app/console doctrine:fixtures:load --no-interaction
+
+.PHONY: stan
+stan: ## Exécute PHPStan
+	$(DOCKER_PHP) bin/phpstan analyse -l 7 src

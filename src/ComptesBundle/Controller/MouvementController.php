@@ -2,6 +2,11 @@
 
 namespace ComptesBundle\Controller;
 
+use ComptesBundle\Entity\Categorie;
+use ComptesBundle\Entity\Compte;
+use ComptesBundle\Entity\Repository\CategorieRepository;
+use ComptesBundle\Entity\Repository\CompteRepository;
+use ComptesBundle\Entity\Repository\MouvementRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,18 +21,17 @@ class MouvementController extends Controller
      * Édition de mouvements bancaires par lots.
      *
      * @todo Utiliser un formulaire Symfony.
-     *
-     * @param Request $request
-     *
-     * @return Response
      */
-    public function editAction(Request $request)
+    public function editAction(Request $request): Response
     {
         // Entity manager et repositories
         $doctrine = $this->getDoctrine();
         $manager = $doctrine->getManager();
+        /** @var MouvementRepository $mouvementRepository */
         $mouvementRepository = $doctrine->getRepository('ComptesBundle:Mouvement');
+        /** @var CategorieRepository $categorieRepository */
         $categorieRepository = $doctrine->getRepository('ComptesBundle:Categorie');
+        /** @var CompteRepository $compteRepository */
         $compteRepository = $doctrine->getRepository('ComptesBundle:Compte');
 
         // Valeurs postées
@@ -38,7 +42,8 @@ class MouvementController extends Controller
         foreach ($batchArray as $mouvementID) {
             if (isset($mouvementsArray[$mouvementID])) {
                 $mouvementArray = $mouvementsArray[$mouvementID];
-                $mouvement = $mouvementID > 0 ? $mouvementRepository->find($mouvementID) : new Mouvement();
+                /** @var ?Mouvement $mouvement */
+                $mouvement = $mouvementID > 0 ? $mouvementRepository->find($mouvementID) : new Mouvement(); // @todo : voir que faire du null
 
                 switch ($action) {
                     case 'save': // Création et édition
@@ -46,26 +51,31 @@ class MouvementController extends Controller
                         if (isset($mouvementArray['date'])) {
                             $dateString = $mouvementArray['date'];
                             $date = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateString 00:00:00");
+                            if (!($date instanceof \DateTime)) {
+                                throw new \Exception("Date du mouvement invalide : $dateString");
+                            }
                             $mouvement->setDate($date);
                         }
 
                         // Catégorie
                         if (isset($mouvementArray['categorie'])) {
                             $categorieID = $mouvementArray['categorie'];
-                            $categorie = $categorieID !== '' ? $categorieRepository->find($categorieID) : null;
+                            /** @var ?Categorie $categorie */
+                            $categorie = $categorieID !== '' ? $categorieRepository->find($categorieID) : null; // @todo : voir que faire du null
                             $mouvement->setCategorie($categorie);
                         }
 
                         // Compte
                         if (isset($mouvementArray['compte'])) {
                             $compteID = $mouvementArray['compte'];
-                            $compte = $compteID !== '' ? $compteRepository->find($compteID) : null;
+                            /** @var ?Compte $compte */
+                            $compte = $compteID !== '' ? $compteRepository->find($compteID) : null; // @todo : voir que faire du null
                             $mouvement->setCompte($compte);
                         }
 
                         // Montant
                         if (isset($mouvementArray['montant'])) {
-                            $montant = str_replace(',', '.', $mouvementArray['montant']);
+                            $montant = (float) str_replace(',', '.', $mouvementArray['montant']);
                             $mouvement->setMontant($montant);
                         }
 

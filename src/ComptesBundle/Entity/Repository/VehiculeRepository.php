@@ -2,6 +2,7 @@
 
 namespace ComptesBundle\Entity\Repository;
 
+use ComptesBundle\Entity\Vehicule;
 use Doctrine\ORM\EntityRepository;
 
 /**
@@ -10,9 +11,9 @@ use Doctrine\ORM\EntityRepository;
 class VehiculeRepository extends EntityRepository
 {
     /**
-     * {@inheritdoc}
+     * @return Vehicule[]
      */
-    public function findAll()
+    public function findAll(): array
     {
         return $this->findBy([], [
             'rang' => 'ASC',

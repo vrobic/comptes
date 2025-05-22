@@ -2,6 +2,7 @@
 
 namespace ComptesBundle\DataFixtures\ORM;
 
+use ComptesBundle\Service\ConfigurationLoader;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
@@ -22,7 +23,7 @@ class LoadCarburantData extends AbstractFixture implements OrderedFixtureInterfa
     /**
      * {@inheritdoc}
      */
-    public function setContainer(ContainerInterface $container = null)
+    public function setContainer(ContainerInterface $container = null): void
     {
         $this->container = $container;
     }
@@ -30,9 +31,9 @@ class LoadCarburantData extends AbstractFixture implements OrderedFixtureInterfa
     /**
      * {@inheritdoc}
      */
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
-        // Chargement de la configuration
+        /** @var ConfigurationLoader $configurationLoader */
         $configurationLoader = $this->container->get('comptes_bundle.configuration.loader');
         $fixturesConfiguration = $configurationLoader->load('fixtures');
 
@@ -58,7 +59,7 @@ class LoadCarburantData extends AbstractFixture implements OrderedFixtureInterfa
     /**
      * {@inheritdoc}
      */
-    public function getOrder()
+    public function getOrder(): int
     {
         return 1;
     }

@@ -2,6 +2,13 @@
 
 namespace ComptesBundle\Controller;
 
+use ComptesBundle\Entity\Compte;
+use ComptesBundle\Entity\Mouvement;
+use ComptesBundle\Entity\Repository\CategorieRepository;
+use ComptesBundle\Entity\Repository\CompteRepository;
+use ComptesBundle\Entity\Repository\KeywordRepository;
+use ComptesBundle\Entity\Repository\MouvementRepository;
+use ComptesBundle\Service\StatsProvider;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,20 +25,23 @@ class CategorieController extends Controller
      *
      * @todo Optimiser la vitesse de calcul des statistiques en limitant le nombre de requêtes.
      * @todo Refactorer le nom des variables passées au template.
-     *
-     * @param Request $request
-     *
-     * @return Response
      */
-    public function indexAction(Request $request)
+    public function indexAction(Request $request): Response
     {
         // Repositories
         $doctrine = $this->getDoctrine();
+        /** @var CategorieRepository $categorieRepository */
         $categorieRepository = $doctrine->getRepository('ComptesBundle:Categorie');
+        /** @var CompteRepository $compteRepository */
         $compteRepository = $doctrine->getRepository('ComptesBundle:Compte');
+        /** @var MouvementRepository $mouvementRepository */
         $mouvementRepository = $doctrine->getRepository('ComptesBundle:Mouvement');
 
-        // Fournisseur de statistiques
+        /**
+         * Fournisseur de statistiques.
+         *
+         * @var StatsProvider $statsProvider
+         */
         $statsProvider = $this->container->get('comptes_bundle.stats.provider');
 
         // Toutes les catégories
@@ -43,8 +53,9 @@ class CategorieController extends Controller
         // Filtre sur le compte
         if ($request->get('compte_id')) {
             $compteID = $request->get('compte_id');
+            /** @var ?Compte $compte */
             $compte = $compteRepository->find($compteID);
-            if (!$compte) {
+            if (!($compte instanceof Compte)) {
                 throw $this->createNotFoundException("Le compte bancaire $compteID n'existe pas.");
             }
         } else {
@@ -67,11 +78,13 @@ class CategorieController extends Controller
             $lastDayOfMonth = (int) $lastDayOfMonth;
 
             $dateStart = \DateTime::createFromFormat('Y-n-j H:i:s', "$year-$month-1 00:00:00");
-            $dateStart->modify('-1 year')->setTime(0, 0); // Depuis un an
+            if ($dateStart instanceof \DateTime) {
+                $dateStart->modify('-1 year')->setTime(0, 0); // Depuis un an
+            }
             $dateEnd = \DateTime::createFromFormat('Y-n-j H:i:s', "$year-$month-$lastDayOfMonth 23:59:59");
         }
 
-        if (!$dateStart || !$dateEnd || $dateStart > $dateEnd) {
+        if (!($dateStart instanceof \DateTime) || !($dateEnd instanceof \DateTime) || $dateStart > $dateEnd) {
             throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException("La période de dates est invalide.");
         }
 
@@ -84,7 +97,7 @@ class CategorieController extends Controller
         $yearStart = (int) date('Y');
         $yearEnd = $yearStart;
         $firstMouvement = $mouvementRepository->findFirstOne($compte);
-        if (null !== $firstMouvement) {
+        if ($firstMouvement instanceof Mouvement) {
             $firstMouvementDate = $firstMouvement->getDate();
             $yearStart = (int) $firstMouvementDate->format('Y');
         }
@@ -143,25 +156,25 @@ class CategorieController extends Controller
 
     /**
      * Affichage d'une catégorie.
-     *
-     * @param Request $request
-     *
-     * @return Response
      */
-    public function showAction(Request $request)
+    public function showAction(Request $request): Response
     {
         // Repositories
         $doctrine = $this->getDoctrine();
+        /** @var CategorieRepository $categorieRepository */
         $categorieRepository = $doctrine->getRepository('ComptesBundle:Categorie');
+        /** @var CompteRepository $compteRepository */
         $compteRepository = $doctrine->getRepository('ComptesBundle:Compte');
+        /** @var MouvementRepository $mouvementRepository */
         $mouvementRepository = $doctrine->getRepository('ComptesBundle:Mouvement');
 
         // La catégorie
         $categorieID = $request->get('categorie_id');
 
         if ($categorieID > 0) {
+            /** @var ?Categorie $categorie */
             $categorie = $categorieRepository->find($categorieID);
-            if (!$categorie) {
+            if (!($categorie instanceof Categorie)) {
                 throw $this->createNotFoundException("La catégorie $categorieID n'existe pas.");
             }
         } else {
@@ -177,8 +190,9 @@ class CategorieController extends Controller
         // Filtre sur le compte
         if ($request->get('compte_id')) {
             $compteID = $request->get('compte_id');
+            /** @var ?Compte $compte */
             $compte = $compteRepository->find($compteID);
-            if (!$compte) {
+            if (!($compte instanceof Compte)) {
                 throw $this->createNotFoundException("Le compte bancaire $compteID n'existe pas.");
             }
         } else {
@@ -201,11 +215,13 @@ class CategorieController extends Controller
             $lastDayOfMonth = (int) $lastDayOfMonth;
 
             $dateStart = \DateTime::createFromFormat('Y-n-j H:i:s', "$year-$month-1 00:00:00");
-            $dateStart->modify('-1 year')->setTime(0, 0); // Depuis un an
+            if ($dateStart instanceof \DateTime) {
+                $dateStart->modify('-1 year')->setTime(0, 0); // Depuis un an
+            }
             $dateEnd = \DateTime::createFromFormat('Y-n-j H:i:s', "$year-$month-$lastDayOfMonth 23:59:59");
         }
 
-        if (!$dateStart || !$dateEnd || $dateStart > $dateEnd) {
+        if (!($dateStart instanceof \DateTime) || !($dateEnd instanceof \DateTime) || $dateStart > $dateEnd) {
             throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException("La période de dates est invalide.");
         }
 
@@ -238,6 +254,9 @@ class CategorieController extends Controller
             $firstMouvementDate = $firstMouvement->getDate();
             $lastMouvementDate = $lastMouvement->getDate();
 
+            /**
+             * @var StatsProvider $statsProvider
+             */
             $statsProvider = $this->container->get('comptes_bundle.stats.provider');
             $monthlyMontants = $statsProvider->getMonthlyMontantsByCategorie($categorie, $firstMouvementDate, $lastMouvementDate, $compte);
             $average = $statsProvider->getAverageMonthlyMontantsByCategorie($categorie, $dateFilter['start'], $dateFilter['end'], $compte);
@@ -248,7 +267,7 @@ class CategorieController extends Controller
             }
 
             // Le total des mouvements des catégories filles
-            if (null !== $categorie) {
+            if ($categorie instanceof Categorie) {
                 foreach ($categorie->getCategoriesFilles() as $categorieFille) {
                     $categorieFilleID = $categorieFille->getId();
                     $montants[$categorieFilleID] = $categorieRepository->getMontantTotalByDate($categorieFille, $dateFilter['start'], $dateFilter['end'], 'ASC', $compte);
@@ -277,17 +296,15 @@ class CategorieController extends Controller
      * Édition de catégories par lots.
      *
      * @todo Utiliser un formulaire Symfony.
-     *
-     * @param Request $request
-     *
-     * @return Response
      */
-    public function editAction(Request $request)
+    public function editAction(Request $request): Response
     {
         // Entity manager et repositories
         $doctrine = $this->getDoctrine();
         $manager = $doctrine->getManager();
+        /** @var CategorieRepository $categorieRepository */
         $categorieRepository = $doctrine->getRepository('ComptesBundle:Categorie');
+        /** @var KeywordRepository $keywordRepository */
         $keywordRepository = $doctrine->getRepository('ComptesBundle:Keyword');
 
         // Tous les mots-clés, classés par catégories
@@ -303,7 +320,8 @@ class CategorieController extends Controller
 
             if (isset($categoriesArray[$categorieID])) {
                 $categorieArray = $categoriesArray[$categorieID];
-                $categorie = $categorieID > 0 ? $categorieRepository->find($categorieID) : new Categorie();
+                /** @var ?Categorie $categorie */
+                $categorie = $categorieID > 0 ? $categorieRepository->find($categorieID) : new Categorie(); // @todo : voir que faire du null
 
                 switch ($action) {
                     case 'save': // Création et édition
@@ -321,7 +339,8 @@ class CategorieController extends Controller
                                 throw new \ComptesBundle\Exception\MerIlEtFouException("Référence circulaire. Tu veux tomber dans l'hyper espace ?");
                             }
 
-                            $categorieParente = $categorieParenteID !== '' ? $categorieRepository->find($categorieParenteID) : null;
+                            /** @var ?Categorie $categorieParente */
+                            $categorieParente = $categorieParenteID !== '' ? $categorieRepository->find($categorieParenteID) : null; // @todo : voir que faire du null
                             $categorie->setCategorieParente($categorieParente);
                         }
 
@@ -345,7 +364,7 @@ class CategorieController extends Controller
                                 // Ce mot-clé existe-il déjà ?
                                 $keyword = $keywordRepository->findOneBy(['word' => $word]);
 
-                                if (null === $keyword) { // Si non, on le crée
+                                if (!($keyword instanceof Keyword)) { // Si non, on le crée
                                     $keyword = new Keyword();
                                     $keyword->setWord($word);
                                     $keyword->setCategorie($categorie);
@@ -391,9 +410,9 @@ class CategorieController extends Controller
         $manager->flush();
 
         // URL de redirection
-        $redirectURL = $request->get('redirect_url', null);
+        $redirectURL = $request->get('redirect_url');
 
-        if (null !== $redirectURL) {
+        if (is_string($redirectURL)) {
             return $this->redirect($redirectURL);
         }
 

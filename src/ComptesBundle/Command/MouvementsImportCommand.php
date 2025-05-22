@@ -2,6 +2,11 @@
 
 namespace ComptesBundle\Command;
 
+use ComptesBundle\Entity\Categorie;
+use ComptesBundle\Entity\Repository\CategorieRepository;
+use ComptesBundle\Service\ImportHandler\MouvementsImportHandlerInterface;
+use ComptesBundle\Service\MouvementCategorizer;
+use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -15,7 +20,7 @@ class MouvementsImportCommand extends AbstractImportCommand
     /**
      * {@inheritdoc}
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('comptes:import:mouvements');
         $this->setDescription("Importe les mouvements d'un compte bancaire.");
@@ -29,7 +34,6 @@ class MouvementsImportCommand extends AbstractImportCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $questionHelper = $this->getHelper('question');
-        $interaction = !$input->getOption('no-interaction');
         $filename = $input->getArgument('filename');
         $handlerIdentifier = $input->getArgument('handler');
 
@@ -39,13 +43,14 @@ class MouvementsImportCommand extends AbstractImportCommand
         // Chargement de la configuration
         $this->loadConfiguration();
 
-        // Parsing du fichier
+        /** @var MouvementsImportHandlerInterface $handler */
         $handler = $this->getHandler($handlerIdentifier);
         $splFile = $this->getFile($filename);
         $handler->parse($splFile);
 
-        // Le manager d'entités qui va nous servir à persister les mouvements
-        $em = $this->getContainer()->get('doctrine')->getManager();
+        /** @var RegistryInterface $doctrine */
+        $doctrine = $this->getContainer()->get('doctrine');
+        $em = $doctrine->getManager();
 
         // Indicateurs
         $i = 0; // Nombre de mouvements importés
@@ -75,19 +80,20 @@ class MouvementsImportCommand extends AbstractImportCommand
         if ($uncategorizedMouvements) {
             $output->writeln("<info>Mouvements non catégorisés</info>", OutputInterface::VERBOSITY_VERBOSE);
 
+            /** @var CategorieRepository $categorieRepository */
             $categorieRepository = $em->getRepository('ComptesBundle:Categorie');
             $categories = $categorieRepository->findAll();
 
             foreach ($uncategorizedMouvements as $mouvement) {
                 $output->writeln("<comment>{$mouvement}</comment>");
 
-                if ($interaction && $categories) {
+                if ($categories) {
                     $answers = [
                         'n' => "Ne pas catégoriser",
                     ];
 
-                    foreach ($categories as $key => $categorie) {
-                        if ($categorie->getCategorieParente() === null) {
+                    foreach ($categories as $categorie) {
+                        if (!($categorie->getCategorieParente() instanceof Categorie)) {
                             $categorieId = $categorie->getId();
                             $categoriesLine = $this->getCategoriesLine($categorie, [$categorie]);
                             $answers[$categorieId] = implode(" / ", $categoriesLine);
@@ -109,7 +115,8 @@ class MouvementsImportCommand extends AbstractImportCommand
                     $categorieId = $questionHelper->ask($input, $output, $question);
 
                     if (strtolower($categorieId) !== 'n') { // Réponse insensible à la casse
-                        $categorie = $categorieRepository->find($categorieId);
+                        /** @var ?Categorie $categorie */
+                        $categorie = $categorieRepository->find($categorieId); // @todo : voir que faire du null
                         $mouvement->setCategorie($categorie);
                     }
                 }
@@ -129,37 +136,39 @@ class MouvementsImportCommand extends AbstractImportCommand
         if ($ambiguousMouvements) {
             $output->writeln("<info>Mouvements ambigus</info>", OutputInterface::VERBOSITY_VERBOSE);
 
-            // Service de catégorisation automatique des mouvements
+            /**
+             * Service de catégorisation automatique des mouvements.
+             *
+             * @var MouvementCategorizer $mouvementCategorizer
+             */
             $mouvementCategorizer = $this->getContainer()->get('comptes_bundle.mouvement.categorizer');
 
             foreach ($ambiguousMouvements as $mouvement) {
                 $output->writeln("<comment>{$mouvement}</comment>");
 
-                if ($interaction) {
-                    // Catégorisation automatique du mouvement
-                    $categories = $mouvementCategorizer->getCategories($mouvement);
+                // Catégorisation automatique du mouvement
+                $categories = $mouvementCategorizer->getCategories($mouvement);
 
-                    if ($categories) {
-                        $answers = [
-                            'n' => "Ne pas catégoriser",
-                        ];
+                if ($categories) {
+                    $answers = [
+                        'n' => "Ne pas catégoriser",
+                    ];
 
-                        foreach ($categories as $key => $categorie) {
-                            $answers[$key] = $categorie;
-                        }
+                    foreach ($categories as $key => $categorie) {
+                        $answers[$key] = $categorie;
+                    }
 
-                        // Question à l'utilisateur
-                        $question = new Question\ChoiceQuestion("<question>Proposition de catégories</question>", $answers);
-                        $question->setAutocompleterValues([]);
-                        $question->setPrompt("<question>Catégorie ? ></question> ");
+                    // Question à l'utilisateur
+                    $question = new Question\ChoiceQuestion("<question>Proposition de catégories</question>", $answers);
+                    $question->setAutocompleterValues([]);
+                    $question->setPrompt("<question>Catégorie ? ></question> ");
 
-                        // La clé de la catégorie au sein du tableau $categories
-                        $categorieKey = $questionHelper->ask($input, $output, $question);
+                    // La clé de la catégorie au sein du tableau $categories
+                    $categorieKey = $questionHelper->ask($input, $output, $question);
 
-                        if (strtolower($categorieKey) !== 'n') { // Réponse insensible à la casse
-                            $categorie = $categories[$categorieKey];
-                            $mouvement->setCategorie($categorie);
-                        }
+                    if (strtolower($categorieKey) !== 'n') { // Réponse insensible à la casse
+                        $categorie = $categories[$categorieKey];
+                        $mouvement->setCategorie($categorie);
                     }
                 }
 
@@ -173,27 +182,25 @@ class MouvementsImportCommand extends AbstractImportCommand
         }
 
         // 4. Les mouvements suspectés comme doublons, qui nécessitent une confirmation manuelle
-        if ($interaction) {
-            $waitingMouvements = $handler->getWaitingMouvements();
+        $waitingMouvements = $handler->getWaitingMouvements();
 
-            foreach ($waitingMouvements as $mouvement) {
-                $output->writeln("<info>Mouvements à valider</info>", OutputInterface::VERBOSITY_VERBOSE);
+        foreach ($waitingMouvements as $mouvement) {
+            $output->writeln("<info>Mouvements à valider</info>", OutputInterface::VERBOSITY_VERBOSE);
 
-                $output->writeln("<comment>{$mouvement}</comment>");
+            $output->writeln("<comment>{$mouvement}</comment>");
 
-                // Question à l'utilisateur
-                $question = new Question\ConfirmationQuestion("<question>Un mouvement similaire existe déjà :\n\t{$mouvement}\nImporter (y/N) ?</question>", false);
+            // Question à l'utilisateur
+            $question = new Question\ConfirmationQuestion("<question>Un mouvement similaire existe déjà :\n\t{$mouvement}\nImporter (y/N) ?</question>", false);
 
-                $confirm = $questionHelper->ask($input, $output, $question);
+            $confirm = $questionHelper->ask($input, $output, $question);
 
-                if ($confirm) {
-                    // Indicateurs
-                    $i++;
-                    $balance += $mouvement->getMontant();
+            if ($confirm) {
+                // Indicateurs
+                $i++;
+                $balance += $mouvement->getMontant();
 
-                    // Enregistrement
-                    $em->persist($mouvement);
-                }
+                // Enregistrement
+                $em->persist($mouvement);
             }
         }
 
@@ -204,21 +211,22 @@ class MouvementsImportCommand extends AbstractImportCommand
         $mouvements = $handler->getMouvements();
         $mouvementsCount = count($mouvements);
         $output->writeln("<info>{$i} mouvements importés sur {$mouvementsCount} pour une balance de {$balance}€</info>");
+
+        return 0;
     }
 
     /**
      * Récupère la lignée d'une catégorie, récursivement.
      *
-     * @param Categorie|null $categorie
-     * @param array          $array
+     * @param Categorie[] $array
      *
-     * @return array
+     * @return Categorie[]
      */
-    private function getCategoriesLine($categorie, $array)
+    private function getCategoriesLine(?Categorie $categorie, array $array): array
     {
-        if (null !== $categorie) {
+        if ($categorie instanceof Categorie) {
             $categorieParente = $categorie->getCategorieParente();
-            if (null !== $categorieParente) {
+            if ($categorieParente instanceof Categorie) {
                 array_unshift($array, $categorieParente);
                 $array = $this->getCategoriesLine($categorieParente, $array);
             }

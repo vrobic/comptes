@@ -16,10 +16,8 @@ trait IdentifiableTrait
 
     /**
      * Récupère l'identifiant de l'entité.
-     *
-     * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }

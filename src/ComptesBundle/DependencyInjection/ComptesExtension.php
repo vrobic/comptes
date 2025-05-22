@@ -17,11 +17,8 @@ class ComptesExtension extends Extension
     /**
      * {@inheritdoc}
      */
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container): void
     {
-        /**
-         * @var array
-         */
         $configuration = $this->processConfiguration(new Configuration(), $configs);
 
         // Injecte la configuration dans les parameters
@@ -39,13 +36,9 @@ class ComptesExtension extends Extension
      * Permet d'accéder aux valeurs de la configuration
      * comme si elles étaient définies dans les parameters.
      *
-     * @param ContainerBuilder $container
-     * @param array            $params
-     * @param string           $rootName
-     *
-     * @return void
+     * @param array<string|int, mixed> $params
      */
-    private function setConfigAsParameters(ContainerBuilder &$container, array $params, $rootName)
+    private function setConfigAsParameters(ContainerBuilder &$container, array $params, string $rootName): void
     {
         foreach ($params as $key => $value) {
             $name = "$rootName.$key";

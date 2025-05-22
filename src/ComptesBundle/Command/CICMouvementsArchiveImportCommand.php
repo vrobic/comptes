@@ -2,6 +2,10 @@
 
 namespace ComptesBundle\Command;
 
+use ComptesBundle\Entity\Compte;
+use ComptesBundle\Entity\Repository\CompteRepository;
+use ComptesBundle\Service\MouvementCategorizer;
+use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
@@ -58,7 +62,7 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
     /**
      * {@inheritdoc}
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('comptes:import:mouvements:archive:cic');
         $this->setDescription("Importe les mouvements d'un compte bancaire du CIC.");
@@ -67,6 +71,8 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
 
     /**
      * {@inheritdoc}
+     *
+     * @todo : ne pas renvoyer des exceptions HTTP
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -77,10 +83,17 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
             throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException("Le fichier $filename n'existe pas.");
         }
 
-        $em = $this->getContainer()->get('doctrine')->getManager();
+        /** @var RegistryInterface $doctrine */
+        $doctrine = $this->getContainer()->get('doctrine');
+        $em = $doctrine->getManager();
+        /** @var CompteRepository $compteRepository */
         $compteRepository = $em->getRepository('ComptesBundle:Compte');
 
         $lines = file($filename);
+
+        if (!is_array($lines)) {
+            throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException("Échec de lecture du fichier $filename.");
+        }
 
         // Indicateurs
         $i = 0; // Nombre de mouvements importés
@@ -99,13 +112,13 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
             }
 
             // Si le numéro de compte n'est pas déterminé, la ligne ne sera pas exploitable
-            if (null === $numeroCompte) {
+            if (!is_string($numeroCompte)) {
                 continue;
             }
 
             $compte = $compteRepository->findOneBy(['numero' => $numeroCompte]);
 
-            if (!$compte) {
+            if (!($compte instanceof Compte)) {
                 throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException("Le compte n°$numeroCompte est inconnu.");
             }
 
@@ -119,10 +132,13 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
 
             // La date brute et sa position dans la ligne
             $dateRaw = $matches[1][0];
-            $datePos = $matches[1][1];
+            $datePos = (int) $matches[1][1];
 
             // L'objet DateTime, utilisable
             $date = \DateTime::createFromFormat('d/m/Y', $dateRaw);
+            if (!($date instanceof \DateTime)) {
+                throw new \Exception("Date du mouvement invalide : $dateRaw");
+            }
 
             // La description démarre 22 caractères après la date
             $descriptionPos = $datePos + 22; // 22 => "00/00/0000 00/00/0000 "
@@ -170,7 +186,7 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
 
                 /* Le montant n'est présent que sur une des lignes.
                  * Donc s'il n'a pas encore été défini... */
-                if (null === $montant) {
+                if (!is_float($montant)) {
                     $descriptionLength = strlen($descriptionRaw);
 
                     // Il se trouve en fin de ligne, après une série d'espaces
@@ -181,14 +197,15 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
                         $montantRaw = $matches[1];
                         $montant = str_replace('.', '', $montantRaw); // Séparateur milliers
                         $montant = str_replace(',', '.', $montant); // Séparateur décimales
+                        $montant = (float) $montant;
                     }
                 }
             }
 
-            if (!$descriptionRows) {
+            if (0 === count($descriptionRows)) {
                 throw new \Exception("La description n'a pas été trouvée à la ligne n°$lineNumber.");
             }
-            if (null === $montant) {
+            if (!is_float($montant)) {
                 throw new \Exception("Le montant n'a pas été trouvé à la ligne n°$lineNumber.");
             }
 
@@ -219,7 +236,10 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
                 $mouvement->setMontant($montant);
             }
 
-            // Service de catégorisation automatique des mouvements
+            /** Service de catégorisation automatique des mouvements
+             *
+             * @var MouvementCategorizer $mouvementCategorizer
+             */
             $mouvementCategorizer = $this->getContainer()->get('comptes_bundle.mouvement.categorizer');
             $categories = $mouvementCategorizer->getCategories($mouvement);
 
@@ -259,5 +279,7 @@ class CICMouvementsArchiveImportCommand extends ContainerAwareCommand
         }
 
         $output->writeln("<info>{$i} mouvements importés pour une balance de {$balance}€</info>");
+
+        return 0;
     }
 }

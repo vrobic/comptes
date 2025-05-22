@@ -2,6 +2,10 @@
 
 namespace ComptesBundle\Command;
 
+use ComptesBundle\Entity\Categorie;
+use ComptesBundle\Entity\Repository\MouvementRepository;
+use ComptesBundle\Service\MouvementCategorizer;
+use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -16,7 +20,7 @@ class MouvementsCategorizerCommand extends ContainerAwareCommand
     /**
      * {@inheritdoc}
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('comptes:mouvements:categorizer');
         $this->setDescription("Définit automatiquement la catégorie des mouvements non catégorisés.");
@@ -29,7 +33,10 @@ class MouvementsCategorizerCommand extends ContainerAwareCommand
     {
         $questionHelper = $this->getHelper('question');
 
-        $em = $this->getContainer()->get('doctrine')->getManager();
+        /** @var RegistryInterface $doctrine */
+        $doctrine = $this->getContainer()->get('doctrine');
+        $em = $doctrine->getManager();
+        /** @var MouvementRepository $mouvementRepository */
         $mouvementRepository = $em->getRepository('ComptesBundle:Mouvement');
 
         // Indicateurs
@@ -39,7 +46,11 @@ class MouvementsCategorizerCommand extends ContainerAwareCommand
         $mouvements = $mouvementRepository->findBy(['categorie' => null]);
 
         if ($mouvements) {
-            // Service de catégorisation automatique des mouvements
+            /**
+             * Service de catégorisation automatique des mouvements.
+             *
+             * @var MouvementCategorizer $mouvementCategorizer
+             */
             $mouvementCategorizer = $this->getContainer()->get('comptes_bundle.mouvement.categorizer');
 
             foreach ($mouvements as $mouvement) {
@@ -81,7 +92,7 @@ class MouvementsCategorizerCommand extends ContainerAwareCommand
                     }
                 }
 
-                $output->writeln($categorie !== null ?
+                $output->writeln($categorie instanceof Categorie ?
                     "<info>\tCatégorisé en : {$categorie}</info>" :
                     "<comment>\tNon catégorisé</comment>"
                 );
@@ -96,5 +107,7 @@ class MouvementsCategorizerCommand extends ContainerAwareCommand
         // Indicateurs
         $mouvementsCount = count($mouvements);
         $output->writeln("<info>{$i} mouvements modifiés sur {$mouvementsCount} mouvements non catégorisés</info>");
+
+        return 0;
     }
 }

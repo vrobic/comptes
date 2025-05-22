@@ -21,7 +21,7 @@ class ConfigurationLoader
     /**
      * La clé de configuration chargée parmi celles disponibles.
      *
-     * @var string|null Est null tant que la méthode load n'a pas été appelée.
+     * @var ?string Est null tant que la méthode load n'a pas été appelée.
      */
     private $key;
 
@@ -43,8 +43,6 @@ class ConfigurationLoader
 
     /**
      * Constructeur.
-     *
-     * @param Container $container
      */
     public function __construct(Container $container)
     {
@@ -64,7 +62,7 @@ class ConfigurationLoader
      * @throws \Exception En cas d'erreur de configuration, ou lorsque la clé
      *                    de configuration à charger n'est pas valide.
      */
-    public function load($key)
+    public function load(string $key): array
     {
         if (!in_array($key, self::KEYS)) {
             throw new \Exception(sprintf("La clé de configuration [%s] n'existe pas. Sont disponibles : [%s].", $key, implode(', ', self::KEYS)));
@@ -85,11 +83,9 @@ class ConfigurationLoader
     /**
      * Valide la configuration.
      *
-     * @return bool
-     *
      * @throws \Exception En cas d'erreur de configuration.
      */
-    public function validateConfiguration()
+    public function validateConfiguration(): bool
     {
         // Méthodes de validation
         $validators = [
@@ -111,11 +107,9 @@ class ConfigurationLoader
     /**
      * Valide la configuration des fixtures.
      *
-     * @return bool
-     *
      * @throws \Exception En cas d'erreur de configuration.
      */
-    private function validateFixturesConfiguration()
+    private function validateFixturesConfiguration(): bool
     {
         return true;
     }
@@ -123,11 +117,9 @@ class ConfigurationLoader
     /**
      * Valide la configuration des imports.
      *
-     * @return bool
-     *
      * @throws \Exception En cas d'erreur de configuration.
      */
-    private function validateImportConfiguration()
+    private function validateImportConfiguration(): bool
     {
         foreach ($this->configuration['handlers'] as $type => $handlers) {
             foreach ($handlers as $identifier => $handler) {
@@ -147,11 +139,9 @@ class ConfigurationLoader
     /**
      * Valide la configuration des statistiques.
      *
-     * @return bool
-     *
      * @throws \Exception En cas d'erreur de configuration.
      */
-    private function validateStatsConfiguration()
+    private function validateStatsConfiguration(): bool
     {
         return true;
     }
@@ -159,12 +149,12 @@ class ConfigurationLoader
     /**
      * Construit un message d'exception détaillé.
      *
-     * @param array  $parameters Le chemin du paramètre en faute.
-     * @param string $message    Le message d'erreur.
+     * @param string[] $parameters Le chemin du paramètre en faute.
+     * @param string   $message    Le message d'erreur.
      *
      * @return string Le message d'exception.
      */
-    private function getExceptionMessage($parameters, $message)
+    private function getExceptionMessage(array $parameters, string $message): string
     {
         $parametersString = implode('.', $parameters);
 

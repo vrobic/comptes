@@ -25,22 +25,16 @@ class Keyword
 
     /**
      * Méthode toString.
-     *
-     * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getWord();
     }
 
     /**
      * Définit le mot.
-     *
-     * @param string $word
-     *
-     * @return Keyword
      */
-    public function setWord($word)
+    public function setWord(string $word): self
     {
         $this->word = strtolower($word);
 
@@ -49,22 +43,16 @@ class Keyword
 
     /**
      * Récupère le mot.
-     *
-     * @return string
      */
-    public function getWord()
+    public function getWord(): string
     {
         return $this->word;
     }
 
     /**
      * Définit la catégorie du mot-clé.
-     *
-     * @param Categorie $categorie
-     *
-     * @return Keyword
      */
-    public function setCategorie(Categorie $categorie)
+    public function setCategorie(Categorie $categorie): self
     {
         $this->categorie = $categorie;
 
@@ -73,10 +61,8 @@ class Keyword
 
     /**
      * Récupère la catégorie du mot-clé.
-     *
-     * @return Categorie
      */
-    public function getCategorie()
+    public function getCategorie(): Categorie
     {
         return $this->categorie;
     }

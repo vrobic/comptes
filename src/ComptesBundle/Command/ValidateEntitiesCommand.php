@@ -2,9 +2,11 @@
 
 namespace ComptesBundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * Valide toutes les entités du bundle en les passant dans le moteur de validation.
@@ -15,7 +17,7 @@ class ValidateEntitiesCommand extends AbstractImportCommand
     /**
      * {@inheritdoc}
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('comptes:validate:entities');
         $this->setDescription("Passe dans le moteur de validation toutes les entités persistées.");
@@ -27,8 +29,12 @@ class ValidateEntitiesCommand extends AbstractImportCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $container = $this->getContainer();
+        /** @var ValidatorInterface $validator */
         $validator = $container->get('validator');
-        $em = $container->get('doctrine')->getManager();
+        /** @var RegistryInterface $doctrine */
+        $doctrine = $container->get('doctrine');
+        /** @var EntityManagerInterface $em */
+        $em = $doctrine->getManager();
 
         // Liste exhaustive des classes gérées par Doctrine
         $classes = $em->getConfiguration()->getMetadataDriverImpl()->getAllClassNames();
@@ -42,15 +48,16 @@ class ValidateEntitiesCommand extends AbstractImportCommand
             foreach ($entities as $entity) {
 
                 /**
-                 * @var Symfony/Component/Validator/ConstraintViolationList
+                 * @var \Symfony\Component\Validator\ConstraintViolationList $errors
                  */
                 $errors = $validator->validate($entity);
 
                 foreach ($errors as $error) {
                     $output->writeln(sprintf("<error>\tEntité %d : %s</error>", $entity->getId(), $error->getMessage()));
-                    $invalidEntitiesCount++;
                 }
             }
         }
+
+        return 0;
     }
 }

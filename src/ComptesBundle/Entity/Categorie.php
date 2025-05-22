@@ -21,35 +21,35 @@ class Categorie
     /**
      * Catégorie parente.
      *
-     * @var Categorie
-     **/
+     * @var ?self
+     */
     protected $categorieParente;
 
     /**
      * Catégories filles.
      *
-     * @var Categorie
-     **/
+     * @var self[]|ArrayCollection
+     */
     protected $categoriesFilles;
 
     /**
      * Mouvements bancaires de la catégorie.
      *
-     * @var \Doctrine\Common\Collections\ArrayCollection
+     * @var Mouvement[]|ArrayCollection
      */
     protected $mouvements;
 
     /**
      * Mots-clés de la catégorie.
      *
-     * @var \Doctrine\Common\Collections\ArrayCollection
+     * @var Keyword[]|ArrayCollection
      */
     protected $keywords;
 
     /**
      * Rang d'affichage de la catégorie.
      *
-     * @var int
+     * @var ?int
      */
     protected $rang;
 
@@ -64,22 +64,16 @@ class Categorie
 
     /**
      * Méthode toString.
-     *
-     * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getNom();
     }
 
     /**
      * Définit le nom de la catégorie.
-     *
-     * @param string $nom
-     *
-     * @return Categorie
      */
-    public function setNom($nom)
+    public function setNom(string $nom): self
     {
         $this->nom = $nom;
 
@@ -88,22 +82,16 @@ class Categorie
 
     /**
      * Récupère le nom de la catégorie.
-     *
-     * @return string
      */
-    public function getNom()
+    public function getNom(): string
     {
         return $this->nom;
     }
 
     /**
      * Définit la catégorie parente.
-     *
-     * @param Categorie $categorieParente
-     *
-     * @return Categorie
      */
-    public function setCategorieParente(Categorie $categorieParente = null)
+    public function setCategorieParente(?self $categorieParente = null): self
     {
         $this->categorieParente = $categorieParente;
 
@@ -112,22 +100,16 @@ class Categorie
 
     /**
      * Récupère la catégorie parente.
-     *
-     * @return Categorie
      */
-    public function getCategorieParente()
+    public function getCategorieParente(): ?self
     {
         return $this->categorieParente;
     }
 
     /**
      * Associe une catégorie fille.
-     *
-     * @param Categorie $categorie
-     *
-     * @return Categorie
      */
-    public function addCategorieFille(Categorie $categorie)
+    public function addCategorieFille(self $categorie): self
     {
         $this->categoriesFilles->add($categorie);
 
@@ -136,12 +118,8 @@ class Categorie
 
     /**
      * Dissocie une catégorie fille.
-     *
-     * @param Categorie $categorie
-     *
-     * @return Categorie
      */
-    public function removeCategorieFille(Categorie $categorie)
+    public function removeCategorieFille(self $categorie): self
     {
         $this->categoriesFilles->removeElement($categorie);
 
@@ -150,10 +128,8 @@ class Categorie
 
     /**
      * Dissocie toutes les catégories filles.
-     *
-     * @return Categorie
      */
-    public function removeCategoriesFilles()
+    public function removeCategoriesFilles(): self
     {
         $this->categoriesFilles->clear();
 
@@ -163,7 +139,9 @@ class Categorie
     /**
      * Récupère les catégories filles.
      *
-     * @return \Doctrine\Common\Collections\ArrayCollection
+     * @todo : typer le retour directement dans le code
+     *
+     * @return self[]|ArrayCollection
      */
     public function getCategoriesFilles()
     {
@@ -173,11 +151,13 @@ class Categorie
     /**
      * Récupère les catégories filles récursivement.
      *
+     * @todo : typer $categoriesFilles directement dans le code
+     *
      * @param Categorie[] $categoriesFilles
      *
      * @return Categorie[]
      */
-    public function getCategoriesFillesRecursive($categoriesFilles = [])
+    public function getCategoriesFillesRecursive($categoriesFilles = []): array
     {
         foreach ($this->categoriesFilles as $categorieFille) {
             $categoriesFilles = array_merge(
@@ -191,12 +171,8 @@ class Categorie
 
     /**
      * Associe un mouvement à la catégorie.
-     *
-     * @param Mouvement $mouvement
-     *
-     * @return Categorie
      */
-    public function addMouvement(Mouvement $mouvement)
+    public function addMouvement(Mouvement $mouvement): self
     {
         $this->mouvements[] = $mouvement;
 
@@ -205,12 +181,8 @@ class Categorie
 
     /**
      * Dissocie un mouvement de la catégorie.
-     *
-     * @param Mouvement $mouvement
-     *
-     * @return Categorie
      */
-    public function removeMouvement(Mouvement $mouvement)
+    public function removeMouvement(Mouvement $mouvement): self
     {
         $this->mouvements->removeElement($mouvement);
 
@@ -219,10 +191,8 @@ class Categorie
 
     /**
      * Dissocie tous les mouvements de la catégorie.
-     *
-     * @return Categorie
      */
-    public function removeMouvements()
+    public function removeMouvements(): self
     {
         $this->mouvements->clear();
 
@@ -232,7 +202,9 @@ class Categorie
     /**
      * Récupère les mouvements de la catégorie.
      *
-     * @return \Doctrine\Common\Collections\ArrayCollection
+     * @todo : typer le retour directement dans le code
+     *
+     * @return Mouvement[]|ArrayCollection
      */
     public function getMouvements()
     {
@@ -241,12 +213,8 @@ class Categorie
 
     /**
      * Associe un mot-clé à la catégorie.
-     *
-     * @param Keyword $keyword
-     *
-     * @return Categorie
      */
-    public function addKeyword(Keyword $keyword)
+    public function addKeyword(Keyword $keyword): self
     {
         $this->keywords[] = $keyword;
 
@@ -255,12 +223,8 @@ class Categorie
 
     /**
      * Dissocie un mot-clé de la catégorie.
-     *
-     * @param Keyword $keyword
-     *
-     * @return Categorie
      */
-    public function removeKeyword(Keyword $keyword)
+    public function removeKeyword(Keyword $keyword): self
     {
         $this->keywords->removeElement($keyword);
 
@@ -269,10 +233,8 @@ class Categorie
 
     /**
      * Dissocie tous les mots-clés de la catégorie.
-     *
-     * @return Categorie
      */
-    public function removeKeywords()
+    public function removeKeywords(): self
     {
         $this->keywords->clear();
 
@@ -282,7 +244,9 @@ class Categorie
     /**
      * Récupère les mots-clés de la catégorie.
      *
-     * @return \Doctrine\Common\Collections\ArrayCollection
+     * @todo : typer le retour directement dans le code
+     *
+     * @return Keyword[]|ArrayCollection
      */
     public function getKeywords()
     {
@@ -291,12 +255,8 @@ class Categorie
 
     /**
      * Définit le rang d'affichage de la catégorie.
-     *
-     * @param int $rang
-     *
-     * @return Categorie
      */
-    public function setRang($rang)
+    public function setRang(?int $rang): self
     {
         $this->rang = $rang;
 
@@ -305,10 +265,8 @@ class Categorie
 
     /**
      * Récupère le rang d'affichage de la catégorie.
-     *
-     * @return int
      */
-    public function getRang()
+    public function getRang(): ?int
     {
         return $this->rang;
     }

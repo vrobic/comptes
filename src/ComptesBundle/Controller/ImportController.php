@@ -2,7 +2,22 @@
 
 namespace ComptesBundle\Controller;
 
+use ComptesBundle\Entity\Categorie;
+use ComptesBundle\Entity\Compte;
+use ComptesBundle\Entity\Mouvement;
+use ComptesBundle\Entity\Plein;
+use ComptesBundle\Entity\Repository\CategorieRepository;
+use ComptesBundle\Entity\Repository\CompteRepository;
+use ComptesBundle\Entity\Repository\MouvementRepository;
+use ComptesBundle\Entity\Repository\PleinRepository;
+use ComptesBundle\Entity\Repository\VehiculeRepository;
+use ComptesBundle\Entity\Vehicule;
+use ComptesBundle\Service\ConfigurationLoader;
+use ComptesBundle\Service\ImportHandler\ImportHandlerInterface;
+use ComptesBundle\Service\ImportHandler\MouvementsImportHandlerInterface;
+use ComptesBundle\Service\ImportHandler\PleinsImportHandlerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -47,13 +62,9 @@ class ImportController extends Controller
      *
      * @todo Comme pour MouvementController->edit(), utiliser un formulaire Symfony.
      *
-     * @param Request $request
-     *
-     * @return Response
-     *
      * @throws \Exception En cas d'erreur d'import du fichier.
      */
-    public function mouvementsAction(Request $request)
+    public function mouvementsAction(Request $request): Response
     {
         // Définit le type d'import
         $this->setType('mouvements');
@@ -67,8 +78,11 @@ class ImportController extends Controller
         // Entity manager et repositories
         $doctrine = $this->getDoctrine();
         $em = $doctrine->getManager();
+        /** @var CompteRepository $compteRepository */
         $compteRepository = $doctrine->getRepository('ComptesBundle:Compte');
+        /** @var CategorieRepository $categorieRepository */
         $categorieRepository = $doctrine->getRepository('ComptesBundle:Categorie');
+        /** @var MouvementRepository $mouvementRepository */
         $mouvementRepository = $doctrine->getRepository('ComptesBundle:Mouvement');
 
         // Tous les comptes bancaires
@@ -91,7 +105,7 @@ class ImportController extends Controller
 
         switch ($action) {
             case 'parse': // Parsing du fichier uploadé
-                // Parsing du fichier
+                /** @var MouvementsImportHandlerInterface $handler */
                 $handler = $this->getHandler($request);
                 $splFile = $this->getFile($request);
                 $handler->parse($splFile);
@@ -112,7 +126,7 @@ class ImportController extends Controller
                 foreach ($mouvements as $hash => $mouvement) {
                     /* Si on doit ignorer les mouvements anciens,
                      * alors on n'importe le mouvement que s'il est plus récent que le dernier présent en base. */
-                    if (false !== $skipOldOnes && null !== $latestMouvement) {
+                    if (false !== $skipOldOnes && $latestMouvement instanceof Mouvement) {
                         $date = $mouvement->getDate();
                         $latestMouvementDate = $latestMouvement->getDate();
 
@@ -161,20 +175,25 @@ class ImportController extends Controller
                     if (isset($mouvementsData[$hash]['date'])) {
                         $dateString = $mouvementsData[$hash]['date'];
                         $date = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateString 00:00:00");
+                        if (!($date instanceof \DateTime)) {
+                            throw new \Exception("Date du mouvement invalide : $dateString");
+                        }
                         $mouvement->setDate($date);
                     }
 
                     // Modification éventuelle de la catégorie
                     if (isset($mouvementsData[$hash]['categorie'])) {
                         $categorieID = $mouvementsData[$hash]['categorie'];
-                        $categorie = $categorieID !== '' ? $categorieRepository->find($categorieID) : null;
+                        /** @var ?Categorie $categorie */
+                        $categorie = $categorieID !== '' ? $categorieRepository->find($categorieID) : null; // @todo : voir que faire du null
                         $mouvement->setCategorie($categorie);
                     }
 
                     // Modification éventuelle du compte
                     if (isset($mouvementsData[$hash]['compte'])) {
                         $compteID = $mouvementsData[$hash]['compte'];
-                        $compte = $compteID !== '' ? $compteRepository->find($compteID) : null;
+                        /** @var ?Compte $compte */
+                        $compte = $compteID !== '' ? $compteRepository->find($compteID) : null; // @todo : voir que faire du null
                         $mouvement->setCompte($compte);
                     }
 
@@ -230,13 +249,9 @@ class ImportController extends Controller
      *
      * @todo Comme pour PleinController->edit(), utiliser un formulaire Symfony.
      *
-     * @param Request $request
-     *
-     * @return Response
-     *
      * @throws \Exception En cas d'erreur d'import du fichier.
      */
-    public function pleinsAction(Request $request)
+    public function pleinsAction(Request $request): Response
     {
         // Définit le type d'import
         $this->setType('pleins');
@@ -250,7 +265,9 @@ class ImportController extends Controller
         // Entity manager et repositories
         $doctrine = $this->getDoctrine();
         $em = $doctrine->getManager();
+        /** @var VehiculeRepository $vehiculeRepository */
         $vehiculeRepository = $doctrine->getRepository('ComptesBundle:Vehicule');
+        /** @var PleinRepository $pleinRepository */
         $pleinRepository = $doctrine->getRepository('ComptesBundle:Plein');
 
         // Tous les véhicules
@@ -268,7 +285,7 @@ class ImportController extends Controller
 
         switch ($action) {
             case 'parse': // Parsing du fichier uploadé
-                // Parsing du fichier
+                /** @var PleinsImportHandlerInterface $handler */
                 $handler = $this->getHandler($request);
                 $splFile = $this->getFile($request);
                 $handler->parse($splFile);
@@ -287,7 +304,7 @@ class ImportController extends Controller
                 foreach ($pleins as $hash => $plein) {
                     /* Si on doit importer les pleins anciens,
                      * alors on n'importe le plein que s'il est plus récent que le dernier présent en base. */
-                    if (false !== $skipOldOnes && null !== $latestPlein) {
+                    if (false !== $skipOldOnes && $latestPlein instanceof Plein) {
                         $date = $plein->getDate();
                         $latestPleinDate = $latestPlein->getDate();
 
@@ -333,13 +350,17 @@ class ImportController extends Controller
                     if (isset($pleinsData[$hash]['date'])) {
                         $dateString = $pleinsData[$hash]['date'];
                         $date = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateString 00:00:00");
+                        if (!($date instanceof \DateTime)) {
+                            throw new \Exception("Date du plein invalide : $dateString");
+                        }
                         $plein->setDate($date);
                     }
 
                     // Modification éventuelle du véhicule
                     if (isset($pleinsData[$hash]['vehicule'])) {
                         $vehiculeID = $pleinsData[$hash]['vehicule'];
-                        $vehicule = $vehiculeID !== '' ? $vehiculeRepository->find($vehiculeID) : null;
+                        /** @var ?Vehicule $vehicule */
+                        $vehicule = $vehiculeID !== '' ? $vehiculeRepository->find($vehiculeID) : null; // @todo : voir que faire du null
                         $plein->setVehicule($vehicule);
                     }
 
@@ -398,11 +419,13 @@ class ImportController extends Controller
     /**
      * Définit le type d'import.
      *
+     * @todo : $type peut devenir une enum
+     *
      * @param string $type Deux valeurs possibles : 'mouvements' ou 'pleins'.
      *
      * @throws \Exception Dans le cas où le type est invalide.
      */
-    private function setType($type)
+    private function setType(string $type): void
     {
         if (!in_array($type, array('mouvements', 'pleins'))) {
             throw new \Exception("Type d'import invalide.");
@@ -414,8 +437,9 @@ class ImportController extends Controller
     /**
      * Charge la configuration adaptée au type d'import.
      */
-    private function loadConfiguration()
+    private function loadConfiguration(): void
     {
+        /** @var ConfigurationLoader $configurationLoader */
         $configurationLoader = $this->container->get('comptes_bundle.configuration.loader');
         $configuration = $configurationLoader->load('import');
         $this->handlers = $configuration['handlers'][$this->type];
@@ -424,17 +448,13 @@ class ImportController extends Controller
     /**
      * Renvoie une instance du handler d'import.
      *
-     * @param Request $request
-     *
-     * @return Une implémentation de l'interface ImportHandlerInterface.
-     *
      * @throws \Exception Si le handler demandé est invalide.
      */
-    private function getHandler(Request $request)
+    private function getHandler(Request $request): ImportHandlerInterface
     {
         $handlerIdentifier = $request->get('handlerIdentifier');
 
-        if (null === $handlerIdentifier) {
+        if (!is_string($handlerIdentifier)) {
             throw new \Exception("Handler manquant.");
         }
         if (!in_array($handlerIdentifier, array_keys($this->handlers))) {
@@ -442,6 +462,7 @@ class ImportController extends Controller
         }
 
         $this->handlerIdentifier = $handlerIdentifier;
+        /** @var ImportHandlerInterface $handler */
         $handler = $this->container->get("comptes_bundle.import.$this->type.$handlerIdentifier");
 
         return $handler;
@@ -450,18 +471,15 @@ class ImportController extends Controller
     /**
      * Renvoie le fichier uploadé.
      *
-     * @param Request $request
-     *
-     * @return SplFileObject
-     *
      * @throws \Symfony\Component\HttpKernel\Exception\BadRequestHttpException           En cas d'erreur d'accès au fichier.
      * @throws \Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException Si le type de fichier n'est pas celui attendu.
      */
-    private function getFile(Request $request)
+    private function getFile(Request $request): \SplFileObject
     {
+        /** @var ?UploadedFile $file */
         $file = $request->files->get('file');
 
-        if (null === $file) {
+        if (!($file instanceof UploadedFile)) {
             throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException("Fichier manquant.");
         }
         if (!$file->isValid()) {

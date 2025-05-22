@@ -2,6 +2,7 @@
 
 namespace ComptesBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\ExecutionContextInterface;
 
 /**
@@ -42,14 +43,14 @@ class Compte
     /**
      * Mouvements bancaires du compte.
      *
-     * @var \Doctrine\Common\Collections\ArrayCollection
+     * @var Mouvement[]|ArrayCollection
      */
     protected $mouvements;
 
     /**
      * Solde initial du compte en euros, avant le premier mouvement rentré dans l'application.
      *
-     * @var string
+     * @var float
      */
     protected $soldeInitial;
 
@@ -63,14 +64,14 @@ class Compte
     /**
      * Date de fermeture éventuelle du compte.
      *
-     * @var \DateTime
+     * @var ?\DateTime
      */
     protected $dateFermeture;
 
     /**
      * Rang d'affichage du compte.
      *
-     * @var int
+     * @var ?int
      */
     protected $rang;
 
@@ -85,22 +86,16 @@ class Compte
 
     /**
      * Méthode toString.
-     *
-     * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getNom();
     }
 
     /**
      * Définit le nom du compte.
-     *
-     * @param string $nom
-     *
-     * @return Compte
      */
-    public function setNom($nom)
+    public function setNom(string $nom): self
     {
         $this->nom = $nom;
 
@@ -109,22 +104,16 @@ class Compte
 
     /**
      * Récupère le nom du compte.
-     *
-     * @return string
      */
-    public function getNom()
+    public function getNom(): string
     {
         return $this->nom;
     }
 
     /**
      * Définit le numéro du compte.
-     *
-     * @param string $numero
-     *
-     * @return Compte
      */
-    public function setNumero($numero)
+    public function setNumero(string $numero): self
     {
         $this->numero = $numero;
 
@@ -133,22 +122,16 @@ class Compte
 
     /**
      * Récupère le numéro du compte.
-     *
-     * @return string
      */
-    public function getNumero()
+    public function getNumero(): string
     {
         return $this->numero;
     }
 
     /**
      * Définit la domiciliation du compte.
-     *
-     * @param string $banque
-     *
-     * @return Compte
      */
-    public function setBanque($banque)
+    public function setBanque(string $banque): self
     {
         $this->banque = $banque;
 
@@ -157,10 +140,8 @@ class Compte
 
     /**
      * Récupère la domiciliation du compte.
-     *
-     * @return string
      */
-    public function getBanque()
+    public function getBanque(): string
     {
         return $this->banque;
     }
@@ -169,10 +150,8 @@ class Compte
      * Définit le plafond du compte.
      *
      * @param int $plafond La valeur 0 correspond à l'absence de plafond.
-     *
-     * @return Compte
      */
-    public function setPlafond($plafond)
+    public function setPlafond(int $plafond): self
     {
         $this->plafond = $plafond;
 
@@ -182,20 +161,16 @@ class Compte
     /**
      * Récupère le plafond du compte.
      * La valeur 0 correspond à l'absence de plafond.
-     *
-     * @return int
      */
-    public function getPlafond()
+    public function getPlafond(): int
     {
         return $this->plafond;
     }
 
     /**
      * Indique si le plafond du compte est atteint.
-     *
-     * @return bool
      */
-    public function isPlafondAtteint()
+    public function isPlafondAtteint(): bool
     {
         $plafond = $this->getPlafond();
         $solde = $this->getSolde();
@@ -207,12 +182,8 @@ class Compte
 
     /**
      * Associe un mouvement au compte.
-     *
-     * @param Mouvement $mouvement
-     *
-     * @return Compte
      */
-    public function addMouvement(Mouvement $mouvement)
+    public function addMouvement(Mouvement $mouvement): self
     {
         $this->mouvements[] = $mouvement;
 
@@ -221,12 +192,8 @@ class Compte
 
     /**
      * Dissocie un mouvement du compte.
-     *
-     * @param Mouvement $mouvement
-     *
-     * @return Compte
      */
-    public function removeMouvement(Mouvement $mouvement)
+    public function removeMouvement(Mouvement $mouvement): self
     {
         $this->mouvements->removeElement($mouvement);
 
@@ -235,10 +202,8 @@ class Compte
 
     /**
      * Dissocie tous les mouvements du compte.
-     *
-     * @return Compte
      */
-    public function removeMouvements()
+    public function removeMouvements(): self
     {
         $this->mouvements->clear();
 
@@ -248,7 +213,9 @@ class Compte
     /**
      * Récupère les mouvements du compte.
      *
-     * @return \Doctrine\Common\Collections\ArrayCollection
+     * @todo : typer le retour directement dans le code
+     *
+     * @return Mouvement[]|ArrayCollection
      */
     public function getMouvements()
     {
@@ -259,11 +226,9 @@ class Compte
      * Définit le solde initial du compte,
      * avant le premier mouvement rentré dans l'application.
      *
-     * @param int $soldeInitial Le solde initial du compte, en euros.
-     *
-     * @return Compte
+     * @param float $soldeInitial Le solde initial du compte, en euros.
      */
-    public function setSoldeInitial($soldeInitial)
+    public function setSoldeInitial(float $soldeInitial): self
     {
         $this->soldeInitial = $soldeInitial;
 
@@ -273,20 +238,16 @@ class Compte
     /**
      * Récupère le solde initial du compte,
      * avant le premier mouvement rentré dans l'application.
-     *
-     * @return string
      */
-    public function getSoldeInitial()
+    public function getSoldeInitial(): float
     {
         return $this->soldeInitial;
     }
 
     /**
      * Calcule le solde du compte.
-     *
-     * @return float
      */
-    public function getSolde()
+    public function getSolde(): float
     {
         $solde = $this->getSoldeInitial();
 
@@ -302,15 +263,11 @@ class Compte
 
     /**
      * Calcule le solde du compte à une date.
-     *
-     * @param \DateTime $date
-     *
-     * @return float
      */
-    public function getSoldeOnDate($date)
+    public function getSoldeOnDate(\DateTime $date): float
     {
         $dateOuverture = $this->getDateOuverture();
-        $solde = $date >= $dateOuverture ? $this->getSoldeInitial() : 0;
+        $solde = $date >= $dateOuverture ? $this->getSoldeInitial() : 0.;
 
         $mouvements = $this->getMouvements();
 
@@ -330,12 +287,8 @@ class Compte
 
     /**
      * Définit la date d'ouverture du compte.
-     *
-     * @param \DateTime $dateOuverture
-     *
-     * @return Compte
      */
-    public function setDateOuverture($dateOuverture)
+    public function setDateOuverture(\DateTime $dateOuverture): self
     {
         $this->dateOuverture = $dateOuverture;
 
@@ -344,22 +297,16 @@ class Compte
 
     /**
      * Récupère la date d'ouverture du compte.
-     *
-     * @return \DateTime
      */
-    public function getDateOuverture()
+    public function getDateOuverture(): \DateTime
     {
         return $this->dateOuverture;
     }
 
     /**
      * Définit la date de fermeture du compte.
-     *
-     * @param \DateTime $dateFermeture
-     *
-     * @return Compte
      */
-    public function setDateFermeture($dateFermeture)
+    public function setDateFermeture(?\DateTime $dateFermeture): self
     {
         $this->dateFermeture = $dateFermeture;
 
@@ -368,22 +315,16 @@ class Compte
 
     /**
      * Récupère la date de fermeture du compte.
-     *
-     * @return \DateTime
      */
-    public function getDateFermeture()
+    public function getDateFermeture(): ?\DateTime
     {
         return $this->dateFermeture;
     }
 
     /**
      * Définit le rang d'affichage du compte.
-     *
-     * @param int $rang
-     *
-     * @return Compte
      */
-    public function setRang($rang)
+    public function setRang(?int $rang): self
     {
         $this->rang = $rang;
 
@@ -392,22 +333,16 @@ class Compte
 
     /**
      * Récupère le rang d'affichage du compte.
-     *
-     * @return int
      */
-    public function getRang()
+    public function getRang(): ?int
     {
         return $this->rang;
     }
 
     /**
      * Valide le compte pour le moteur de validation.
-     *
-     * @param ExecutionContextInterface $context
-     *
-     * @return void
      */
-    public function validate(ExecutionContextInterface $context)
+    public function validate(ExecutionContextInterface $context): void
     {
         $violations = [];
 
@@ -419,7 +354,7 @@ class Compte
             $violations[] = "La date d'ouverture du compte doit être située dans le passé.";
         }
 
-        if ($this->getDateFermeture() !== null) {
+        if ($this->getDateFermeture() instanceof \DateTime) {
             if ($this->getDateFermeture() > new \DateTime()) {
                 $violations[] = "La date de fermeture du compte doit être située dans le passé.";
             }
