@@ -14,5 +14,4 @@ interface PleinsImportHandlerInterface extends ImportHandlerInterface
 
     /** @return array<string, Plein> */
     public function getWaitingPleins(): array;
-
 }
