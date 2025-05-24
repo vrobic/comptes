@@ -28,7 +28,8 @@
     "require-dev": {
         "sensio/generator-bundle": "~3.0",
         "symfony/phpunit-bridge": "~2.7",
-        "phpstan/phpstan": "^1.12"
+        "phpstan/phpstan": "^1.12",
+        "friendsofphp/php-cs-fixer": "v2.2.20"
     },
     "scripts": {
         "post-install-cmd": [

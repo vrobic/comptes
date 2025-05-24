@@ -74,7 +74,6 @@ class CompteController extends Controller
 
         // Les faux mouvements peuvent avoir été intercalés au mauvais endroit
         usort($mouvements, function (Mouvement $mouvementA, Mouvement $mouvementB): int {
-
             $dateA = $mouvementA->getDate();
             $dateB = $mouvementB->getDate();
 

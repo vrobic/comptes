@@ -29,6 +29,15 @@ reinstall: ## Réinstalle la base de données
 fixtures: ## Charge les fixtures
 	$(DOCKER_PHP) app/console doctrine:fixtures:load --no-interaction
 
+.PHONY: lint
+lint: ## Exécute PHPCS et PHPStan
+	make cs-fix
+	make stan
+
+.PHONY: cs-fix
+cs-fix: ## Exécute PHPCS
+	$(DOCKER_PHP) bin/php-cs-fixer fix src
+
 .PHONY: stan
 stan: ## Exécute PHPStan
 	$(DOCKER_PHP) bin/phpstan analyse -l 7 src
