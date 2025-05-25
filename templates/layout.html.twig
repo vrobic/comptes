@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html data-modules="{% block modules %}{% endblock %}">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Comptes{% block title %}{% endblock %}</title>
+        {% block stylesheets %}
+            <link rel="stylesheet" href="/css/lib/bootstrap.min.css" />
+            <link rel="stylesheet" href="/css/lib/select2.min.css" />
+            <link rel="stylesheet" href="/css/lib/jquery.tag-editor.css" />
+            <link rel="stylesheet" href="/css/comptes.css" />
+        {% endblock %}
+        {% block javascripts %}
+            <script type="text/javascript" src="/js/lib/jquery.min.js"></script>
+            <script type="text/javascript" src="/js/lib/bootstrap.min.js"></script>
+            <script type="text/javascript" src="/js/lib/highcharts.min.js"></script>
+            <script type="text/javascript" src="/js/lib/select2.min.js"></script>
+            <script type="text/javascript" src="/js/lib/select2.fr.min.js"></script>
+            <script type="text/javascript" src="/js/lib/jquery.caret.min.js"></script>
+            <script type="text/javascript" src="/js/lib/jquery.tag-editor.min.js"></script>
+            <script type="text/javascript" src="/js/comptes.main.js"></script>
+            <script type="text/javascript" src="/js/comptes.forms.js"></script>
+            <script type="text/javascript" src="/js/comptes.highcharts.js"></script>
+        {% endblock %}
+    </head>
+    <body>
+        {% block body %}
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="sidebar col-md-2">
+                        {% block sidebar %}
+                            <ul class="nav nav-sidebar">
+                                <li{% if app.request.get('_route') == 'dashboard' %} class="active"{% endif %}>
+                                    <a href="{{ path('dashboard') }}">
+                                        <span class="glyphicon glyphicon-dashboard"></span> Dashboard
+                                    </a>
+                                </li>
+                                <li{% if app.request.get('_route') == 'comptes_comptes' %} class="active"{% endif %}>
+                                    <a href="{{ path('comptes_comptes') }}">
+                                        <span class="glyphicon glyphicon-euro"></span> Comptes
+                                    </a>
+                                </li>
+                                <li{% if app.request.get('_route') == 'categories_categories' %} class="active"{% endif %}>
+                                    <a href="{{ path('categories_categories') }}">
+                                        <span class="glyphicon glyphicon-list-alt"></span> Catégories
+                                    </a>
+                                </li>
+                                <li{% if app.request.get('_route') == 'import_mouvements' %} class="active"{% endif %}>
+                                    <a href="{{ path('import_mouvements') }}">
+                                        <span class="glyphicon glyphicon-import"></span> Import mouvements
+                                    </a>
+                                </li>
+                            </ul>
+                        {% endblock %}
+                    </div>
+                    <div class="content col-md-10 col-md-offset-2">
+                        {% block content %}{% endblock %}
+                    </div>
+                </div>
+            </div>
+        {% endblock %}
+    </body>
+</html>

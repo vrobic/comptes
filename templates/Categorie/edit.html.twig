@@ -1,0 +1,148 @@
+{% extends 'layout.html.twig' %}
+
+{% block modules 'forms;highcharts' %}
+
+{% block title %} - Édition des catégories{% endblock %}
+
+{% import _self as macros %}
+
+{% macro categoriesFillesRow(categories, currentCategorie, keywords, depth) %}
+    <tr>
+        <td>
+            <label for="batch-{{ currentCategorie.id }}" class="sr-only">Éditer</label>
+            <input id="batch-{{ currentCategorie.id }}" type="checkbox" name="batch[]" value="{{ currentCategorie.id }}">
+        </td>
+        <td class="input-text">
+            <label for="rang-{{ currentCategorie.id }}" class="sr-only">Rang</label>
+            <input id="rang-{{ currentCategorie.id }}" type="text" name="categories[{{ currentCategorie.id }}][rang]" value="{{ currentCategorie.rang }}" placeholder="0">
+        </td>
+        <td class="input-text" style="padding-left: {{ (5 + depth * 20) ~ "px" }};">
+            <label for="nom-{{ currentCategorie.id }}" class="sr-only">Nom</label>
+            <input id="nom-{{ currentCategorie.id }}" type="text" name="categories[{{ currentCategorie.id }}][nom]" value="{{ currentCategorie.nom }}" placeholder="Nom de la catégorie">
+        </td>
+        <td class="input-select2">
+            <label for="categorie-parente-{{ currentCategorie.id }}" class="sr-only">Catégorie parente</label>
+            <select id="categorie-parente-{{ currentCategorie.id }}" name="categories[{{ currentCategorie.id }}][categorieParente]">
+                <option value="">&nbsp;</option>
+                {% for categorie in categories %}
+                    {% if not categorie.categorieParente %}
+                        {{ _self.categoriesFillesSelect(categorie, currentCategorie, 0) }}
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </td>
+        <td class="input-tags">
+            <label for="keywords-{{ currentCategorie.id }}" class="sr-only">Mots-clés</label>
+            <input id="keywords-{{ currentCategorie.id }}" type="text" name="categories[{{ currentCategorie.id }}][keywords]" value="{{ keywords[currentCategorie.id] is defined ? keywords[currentCategorie.id]|join('|') }}" placeholder="Mots-clés">
+        </td>
+    </tr>
+    {% if currentCategorie.categoriesFilles is not empty %}
+        {% set depth = depth + 1 %}
+        {% for categorieFille in currentCategorie.categoriesFilles %}
+            {{ _self.categoriesFillesRow(categories, categorieFille, keywords, depth) }}
+        {% endfor %}
+    {% endif %}
+{% endmacro %}
+
+{% macro categoriesFillesSelect(categorie, currentCategorie, depth) %}
+
+    {% set optgroup = not categorie.categorieParente %}
+    {% if optgroup %}<optgroup label="{{ categorie }}">{% endif %}
+
+        <option value="{{ categorie.id }}" style="padding-left: {{ (depth * 20) ~ "px" }};" {{ currentCategorie is not null and currentCategorie.categorieParente is not null and currentCategorie.categorieParente.id == categorie.id ? "selected" }} {{ currentCategorie is not null and currentCategorie.id == categorie.id ? "disabled" }}>{{ categorie }}</option>
+        {% if categorie.categoriesFilles is not empty %}
+            {% set depth = depth + 1 %}
+            {% for categorieFille in categorie.categoriesFilles %}
+                {{ _self.categoriesFillesSelect(categorieFille, currentCategorie, depth) }}
+            {% endfor %}
+        {% endif %}
+
+    {% if optgroup %}</optgroup>{% endif %}
+
+{% endmacro %}
+
+{% block content %}
+    <h1>Édition des catégories</h1>
+    <form action="{{ path('categories_edit') }}" method="POST">
+        <table class="table table-condensed table-striped table-hover">
+            <caption>Liste des catégories</caption>
+            <thead>
+                <tr>
+                    <th class="col-md-1">
+                        Action par lot
+                        <small>
+                            <span class="glyphicon glyphicon-check trigger" data-trigger="check-all" data-target-name="batch[]" title="Cocher tout"></span>
+                            <span class="glyphicon glyphicon-unchecked trigger" data-trigger="uncheck-all" data-target-name="batch[]" title="Décocher tout"></span>
+                        </small>
+                    </th>
+                    <th class="col-md-1">
+                        Rang
+                        <small>entre catégories sœurs</small>
+                    </th>
+                    <th class="col-md-3">Catégorie</th>
+                    <th class="col-md-3">Catégorie parente</th>
+                    <th class="col-md-4">
+                        Mots-clés
+                        <small>utilisés dans les imports de mouvements</small>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for categorie in categories %}
+                    {% if not categorie.categorieParente %}
+                        {{ macros.categoriesFillesRow(categories, categorie, keywords, 0) }}
+                    {% endif %}
+                {% endfor %}
+                <tr class="new-row hidden" data-id="-1">
+                    <td>
+                        <label for="batch--1" class="sr-only">Ajouter</label>
+                        <input id="batch--1" type="checkbox" name="batch[]" value="-1">
+                    </td>
+                    <td class="input-text">
+                        <label for="rang--1" class="sr-only">Rang</label>
+                        <input id="rang--1" type="text" name="categories[-1][rang]" value="" placeholder="0">
+                    </td>
+                    <td class="input-text">
+                        <label for="nom--1" class="sr-only">Nom</label>
+                        <input id="nom--1" type="text" name="categories[-1][nom]" value="" placeholder="Nom de la catégorie">
+                    </td>
+                    <td class="input-select2">
+                        <label for="categorie-parente--1" class="sr-only">Catégorie parente</label>
+                        <select id="categorie-parente--1" name="categories[-1][categorieParente]">
+                            <option value="">&nbsp;</option>
+                            {% for categorie in categories %}
+                                {% if not categorie.categorieParente %}
+                                    {{ macros.categoriesFillesSelect(categorie, null, 0) }}
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td class="input-tags">
+                        <label for="keywords--1" class="sr-only">Mots-clés</label>
+                        <input id="keywords--1" type="text" name="categories[-1][keywords]" value="" placeholder="Mots-clés">
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="5">
+                        <button class="btn btn-default" data-trigger="add-new-row">
+                            <span class="glyphicon glyphicon-plus-sign"></span> Ajouter une catégorie
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <input type="hidden" name="redirect_url" value="{{ path(app.request.get('_route')) }}">
+        <div class="btn-group">
+            <button class="btn btn-default" type="submit" name="action" value="save">
+                <span class="glyphicon glyphicon-floppy-disk"></span> Enregistrer
+            </button>
+            <button class="btn btn-default" type="submit" name="action" value="delete">
+                <span class="glyphicon glyphicon-floppy-remove"></span> Supprimer
+            </button>
+            <div class="clearfix"></div>
+            <p class="help-block">
+                <span class="glyphicon glyphicon-info-sign"></span> N'oublie pas de cocher les catégories que tu veux modifier.
+            </p>
+        </div>
+    </form>
+{% endblock %}
