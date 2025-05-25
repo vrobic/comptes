@@ -71,6 +71,7 @@
         }
     },
     "require-dev": {
+        "phpstan/phpstan": "^2.1",
         "symfony/stopwatch": "7.2.*",
         "symfony/web-profiler-bundle": "7.2.*"
     }
