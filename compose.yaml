@@ -13,6 +13,8 @@ services:
       # The two next lines can be removed after initial installation
       SYMFONY_VERSION: ${SYMFONY_VERSION:-}
       STABILITY: ${STABILITY:-stable}
+      # Permettre d'utiliser PHPCS même si notre version de PHP est trop récente pour lui
+      PHP_CS_FIXER_IGNORE_ENV: 1
     volumes:
       - caddy_data:/data
       - caddy_config:/config
