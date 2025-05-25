@@ -22,5 +22,12 @@ migration-generate: ## Génère le squelette d'un nouvelle migration de base de 
 migration-migrate: ## Exécute les migrations qui n'ont pas été jouées sur la base de données
 	$(DOCKER_PHP) vendor/bin/doctrine-migrations migrate
 
+lint: ## Exécute PHPCS et PHPStan
+	make cs-fix
+	make stan
+
+cs-fix: ## Exécute PHPCS
+	$(DOCKER_PHP) vendor/bin/php-cs-fixer fix src --allow-risky=yes
+
 stan: ## Exécute PHPStan
 	$(DOCKER_PHP) vendor/bin/phpstan analyse -l 7 src
