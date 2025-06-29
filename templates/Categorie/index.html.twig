@@ -12,10 +12,10 @@
             <a href="{{ path('categories_categorie', {'categorieId': categorie.id, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y'), 'compteId': compte_filter is not null ? compte_filter.id : ''}) }}">{{ categorie }}</a>
         </td>
         <td>
-            {{ montants[categorie.id].period|number_format(2, ".", "") ~ "€" }}
+            {{ montants[categorie.id].period|number_format(2, ",", " ") ~ " €" }}
         </td>
         <td>
-            {{ montants[categorie.id].average|number_format(2, ".", "") ~ "€" }}
+            {{ montants[categorie.id].average|number_format(2, ",", " ") ~ " €" }}
         </td>
         <td data-sparkline="{% for year, montant in montants[categorie.id].yearly %}{{ year ~ ':' ~ montant ~ (not loop.last ? ',') | e('js') }}{% endfor %}"></td>
     </tr>
@@ -127,7 +127,7 @@
                     <a href="{{ path('categories_categorie', {'categorieId': 0, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y'), 'compteId': compte_filter is not null ? compte_filter.id : ''}) }}">Non catégorisé</a>
                 </td>
                 <td>
-                    {{ montant_total_non_categorise|number_format(2, ".", "") ~ "€" }}
+                    {{ montant_total_non_categorise|number_format(2, ",", " ") ~ " €" }}
                 </td>
                 <td colspan="2"></td>
             </tr>
@@ -137,7 +137,7 @@
                     <small>(dont non catégorisé)</small>
                 </td>
                 <td>
-                    {{ montant_total|number_format(2, ".", "") ~ "€" }}
+                    {{ montant_total|number_format(2, ",", " ") ~ " €" }}
                 </td>
                 <td></td>
                 <td data-sparkline="{% for year, montant in yearly_montants %}{{ year ~ ':' ~ montant ~ (not loop.last ? ',') | e('js') }}{% endfor %}"></td>

@@ -33,11 +33,11 @@ class Mouvement
     public function __toString(): string
     {
         $compte = $this->getCompte();
-        $date = $this->getDate()->format('d/m/Y');
+        $date = $this->getDate()->format('d-m-Y');
         $description = $this->getDescription();
-        $montant = $this->getMontant();
+        $montant = number_format($this->getMontant(), 2, ',', ' ');
 
-        return "$compte $date {$montant}€ $description";
+        return "$compte $date {$montant} € $description";
     }
 
     /**

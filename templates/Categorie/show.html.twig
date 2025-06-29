@@ -111,7 +111,7 @@
                         x: -20 // centrage
                     },
                     subtitle: {
-                        text: "Moyenne mensuelle sur la période : {{ average|number_format(2, ".", "") ~ "€" }}",
+                        text: "Moyenne mensuelle sur la période : {{ average|number_format(2, ",", " ") ~ " €" }}",
                         x: -20 // centrage
                     },
                     xAxis: {
@@ -198,7 +198,7 @@
             <tfoot>
                 <tr>
                     <th>Total</th>
-                    <td colspan="5">{{ total|number_format(2, ".", "") ~ "€" }}</td>
+                    <td colspan="5">{{ total|number_format(2, ",", " ") ~ " €" }}</td>
                 </tr>
             </tfoot>
         </table>
