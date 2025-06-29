@@ -17,10 +17,10 @@ import-bdd: ## Import base de données
 	docker compose exec -T database mysql -u${MYSQL_USER} -p${MYSQL_PASSWORD} ${MYSQL_DATABASE} < ~/Downloads/comptes.sql
 
 migration-generate: ## Génère le squelette d'un nouvelle migration de base de données
-	$(DOCKER_PHP) vendor/bin/doctrine-migrations generate
+	$(DOCKER_PHP) bin/console doctrine:migrations:generate
 
 migration-migrate: ## Exécute les migrations qui n'ont pas été jouées sur la base de données
-	$(DOCKER_PHP) vendor/bin/doctrine-migrations migrate
+	$(DOCKER_PHP) bin/console doctrine:migrations:migrate
 
 lint: ## Exécute PHPCS et PHPStan
 	make cs-fix

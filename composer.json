@@ -9,12 +9,13 @@
         "php": ">=8.4.7",
         "ext-ctype": "*",
         "ext-iconv": "*",
-        "doctrine/dbal": "^4.2",
-        "doctrine/migrations": "^3.9",
+        "doctrine/doctrine-bundle": ">=2.15",
+        "doctrine/doctrine-migrations-bundle": "^3.4.2",
         "runtime/frankenphp-symfony": "^0.2.0",
+        "shuchkin/simplexlsx": "^1.1.14",
         "symfony/console": "7.2.*",
         "symfony/dotenv": "7.2.*",
-        "symfony/flex": "^2",
+        "symfony/flex": "^2.7.1",
         "symfony/framework-bundle": "7.2.*",
         "symfony/runtime": "7.2.*",
         "symfony/yaml": "7.2.*"
@@ -72,7 +73,7 @@
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.75",
-        "phpstan/phpstan": "^2.1",
+        "phpstan/phpstan": "^2.1.17",
         "symfony/debug-bundle": "7.2.*",
         "symfony/stopwatch": "7.2.*",
         "symfony/web-profiler-bundle": "7.2.*"

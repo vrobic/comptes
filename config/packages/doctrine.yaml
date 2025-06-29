@@ -1,0 +1,27 @@
+doctrine:
+    dbal:
+        driver: pdo_mysql
+        user: '%env(resolve:MYSQL_USER)%'
+        password: '%env(resolve:MYSQL_PASSWORD)%'
+        host: database
+        dbname: '%env(resolve:MYSQL_DATABASE)%'
+        server_version: '%env(resolve:MYSQL_VERSION)%'
+        charset: '%env(resolve:MYSQL_CHARSET)%'
+
+        profiling_collect_backtrace: '%kernel.debug%'
+        use_savepoints: true
+
+when@test:
+    doctrine:
+        dbal:
+            # "TEST_TOKEN" is typically set by ParaTest
+            dbname_suffix: '_test%env(default::TEST_TOKEN)%'
+
+when@prod:
+    framework:
+        cache:
+            pools:
+                doctrine.result_cache_pool:
+                    adapter: cache.app
+                doctrine.system_cache_pool:
+                    adapter: cache.system
