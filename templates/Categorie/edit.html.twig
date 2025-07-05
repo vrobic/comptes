@@ -26,7 +26,7 @@
                 <option value="">&nbsp;</option>
                 {% for categorie in categories %}
                     {% if not categorie.categorieParente %}
-                        {{ _self.categoriesFillesSelect(categorie, currentCategorie, 0) }}
+                        {{ _self.categoriesFillesSelect(categories, categorie, currentCategorie, 0) }}
                     {% endif %}
                 {% endfor %}
             </select>
@@ -39,21 +39,21 @@
     {% if currentCategorie.categoriesFilles is not empty %}
         {% set depth = depth + 1 %}
         {% for categorieFille in currentCategorie.categoriesFilles %}
-            {{ _self.categoriesFillesRow(categories, categorieFille, keywords, depth) }}
+            {{ _self.categoriesFillesRow(categories, categories[categorieFille], keywords, depth) }}
         {% endfor %}
     {% endif %}
 {% endmacro %}
 
-{% macro categoriesFillesSelect(categorie, currentCategorie, depth) %}
+{% macro categoriesFillesSelect(categories, categorie, currentCategorie, depth) %}
 
-    {% set optgroup = categorie.categorieParente is null %}
+    {% set optgroup = not categorie.categorieParente %}
     {% if optgroup %}<optgroup label="{{ categorie }}">{% endif %}
 
-        <option value="{{ categorie.id }}" style="padding-left: {{ (depth * 20) ~ "px" }};" {{ currentCategorie is not null and currentCategorie.categorieParente is not null and currentCategorie.categorieParente.id == categorie.id ? "selected" }} {{ currentCategorie is not null and currentCategorie.id == categorie.id ? "disabled" }}>{{ categorie }}</option>
+        <option value="{{ categorie.id }}" style="padding-left: {{ (depth * 20) ~ "px" }};" {{ currentCategorie is not null and currentCategorie.categorieParente is not null and currentCategorie.categorieParente == categorie.id ? "selected" }} {{ currentCategorie is not null and currentCategorie.id == categorie.id ? "disabled" }}>{{ categorie }}</option>
         {% if categorie.categoriesFilles is not empty %}
             {% set depth = depth + 1 %}
             {% for categorieFille in categorie.categoriesFilles %}
-                {{ _self.categoriesFillesSelect(categorieFille, currentCategorie, depth) }}
+                {{ _self.categoriesFillesSelect(categories, categories[categorieFille], currentCategorie, depth) }}
             {% endfor %}
         {% endif %}
 
@@ -112,7 +112,7 @@
                             <option value="">&nbsp;</option>
                             {% for categorie in categories %}
                                 {% if not categorie.categorieParente %}
-                                    {{ macros.categoriesFillesSelect(categorie, null, 0) }}
+                                    {{ macros.categoriesFillesSelect(categories, categorie, null, 0) }}
                                 {% endif %}
                             {% endfor %}
                         </select>

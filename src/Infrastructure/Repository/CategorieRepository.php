@@ -14,6 +14,8 @@ use Doctrine\DBAL\Query\QueryBuilder;
 
 final readonly class CategorieRepository
 {
+    use UpsertTrait;
+
     public function __construct(
         private Connection $connection,
         private CategorieDenormalizer $categorieDenormalizer,
@@ -113,6 +115,36 @@ final readonly class CategorieRepository
         }
 
         return array_unique($ids);
+    }
+
+    public function save(Categorie ...$categories): void
+    {
+        foreach ($categories as $categorie) {
+            $data = [
+                'categorie_parente_id' => $categorie->getCategorieParente(),
+                'nom' => $categorie->getNom(),
+                'rang' => $categorie->getRang(),
+            ];
+
+            $this->upsert(
+                $this->connection,
+                'categories',
+                array_merge(
+                    ['id' => $categorie->getId()],
+                    $data,
+                ),
+                $data,
+            );
+        }
+    }
+
+    public function delete(int ...$ids): void
+    {
+        $this->connection->executeStatement(
+            'DELETE FROM categories WHERE id IN (:ids);',
+            ['ids' => $ids],
+            ['ids' => ArrayParameterType::INTEGER]
+        );
     }
 
     private function getBaseQueryBuilder(): QueryBuilder

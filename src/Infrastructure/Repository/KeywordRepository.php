@@ -7,15 +7,35 @@ namespace App\Infrastructure\Repository;
 use App\Domain\Keyword\Keyword;
 use App\Domain\Keyword\KeywordCollection;
 use App\Infrastructure\Denormalizer\KeywordDenormalizer;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;
 
 final readonly class KeywordRepository
 {
+    use UpsertTrait;
+
     public function __construct(
         private Connection $connection,
         private KeywordDenormalizer $keywordDenormalizer,
     ) {
+    }
+
+    public function find(string $word): ?Keyword
+    {
+        $row = $this->getBaseQueryBuilder()
+            ->where('keyword.word = :word')
+            ->setParameter('word', $word)
+            ->executeQuery()
+            ->fetchAssociative();
+
+        if (false === $row) {
+            return null;
+        }
+
+        return $this->keywordDenormalizer->denormalize(
+            $this->préparerRowPourDenormalizer($row)
+        );
     }
 
     public function findAll(): KeywordCollection
@@ -27,8 +47,37 @@ final readonly class KeywordRepository
         return KeywordCollection::from(
             ...array_map(
                 fn (array $row): Keyword => $this->keywordDenormalizer->denormalize($row),
-                $this->préparerPourDenormalizer($rows)
+                $this->préparerRowsPourDenormalizer($rows)
             )
+        );
+    }
+
+    public function save(Keyword ...$keywords): void
+    {
+        foreach ($keywords as $keyword) {
+            $data = [
+                'categorie_id' => $keyword->getCategorie()->getId(),
+                'word' => $keyword->getWord(),
+            ];
+
+            $this->upsert(
+                $this->connection,
+                'keywords',
+                array_merge(
+                    ['id' => $keyword->getId()],
+                    $data,
+                ),
+                $data,
+            );
+        }
+    }
+
+    public function delete(int ...$ids): void
+    {
+        $this->connection->executeStatement(
+            'DELETE FROM keywords WHERE id IN (:ids);',
+            ['ids' => $ids],
+            ['ids' => ArrayParameterType::INTEGER]
         );
     }
 
@@ -51,30 +100,34 @@ final readonly class KeywordRepository
             ->orderBy('keyword.word', 'ASC');
     }
 
-    private function préparerPourDenormalizer(array $rows): array
+    private function préparerRowsPourDenormalizer(array $rows): array
     {
-        foreach ($rows as &$row) {
-            $row = array_reduce(
-                array_keys($row),
-                static function (array $carry, string|int $key) use ($row): array {
-                    if (is_string($key) && str_starts_with($key, 'categorie_')) {
-                        $carry['categorie'][substr($key, 10)] = $row[$key];
-                    } else {
-                        $carry[$key] = $row[$key];
-                    }
+        return array_map(
+            fn (array $row): array => $this->préparerRowPourDenormalizer($row),
+            $rows
+        );
+    }
 
-                    return $carry;
-                },
-                []
-            );
+    private function préparerRowPourDenormalizer(array $row): array
+    {
+        $row = array_reduce(
+            array_keys($row),
+            static function (array $carry, string|int $key) use ($row): array {
+                if (is_string($key) && str_starts_with($key, 'categorie_')) {
+                    $carry['categorie'][substr($key, 10)] = $row[$key];
+                } else {
+                    $carry[$key] = $row[$key];
+                }
 
-            // Nettoyage
-            $row = array_map(
-                static fn ($item) => is_array($item) && null === $item['id'] ? null : $item,
-                $row,
-            );
-        }
+                return $carry;
+            },
+            []
+        );
 
-        return $rows;
+        // Nettoyage
+        return array_map(
+            static fn ($item) => is_array($item) && null === $item['id'] ? null : $item,
+            $row,
+        );
     }
 }

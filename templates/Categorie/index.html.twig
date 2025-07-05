@@ -22,7 +22,7 @@
     {% if categorie.categoriesFilles is not empty %}
         {% set depth = depth + 1 %}
         {% for id in categorie.categoriesFilles %}
-            {{ _self.categoriesFilles(categories, categories.get(id), montants, depth, date_filter, compte_filter) }}
+            {{ _self.categoriesFilles(categories, categories[id], montants, depth, date_filter, compte_filter) }}
         {% endfor %}
     {% endif %}
 {% endmacro %}

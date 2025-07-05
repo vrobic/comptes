@@ -12,6 +12,7 @@ use App\Domain\Compte\Compte;
  */
 class Mouvement
 {
+    // @todo : supprimer les setters et ajouter des readonly
     public function __construct(
         private readonly ?int $id, // null tant que l'ID n'a pas été généré par la BDD (@todo : utiliser des UUID pour éviter ça)
         private \DateTime $date, // date du mouvement

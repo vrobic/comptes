@@ -12,8 +12,9 @@ final class Categorie
     /**
      * @param int[] $categoriesFilles
      */
+    // @todo : supprimer les setters et ajouter des readonly
     public function __construct(
-        private readonly int $id,
+        private readonly ?int $id, // null tant que l'ID n'a pas été généré par la BDD (@todo : utiliser des UUID pour éviter ça)
         private string $nom, // nom de la catégorie
         private ?int $categorieParente, // catégorie parente
         private array $categoriesFilles, // catégories filles
@@ -26,7 +27,7 @@ final class Categorie
         return $this->getNom();
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }

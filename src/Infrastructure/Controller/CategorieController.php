@@ -8,9 +8,12 @@ use App\Application\StatsProvider;
 use App\Domain\Categorie\Categorie;
 use App\Domain\Compte\Compte;
 use App\Domain\DataStructure\Maybe;
+use App\Domain\Keyword\Keyword;
+use App\Domain\Keyword\KeywordCollection;
 use App\Domain\Mouvement\Mouvement;
 use App\Infrastructure\Repository\CategorieRepository;
 use App\Infrastructure\Repository\CompteRepository;
+use App\Infrastructure\Repository\KeywordRepository;
 use App\Infrastructure\Repository\MouvementRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,6 +28,7 @@ final class CategorieController extends AbstractController
         private readonly CategorieRepository $categorieRepository,
         private readonly CompteRepository $compteRepository,
         private readonly MouvementRepository $mouvementRepository,
+        private readonly KeywordRepository $keywordRepository,
         private readonly StatsProvider $statsProvider,
     ) {
     }
@@ -135,7 +139,10 @@ final class CategorieController extends AbstractController
         return $this->render(
             'Categorie/index.html.twig',
             [
-                'categories' => $categories,
+                'categories' => $categories->toArray(
+                    static fn (int $categorieId): int => $categorieId,
+                    static fn (Categorie $categorie): Categorie => $categorie
+                ),
                 'comptes' => $comptes,
                 'compte_filter' => $compte,
                 'date_filter' => [
@@ -284,7 +291,10 @@ final class CategorieController extends AbstractController
             'Categorie/show.html.twig',
             [
                 'categorie' => $categorie,
-                'categories' => $categories,
+                'categories' => $categories->toArray(
+                    static fn (int $categorieId): int => $categorieId,
+                    static fn (Categorie $categorie): Categorie => $categorie
+                ),
                 'comptes' => $comptes,
                 'compte_filter' => $compte,
                 'date_filter' => [
@@ -303,10 +313,208 @@ final class CategorieController extends AbstractController
     }
 
     #[Route('/categories/edit', name: 'categories_edit')]
-    public function edit(int $categorieId): Response
+    public function edit(Request $request): Response
     {
-        // @todo
+        $keywords = $this->keywordRepository->findAll();
+        $keywordsParCatégorie = $keywords->trierParCatégorie();
 
-        return new Response();
+        // Valeurs postées
+        $action = $request->get('action');
+        $batchArray = $request->get('batch', []);
+        $categoriesArray = $request->get('categories', []);
+
+        foreach ($batchArray as $categorieID) {
+            $categorieID = (int) $categorieID;
+
+            if (isset($categoriesArray[$categorieID])) {
+                $categorieArray = $categoriesArray[$categorieID];
+
+                switch ($action) {
+                    case 'save': // Création et édition
+                        // Nom
+                        if (isset($categorieArray['nom'])) {
+                            $nom = $categorieArray['nom'];
+                        }
+
+                        // Catégorie parente
+                        if (isset($categorieArray['categorieParente'])) {
+                            $categorieParenteID = (int) $categorieArray['categorieParente'];
+
+                            if ($categorieParenteID === $categorieID) {
+                                throw new BadRequestHttpException("Impossible de définir la catégorie $categorieParenteID comme parente de $categorieID (référence circulaire)");
+                            }
+
+                            if ($categorieParenteID > 0) {
+                                $categorieParente = $this->categorieRepository->find($categorieParenteID);
+
+                                if (!($categorieParente instanceof Categorie)) {
+                                    throw new BadRequestHttpException("Catégorie $categorieID introuvable");
+                                }
+                            }
+                        }
+
+                        // Rang
+                        if (isset($categorieArray['rang'])) {
+                            $rang = '' !== $categorieArray['rang'] ? (int) $categorieArray['rang'] : null;
+                        }
+
+                        $variablesDéfinies = get_defined_vars();
+
+                        if ($categorieID > 0) { // Édition
+                            $categorie = $this->categorieRepository->find($categorieID);
+
+                            if (!($categorie instanceof Categorie)) {
+                                throw new BadRequestHttpException("Catégorie $categorieID introuvable");
+                            }
+
+                            if (array_key_exists('nom', $variablesDéfinies)) {
+                                $categorie->setNom($nom);
+                            }
+                            if (array_key_exists('categorieParente', $variablesDéfinies)) {
+                                $categorie->setCategorieParente($categorieParente->getId());
+                            }
+                            if (array_key_exists('rang', $variablesDéfinies)) {
+                                $categorie->setRang($rang);
+                            }
+                        } else { // Création
+                            if (
+                                !array_key_exists('nom', $variablesDéfinies)
+                                || !array_key_exists('categorieParente', $variablesDéfinies)
+                                || !array_key_exists('rang', $variablesDéfinies)
+                            ) {
+                                throw new BadRequestHttpException("Les valeurs nécessaires à la création d'une catégorie ne sont pas toutes postées.");
+                            }
+
+                            $categorie = new Categorie(
+                                null,
+                                $nom,
+                                $categorieParente->getId(),
+                                [],
+                                $rang
+                            );
+                        }
+
+                        $this->categorieRepository->save($categorie);
+
+                        // @todo : définir l'ID de la catégorie pour que $categorie->getId() le renvoie
+                        // @todo : sans ça, la création d'une catégorie plante au moment d'ajouter des mots-clés
+
+                        // Mots-clés
+                        if (isset($categorieArray['keywords'])) {
+                            $avant = $keywordsParCatégorie->has($categorieID) ?
+                                $keywordsParCatégorie->get($categorieID)->toArray(
+                                    static fn (Keyword $keyword): string => $keyword->getWord()
+                                ) :
+                                [];
+                            $après = explode('|', $categorieArray['keywords']);
+
+                            $noEmpty = static fn (string $word): bool => trim($word) !== '';
+                            $supprimés = array_filter(
+                                array_diff($avant, $après),
+                                $noEmpty
+                            );
+                            $ajoutés = array_filter(
+                                array_diff($après, $avant),
+                                $noEmpty
+                            );
+
+                            // Ajoute les mots-clés sélectionnés
+                            foreach ($ajoutés as $ajouté) {
+                                // Ce mot-clé existe-il déjà ?
+                                $keyword = $keywords->findFirst(
+                                    static fn (Keyword $keyword): bool => $keyword->getWord() === $ajouté,
+                                );
+
+                                if (!($keyword instanceof Keyword)) { // Si non, on le crée
+                                    $keyword = new Keyword(
+                                        null,
+                                        $ajouté,
+                                        $categorie
+                                    );
+                                } else { // Si oui, on vérifie qu'il n'est pas déjà affecté à une autre catégorie
+                                    $keywordCategorie = $keyword->getCategorie();
+                                    $keywordCategorieID = $keywordCategorie->getId();
+
+                                    if ($keywordCategorieID !== $categorieID) {
+                                        throw new BadRequestHttpException("Le mot-clé \"$keyword\" ne peut pas être ajouté à la catégorie \"$categorie\" puisqu'il est déjà affecté à \"$keywordCategorie\".");
+                                    }
+
+                                    $keyword->setCategorie($categorie);
+                                }
+
+                                $this->keywordRepository->save($keyword);
+                            }
+
+                            // Supprime les mots-clés qui ne sont plus sélectionnés
+                            foreach ($supprimés as $supprimé) {
+                                $keyword = $keywords->findFirst(
+                                    static fn (Keyword $keyword): bool => $keyword->getWord() === $supprimé,
+                                );
+
+                                if (!($keyword instanceof Keyword)) {
+                                    continue;
+                                }
+
+                                // Pas besoin de vider la catégorie du mot-clé, il n'a plus de raison d'être donc on le supprime directement
+                                $this->keywordRepository->delete($keyword->getId());
+                            }
+                        }
+
+                        break;
+
+                    case 'delete': // Suppression
+                        if ($categorieID > 0) {
+                            $mouvementsDeLaCatégorie = $this->mouvementRepository->findBy(
+                                categoriesIds: Maybe::from([$categorieID]),
+                                compteId: Maybe::nothing(),
+                                dateStart: Maybe::nothing(),
+                                dateEnd: Maybe::nothing(),
+                                montant: Maybe::nothing(),
+                            );
+
+                            if (!$mouvementsDeLaCatégorie->isEmpty()) {
+                                throw new BadRequestHttpException("La catégorie $categorieID ne peut pas être supprimée car elle est utilisée par {$mouvementsDeLaCatégorie->count()} mouvements.");
+                            }
+
+                            if ($keywordsParCatégorie->has($categorieID)) {
+                                $this->keywordRepository->delete(
+                                    ...$keywordsParCatégorie->get($categorieID)->toArray(
+                                        static fn (Keyword $keyword): int => $keyword->getId()
+                                    )
+                                );
+                            }
+
+                            $this->categorieRepository->delete($categorieID);
+                        }
+
+                        break;
+                }
+            }
+        }
+
+        // URL de redirection
+        $redirectURL = $request->get('redirect_url');
+
+        if (is_string($redirectURL)) {
+            return $this->redirect($redirectURL);
+        }
+
+        $categories = $this->categorieRepository->findAll();
+
+        return $this->render(
+            'Categorie/edit.html.twig',
+            [
+                'categories' => $categories->toArray(
+                    static fn (int $categorieId): int => $categorieId,
+                    static fn (Categorie $categorie): Categorie => $categorie
+                ),
+                'keywords' => $keywordsParCatégorie->toArray(
+                    static fn (int $categorieId): int => $categorieId,
+                    static fn (KeywordCollection $keywords): array => $keywords->toArray(
+                        static fn (Keyword $keyword): string => $keyword->getWord()
+                    )
+                ),
+            ]
+        );
     }
 }

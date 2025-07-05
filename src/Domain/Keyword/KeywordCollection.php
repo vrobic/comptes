@@ -12,4 +12,23 @@ final class KeywordCollection extends Set
     {
         parent::__construct(Keyword::class);
     }
+
+    public function trierParCatégorie(): KeywordsParCategorie
+    {
+        $keywordsParCategorie = new KeywordsParCategorie();
+
+        foreach ($this as $keyword) {
+            $categorieID = $keyword->getCategorie()->getId();
+
+            $keywords = $keywordsParCategorie->has($categorieID) ?
+                $keywordsParCategorie->get($categorieID) :
+                new KeywordCollection();
+
+            $keywords = $keywords->add($keyword);
+
+            $keywordsParCategorie = $keywordsParCategorie->add($categorieID, $keywords);
+        }
+
+        return $keywordsParCategorie;
+    }
 }

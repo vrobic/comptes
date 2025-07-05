@@ -11,6 +11,7 @@ use App\Domain\Mouvement\Mouvement;
  */
 final class Compte
 {
+    // @todo : supprimer les setters et ajouter des readonly
     public function __construct(
         private readonly int $id,
         private string $nom, // nom du compte

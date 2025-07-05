@@ -436,14 +436,10 @@ final readonly class MouvementRepository
 
     public function delete(int ...$ids): void
     {
-        $this->connection->delete(
-            'mouvements',
-            [
-                'id' => $ids,
-            ],
-            [
-                'id' => ArrayParameterType::INTEGER,
-            ]
+        $this->connection->executeStatement(
+            'DELETE FROM mouvements WHERE id IN (:ids);',
+            ['ids' => $ids],
+            ['ids' => ArrayParameterType::INTEGER]
         );
     }
 

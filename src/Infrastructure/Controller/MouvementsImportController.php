@@ -224,7 +224,10 @@ class MouvementsImportController extends AbstractController
             [
                 'handlers' => $this->handlers,
                 'comptes' => $comptes,
-                'categories' => $categories,
+                'categories' => $categories->toArray(
+                    static fn (int $categorieId): int => $categorieId,
+                    static fn (Categorie $categorie): Categorie => $categorie
+                ),
                 'categorized_mouvements' => $categorizedMouvements,
                 'uncategorized_mouvements' => $uncategorizedMouvements,
                 'ambiguous_mouvements' => $ambiguousMouvements,
@@ -283,7 +286,7 @@ class MouvementsImportController extends AbstractController
 
         // Handlers disponibles
         if ($fileExtension !== $this->handlers[$this->handlerIdentifier]['extension']) {
-            throw new UnsupportedMediaTypeHttpException("Le handler [$this->handlerIdentifier] ne supporte pas le type de fichier [$fileExtension].");
+            throw new UnsupportedMediaTypeHttpException("Le handler $this->handlerIdentifier ne supporte pas le type de fichier $fileExtension.");
         }
 
         $splFile = $file->openFile();
