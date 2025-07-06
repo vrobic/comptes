@@ -259,7 +259,7 @@ abstract class AbstractMouvementsImportHandler implements MouvementsImportHandle
             if (count($categories) > 1) {
                 $classification = self::AMBIGUOUS;
             } else {
-                $mouvement->setCategorie($categories->first());
+                $mouvement->categorie = $categories->first();
                 $classification = self::CATEGORIZED;
             }
         } else {
@@ -269,10 +269,10 @@ abstract class AbstractMouvementsImportHandler implements MouvementsImportHandle
         // Recherche d'un éventuel doublon
         $similarMouvements = $this->mouvementRepository->findBy(
             categoriesIds: Maybe::nothing(),
-            compteId: Maybe::from($mouvement->getCompte()->getId()),
-            dateStart: Maybe::from($mouvement->getDate()),
-            dateEnd: Maybe::from($mouvement->getDate()),
-            montant: Maybe::from($mouvement->getMontant()),
+            compteId: Maybe::from($mouvement->compte->id),
+            dateStart: Maybe::from($mouvement->date),
+            dateEnd: Maybe::from($mouvement->date),
+            montant: Maybe::from($mouvement->montant),
         );
 
         if (!$similarMouvements->isEmpty()) {

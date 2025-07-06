@@ -116,8 +116,8 @@ class MouvementsImportController extends AbstractController
                     /* Si on doit ignorer les mouvements anciens,
                      * alors on n'importe le mouvement que s'il est plus récent que le dernier présent en base. */
                     if (false !== $skipOldOnes && $latestMouvement instanceof Mouvement) {
-                        $date = $mouvement->getDate();
-                        $latestMouvementDate = $latestMouvement->getDate();
+                        $date = $mouvement->date;
+                        $latestMouvementDate = $latestMouvement->date;
 
                         if ($date < $latestMouvementDate) {
                             unset($mouvements[$hash]);
@@ -164,7 +164,7 @@ class MouvementsImportController extends AbstractController
                         if (!($date instanceof \DateTime)) {
                             throw new BadRequestHttpException("Date du mouvement invalide : $dateString");
                         }
-                        $mouvement->setDate($date);
+                        $mouvement->date = $date;
                     }
 
                     // Modification éventuelle de la catégorie
@@ -183,7 +183,7 @@ class MouvementsImportController extends AbstractController
                             $categorie = null;
                         }
 
-                        $mouvement->setCategorie($categorie);
+                        $mouvement->categorie = $categorie;
                     }
 
                     // Modification éventuelle du compte
@@ -196,20 +196,20 @@ class MouvementsImportController extends AbstractController
                                 throw new BadRequestHttpException("Compte $compteId introuvable");
                             }
 
-                            $mouvement->setCompte($compte);
+                            $mouvement->compte = $compte;
                         }
                     }
 
                     // Modification éventuelle du montant
                     if (isset($mouvementsData[$hash]['montant'])) {
                         $montant = (float) $mouvementsData[$hash]['montant'];
-                        $mouvement->setMontant($montant);
+                        $mouvement->montant = $montant;
                     }
 
                     // Modification éventuelle de la description
                     if (isset($mouvementsData[$hash]['description'])) {
                         $description = $mouvementsData[$hash]['description'];
-                        $mouvement->setDescription($description);
+                        $mouvement->description = $description;
                     }
 
                     // Persistance des données

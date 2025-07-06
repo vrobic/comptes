@@ -7,6 +7,7 @@ namespace App\Application;
 use App\Domain\Categorie\Categorie;
 use App\Domain\Compte\Compte;
 use App\Domain\DataStructure\Maybe;
+use App\Domain\Mouvement\Mouvement;
 use App\Infrastructure\Repository\CategorieRepository;
 use App\Infrastructure\Repository\MouvementRepository;
 
@@ -50,12 +51,12 @@ final readonly class StatsProvider
                 Maybe::from(
                     $categorie->getValeur() instanceof Categorie ?
                         $this->categorieRepository
-                            ->getCategoriesFillesRecursive($categorie->getValeur()->getId())
-                            ->add($categorie->getValeur()->getId()) :
+                            ->getCategoriesFillesRecursive($categorie->getValeur()->id)
+                            ->add($categorie->getValeur()->id) :
                         null
                 ) :
                 Maybe::nothing(),
-            compteId: $compte->estDéfini ? Maybe::from($compte->getValeur()->getId()) : Maybe::nothing(),
+            compteId: $compte->estDéfini ? Maybe::from($compte->getValeur()->id) : Maybe::nothing(),
             dateStart: Maybe::from($dateStart->modify('first day of this year')->setTime(0, 0, 0)),
             dateEnd: Maybe::from($dateEnd->modify('last day of this year')->setTime(23, 59, 59)),
             montant: Maybe::nothing(),
@@ -63,9 +64,10 @@ final readonly class StatsProvider
 
         $yearlyMontants = [];
 
+        /** @var Mouvement $mouvement */
         foreach ($mouvements as $mouvement) {
-            $montant = $mouvement->getMontant();
-            $date = $mouvement->getDate();
+            $montant = $mouvement->montant;
+            $date = $mouvement->date;
             $year = (int) $date->format('Y');
 
             if (!isset($yearlyMontants[$year])) {
@@ -99,8 +101,8 @@ final readonly class StatsProvider
             Maybe::from(
                 $categorie->getValeur() instanceof Categorie ?
                     $this->categorieRepository
-                        ->getCategoriesFillesRecursive($categorie->getValeur()->getId())
-                        ->add($categorie->getValeur()->getId()) :
+                        ->getCategoriesFillesRecursive($categorie->getValeur()->id)
+                        ->add($categorie->getValeur()->id) :
                     null
             ) :
             Maybe::nothing();
@@ -122,18 +124,19 @@ final readonly class StatsProvider
 
         $mouvements = $this->mouvementRepository->findBy(
             categoriesIds: $categoriesIds,
-            compteId: $compte->estDéfini ? Maybe::from($compte->getValeur()->getId()) : Maybe::nothing(),
+            compteId: $compte->estDéfini ? Maybe::from($compte->getValeur()->id) : Maybe::nothing(),
             dateStart: Maybe::from($dateStart->modify('first day of this month')->setTime(0, 0, 0)),
             dateEnd: Maybe::from($dateEnd->modify('last day of this month')->setTime(23, 59, 59)),
             montant: Maybe::nothing(),
         );
 
+        /** @var Mouvement $mouvement */
         foreach ($mouvements as $mouvement) {
-            $date = $mouvement->getDate();
+            $date = $mouvement->date;
             $year = (int) $date->format('Y');
             $month = (int) $date->format('m');
 
-            $montants[$year][$month] += $mouvement->getMontant();
+            $montants[$year][$month] += $mouvement->montant;
         }
 
         return $montants;

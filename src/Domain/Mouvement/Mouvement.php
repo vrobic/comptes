@@ -12,20 +12,14 @@ use App\Domain\Compte\Compte;
  */
 class Mouvement
 {
-    // @todo : supprimer les getters, setters et ajouter des readonly
     public function __construct(
-        private readonly MouvementId $id,
-        private \DateTime $date, // date du mouvement
-        private ?Categorie $categorie, // catégorie du mouvement
-        private Compte $compte, // compte bancaire
-        private float $montant, // montant du mouvement en euros, positif (crédit) ou négatif (débit)
-        private string $description, // description du mouvement
+        public readonly MouvementId $id,
+        public \DateTime $date,
+        public ?Categorie $categorie,
+        public Compte $compte,
+        public float $montant, // montant en euros, positif (crédit) ou négatif (débit)
+        public string $description,
     ) {
-    }
-
-    public function getId(): MouvementId
-    {
-        return $this->id;
     }
 
     /**
@@ -33,10 +27,10 @@ class Mouvement
      */
     public function __toString(): string
     {
-        $compte = $this->getCompte();
-        $date = $this->getDate()->format('d-m-Y');
-        $description = $this->getDescription();
-        $montant = number_format($this->getMontant(), 2, ',', ' ');
+        $compte = $this->compte;
+        $date = $this->date->format('d-m-Y');
+        $description = $this->description;
+        $montant = number_format($this->montant, 2, ',', ' ');
 
         return "$compte $date {$montant} € $description";
     }
@@ -54,96 +48,6 @@ class Mouvement
     }
 
     /**
-     * Définit la catégorie du mouvement.
-     */
-    public function setCategorie(?Categorie $categorie = null): self
-    {
-        $this->categorie = $categorie;
-
-        return $this;
-    }
-
-    /**
-     * Récupère la catégorie du mouvement.
-     */
-    public function getCategorie(): ?Categorie
-    {
-        return $this->categorie;
-    }
-
-    /**
-     * Définit le compte bancaire.
-     */
-    public function setCompte(Compte $compte): self
-    {
-        $this->compte = $compte;
-
-        return $this;
-    }
-
-    /**
-     * Récupère le compte bancaire.
-     */
-    public function getCompte(): Compte
-    {
-        return $this->compte;
-    }
-
-    /**
-     * Définit le montant du mouvement en euros, positif (crédit) ou négatif (débit).
-     */
-    public function setMontant(float $montant): self
-    {
-        $this->montant = $montant;
-
-        return $this;
-    }
-
-    /**
-     * Récupère le montant du mouvement en euros, positif (crédit) ou négatif (débit).
-     */
-    public function getMontant(): float
-    {
-        return $this->montant;
-    }
-
-    /**
-     * Définit la description du mouvement.
-     */
-    public function setDescription(string $description): self
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
-    /**
-     * Récupère la description du mouvement.
-     */
-    public function getDescription(): string
-    {
-        return $this->description;
-    }
-
-    /**
-     * Définit la date.
-     */
-    public function setDate(\DateTime $date): self
-    {
-        $this->date = $date;
-
-        return $this;
-    }
-
-    /**
-     * Récupère la date.
-     */
-    public function getDate(): \DateTime
-    {
-        return $this->date;
-    }
-
-    /**
      * Valide le mouvement pour le moteur de validation.
      *
      * @todo : rebrancher
@@ -152,7 +56,7 @@ class Mouvement
     {
         $violations = [];
 
-        if ($this->getDate() > new \DateTime()) {
+        if ($this->date > new \DateTime()) {
             $violations[] = 'La date du mouvement doit être située dans le passé.';
         }
 

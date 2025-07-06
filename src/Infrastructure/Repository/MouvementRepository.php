@@ -373,18 +373,18 @@ final readonly class MouvementRepository
     {
         foreach ($mouvements as $mouvement) {
             $data = [
-                'categorie_id' => $mouvement->getCategorie()?->getId()->__toString(),
-                'compte_id' => $mouvement->getCompte()->getId(),
-                'date' => $mouvement->getDate()->format('Y-m-d'),
-                'montant' => $mouvement->getMontant(),
-                'description' => $mouvement->getDescription(),
+                'categorie_id' => $mouvement->categorie?->id->__toString(),
+                'compte_id' => $mouvement->compte->id,
+                'date' => $mouvement->date->format('Y-m-d'),
+                'montant' => $mouvement->montant,
+                'description' => $mouvement->description,
             ];
 
             $this->upsert(
                 $this->connection,
                 'mouvements',
                 array_merge(
-                    ['id' => (string) $mouvement->getId()],
+                    ['id' => (string) $mouvement->id],
                     $data,
                 ),
                 $data,

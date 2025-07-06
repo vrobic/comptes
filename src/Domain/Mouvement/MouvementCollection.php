@@ -16,7 +16,7 @@ final class MouvementCollection extends Set
     /** @param Mouvement $value */
     public function getUniqueKey(mixed $value): string
     {
-        return (string) $value->getId();
+        return (string) $value->id;
     }
 
     /**
@@ -25,7 +25,7 @@ final class MouvementCollection extends Set
     public function balance(): float
     {
         return $this->reduce(
-            static fn (float $balance, Mouvement $mouvement): float => $balance + $mouvement->getMontant(),
+            static fn (float $balance, Mouvement $mouvement): float => $balance + $mouvement->montant,
             0.
         );
     }

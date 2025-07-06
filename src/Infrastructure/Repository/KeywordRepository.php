@@ -57,15 +57,15 @@ final readonly class KeywordRepository
     {
         foreach ($keywords as $keyword) {
             $data = [
-                'categorie_id' => (string) $keyword->getCategorie()->getId(),
-                'word' => $keyword->getWord(),
+                'categorie_id' => (string) $keyword->categorie->id,
+                'word' => $keyword->word,
             ];
 
             $this->upsert(
                 $this->connection,
                 'keywords',
                 array_merge(
-                    ['id' => (string) $keyword->getId()],
+                    ['id' => (string) $keyword->id],
                     $data,
                 ),
                 $data,

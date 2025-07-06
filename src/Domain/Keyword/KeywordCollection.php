@@ -17,8 +17,9 @@ final class KeywordCollection extends Set
     {
         $keywordsParCategorie = new KeywordsParCategorieMap();
 
+        /** @var Keyword $keyword */
         foreach ($this as $keyword) {
-            $categorieId = $keyword->getCategorie()->getId();
+            $categorieId = $keyword->categorie->id;
 
             $keywords = $keywordsParCategorie->has((string) $categorieId) ?
                 $keywordsParCategorie->get((string) $categorieId) :
@@ -35,6 +36,6 @@ final class KeywordCollection extends Set
     /** @param Keyword $value */
     public function getUniqueKey(mixed $value): string
     {
-        return (string) $value->getId();
+        return (string) $value->id;
     }
 }

@@ -45,6 +45,10 @@ class CMExcelMouvementsImportHandler extends AbstractMouvementsImportHandler
          */
         $comptesBySheets = [];
 
+        /**
+         * @var int    $sheetIndex
+         * @var string $compteId
+         */
         foreach ($configuration['sheets'] as $sheetIndex => $compteId) {
             if (!CompteId::estValide($compteId)) {
                 throw new \RuntimeException(); // @todo
@@ -62,6 +66,7 @@ class CMExcelMouvementsImportHandler extends AbstractMouvementsImportHandler
         $xlsx = SimpleXLSX::parse($file->getRealPath());
 
         foreach ($comptesBySheets as $sheetIndex => $compte) {
+            /** @var int $rowIndex */
             foreach ($xlsx->rows($sheetIndex) as $rowIndex => $row) {
                 if ($rowIndex < self::START_ROW_NUMBER) {
                     continue;

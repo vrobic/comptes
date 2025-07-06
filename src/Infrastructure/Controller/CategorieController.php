@@ -88,8 +88,8 @@ final class CategorieController extends AbstractController
         }
 
         // Années de début et de fin pour les classements par années
-        $firstMouvement = $this->mouvementRepository->findFirstOne($compte?->getId());
-        $yearStart = (int) ($firstMouvement instanceof Mouvement ? $firstMouvement->getDate() : $dateStart)->format('Y');
+        $firstMouvement = $this->mouvementRepository->findFirstOne($compte?->id);
+        $yearStart = (int) ($firstMouvement instanceof Mouvement ? $firstMouvement->date : $dateStart)->format('Y');
         $yearEnd = (int) $dateEnd->format('Y');
 
         // Montant total des mouvements, toutes catégories confondues
@@ -104,17 +104,18 @@ final class CategorieController extends AbstractController
         $montants = []; // @todo : tous ces montants devraient plutôt s'appeler balance ?
 
         // Montant cumulé de tous les mouvements, et des mouvements catégorisés sur la période donnée
-        $montantTotalPeriode = $this->mouvementRepository->getMontantTotalByDate($dateStart, $dateEnd, $compte?->getId());
+        $montantTotalPeriode = $this->mouvementRepository->getMontantTotalByDate($dateStart, $dateEnd, $compte?->id);
         $montantTotalPeriodeCategorise = 0;
 
+        /** @var Categorie $categorie */
         foreach ($categories as $categorie) {
-            $categorieId = $categorie->getId();
+            $categorieId = $categorie->id;
 
             // Montant cumulé des mouvements de la catégorie sur la période donnée
-            $montantTotalPeriodeCategorie = $this->categorieRepository->getMontantTotalByDate($categorieId, $dateStart, $dateEnd, $compte?->getId());
+            $montantTotalPeriodeCategorie = $this->categorieRepository->getMontantTotalByDate($categorieId, $dateStart, $dateEnd, $compte?->id);
 
             // Si la catégorie est de premier niveau, on la prend en compte dans le calcul du total des mouvements catégorisés
-            if (null === $categorie->getCategorieParente()) {
+            if (null === $categorie->categorieParente) {
                 $montantTotalPeriodeCategorise += $montantTotalPeriodeCategorie;
             }
 
@@ -233,11 +234,11 @@ final class CategorieController extends AbstractController
             categoriesIds: Maybe::from(
                 $categorie instanceof Categorie ?
                     $this->categorieRepository
-                        ->getCategoriesFillesRecursive($categorie->getId())
-                        ->add($categorie->getId()) :
+                        ->getCategoriesFillesRecursive($categorie->id)
+                        ->add($categorie->id) :
                     null
             ),
-            compteId: $compte instanceof Compte ? Maybe::from($compte->getId()) : Maybe::nothing(),
+            compteId: $compte instanceof Compte ? Maybe::from($compte->id) : Maybe::nothing(),
             dateStart: Maybe::from($dateStart),
             dateEnd: Maybe::from($dateEnd),
             montant: Maybe::nothing(),
@@ -256,8 +257,9 @@ final class CategorieController extends AbstractController
         $montants = []; // @todo : expliciter le nom de la variable
 
         if (!$mouvements->isEmpty()) {
+            /** @var Mouvement $mouvement */
             foreach ($mouvements as $mouvement) {
-                $montant = $mouvement->getMontant();
+                $montant = $mouvement->montant;
                 $total += $montant;
             }
 
@@ -292,12 +294,13 @@ final class CategorieController extends AbstractController
 
             // Le total des mouvements des catégories filles
             if ($categorie instanceof Categorie) {
-                foreach ($categorie->getCategoriesFilles() as $categorieFilleId) {
+                /** @var CategorieId $categorieFilleId */
+                foreach ($categorie->categoriesFilles as $categorieFilleId) {
                     $montants[(string) $categorieFilleId] = $this->categorieRepository->getMontantTotalByDate(
                         categorieId: $categorieFilleId,
                         dateStart: $dateStart,
                         dateEnd: $dateEnd,
-                        compteId: $compte?->getId(),
+                        compteId: $compte?->id,
                     );
                 }
             }
@@ -339,12 +342,13 @@ final class CategorieController extends AbstractController
         $batchArray = $request->get('batch', []);
         $categoriesArray = $request->get('categories', []);
 
+        /** @var string $categorieId */
         foreach ($batchArray as $categorieId) {
             if (isset($categoriesArray[$categorieId])) {
                 $categorieArray = $categoriesArray[$categorieId];
 
                 $categorieId = CategorieId::estValide($categorieId) ?
-                    new CategorieId((string) $categorieId) :
+                    new CategorieId($categorieId) :
                     null;
 
                 switch ($action) {
@@ -392,13 +396,13 @@ final class CategorieController extends AbstractController
                             }
 
                             if (array_key_exists('nom', $variablesDéfinies)) {
-                                $categorie->setNom($nom);
+                                $categorie->nom = $nom;
                             }
                             if (array_key_exists('categorieParente', $variablesDéfinies)) {
-                                $categorie->setCategorieParente($categorieParente->getId());
+                                $categorie->categorieParente = $categorieParente->id;
                             }
                             if (array_key_exists('rang', $variablesDéfinies)) {
-                                $categorie->setRang($rang);
+                                $categorie->rang = $rang;
                             }
                         } else { // Création
                             if (
@@ -414,7 +418,7 @@ final class CategorieController extends AbstractController
                             $categorie = new Categorie(
                                 $categorieId,
                                 $nom,
-                                $categorieParente->getId(),
+                                $categorieParente->id,
                                 new CategorieIdCollection(),
                                 $rang
                             );
@@ -424,18 +428,21 @@ final class CategorieController extends AbstractController
 
                         // Mots-clés
                         if (isset($categorieArray['keywords'])) {
+                            /** @var string[] $avant */
                             $avant = $keywordsParCatégorie->has((string) $categorieId) ?
                                 $keywordsParCatégorie->get((string) $categorieId)->toArray(
-                                    static fn (Keyword $keyword): string => $keyword->getWord()
+                                    static fn (Keyword $keyword): string => $keyword->word
                                 ) :
                                 [];
                             $après = explode('|', $categorieArray['keywords']);
 
                             $noEmpty = static fn (string $word): bool => '' !== trim($word);
+                            /** @var string[] $supprimés */
                             $supprimés = array_filter(
                                 array_diff($avant, $après),
                                 $noEmpty
                             );
+                            /** @var string[] $ajoutés */
                             $ajoutés = array_filter(
                                 array_diff($après, $avant),
                                 $noEmpty
@@ -445,7 +452,7 @@ final class CategorieController extends AbstractController
                             foreach ($ajoutés as $ajouté) {
                                 // Ce mot-clé existe-il déjà ?
                                 $keyword = $keywords->findFirst(
-                                    static fn (Keyword $keyword): bool => $keyword->getWord() === $ajouté,
+                                    static fn (Keyword $keyword): bool => $keyword->word === $ajouté,
                                 );
 
                                 if (!($keyword instanceof Keyword)) { // Si non, on le crée
@@ -455,14 +462,14 @@ final class CategorieController extends AbstractController
                                         $categorie
                                     );
                                 } else { // Si oui, on vérifie qu'il n'est pas déjà affecté à une autre catégorie
-                                    $keywordCategorie = $keyword->getCategorie();
-                                    $keywordCategorieId = $keywordCategorie->getId();
+                                    $keywordCategorie = $keyword->categorie;
+                                    $keywordCategorieId = $keywordCategorie->id;
 
                                     if (!$keywordCategorieId->estÉgalÀ($categorieId)) {
                                         throw new BadRequestHttpException("Le mot-clé \"$keyword\" ne peut pas être ajouté à la catégorie \"$categorie\" puisqu'il est déjà affecté à \"$keywordCategorie\".");
                                     }
 
-                                    $keyword->setCategorie($categorie);
+                                    $keyword->categorie = $categorie;
                                 }
 
                                 $this->keywordRepository->save($keyword);
@@ -471,7 +478,7 @@ final class CategorieController extends AbstractController
                             // Supprime les mots-clés qui ne sont plus sélectionnés
                             foreach ($supprimés as $supprimé) {
                                 $keyword = $keywords->findFirst(
-                                    static fn (Keyword $keyword): bool => $keyword->getWord() === $supprimé,
+                                    static fn (Keyword $keyword): bool => $keyword->word === $supprimé,
                                 );
 
                                 if (!($keyword instanceof Keyword)) {
@@ -479,7 +486,7 @@ final class CategorieController extends AbstractController
                                 }
 
                                 // Pas besoin de vider la catégorie du mot-clé, il n'a plus de raison d'être donc on le supprime directement
-                                $this->keywordRepository->delete($keyword->getId());
+                                $this->keywordRepository->delete($keyword->id);
                             }
                         }
 
@@ -502,7 +509,7 @@ final class CategorieController extends AbstractController
                             if ($keywordsParCatégorie->has((string) $categorieId)) {
                                 $this->keywordRepository->delete(
                                     ...$keywordsParCatégorie->get((string) $categorieId)->toArray(
-                                        static fn (Keyword $keyword): KeywordId => $keyword->getId()
+                                        static fn (Keyword $keyword): KeywordId => $keyword->id
                                     )
                                 );
                             }
@@ -534,7 +541,7 @@ final class CategorieController extends AbstractController
                 'keywords' => $keywordsParCatégorie->toArray(
                     static fn (string $categorieId): string => $categorieId,
                     static fn (KeywordCollection $keywords): array => $keywords->toArray(
-                        static fn (Keyword $keyword): string => $keyword->getWord()
+                        static fn (Keyword $keyword): string => $keyword->word
                     )
                 ),
             ]

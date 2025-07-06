@@ -38,12 +38,13 @@ final class MouvementController extends AbstractController
         $batchArray = $request->get('batch', []);
         $mouvementsArray = $request->get('mouvements', []);
 
+        /** @var string $mouvementId */
         foreach ($batchArray as $mouvementId) {
             if (isset($mouvementsArray[$mouvementId])) {
                 $mouvementArray = $mouvementsArray[$mouvementId];
 
                 $mouvementId = MouvementId::estValide($mouvementId) ?
-                    new MouvementId((string) $mouvementId) :
+                    new MouvementId($mouvementId) :
                     null;
 
                 switch ($action) {
@@ -107,19 +108,19 @@ final class MouvementController extends AbstractController
                             }
 
                             if (array_key_exists('date', $variablesDéfinies)) {
-                                $mouvement->setDate($date);
+                                $mouvement->date = $date;
                             }
                             if (array_key_exists('categorie', $variablesDéfinies)) {
-                                $mouvement->setCategorie($categorie);
+                                $mouvement->categorie = $categorie;
                             }
                             if (array_key_exists('compte', $variablesDéfinies)) {
-                                $mouvement->setCompte($compte);
+                                $mouvement->compte = $compte;
                             }
                             if (array_key_exists('montant', $variablesDéfinies)) {
-                                $mouvement->setMontant($montant);
+                                $mouvement->montant = $montant;
                             }
                             if (array_key_exists('description', $variablesDéfinies)) {
-                                $mouvement->setDescription($description);
+                                $mouvement->description = $description;
                             }
                         } else { // Création
                             if (

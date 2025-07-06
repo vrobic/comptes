@@ -16,6 +16,6 @@ final class CompteCollection extends Set
     /** @param Compte $value */
     public function getUniqueKey(mixed $value): string
     {
-        return (string) $value->getId();
+        return (string) $value->id;
     }
 }

@@ -74,9 +74,9 @@ final class CompteController extends AbstractController
 
             $dateStart = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateStartString 00:00:00");
             $dateEnd = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateEndString 23:59:59");
-        } elseif ($compte->getDateFermeture() instanceof \DateTime) { // Si le compte est clôturé, du début à la fin de sa vie
-            $dateStart = $compte->getDateOuverture();
-            $dateEnd = $compte->getDateFermeture();
+        } elseif ($compte->dateFermeture instanceof \DateTime) { // Si le compte est clôturé, du début à la fin de sa vie
+            $dateStart = $compte->dateOuverture;
+            $dateEnd = $compte->dateFermeture;
         } else { // Sinon, le mois courant en entier
             list($year, $month, $lastDayOfMonth) = explode('-', date('Y-n-t'));
 
@@ -108,7 +108,7 @@ final class CompteController extends AbstractController
         if (!$mouvements->isEmpty()) {
             /** @var Mouvement $firstMouvement */
             $firstMouvement = $mouvements->first();
-            $firstMouvementDate = $firstMouvement->getDate();
+            $firstMouvementDate = $firstMouvement->date;
             $soldeStart = $this->compteRepository->getSoldeÀDate($compteId, $firstMouvementDate);
         } else {
             $soldeStart = 0.;

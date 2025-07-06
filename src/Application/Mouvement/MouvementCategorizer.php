@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\Mouvement;
 
 use App\Domain\Categorie\CategorieCollection;
+use App\Domain\Keyword\Keyword;
 use App\Domain\Mouvement\Mouvement;
 use App\Infrastructure\Repository\KeywordRepository;
 
@@ -27,17 +28,18 @@ final readonly class MouvementCategorizer
         $keywords = $this->keywordRepository->findAll();
 
         // La description du mouvement
-        $description = $mouvement->getDescription();
+        $description = $mouvement->description;
 
         // Les catégories probables du mouvement
         $categories = new CategorieCollection();
 
+        /** @var Keyword $keyword */
         foreach ($keywords as $keyword) {
-            $word = $keyword->getWord();
+            $word = $keyword->word;
 
             // Si le mot-clé est présent dans la description
             if (preg_match("/\b$word\b/i", $description)) {
-                $categories = $categories->add($keyword->getCategorie());
+                $categories = $categories->add($keyword->categorie);
             }
         }
 

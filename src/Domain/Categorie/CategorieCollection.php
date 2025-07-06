@@ -16,6 +16,6 @@ final class CategorieCollection extends Set
     /** @param Categorie $value */
     public function getUniqueKey(mixed $value): string
     {
-        return (string) $value->getId();
+        return (string) $value->id;
     }
 }

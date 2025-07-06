@@ -24,7 +24,6 @@ final readonly class CategorieRepository
     ) {
     }
 
-    // @todo : renvoyer une collection, et si besoin de retraitement le faire dans le contrôleur voire sur la collection
     public function findAll(): CategorieParIdMap
     {
         $rows = $this->getBaseQueryBuilder()
@@ -118,16 +117,16 @@ final readonly class CategorieRepository
     {
         foreach ($categories as $categorie) {
             $data = [
-                'categorie_parente_id' => $categorie->getCategorieParente()?->__toString(),
-                'nom' => $categorie->getNom(),
-                'rang' => $categorie->getRang(),
+                'categorie_parente_id' => $categorie->categorieParente?->__toString(),
+                'nom' => $categorie->nom,
+                'rang' => $categorie->rang,
             ];
 
             $this->upsert(
                 $this->connection,
                 'categories',
                 array_merge(
-                    ['id' => (string) $categorie->getId()],
+                    ['id' => (string) $categorie->id],
                     $data,
                 ),
                 $data,
