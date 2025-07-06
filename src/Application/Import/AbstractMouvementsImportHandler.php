@@ -6,6 +6,7 @@ namespace App\Application\Import;
 
 use App\Application\Mouvement\MouvementCategorizer;
 use App\Domain\DataStructure\Maybe;
+use App\Domain\Id\IdGeneratorInterface;
 use App\Domain\Mouvement\Mouvement;
 use App\Infrastructure\Configuration\ConfigurationLoader;
 use App\Infrastructure\Repository\CompteRepository;
@@ -112,6 +113,7 @@ abstract class AbstractMouvementsImportHandler implements MouvementsImportHandle
     public function __construct(
         protected readonly MouvementRepository $mouvementRepository,
         protected readonly CompteRepository $compteRepository,
+        protected readonly IdGeneratorInterface $idGenerator,
         private readonly MouvementCategorizer $mouvementCategorizer,
         ConfigurationLoader $configurationLoader,
     ) {
@@ -253,11 +255,11 @@ abstract class AbstractMouvementsImportHandler implements MouvementsImportHandle
         // Service de catégorisation automatique des mouvements
         $categories = $this->mouvementCategorizer->getCategories($mouvement);
 
-        if ($categories) {
+        if (!$categories->isEmpty()) {
             if (count($categories) > 1) {
                 $classification = self::AMBIGUOUS;
             } else {
-                $mouvement->setCategorie($categories[0]);
+                $mouvement->setCategorie($categories->first());
                 $classification = self::CATEGORIZED;
             }
         } else {

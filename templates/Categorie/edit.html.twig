@@ -14,15 +14,15 @@
         </td>
         <td class="input-text">
             <label for="rang-{{ currentCategorie.id }}" class="sr-only">Rang</label>
-            <input id="rang-{{ currentCategorie.id }}" type="text" name="categories[{{ currentCategorie.id }}][rang]" value="{{ currentCategorie.rang }}" placeholder="0">
+            <input id="rang-{{ currentCategorie.id }}" type="text" name="categories[{{ currentCategorie.id.__toString }}][rang]" value="{{ currentCategorie.rang }}" placeholder="0">
         </td>
         <td class="input-text" style="padding-left: {{ (5 + depth * 20) ~ "px" }};">
             <label for="nom-{{ currentCategorie.id }}" class="sr-only">Nom</label>
-            <input id="nom-{{ currentCategorie.id }}" type="text" name="categories[{{ currentCategorie.id }}][nom]" value="{{ currentCategorie.nom }}" placeholder="Nom de la catégorie">
+            <input id="nom-{{ currentCategorie.id }}" type="text" name="categories[{{ currentCategorie.id.__toString }}][nom]" value="{{ currentCategorie.nom }}" placeholder="Nom de la catégorie">
         </td>
         <td class="input-select2">
             <label for="categorie-parente-{{ currentCategorie.id }}" class="sr-only">Catégorie parente</label>
-            <select id="categorie-parente-{{ currentCategorie.id }}" name="categories[{{ currentCategorie.id }}][categorieParente]">
+            <select id="categorie-parente-{{ currentCategorie.id }}" name="categories[{{ currentCategorie.id.__toString }}][categorieParente]">
                 <option value="">&nbsp;</option>
                 {% for categorie in categories %}
                     {% if not categorie.categorieParente %}
@@ -33,13 +33,13 @@
         </td>
         <td class="input-tags">
             <label for="keywords-{{ currentCategorie.id }}" class="sr-only">Mots-clés</label>
-            <input id="keywords-{{ currentCategorie.id }}" type="text" name="categories[{{ currentCategorie.id }}][keywords]" value="{{ keywords[currentCategorie.id] is defined ? keywords[currentCategorie.id]|join('|') }}" placeholder="Mots-clés">
+            <input id="keywords-{{ currentCategorie.id }}" type="text" name="categories[{{ currentCategorie.id.__toString }}][keywords]" value="{{ keywords[currentCategorie.id.__toString] is defined ? keywords[currentCategorie.id.__toString]|join('|') }}" placeholder="Mots-clés">
         </td>
     </tr>
     {% if currentCategorie.categoriesFilles is not empty %}
         {% set depth = depth + 1 %}
-        {% for categorieFille in currentCategorie.categoriesFilles %}
-            {{ _self.categoriesFillesRow(categories, categories[categorieFille], keywords, depth) }}
+        {% for id in currentCategorie.categoriesFilles %}
+            {{ _self.categoriesFillesRow(categories, categories[id.__toString], keywords, depth) }}
         {% endfor %}
     {% endif %}
 {% endmacro %}
@@ -52,8 +52,8 @@
         <option value="{{ categorie.id }}" style="padding-left: {{ (depth * 20) ~ "px" }};" {{ currentCategorie is not null and currentCategorie.categorieParente is not null and currentCategorie.categorieParente == categorie.id ? "selected" }} {{ currentCategorie is not null and currentCategorie.id == categorie.id ? "disabled" }}>{{ categorie }}</option>
         {% if categorie.categoriesFilles is not empty %}
             {% set depth = depth + 1 %}
-            {% for categorieFille in categorie.categoriesFilles %}
-                {{ _self.categoriesFillesSelect(categories, categories[categorieFille], currentCategorie, depth) }}
+            {% for id in categorie.categoriesFilles %}
+                {{ _self.categoriesFillesSelect(categories, categories[id.__toString], currentCategorie, depth) }}
             {% endfor %}
         {% endif %}
 
@@ -96,7 +96,7 @@
                 <tr class="new-row hidden" data-id="-1">
                     <td>
                         <label for="batch--1" class="sr-only">Ajouter</label>
-                        <input id="batch--1" type="checkbox" name="batch[]" value="-1">
+                        <input id="batch--1" type="checkbox" name="batch[]" value="">
                     </td>
                     <td class="input-text">
                         <label for="rang--1" class="sr-only">Rang</label>

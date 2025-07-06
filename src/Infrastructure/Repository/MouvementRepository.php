@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Repository;
 
+use App\Domain\Categorie\CategorieId;
+use App\Domain\Categorie\CategorieIdCollection;
+use App\Domain\Compte\CompteId;
 use App\Domain\DataStructure\Maybe;
 use App\Domain\Mouvement\Mouvement;
 use App\Domain\Mouvement\MouvementCollection;
+use App\Domain\Mouvement\MouvementId;
 use App\Infrastructure\Denormalizer\MouvementDenormalizer;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
@@ -25,7 +29,7 @@ final readonly class MouvementRepository
     ) {
     }
 
-    public function find(int $mouvementId): ?Mouvement
+    public function find(MouvementId $mouvementId): ?Mouvement
     {
         $row = $this->connection->fetchAssociative(
             <<<SQL
@@ -62,7 +66,7 @@ final readonly class MouvementRepository
                         mouvement.id = :mouvement_id;
                 SQL,
             [
-                'mouvement_id' => $mouvementId,
+                'mouvement_id' => (string) $mouvementId,
             ]
         );
 
@@ -87,11 +91,11 @@ final readonly class MouvementRepository
     }
 
     /**
-     * @param Maybe<int[]|null> $categoriesIds
-     * @param Maybe<int>        $compteId
-     * @param Maybe<\DateTime>  $dateStart
-     * @param Maybe<\DateTime>  $dateEnd
-     * @param Maybe<float>      $montant
+     * @param Maybe<CategorieIdCollection|null> $categoriesIds
+     * @param Maybe<CompteId>                   $compteId
+     * @param Maybe<\DateTime>                  $dateStart
+     * @param Maybe<\DateTime>                  $dateEnd
+     * @param Maybe<float>                      $montant
      */
     public function findBy(
         Maybe $categoriesIds,
@@ -106,13 +110,15 @@ final readonly class MouvementRepository
 
         if ($compteId->estDéfini) {
             $wheres[] = 'mouvement.compte_id = :compte_id';
-            $params['compte_id'] = $compteId->getValeur();
+            $params['compte_id'] = (string) $compteId->getValeur();
         }
         if ($categoriesIds->estDéfini) {
-            if (is_array($categoriesIds->getValeur())) {
+            if ($categoriesIds->getValeur() instanceof CategorieIdCollection) {
                 $wheres[] = 'mouvement.categorie_id IN (:categories_ids)';
-                $params['categories_ids'] = $categoriesIds->getValeur();
-                $types['categories_ids'] = ArrayParameterType::INTEGER;
+                $params['categories_ids'] = $categoriesIds->getValeur()->toArray(
+                    static fn (CategorieId $id): string => (string) $id
+                );
+                $types['categories_ids'] = ArrayParameterType::STRING;
             } elseif (is_null($categoriesIds->getValeur())) {
                 $wheres[] = 'mouvement.categorie_id IS NULL';
             } else {
@@ -190,12 +196,10 @@ final readonly class MouvementRepository
 
     /**
      * Récupère le mouvement le plus ancien.
-     *
-     * @todo Mutualiser avec self->findLatestOne()
      */
-    public function findFirstOne(?int $compteId = null): ?Mouvement
+    public function findFirstOne(?CompteId $compteId = null): ?Mouvement
     {
-        $row = is_int($compteId) ?
+        $row = $compteId instanceof CompteId ?
             $this->connection->fetchAssociative(
                 <<<SQL
                     SELECT
@@ -234,7 +238,7 @@ final readonly class MouvementRepository
                     LIMIT 1;
                 SQL,
                 [
-                    'compte_id' => $compteId,
+                    'compte_id' => (string) $compteId,
                 ]
             ) :
             $this->connection->fetchAssociative(
@@ -286,90 +290,45 @@ final readonly class MouvementRepository
 
     /**
      * Récupère le mouvement le plus récent.
-     *
-     * @todo Mutualiser avec self->findFirstOne()
      */
-    public function findLatestOne(?int $compteId = null): ?Mouvement
+    public function findLatestOne(): ?Mouvement
     {
-        $row = is_int($compteId) ?
-            $this->connection->fetchAssociative(
-                <<<SQL
-                    SELECT
-                        mouvement.id,
-                        mouvement.date,
-                        mouvement.montant,
-                        mouvement.description,
-                        categorie.id AS categorie_id,
-                        categorie.nom AS categorie_nom,
-                        categorie.rang AS categorie_rang,
-                        categorie.categorie_parente_id AS categorie_categorie_parente_id,
-                        GROUP_CONCAT(DISTINCT categories_filles.id) AS categorie_categories_filles,
-                        compte.id AS compte_id,
-                        compte.nom AS compte_nom,
-                        compte.numero AS compte_numero,
-                        compte.banque AS compte_banque,
-                        compte.plafond AS compte_plafond,
-                        compte.solde_initial AS compte_solde_initial,
-                        compte.solde_initial + compte_solde.solde AS compte_solde,
-                        compte.rang AS compte_rang,
-                        compte.date_ouverture AS compte_date_ouverture,
-                        compte.date_fermeture AS compte_date_fermeture
-                    FROM mouvements mouvement
-                    JOIN comptes compte ON mouvement.compte_id = compte.id
-                    LEFT JOIN categories categorie ON mouvement.categorie_id = categorie.id
-                    LEFT JOIN categories categories_filles ON categorie.id = categories_filles.categorie_parente_id
-                    LEFT JOIN (
-                        SELECT compte_id, SUM(montant) AS solde
-                        FROM mouvements
-                        GROUP BY compte_id
-                    ) compte_solde ON compte.id = compte_solde.compte_id
-                    WHERE
-                        mouvement.compte_id = :compte_id
-                    GROUP BY mouvement.id
-                    ORDER BY mouvement.date DESC
-                    LIMIT 1;
-                SQL,
-                [
-                    'compte_id' => $compteId,
-                ]
-            ) :
-            $this->connection->fetchAssociative(
-                <<<SQL
-                    SELECT
-                        mouvement.id,
-                        mouvement.date,
-                        mouvement.montant,
-                        mouvement.description,
-                        categorie.id AS categorie_id,
-                        categorie.nom AS categorie_nom,
-                        categorie.rang AS categorie_rang,
-                        categorie.categorie_parente_id AS categorie_categorie_parente_id,
-                        GROUP_CONCAT(DISTINCT categories_filles.id) AS categorie_categories_filles,
-                        compte.id AS compte_id,
-                        compte.nom AS compte_nom,
-                        compte.numero AS compte_numero,
-                        compte.banque AS compte_banque,
-                        compte.plafond AS compte_plafond,
-                        compte.solde_initial AS compte_solde_initial,
-                        compte.solde_initial + compte_solde.solde AS compte_solde,
-                        compte.rang AS compte_rang,
-                        compte.date_ouverture AS compte_date_ouverture,
-                        compte.date_fermeture AS compte_date_fermeture
-                    FROM mouvements mouvement
-                    JOIN comptes compte ON mouvement.compte_id = compte.id
-                    LEFT JOIN categories categorie ON mouvement.categorie_id = categorie.id
-                    LEFT JOIN categories categories_filles ON categorie.id = categories_filles.categorie_parente_id
-                    LEFT JOIN (
-                        SELECT compte_id, SUM(montant) AS solde
-                        FROM mouvements
-                        GROUP BY compte_id
-                    ) compte_solde ON compte.id = compte_solde.compte_id
-                    GROUP BY mouvement.id
-                    ORDER BY mouvement.date DESC
-                    LIMIT 1;
-                SQL
-            )
-        ;
+        $row = $this->connection->fetchAssociative(
+            <<<SQL
+                SELECT
+                    mouvement.id,
+                    mouvement.date,
+                    mouvement.montant,
+                    mouvement.description,
+                    categorie.id AS categorie_id,
+                    categorie.nom AS categorie_nom,
+                    categorie.rang AS categorie_rang,
+                    categorie.categorie_parente_id AS categorie_categorie_parente_id,
+                    GROUP_CONCAT(DISTINCT categories_filles.id) AS categorie_categories_filles,
+                    compte.id AS compte_id,
+                    compte.nom AS compte_nom,
+                    compte.numero AS compte_numero,
+                    compte.banque AS compte_banque,
+                    compte.plafond AS compte_plafond,
+                    compte.solde_initial AS compte_solde_initial,
+                    compte.solde_initial + compte_solde.solde AS compte_solde,
+                    compte.rang AS compte_rang,
+                    compte.date_ouverture AS compte_date_ouverture,
+                    compte.date_fermeture AS compte_date_fermeture
+                FROM mouvements mouvement
+                JOIN comptes compte ON mouvement.compte_id = compte.id
+                LEFT JOIN categories categorie ON mouvement.categorie_id = categorie.id
+                LEFT JOIN categories categories_filles ON categorie.id = categories_filles.categorie_parente_id
+                LEFT JOIN (
+                    SELECT compte_id, SUM(montant) AS solde
+                    FROM mouvements
+                    GROUP BY compte_id
+                ) compte_solde ON compte.id = compte_solde.compte_id
+                GROUP BY mouvement.id
+                ORDER BY mouvement.date DESC
+                LIMIT 1;
+            SQL
+        );
 
         if (false === $row) {
             return null;
@@ -383,14 +342,13 @@ final readonly class MouvementRepository
     /**
      * Calcule le montant cumulé de tous les mouvements entre deux dates.
      *
-     * @param \DateTime $dateStart date de début, incluse
-     * @param \DateTime $dateEnd   date de fin, incluse
-     * @param ?int      $compteId  L'identifiant d'un compte, facultatif
+     * @param \DateTime $dateStart Date de début, incluse
+     * @param \DateTime $dateEnd   Date de fin, incluse
      */
     public function getMontantTotalByDate(
         \DateTime $dateStart,
         \DateTime $dateEnd,
-        ?int $compteId = null,
+        ?CompteId $compteId = null,
     ): float {
         $wheres[] = 'date >= :date_start AND date <= :date_end';
         $params = [
@@ -398,9 +356,9 @@ final readonly class MouvementRepository
             'date_end' => $dateEnd->format('Y-m-d'),
         ];
 
-        if (is_int($compteId)) {
+        if ($compteId instanceof CompteId) {
             $wheres[] = 'compte_id = :compte_id';
-            $params['compte_id'] = $compteId;
+            $params['compte_id'] = (string) $compteId;
         }
 
         $sql = 'SELECT SUM(montant) FROM mouvements WHERE '.implode(' AND ', $wheres).';';
@@ -415,7 +373,7 @@ final readonly class MouvementRepository
     {
         foreach ($mouvements as $mouvement) {
             $data = [
-                'categorie_id' => $mouvement->getCategorie()?->getId(),
+                'categorie_id' => $mouvement->getCategorie()?->getId()->__toString(),
                 'compte_id' => $mouvement->getCompte()->getId(),
                 'date' => $mouvement->getDate()->format('Y-m-d'),
                 'montant' => $mouvement->getMontant(),
@@ -426,7 +384,7 @@ final readonly class MouvementRepository
                 $this->connection,
                 'mouvements',
                 array_merge(
-                    ['id' => $mouvement->getId()],
+                    ['id' => (string) $mouvement->getId()],
                     $data,
                 ),
                 $data,
@@ -434,12 +392,17 @@ final readonly class MouvementRepository
         }
     }
 
-    public function delete(int ...$ids): void
+    public function delete(MouvementId ...$ids): void
     {
         $this->connection->executeStatement(
             'DELETE FROM mouvements WHERE id IN (:ids);',
-            ['ids' => $ids],
-            ['ids' => ArrayParameterType::INTEGER]
+            [
+                'ids' => array_map(
+                    static fn (MouvementId $id): string => (string) $id,
+                    $ids
+                ),
+            ],
+            ['ids' => ArrayParameterType::STRING]
         );
     }
 

@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Application\Import;
 
 use App\Domain\Compte\Compte;
+use App\Domain\Compte\CompteId;
 use App\Domain\Mouvement\Mouvement;
+use App\Domain\Mouvement\MouvementId;
 use Shuchkin\SimpleXLSX;
 
 /**
@@ -29,7 +31,7 @@ class CMExcelMouvementsImportHandler extends AbstractMouvementsImportHandler
     /**
      * Parse les mouvements et remplit les tableaux de classification du handler.
      *
-     * @param \SplFileObject $file fichier Excel fourni par le Crédit Mutuel
+     * @param \SplFileObject $file Fichier Excel fourni par le Crédit Mutuel
      */
     public function parse(\SplFileObject $file): void
     {
@@ -43,11 +45,15 @@ class CMExcelMouvementsImportHandler extends AbstractMouvementsImportHandler
          */
         $comptesBySheets = [];
 
-        foreach ($configuration['sheets'] as $sheetIndex => $compteID) {
-            $compte = $this->compteRepository->find($compteID);
+        foreach ($configuration['sheets'] as $sheetIndex => $compteId) {
+            if (!CompteId::estValide($compteId)) {
+                throw new \RuntimeException(); // @todo
+            }
+
+            $compte = $this->compteRepository->find(new CompteId($compteId));
 
             if (!($compte instanceof Compte)) {
-                // @todo
+                throw new \RuntimeException(); // @todo
             }
 
             $comptesBySheets[$sheetIndex] = $compte;
@@ -77,7 +83,7 @@ class CMExcelMouvementsImportHandler extends AbstractMouvementsImportHandler
                 $montant = (float) $montant;
 
                 $mouvement = new Mouvement(
-                    null,
+                    new MouvementId((string) $this->idGenerator->générer()),
                     new \DateTime($date),
                     null, // sera définie plus tard par la classification
                     $compte,

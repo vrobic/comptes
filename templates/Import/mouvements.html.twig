@@ -15,7 +15,7 @@
         {% if categorie.categoriesFilles is not empty %}
             {% set depth = depth + 1 %}
             {% for id in categorie.categoriesFilles %}
-                {{ _self.categoriesFilles(categories, categories[id], mouvement, depth) }}
+                {{ _self.categoriesFilles(categories, categories[id.__toString], mouvement, depth) }}
             {% endfor %}
         {% endif %}
 

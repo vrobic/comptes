@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Denormalizer;
 
 use App\Domain\Compte\Compte;
+use App\Domain\Compte\CompteId;
 
 final readonly class CompteDenormalizer implements Denormalizer
 {
@@ -24,7 +25,7 @@ final readonly class CompteDenormalizer implements Denormalizer
         }
 
         return new Compte(
-            (int) $data['id'],
+            new CompteId((string) $data['id']),
             (string) $data['nom'],
             (string) $data['numero'],
             (string) $data['banque'],

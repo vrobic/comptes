@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Application\Import;
 
 use App\Domain\Compte\Compte;
+use App\Domain\Compte\CompteId;
 use App\Domain\Mouvement\Mouvement;
+use App\Domain\Mouvement\MouvementId;
 
 /**
  * Implémente un handler CSV d'import de mouvements de la banque Caisse d'Épargne.
@@ -22,19 +24,22 @@ class CaisseEpargneCSVMouvementsImportHandler extends AbstractMouvementsImportHa
     /**
      * Parse les mouvements et remplit les tableaux de classification du handler.
      *
-     * @param \SplFileObject $file fichier CSV fourni par la Caisse d'Épargne
+     * @param \SplFileObject $file Fichier CSV fourni par la Caisse d'Épargne
      */
     public function parse(\SplFileObject $file): void
     {
         // Configuration du handler
         $configuration = $this->configuration[self::HANDLER_ID]['config'];
 
+        if (!CompteId::estValide($configuration['compte'])) {
+            throw new \RuntimeException(); // @todo
+        }
+
         // Le compte bancaire dans lequel importer les mouvements
-        $compteID = $configuration['compte'];
-        $compte = $this->compteRepository->find($compteID);
+        $compte = $this->compteRepository->find(new CompteId($configuration['compte']));
 
         if (!($compte instanceof Compte)) {
-            // @todo
+            throw new \RuntimeException(); // @todo
         }
 
         /**
@@ -97,7 +102,7 @@ class CaisseEpargneCSVMouvementsImportHandler extends AbstractMouvementsImportHa
             $montant = (float) $montant;
 
             $mouvement = new Mouvement(
-                null,
+                new MouvementId((string) $this->idGenerator->générer()),
                 $date,
                 null, // sera définie plus tard par la classification
                 $compte,

@@ -11,9 +11,9 @@ use App\Domain\Mouvement\Mouvement;
  */
 final class Compte
 {
-    // @todo : supprimer les setters et ajouter des readonly
+    // @todo : supprimer les getters, setters et ajouter des readonly
     public function __construct(
-        private readonly int $id,
+        private readonly CompteId $id,
         private string $nom, // nom du compte
         private string $numero, // numéro du compte
         private string $banque, // domiciliation du compte
@@ -31,7 +31,7 @@ final class Compte
         return $this->nom;
     }
 
-    public function getId(): int
+    public function getId(): CompteId
     {
         return $this->id;
     }
@@ -93,7 +93,7 @@ final class Compte
     /**
      * Définit le plafond du compte.
      *
-     * @param int $plafond la valeur 0 correspond à l'absence de plafond
+     * @param int $plafond La valeur 0 correspond à l'absence de plafond
      */
     public function setPlafond(int $plafond): self
     {
@@ -138,7 +138,7 @@ final class Compte
      * Définit le solde initial du compte,
      * avant le premier mouvement rentré dans l'application.
      *
-     * @param float $soldeInitial le solde initial du compte, en euros
+     * @param float $soldeInitial Le solde initial du compte, en euros
      */
     public function setSoldeInitial(float $soldeInitial): self
     {

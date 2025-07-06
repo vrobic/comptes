@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Denormalizer;
 
 use App\Domain\Mouvement\Mouvement;
+use App\Domain\Mouvement\MouvementId;
 
 final readonly class MouvementDenormalizer implements Denormalizer
 {
@@ -22,7 +23,7 @@ final readonly class MouvementDenormalizer implements Denormalizer
         }
 
         return new Mouvement(
-            (int) $data['id'],
+            new MouvementId((string) $data['id']),
             $date,
             is_array($data['categorie']) ? $this->categorieDenormalizer->denormalize($data['categorie']) : null,
             $this->compteDenormalizer->denormalize($data['compte']),

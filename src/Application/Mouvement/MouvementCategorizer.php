@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Mouvement;
 
-use App\Domain\Categorie\Categorie;
+use App\Domain\Categorie\CategorieCollection;
 use App\Domain\Mouvement\Mouvement;
 use App\Infrastructure\Repository\KeywordRepository;
 
@@ -20,12 +20,8 @@ final readonly class MouvementCategorizer
 
     /**
      * Trouve les catégories probables d'un mouvement.
-     *
-     * @todo : renvoyer une collection ?
-     *
-     * @return Categorie[] liste de catégories
      */
-    public function getCategories(Mouvement $mouvement): array
+    public function getCategories(Mouvement $mouvement): CategorieCollection
     {
         // Tous les mots-clés de description
         $keywords = $this->keywordRepository->findAll();
@@ -34,22 +30,16 @@ final readonly class MouvementCategorizer
         $description = $mouvement->getDescription();
 
         // Les catégories probables du mouvement
-        $categories = [];
+        $categories = new CategorieCollection();
 
         foreach ($keywords as $keyword) {
             $word = $keyword->getWord();
 
             // Si le mot-clé est présent dans la description
             if (preg_match("/\b$word\b/i", $description)) {
-                $categorie = $keyword->getCategorie();
-                $categorieID = $categorie->getId();
-
-                $categories[$categorieID] = $categorie; // Assure l'unicité
+                $categories = $categories->add($keyword->getCategorie());
             }
         }
-
-        // Reset des clés
-        $categories = array_values($categories);
 
         return $categories;
     }

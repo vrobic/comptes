@@ -12,4 +12,10 @@ final class CompteCollection extends Set
     {
         parent::__construct(Compte::class);
     }
+
+    /** @param Compte $value */
+    public function getUniqueKey(mixed $value): string
+    {
+        return (string) $value->getId();
+    }
 }

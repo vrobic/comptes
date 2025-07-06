@@ -6,10 +6,15 @@ namespace App\Infrastructure\Controller;
 
 use App\Application\StatsProvider;
 use App\Domain\Categorie\Categorie;
+use App\Domain\Categorie\CategorieId;
+use App\Domain\Categorie\CategorieIdCollection;
 use App\Domain\Compte\Compte;
+use App\Domain\Compte\CompteId;
 use App\Domain\DataStructure\Maybe;
+use App\Domain\Id\IdGeneratorInterface;
 use App\Domain\Keyword\Keyword;
 use App\Domain\Keyword\KeywordCollection;
+use App\Domain\Keyword\KeywordId;
 use App\Domain\Mouvement\Mouvement;
 use App\Infrastructure\Repository\CategorieRepository;
 use App\Infrastructure\Repository\CompteRepository;
@@ -30,6 +35,7 @@ final class CategorieController extends AbstractController
         private readonly MouvementRepository $mouvementRepository,
         private readonly KeywordRepository $keywordRepository,
         private readonly StatsProvider $statsProvider,
+        private readonly IdGeneratorInterface $idGenerator,
     ) {
     }
 
@@ -44,10 +50,12 @@ final class CategorieController extends AbstractController
 
         // Filtre sur le compte
         if ($request->get('compte_id')) {
-            $compteID = (int) $request->get('compte_id');
-            $compte = $this->compteRepository->find($compteID);
-            if (!($compte instanceof Compte)) {
-                throw $this->createNotFoundException("Le compte bancaire $compteID n'existe pas.");
+            if (CompteId::estValide((string) $request->get('compte_id'))) {
+                $compteId = new CompteId((string) $request->get('compte_id'));
+                $compte = $this->compteRepository->find($compteId);
+                if (!($compte instanceof Compte)) {
+                    throw new NotFoundHttpException("Le compte bancaire $compteId n'existe pas.");
+                }
             }
         } else {
             $compte = null;
@@ -100,10 +108,10 @@ final class CategorieController extends AbstractController
         $montantTotalPeriodeCategorise = 0;
 
         foreach ($categories as $categorie) {
-            $categorieID = $categorie->getId();
+            $categorieId = $categorie->getId();
 
             // Montant cumulé des mouvements de la catégorie sur la période donnée
-            $montantTotalPeriodeCategorie = $this->categorieRepository->getMontantTotalByDate($categorieID, $dateStart, $dateEnd, $compte?->getId());
+            $montantTotalPeriodeCategorie = $this->categorieRepository->getMontantTotalByDate($categorieId, $dateStart, $dateEnd, $compte?->getId());
 
             // Si la catégorie est de premier niveau, on la prend en compte dans le calcul du total des mouvements catégorisés
             if (null === $categorie->getCategorieParente()) {
@@ -126,7 +134,7 @@ final class CategorieController extends AbstractController
                 $compte instanceof Compte ? Maybe::from($compte) : Maybe::nothing(),
             );
 
-            $montants[$categorieID] = [
+            $montants[(string) $categorieId] = [
                 'period' => $montantTotalPeriodeCategorie,
                 'yearly' => $montantsAnnuelsCategorie,
                 'average' => $average,
@@ -140,7 +148,7 @@ final class CategorieController extends AbstractController
             'Categorie/index.html.twig',
             [
                 'categories' => $categories->toArray(
-                    static fn (int $categorieId): int => $categorieId,
+                    static fn (string $categorieId): string => $categorieId,
                     static fn (Categorie $categorie): Categorie => $categorie
                 ),
                 'comptes' => $comptes,
@@ -160,9 +168,13 @@ final class CategorieController extends AbstractController
     #[Route('/categorie/{categorieId}', name: 'categories_categorie')]
     public function détail(
         Request $request,
-        int $categorieId,
+        string $categorieId, // @todo : utiliser un param converter
     ): Response {
-        if ($categorieId > 0) {
+        $categorieId = CategorieId::estValide($categorieId) ?
+            new CategorieId($categorieId) :
+            null;
+
+        if ($categorieId instanceof CategorieId) {
             $categorie = $this->categorieRepository->find($categorieId);
             if (!($categorie instanceof Categorie)) {
                 throw new NotFoundHttpException("La catégorie $categorieId n'existe pas.");
@@ -179,10 +191,12 @@ final class CategorieController extends AbstractController
 
         // Filtre sur le compte
         if ($request->get('compte_id')) {
-            $compteID = (int) $request->get('compte_id');
-            $compte = $this->compteRepository->find($compteID);
-            if (!($compte instanceof Compte)) {
-                throw new NotFoundHttpException("Le compte bancaire $compteID n'existe pas.");
+            if (CompteId::estValide((string) $request->get('compte_id'))) {
+                $compteId = new CompteId((string) $request->get('compte_id'));
+                $compte = $this->compteRepository->find($compteId);
+                if (!($compte instanceof Compte)) {
+                    throw new NotFoundHttpException("Le compte bancaire $compteId n'existe pas.");
+                }
             }
         } else {
             $compte = null;
@@ -218,7 +232,9 @@ final class CategorieController extends AbstractController
         $mouvements = $this->mouvementRepository->findBy(
             categoriesIds: Maybe::from(
                 $categorie instanceof Categorie ?
-                    array_merge([$categorie->getId()], $this->categorieRepository->getCategoriesFillesRecursive($categorie->getId())) :
+                    $this->categorieRepository
+                        ->getCategoriesFillesRecursive($categorie->getId())
+                        ->add($categorie->getId()) :
                     null
             ),
             compteId: $compte instanceof Compte ? Maybe::from($compte->getId()) : Maybe::nothing(),
@@ -270,15 +286,15 @@ final class CategorieController extends AbstractController
             );
 
             // Le total des mouvements de la catégorie
-            if ($categorieId > 0) {
-                $montants[$categorieId] = $total;
+            if ($categorieId instanceof CategorieId) {
+                $montants[(string) $categorieId] = $total;
             }
 
             // Le total des mouvements des catégories filles
             if ($categorie instanceof Categorie) {
-                foreach ($categorie->getCategoriesFilles() as $categorieFilleID) {
-                    $montants[$categorieFilleID] = $this->categorieRepository->getMontantTotalByDate(
-                        categorieId: $categorieFilleID,
+                foreach ($categorie->getCategoriesFilles() as $categorieFilleId) {
+                    $montants[(string) $categorieFilleId] = $this->categorieRepository->getMontantTotalByDate(
+                        categorieId: $categorieFilleId,
                         dateStart: $dateStart,
                         dateEnd: $dateEnd,
                         compteId: $compte?->getId(),
@@ -292,7 +308,7 @@ final class CategorieController extends AbstractController
             [
                 'categorie' => $categorie,
                 'categories' => $categories->toArray(
-                    static fn (int $categorieId): int => $categorieId,
+                    static fn (string $categorieId): string => $categorieId,
                     static fn (Categorie $categorie): Categorie => $categorie
                 ),
                 'comptes' => $comptes,
@@ -323,11 +339,13 @@ final class CategorieController extends AbstractController
         $batchArray = $request->get('batch', []);
         $categoriesArray = $request->get('categories', []);
 
-        foreach ($batchArray as $categorieID) {
-            $categorieID = (int) $categorieID;
+        foreach ($batchArray as $categorieId) {
+            if (isset($categoriesArray[$categorieId])) {
+                $categorieArray = $categoriesArray[$categorieId];
 
-            if (isset($categoriesArray[$categorieID])) {
-                $categorieArray = $categoriesArray[$categorieID];
+                $categorieId = CategorieId::estValide($categorieId) ?
+                    new CategorieId((string) $categorieId) :
+                    null;
 
                 switch ($action) {
                     case 'save': // Création et édition
@@ -338,17 +356,23 @@ final class CategorieController extends AbstractController
 
                         // Catégorie parente
                         if (isset($categorieArray['categorieParente'])) {
-                            $categorieParenteID = (int) $categorieArray['categorieParente'];
+                            $categorieParenteId = CategorieId::estValide($categorieArray['categorieParente']) ?
+                                new CategorieId((string) $categorieArray['categorieParente']) :
+                                null;
 
-                            if ($categorieParenteID === $categorieID) {
-                                throw new BadRequestHttpException("Impossible de définir la catégorie $categorieParenteID comme parente de $categorieID (référence circulaire)");
+                            if (
+                                $categorieParenteId instanceof CategorieId
+                                && $categorieId instanceof CategorieId
+                                && $categorieParenteId->estÉgalÀ($categorieId)
+                            ) {
+                                throw new BadRequestHttpException("Impossible de définir la catégorie $categorieParenteId comme parente de $categorieId (référence circulaire)");
                             }
 
-                            if ($categorieParenteID > 0) {
-                                $categorieParente = $this->categorieRepository->find($categorieParenteID);
+                            if ($categorieParenteId instanceof CategorieId) {
+                                $categorieParente = $this->categorieRepository->find($categorieParenteId);
 
                                 if (!($categorieParente instanceof Categorie)) {
-                                    throw new BadRequestHttpException("Catégorie $categorieID introuvable");
+                                    throw new BadRequestHttpException("Catégorie $categorieId introuvable");
                                 }
                             }
                         }
@@ -360,11 +384,11 @@ final class CategorieController extends AbstractController
 
                         $variablesDéfinies = get_defined_vars();
 
-                        if ($categorieID > 0) { // Édition
-                            $categorie = $this->categorieRepository->find($categorieID);
+                        if ($categorieId instanceof CategorieId) { // Édition
+                            $categorie = $this->categorieRepository->find($categorieId);
 
                             if (!($categorie instanceof Categorie)) {
-                                throw new BadRequestHttpException("Catégorie $categorieID introuvable");
+                                throw new BadRequestHttpException("Catégorie $categorieId introuvable");
                             }
 
                             if (array_key_exists('nom', $variablesDéfinies)) {
@@ -385,30 +409,29 @@ final class CategorieController extends AbstractController
                                 throw new BadRequestHttpException("Les valeurs nécessaires à la création d'une catégorie ne sont pas toutes postées.");
                             }
 
+                            $categorieId = new CategorieId((string) $this->idGenerator->générer());
+
                             $categorie = new Categorie(
-                                null,
+                                $categorieId,
                                 $nom,
                                 $categorieParente->getId(),
-                                [],
+                                new CategorieIdCollection(),
                                 $rang
                             );
                         }
 
                         $this->categorieRepository->save($categorie);
 
-                        // @todo : définir l'ID de la catégorie pour que $categorie->getId() le renvoie
-                        // @todo : sans ça, la création d'une catégorie plante au moment d'ajouter des mots-clés
-
                         // Mots-clés
                         if (isset($categorieArray['keywords'])) {
-                            $avant = $keywordsParCatégorie->has($categorieID) ?
-                                $keywordsParCatégorie->get($categorieID)->toArray(
+                            $avant = $keywordsParCatégorie->has((string) $categorieId) ?
+                                $keywordsParCatégorie->get((string) $categorieId)->toArray(
                                     static fn (Keyword $keyword): string => $keyword->getWord()
                                 ) :
                                 [];
                             $après = explode('|', $categorieArray['keywords']);
 
-                            $noEmpty = static fn (string $word): bool => trim($word) !== '';
+                            $noEmpty = static fn (string $word): bool => '' !== trim($word);
                             $supprimés = array_filter(
                                 array_diff($avant, $après),
                                 $noEmpty
@@ -427,15 +450,15 @@ final class CategorieController extends AbstractController
 
                                 if (!($keyword instanceof Keyword)) { // Si non, on le crée
                                     $keyword = new Keyword(
-                                        null,
+                                        new KeywordId((string) $this->idGenerator->générer()),
                                         $ajouté,
                                         $categorie
                                     );
                                 } else { // Si oui, on vérifie qu'il n'est pas déjà affecté à une autre catégorie
                                     $keywordCategorie = $keyword->getCategorie();
-                                    $keywordCategorieID = $keywordCategorie->getId();
+                                    $keywordCategorieId = $keywordCategorie->getId();
 
-                                    if ($keywordCategorieID !== $categorieID) {
+                                    if (!$keywordCategorieId->estÉgalÀ($categorieId)) {
                                         throw new BadRequestHttpException("Le mot-clé \"$keyword\" ne peut pas être ajouté à la catégorie \"$categorie\" puisqu'il est déjà affecté à \"$keywordCategorie\".");
                                     }
 
@@ -463,9 +486,9 @@ final class CategorieController extends AbstractController
                         break;
 
                     case 'delete': // Suppression
-                        if ($categorieID > 0) {
+                        if ($categorieId instanceof CategorieId) {
                             $mouvementsDeLaCatégorie = $this->mouvementRepository->findBy(
-                                categoriesIds: Maybe::from([$categorieID]),
+                                categoriesIds: Maybe::from(new CategorieIdCollection()->add($categorieId)),
                                 compteId: Maybe::nothing(),
                                 dateStart: Maybe::nothing(),
                                 dateEnd: Maybe::nothing(),
@@ -473,18 +496,18 @@ final class CategorieController extends AbstractController
                             );
 
                             if (!$mouvementsDeLaCatégorie->isEmpty()) {
-                                throw new BadRequestHttpException("La catégorie $categorieID ne peut pas être supprimée car elle est utilisée par {$mouvementsDeLaCatégorie->count()} mouvements.");
+                                throw new BadRequestHttpException("La catégorie $categorieId ne peut pas être supprimée car elle est utilisée par {$mouvementsDeLaCatégorie->count()} mouvements.");
                             }
 
-                            if ($keywordsParCatégorie->has($categorieID)) {
+                            if ($keywordsParCatégorie->has((string) $categorieId)) {
                                 $this->keywordRepository->delete(
-                                    ...$keywordsParCatégorie->get($categorieID)->toArray(
-                                        static fn (Keyword $keyword): int => $keyword->getId()
+                                    ...$keywordsParCatégorie->get((string) $categorieId)->toArray(
+                                        static fn (Keyword $keyword): KeywordId => $keyword->getId()
                                     )
                                 );
                             }
 
-                            $this->categorieRepository->delete($categorieID);
+                            $this->categorieRepository->delete($categorieId);
                         }
 
                         break;
@@ -505,11 +528,11 @@ final class CategorieController extends AbstractController
             'Categorie/edit.html.twig',
             [
                 'categories' => $categories->toArray(
-                    static fn (int $categorieId): int => $categorieId,
+                    static fn (string $categorieId): string => $categorieId,
                     static fn (Categorie $categorie): Categorie => $categorie
                 ),
                 'keywords' => $keywordsParCatégorie->toArray(
-                    static fn (int $categorieId): int => $categorieId,
+                    static fn (string $categorieId): string => $categorieId,
                     static fn (KeywordCollection $keywords): array => $keywords->toArray(
                         static fn (Keyword $keyword): string => $keyword->getWord()
                     )

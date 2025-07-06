@@ -7,7 +7,9 @@ namespace App\Infrastructure\Controller;
 use App\Application\Import\ImportHandlerInterface;
 use App\Application\Import\MouvementsImportHandlerInterface;
 use App\Domain\Categorie\Categorie;
+use App\Domain\Categorie\CategorieId;
 use App\Domain\Compte\Compte;
+use App\Domain\Compte\CompteId;
 use App\Domain\Mouvement\Mouvement;
 use App\Infrastructure\Configuration\ConfigurationLoader;
 use App\Infrastructure\Repository\CategorieRepository;
@@ -167,13 +169,15 @@ class MouvementsImportController extends AbstractController
 
                     // Modification éventuelle de la catégorie
                     if (isset($mouvementsData[$hash]['categorie'])) {
-                        $categorieID = (int) $mouvementsData[$hash]['categorie'];
+                        $categorieId = CategorieId::estValide((string) $mouvementsData[$hash]['categorie']) ?
+                            new CategorieId((string) $mouvementsData[$hash]['categorie']) :
+                            null;
 
-                        if ($categorieID > 0) {
-                            $categorie = $this->categorieRepository->find($categorieID);
+                        if ($categorieId instanceof CategorieId) {
+                            $categorie = $this->categorieRepository->find($categorieId);
 
                             if (!($categorie instanceof Categorie)) {
-                                // @todo
+                                throw new BadRequestHttpException("Catégorie $categorieId introuvable");
                             }
                         } else {
                             $categorie = null;
@@ -184,17 +188,16 @@ class MouvementsImportController extends AbstractController
 
                     // Modification éventuelle du compte
                     if (isset($mouvementsData[$hash]['compte'])) {
-                        $compteID = (int) $mouvementsData[$hash]['compte'];
-
-                        if ($compteID > 0) {
-                            $compte = $this->compteRepository->find($compteID);
+                        if (CompteId::estValide((string) $mouvementsData[$hash]['compte'])) {
+                            $compteId = new CompteId((string) $mouvementsData[$hash]['compte']);
+                            $compte = $this->compteRepository->find($compteId);
 
                             if (!($compte instanceof Compte)) {
-                                // @todo
+                                throw new BadRequestHttpException("Compte $compteId introuvable");
                             }
-                        }
 
-                        $mouvement->setCompte($compte);
+                            $mouvement->setCompte($compte);
+                        }
                     }
 
                     // Modification éventuelle du montant
@@ -225,7 +228,7 @@ class MouvementsImportController extends AbstractController
                 'handlers' => $this->handlers,
                 'comptes' => $comptes,
                 'categories' => $categories->toArray(
-                    static fn (int $categorieId): int => $categorieId,
+                    static fn (string $categorieId): string => $categorieId,
                     static fn (Categorie $categorie): Categorie => $categorie
                 ),
                 'categorized_mouvements' => $categorizedMouvements,

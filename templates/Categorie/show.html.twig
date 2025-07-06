@@ -15,7 +15,7 @@
         {% if categorie.categoriesFilles is not empty %}
             {% set depth = depth + 1 %}
             {% for id in categorie.categoriesFilles %}
-                {{ _self.categoriesFilles(categories, categories[id], mouvement, depth) }}
+                {{ _self.categoriesFilles(categories, categories[id.__toString], mouvement, depth) }}
             {% endfor %}
         {% endif %}
 
@@ -27,7 +27,7 @@
     <h1>{{ categorie is not null ? categorie : "Mouvements non catégorisés" }}</h1>
     <div class="row">
         <div class="col-md-8">
-            <form action="{{ path('categories_categorie', {'categorieId': categorie is not null ? categorie.id : 0}) }}" method="GET">
+            <form action="{{ path('categories_categorie', {'categorieId': categorie is not null ? categorie.id : 'aucune'}) }}" method="GET">
                 <div class="input-group">
                     <label for="date-filter-start" class="input-group-addon">Du</label>
                     <input id="date-filter-start"class="form-control" type="text" name="date_filter[start]" value="{{ date_filter.start|date('d-m-Y') }}" placeholder="{{ date_filter.start|date('d-m-Y') }}">
@@ -76,12 +76,12 @@
                             type: 'pie',
                             name: "Répartition des dépenses par sous catégorie",
                             data: [
-                                {% for categorieFille in categorie.categoriesFilles %}
-                                    {% if montants[categorieFille] < 0 %}
+                                {% for id in categorie.categoriesFilles %}
+                                    {% if montants[id.__toString] < 0 %}
                                         {
-                                            name: "{{ categories[categorieFille]|e('js') }}",
-                                            y: {{ montants[categorieFille]|abs|e('js') }},
-                                            url: '{{ path('categories_categorie', {'categorieId': categorieFille, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y'), 'compteId': compte_filter is not null ? compte_filter.id : ''})|e('js') }}'
+                                            name: "{{ categories[id.__toString]|e('js') }}",
+                                            y: {{ montants[id.__toString]|abs|e('js') }},
+                                            url: '{{ path('categories_categorie', {'categorieId': id, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y'), 'compteId': compte_filter is not null ? compte_filter.id : ''})|e('js') }}'
                                         },
                                     {% endif %}
                                 {% endfor %}
@@ -202,7 +202,7 @@
                 </tr>
             </tfoot>
         </table>
-        <input type="hidden" name="redirect_url" value="{{ path(app.request.get('_route'), {'categorieId': categorie is null ? 0 : categorie.id, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y')}) }}">
+        <input type="hidden" name="redirect_url" value="{{ path(app.request.get('_route'), {'categorieId': categorie is null ? 'aucune' : categorie.id, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y')}) }}">
         <div class="btn-group">
             <button class="btn btn-default" type="submit" name="action" value="save">
                 <span class="glyphicon glyphicon-floppy-disk"></span> Enregistrer

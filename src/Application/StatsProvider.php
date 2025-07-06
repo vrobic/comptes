@@ -25,8 +25,8 @@ final readonly class StatsProvider
      * Calcule le montant total annuel des mouvements,
      * pour toutes les années incluses dans un intervalle.
      *
-     * @param int                   $yearStart année de début, incluse
-     * @param int                   $yearEnd   année de fin, incluse
+     * @param int                   $yearStart Année de début, incluse
+     * @param int                   $yearEnd   Année de fin, incluse
      * @param Maybe<Categorie|null> $categorie
      * @param Maybe<Compte>         $compte
      *
@@ -49,7 +49,9 @@ final readonly class StatsProvider
             categoriesIds: $categorie->estDéfini ?
                 Maybe::from(
                     $categorie->getValeur() instanceof Categorie ?
-                        array_merge([$categorie->getValeur()->getId()], $this->categorieRepository->getCategoriesFillesRecursive($categorie->getValeur()->getId())) :
+                        $this->categorieRepository
+                            ->getCategoriesFillesRecursive($categorie->getValeur()->getId())
+                            ->add($categorie->getValeur()->getId()) :
                         null
                 ) :
                 Maybe::nothing(),
@@ -80,8 +82,8 @@ final readonly class StatsProvider
      * Calcule le montant mensuel total des mouvements d'une catégorie,
      * compris entre deux dates incluses.
      *
-     * @param \DateTime             $dateStart date de début, incluse
-     * @param \DateTime             $dateEnd   date de fin, incluse
+     * @param \DateTime             $dateStart Date de début, incluse
+     * @param \DateTime             $dateEnd   Date de fin, incluse
      * @param Maybe<Categorie|null> $categorie
      * @param Maybe<Compte>         $compte
      *
@@ -96,7 +98,9 @@ final readonly class StatsProvider
         $categoriesIds = $categorie->estDéfini ?
             Maybe::from(
                 $categorie->getValeur() instanceof Categorie ?
-                    array_merge([$categorie->getValeur()->getId()], $this->categorieRepository->getCategoriesFillesRecursive($categorie->getValeur()->getId())) :
+                    $this->categorieRepository
+                        ->getCategoriesFillesRecursive($categorie->getValeur()->getId())
+                        ->add($categorie->getValeur()->getId()) :
                     null
             ) :
             Maybe::nothing();
@@ -139,8 +143,8 @@ final readonly class StatsProvider
      * Calcule le montant mensuel moyen des mouvements d'une catégorie,
      * compris entre deux dates incluses.
      *
-     * @param \DateTime             $dateStart date de début, incluse
-     * @param \DateTime             $dateEnd   date de fin, incluse
+     * @param \DateTime             $dateStart Date de début, incluse
+     * @param \DateTime             $dateEnd   Date de fin, incluse
      * @param Maybe<Categorie|null> $categorie
      * @param Maybe<Compte>         $compte
      *

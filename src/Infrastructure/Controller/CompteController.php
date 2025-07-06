@@ -6,6 +6,7 @@ namespace App\Infrastructure\Controller;
 
 use App\Domain\Categorie\Categorie;
 use App\Domain\Compte\Compte;
+use App\Domain\Compte\CompteId;
 use App\Domain\DataStructure\Maybe;
 use App\Domain\Mouvement\Mouvement;
 use App\Infrastructure\Repository\CategorieRepository;
@@ -49,8 +50,16 @@ final class CompteController extends AbstractController
     #[Route('/compte/{compteId}', name: 'comptes_compte')]
     public function détail(
         Request $request,
-        int $compteId,
+        string $compteId, // @todo : utiliser un param converter
     ): Response {
+        $compteId = CompteId::estValide($compteId) ?
+            new CompteId($compteId) :
+            null;
+
+        if (!($compteId instanceof CompteId)) {
+            throw new BadRequestHttpException();
+        }
+
         $compte = $this->compteRepository->find($compteId);
 
         if (!($compte instanceof Compte)) {
@@ -118,7 +127,7 @@ final class CompteController extends AbstractController
                 ],
                 'mouvements' => $mouvements,
                 'categories' => $categories->toArray(
-                    static fn (int $categorieId): int => $categorieId,
+                    static fn (string $categorieId): string => $categorieId,
                     static fn (Categorie $categorie): Categorie => $categorie
                 ),
                 'solde_start' => $soldeStart,

@@ -12,9 +12,9 @@ use App\Domain\Compte\Compte;
  */
 class Mouvement
 {
-    // @todo : supprimer les setters et ajouter des readonly
+    // @todo : supprimer les getters, setters et ajouter des readonly
     public function __construct(
-        private readonly ?int $id, // null tant que l'ID n'a pas été généré par la BDD (@todo : utiliser des UUID pour éviter ça)
+        private readonly MouvementId $id,
         private \DateTime $date, // date du mouvement
         private ?Categorie $categorie, // catégorie du mouvement
         private Compte $compte, // compte bancaire
@@ -23,7 +23,7 @@ class Mouvement
     ) {
     }
 
-    public function getId(): ?int
+    public function getId(): MouvementId
     {
         return $this->id;
     }

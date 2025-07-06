@@ -13,6 +13,12 @@ final class MouvementCollection extends Set
         parent::__construct(Mouvement::class);
     }
 
+    /** @param Mouvement $value */
+    public function getUniqueKey(mixed $value): string
+    {
+        return (string) $value->getId();
+    }
+
     /**
      * Calcule la balance (débit/crédit) de la liste de mouvements.
      */

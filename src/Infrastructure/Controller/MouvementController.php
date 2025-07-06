@@ -5,8 +5,12 @@ declare(strict_types=1);
 namespace App\Infrastructure\Controller;
 
 use App\Domain\Categorie\Categorie;
+use App\Domain\Categorie\CategorieId;
 use App\Domain\Compte\Compte;
+use App\Domain\Compte\CompteId;
+use App\Domain\Id\IdGeneratorInterface;
 use App\Domain\Mouvement\Mouvement;
+use App\Domain\Mouvement\MouvementId;
 use App\Infrastructure\Repository\CategorieRepository;
 use App\Infrastructure\Repository\CompteRepository;
 use App\Infrastructure\Repository\MouvementRepository;
@@ -22,6 +26,7 @@ final class MouvementController extends AbstractController
         private readonly MouvementRepository $mouvementRepository,
         private readonly CompteRepository $compteRepository,
         private readonly CategorieRepository $categorieRepository,
+        private readonly IdGeneratorInterface $idGenerator,
     ) {
     }
 
@@ -33,11 +38,13 @@ final class MouvementController extends AbstractController
         $batchArray = $request->get('batch', []);
         $mouvementsArray = $request->get('mouvements', []);
 
-        foreach ($batchArray as $mouvementID) {
-            $mouvementID = (int) $mouvementID;
+        foreach ($batchArray as $mouvementId) {
+            if (isset($mouvementsArray[$mouvementId])) {
+                $mouvementArray = $mouvementsArray[$mouvementId];
 
-            if (isset($mouvementsArray[$mouvementID])) {
-                $mouvementArray = $mouvementsArray[$mouvementID];
+                $mouvementId = MouvementId::estValide($mouvementId) ?
+                    new MouvementId((string) $mouvementId) :
+                    null;
 
                 switch ($action) {
                     case 'save': // Création et édition
@@ -53,13 +60,15 @@ final class MouvementController extends AbstractController
 
                         // Catégorie
                         if (isset($mouvementArray['categorie'])) {
-                            $categorieID = (int) $mouvementArray['categorie'];
+                            $categorieId = CategorieId::estValide((string) $mouvementArray['categorie']) ?
+                                new CategorieId((string) $mouvementArray['categorie']) :
+                                null;
 
-                            if ($categorieID > 0) {
-                                $categorie = $this->categorieRepository->find($categorieID);
+                            if ($categorieId instanceof CategorieId) {
+                                $categorie = $this->categorieRepository->find($categorieId);
 
                                 if (!($categorie instanceof Categorie)) {
-                                    throw new BadRequestHttpException("Catégorie $categorieID introuvable");
+                                    throw new BadRequestHttpException("Catégorie $categorieId introuvable");
                                 }
                             } else {
                                 $categorie = null;
@@ -68,13 +77,12 @@ final class MouvementController extends AbstractController
 
                         // Compte
                         if (isset($mouvementArray['compte'])) {
-                            $compteID = (int) $mouvementArray['compte'];
-
-                            if ($compteID > 0) {
-                                $compte = $this->compteRepository->find($compteID);
+                            if (CompteId::estValide((string) $mouvementArray['compte'])) {
+                                $compteId = new CompteId((string) $mouvementArray['compte']);
+                                $compte = $this->compteRepository->find($compteId);
 
                                 if (!($compte instanceof Compte)) {
-                                    throw new BadRequestHttpException("Compte $compteID introuvable");
+                                    throw new BadRequestHttpException("Compte $compteId introuvable");
                                 }
                             }
                         }
@@ -91,11 +99,11 @@ final class MouvementController extends AbstractController
 
                         $variablesDéfinies = get_defined_vars();
 
-                        if ($mouvementID > 0) { // Édition
-                            $mouvement = $this->mouvementRepository->find($mouvementID);
+                        if ($mouvementId instanceof MouvementId) { // Édition
+                            $mouvement = $this->mouvementRepository->find($mouvementId);
 
                             if (!($mouvement instanceof Mouvement)) {
-                                throw new BadRequestHttpException("Mouvement $mouvementID introuvable");
+                                throw new BadRequestHttpException("Mouvement $mouvementId introuvable");
                             }
 
                             if (array_key_exists('date', $variablesDéfinies)) {
@@ -125,7 +133,7 @@ final class MouvementController extends AbstractController
                             }
 
                             $mouvement = new Mouvement(
-                                null,
+                                new MouvementId((string) $this->idGenerator->générer()),
                                 $date,
                                 $categorie,
                                 $compte,
@@ -139,8 +147,8 @@ final class MouvementController extends AbstractController
                         break;
 
                     case 'delete': // Suppression
-                        if ($mouvementID > 0) {
-                            $this->mouvementRepository->delete($mouvementID);
+                        if ($mouvementId instanceof MouvementId) {
+                            $this->mouvementRepository->delete($mouvementId);
                         }
 
                         break;

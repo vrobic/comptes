@@ -11,9 +11,10 @@ use App\Domain\Categorie\Categorie;
  */
 final class Keyword
 {
-    // @todo : supprimer les setters et ajouter des readonly
+    // @todo : supprimer les getters, setters et ajouter des readonly
     public function __construct(
-        private readonly ?int $id, // null tant que l'ID n'a pas été généré par la BDD (@todo : utiliser des UUID pour éviter ça)
+        // @todo : supprimer $id car $word est unique
+        private readonly KeywordId $id,
         private string $word, // mot
         private Categorie $categorie, // catégorie utilisant ce mot-clé
     ) {
@@ -24,7 +25,7 @@ final class Keyword
         return $this->word;
     }
 
-    public function getId(): ?int
+    public function getId(): KeywordId
     {
         return $this->id;
     }

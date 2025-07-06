@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Infrastructure\Repository;
 
 use App\Domain\Categorie\Categorie;
-use App\Domain\Categorie\CategorieParId;
-use App\Domain\Compte\Compte;
+use App\Domain\Categorie\CategorieId;
+use App\Domain\Categorie\CategorieIdCollection;
+use App\Domain\Categorie\CategorieParIdMap;
+use App\Domain\Compte\CompteId;
 use App\Infrastructure\Denormalizer\CategorieDenormalizer;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
@@ -22,7 +24,8 @@ final readonly class CategorieRepository
     ) {
     }
 
-    public function findAll(): CategorieParId
+    // @todo : renvoyer une collection, et si besoin de retraitement le faire dans le contrôleur voire sur la collection
+    public function findAll(): CategorieParIdMap
     {
         $rows = $this->getBaseQueryBuilder()
             ->executeQuery()
@@ -30,19 +33,19 @@ final readonly class CategorieRepository
 
         return array_reduce(
             $rows,
-            fn (CategorieParId $map, array $row): CategorieParId => $map->add(
-                (int) $row['id'],
+            fn (CategorieParIdMap $map, array $row): CategorieParIdMap => $map->add(
+                (string) $row['id'],
                 $this->categorieDenormalizer->denormalize($row)
             ),
-            new CategorieParId()
+            new CategorieParIdMap()
         );
     }
 
-    public function find(int $categorieId): ?Categorie
+    public function find(CategorieId $categorieId): ?Categorie
     {
         $row = $this->getBaseQueryBuilder()
             ->where('categorie.id = :categorie_id')
-            ->setParameter('categorie_id', $categorieId)
+            ->setParameter('categorie_id', (string) $categorieId)
             ->executeQuery()
             ->fetchAssociative();
 
@@ -56,33 +59,30 @@ final readonly class CategorieRepository
     /**
      * Calcule le montant cumulé des mouvements d'une catégorie, entre deux dates.
      *
-     * @param int       $categorieId L'identifiant de la catégorie
-     * @param \DateTime $dateStart   date de début, incluse
-     * @param \DateTime $dateEnd     date de fin, incluse
-     * @param ?int      $compteId    L'identifiant d'un compte, facultatif
+     * @param \DateTime $dateStart Date de début, incluse
+     * @param \DateTime $dateEnd   Date de fin, incluse
      */
     public function getMontantTotalByDate(
-        int $categorieId,
+        CategorieId $categorieId,
         \DateTime $dateStart,
         \DateTime $dateEnd,
-        ?int $compteId = null,
+        ?CompteId $compteId = null,
     ): float {
-        $categoriesIds = array_merge(
-            [$categorieId],
-            $this->getCategoriesFillesRecursive($categorieId),
-        );
+        $categoriesIds = $this->getCategoriesFillesRecursive($categorieId)->add($categorieId);
 
         $wheres[] = 'categorie_id IN (:categories_ids)';
         $wheres[] = 'date >= :date_start AND date <= :date_end';
         $params = [
-            'categories_ids' => $categoriesIds,
+            'categories_ids' => $categoriesIds->toArray(
+                static fn (CategorieId $id): string => (string) $id
+            ),
             'date_start' => $dateStart->format('Y-m-d'),
             'date_end' => $dateEnd->format('Y-m-d'),
         ];
 
-        if (is_int($compteId)) {
+        if ($compteId instanceof CompteId) {
             $wheres[] = 'compte_id = :compte_id';
-            $params['compte_id'] = $compteId;
+            $params['compte_id'] = (string) $compteId;
         }
 
         $sql = 'SELECT SUM(montant) FROM mouvements WHERE '.implode(' AND ', $wheres).';';
@@ -91,37 +91,34 @@ final readonly class CategorieRepository
             $sql,
             $params,
             [
-                'categories_ids' => ArrayParameterType::INTEGER,
+                'categories_ids' => ArrayParameterType::STRING,
             ]
         );
     }
 
-    /**
-     * @return int[]
-     */
-    public function getCategoriesFillesRecursive(int $categorieId): array
+    public function getCategoriesFillesRecursive(CategorieId $categorieId): CategorieIdCollection
     {
-        $filles = $this->connection->fetchFirstColumn(
+        $results = $this->connection->fetchFirstColumn(
             'SELECT id FROM categories WHERE categorie_parente_id = :categorie_id;',
-            ['categorie_id' => $categorieId]
+            ['categorie_id' => (string) $categorieId]
         );
 
-        $ids = [];
+        return array_reduce(
+            $results,
+            function (CategorieIdCollection $ids, string $result): CategorieIdCollection {
+                $id = new CategorieId($result);
 
-        /** @var int $fille */
-        foreach ($filles as $fille) {
-            $ids[] = $fille;
-            $ids = array_merge($ids, $this->getCategoriesFillesRecursive($fille));
-        }
-
-        return array_unique($ids);
+                return $ids->add($id, ...$this->getCategoriesFillesRecursive($id));
+            },
+            new CategorieIdCollection()
+        );
     }
 
     public function save(Categorie ...$categories): void
     {
         foreach ($categories as $categorie) {
             $data = [
-                'categorie_parente_id' => $categorie->getCategorieParente(),
+                'categorie_parente_id' => $categorie->getCategorieParente()?->__toString(),
                 'nom' => $categorie->getNom(),
                 'rang' => $categorie->getRang(),
             ];
@@ -130,7 +127,7 @@ final readonly class CategorieRepository
                 $this->connection,
                 'categories',
                 array_merge(
-                    ['id' => $categorie->getId()],
+                    ['id' => (string) $categorie->getId()],
                     $data,
                 ),
                 $data,
@@ -138,12 +135,17 @@ final readonly class CategorieRepository
         }
     }
 
-    public function delete(int ...$ids): void
+    public function delete(CategorieId ...$ids): void
     {
         $this->connection->executeStatement(
             'DELETE FROM categories WHERE id IN (:ids);',
-            ['ids' => $ids],
-            ['ids' => ArrayParameterType::INTEGER]
+            [
+                'ids' => array_map(
+                    static fn (CategorieId $id): string => (string) $id,
+                    $ids
+                ),
+            ],
+            ['ids' => ArrayParameterType::STRING]
         );
     }
 

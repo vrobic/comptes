@@ -9,15 +9,12 @@ namespace App\Domain\Categorie;
  */
 final class Categorie
 {
-    /**
-     * @param int[] $categoriesFilles
-     */
-    // @todo : supprimer les setters et ajouter des readonly
+    // @todo : supprimer les getters, setters et ajouter des readonly
     public function __construct(
-        private readonly ?int $id, // null tant que l'ID n'a pas été généré par la BDD (@todo : utiliser des UUID pour éviter ça)
+        private readonly CategorieId $id,
         private string $nom, // nom de la catégorie
-        private ?int $categorieParente, // catégorie parente
-        private array $categoriesFilles, // catégories filles
+        private ?CategorieId $categorieParente, // catégorie parente
+        private CategorieIdCollection $categoriesFilles, // catégories filles
         private ?int $rang, // rang d'affichage
     ) {
     }
@@ -27,7 +24,7 @@ final class Categorie
         return $this->getNom();
     }
 
-    public function getId(): ?int
+    public function getId(): CategorieId
     {
         return $this->id;
     }
@@ -53,7 +50,7 @@ final class Categorie
     /**
      * Définit la catégorie parente.
      */
-    public function setCategorieParente(?int $categorieParente = null): self
+    public function setCategorieParente(?CategorieId $categorieParente = null): self
     {
         $this->categorieParente = $categorieParente;
 
@@ -63,47 +60,15 @@ final class Categorie
     /**
      * Récupère la catégorie parente.
      */
-    public function getCategorieParente(): ?int
+    public function getCategorieParente(): ?CategorieId
     {
         return $this->categorieParente;
     }
 
     /**
-     * Associe une catégorie fille.
-     */
-    public function addCategorieFille(int $categorie): self
-    {
-        $this->categoriesFilles[] = $categorie;
-
-        return $this;
-    }
-
-    /**
-     * Dissocie une catégorie fille.
-     */
-    public function removeCategorieFille(int $categorie): self
-    {
-        // @todo
-
-        return $this;
-    }
-
-    /**
-     * Dissocie toutes les catégories filles.
-     */
-    public function removeCategoriesFilles(): self
-    {
-        $this->categoriesFilles = [];
-
-        return $this;
-    }
-
-    /**
      * Récupère les catégories filles.
-     *
-     * @return int[]
      */
-    public function getCategoriesFilles(): array
+    public function getCategoriesFilles(): CategorieIdCollection
     {
         return $this->categoriesFilles;
     }

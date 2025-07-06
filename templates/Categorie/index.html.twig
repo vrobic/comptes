@@ -12,17 +12,17 @@
             <a href="{{ path('categories_categorie', {'categorieId': categorie.id, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y'), 'compteId': compte_filter is not null ? compte_filter.id : ''}) }}">{{ categorie }}</a>
         </td>
         <td>
-            {{ montants[categorie.id].period|number_format(2, ",", " ") ~ " €" }}
+            {{ montants[categorie.id.__toString].period|number_format(2, ",", " ") ~ " €" }}
         </td>
         <td>
-            {{ montants[categorie.id].average|number_format(2, ",", " ") ~ " €" }}
+            {{ montants[categorie.id.__toString].average|number_format(2, ",", " ") ~ " €" }}
         </td>
-        <td data-sparkline="{% for year, montant in montants[categorie.id].yearly %}{{ year ~ ':' ~ montant ~ (not loop.last ? ',') | e('js') }}{% endfor %}"></td>
+        <td data-sparkline="{% for year, montant in montants[categorie.id.__toString].yearly %}{{ year ~ ':' ~ montant ~ (not loop.last ? ',') | e('js') }}{% endfor %}"></td>
     </tr>
     {% if categorie.categoriesFilles is not empty %}
         {% set depth = depth + 1 %}
         {% for id in categorie.categoriesFilles %}
-            {{ _self.categoriesFilles(categories, categories[id], montants, depth, date_filter, compte_filter) }}
+            {{ _self.categoriesFilles(categories, categories[id.__toString], montants, depth, date_filter, compte_filter) }}
         {% endfor %}
     {% endif %}
 {% endmacro %}
@@ -82,13 +82,13 @@
                             {
                                 name: "Non catégorisé",
                                 y: {{ montant_total_non_categorise|abs|e('js') }},
-                                url: '{{ path('categories_categorie', {'categorieId': 0, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y'), 'compteId': compte_filter is not null ? compte_filter.id : ''})|e('js') }}'
+                                url: '{{ path('categories_categorie', {'categorieId': 'aucune', 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y'), 'compteId': compte_filter is not null ? compte_filter.id : ''})|e('js') }}'
                             },
                             {% for categorie in categories %}
-                                {%  if not categorie.categorieParente and montants[categorie.id].period < 0 %}
+                                {%  if not categorie.categorieParente and montants[categorie.id.__toString].period < 0 %}
                                     {
                                         name: "{{ categorie|e('js') }}",
-                                        y: {{ montants[categorie.id].period|abs|e('js') }},
+                                        y: {{ montants[categorie.id.__toString].period|abs|e('js') }},
                                         url: '{{ path('categories_categorie', {'categorieId': categorie.id, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y'), 'compteId': compte_filter is not null ? compte_filter.id : ''})|e('js') }}'
                                     },
                                 {% endif %}
@@ -124,7 +124,7 @@
         <tbody>
             <tr>
                 <td>
-                    <a href="{{ path('categories_categorie', {'categorieId': 0, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y'), 'compteId': compte_filter is not null ? compte_filter.id : ''}) }}">Non catégorisé</a>
+                    <a href="{{ path('categories_categorie', {'categorieId': 'aucune', 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y'), 'compteId': compte_filter is not null ? compte_filter.id : ''}) }}">Non catégorisé</a>
                 </td>
                 <td>
                     {{ montant_total_non_categorise|number_format(2, ",", " ") ~ " €" }}

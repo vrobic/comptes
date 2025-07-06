@@ -6,6 +6,7 @@ namespace App\Infrastructure\Repository;
 
 use App\Domain\Keyword\Keyword;
 use App\Domain\Keyword\KeywordCollection;
+use App\Domain\Keyword\KeywordId;
 use App\Infrastructure\Denormalizer\KeywordDenormalizer;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
@@ -56,7 +57,7 @@ final readonly class KeywordRepository
     {
         foreach ($keywords as $keyword) {
             $data = [
-                'categorie_id' => $keyword->getCategorie()->getId(),
+                'categorie_id' => (string) $keyword->getCategorie()->getId(),
                 'word' => $keyword->getWord(),
             ];
 
@@ -64,7 +65,7 @@ final readonly class KeywordRepository
                 $this->connection,
                 'keywords',
                 array_merge(
-                    ['id' => $keyword->getId()],
+                    ['id' => (string) $keyword->getId()],
                     $data,
                 ),
                 $data,
@@ -72,12 +73,17 @@ final readonly class KeywordRepository
         }
     }
 
-    public function delete(int ...$ids): void
+    public function delete(KeywordId ...$ids): void
     {
         $this->connection->executeStatement(
             'DELETE FROM keywords WHERE id IN (:ids);',
-            ['ids' => $ids],
-            ['ids' => ArrayParameterType::INTEGER]
+            [
+                'ids' => array_map(
+                    static fn (KeywordId $id): string => (string) $id,
+                    $ids
+                ),
+            ],
+            ['ids' => ArrayParameterType::STRING]
         );
     }
 

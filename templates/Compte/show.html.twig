@@ -15,7 +15,7 @@
         {% if categorie.categoriesFilles is not empty %}
             {% set depth = depth + 1 %}
             {% for id in categorie.categoriesFilles %}
-                {{ _self.categoriesFilles(categories, categories[id], mouvement, depth) }}
+                {{ _self.categoriesFilles(categories, categories[id.__toString], mouvement, depth) }}
             {% endfor %}
         {% endif %}
 
@@ -159,7 +159,7 @@
                 <tr class="new-row hidden" data-id="-1">
                     <td>
                         <label for="batch--1" class="sr-only">Ajouter</label>
-                        <input id="batch--1" type="checkbox" name="batch[]" value="-1">
+                        <input id="batch--1" type="checkbox" name="batch[]" value="">
                         <input type="hidden" name="mouvements[-1][compte]" value="{{ compte.id }}">
                     </td>
                     <td class="input-text">

@@ -6,16 +6,16 @@ namespace App\Domain\Categorie;
 
 use App\Domain\DataStructure\Set;
 
-final class CategorieCollection extends Set
+final class CategorieIdCollection extends Set
 {
     public function __construct()
     {
-        parent::__construct(Categorie::class);
+        parent::__construct(CategorieId::class);
     }
 
-    /** @param Categorie $value */
+    /** @param CategorieId $value */
     public function getUniqueKey(mixed $value): string
     {
-        return (string) $value->getId();
+        return (string) $value;
     }
 }
