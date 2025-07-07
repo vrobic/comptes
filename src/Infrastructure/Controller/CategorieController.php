@@ -328,7 +328,7 @@ final class CategorieController extends AbstractController
     public function edit(Request $request): Response
     {
         $keywords = $this->keywordRepository->findAll();
-        $keywordsParCatégorie = $keywords->trierParCatégorie();
+        $keywordsParCatégorieId = $keywords->trierParCatégorie();
 
         // Valeurs postées
         $action = $request->get('action');
@@ -421,37 +421,37 @@ final class CategorieController extends AbstractController
 
                         // Mots-clés
                         if (isset($categorieArray['keywords'])) {
-                            /** @var string[] $avant */
-                            $avant = $keywordsParCatégorie->has((string) $categorieId) ?
-                                $keywordsParCatégorie->get((string) $categorieId)->toArray(
+                            /** @var string[] $motsAvant */
+                            $motsAvant = $keywordsParCatégorieId->has((string) $categorieId) ?
+                                $keywordsParCatégorieId->get((string) $categorieId)->toArray(
                                     static fn (Keyword $keyword): string => $keyword->word
                                 ) :
                                 [];
-                            $après = explode('|', $categorieArray['keywords']);
+                            $motsAprès = explode('|', $categorieArray['keywords']);
 
                             $noEmpty = static fn (string $word): bool => '' !== trim($word);
-                            /** @var string[] $supprimés */
-                            $supprimés = array_filter(
-                                array_diff($avant, $après),
+                            /** @var string[] $motsSupprimés */
+                            $motsSupprimés = array_filter(
+                                array_diff($motsAvant, $motsAprès),
                                 $noEmpty
                             );
-                            /** @var string[] $ajoutés */
-                            $ajoutés = array_filter(
-                                array_diff($après, $avant),
+                            /** @var string[] $motsAjoutés */
+                            $motsAjoutés = array_filter(
+                                array_diff($motsAprès, $motsAvant),
                                 $noEmpty
                             );
 
                             // Ajoute les mots-clés sélectionnés
-                            foreach ($ajoutés as $ajouté) {
+                            foreach ($motsAjoutés as $motAjouté) {
                                 // Ce mot-clé existe-il déjà ?
                                 $keyword = $keywords->findFirst(
-                                    static fn (Keyword $keyword): bool => $keyword->word === $ajouté,
+                                    static fn (Keyword $keyword): bool => $keyword->word === $motAjouté,
                                 );
 
                                 if (!($keyword instanceof Keyword)) { // Si non, on le crée
                                     $keyword = new Keyword(
                                         new KeywordId((string) $this->idGenerator->générer()),
-                                        $ajouté,
+                                        $motAjouté,
                                         $categorie
                                     );
                                 } else { // Si oui, on vérifie qu'il n'est pas déjà affecté à une autre catégorie
@@ -469,9 +469,9 @@ final class CategorieController extends AbstractController
                             }
 
                             // Supprime les mots-clés qui ne sont plus sélectionnés
-                            foreach ($supprimés as $supprimé) {
+                            foreach ($motsSupprimés as $motSupprimé) {
                                 $keyword = $keywords->findFirst(
-                                    static fn (Keyword $keyword): bool => $keyword->word === $supprimé,
+                                    static fn (Keyword $keyword): bool => $keyword->word === $motSupprimé,
                                 );
 
                                 if (!($keyword instanceof Keyword)) {
@@ -499,9 +499,9 @@ final class CategorieController extends AbstractController
                                 throw new BadRequestHttpException("La catégorie $categorieId ne peut pas être supprimée car elle est utilisée par {$mouvementsDeLaCatégorie->count()} mouvements.");
                             }
 
-                            if ($keywordsParCatégorie->has((string) $categorieId)) {
+                            if ($keywordsParCatégorieId->has((string) $categorieId)) {
                                 $this->keywordRepository->delete(
-                                    ...$keywordsParCatégorie->get((string) $categorieId)->toArray(
+                                    ...$keywordsParCatégorieId->get((string) $categorieId)->toArray(
                                         static fn (Keyword $keyword): KeywordId => $keyword->id
                                     )
                                 );
@@ -528,7 +528,7 @@ final class CategorieController extends AbstractController
             'Categorie/edit.html.twig',
             [
                 'categories' => $categories->toAssociativeArray(),
-                'keywords' => $keywordsParCatégorie->toAssociativeArray(),
+                'keywords' => $keywordsParCatégorieId->toAssociativeArray(),
             ]
         );
     }
