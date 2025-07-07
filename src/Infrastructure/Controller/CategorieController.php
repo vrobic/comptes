@@ -13,7 +13,6 @@ use App\Domain\Compte\CompteId;
 use App\Domain\DataStructure\Maybe;
 use App\Domain\Id\IdGeneratorInterface;
 use App\Domain\Keyword\Keyword;
-use App\Domain\Keyword\KeywordCollection;
 use App\Domain\Keyword\KeywordId;
 use App\Domain\Mouvement\Mouvement;
 use App\Infrastructure\Repository\CategorieRepository;
@@ -148,10 +147,7 @@ final class CategorieController extends AbstractController
         return $this->render(
             'Categorie/index.html.twig',
             [
-                'categories' => $categories->toArray(
-                    static fn (string $categorieId): string => $categorieId,
-                    static fn (Categorie $categorie): Categorie => $categorie
-                ),
+                'categories' => $categories->toAssociativeArray(),
                 'comptes' => $comptes,
                 'compte_filter' => $compte,
                 'date_filter' => [
@@ -310,10 +306,7 @@ final class CategorieController extends AbstractController
             'Categorie/show.html.twig',
             [
                 'categorie' => $categorie,
-                'categories' => $categories->toArray(
-                    static fn (string $categorieId): string => $categorieId,
-                    static fn (Categorie $categorie): Categorie => $categorie
-                ),
+                'categories' => $categories->toAssociativeArray(),
                 'comptes' => $comptes,
                 'compte_filter' => $compte,
                 'date_filter' => [
@@ -534,16 +527,8 @@ final class CategorieController extends AbstractController
         return $this->render(
             'Categorie/edit.html.twig',
             [
-                'categories' => $categories->toArray(
-                    static fn (string $categorieId): string => $categorieId,
-                    static fn (Categorie $categorie): Categorie => $categorie
-                ),
-                'keywords' => $keywordsParCatégorie->toArray(
-                    static fn (string $categorieId): string => $categorieId,
-                    static fn (KeywordCollection $keywords): array => $keywords->toArray(
-                        static fn (Keyword $keyword): string => $keyword->word
-                    )
-                ),
+                'categories' => $categories->toAssociativeArray(),
+                'keywords' => $keywordsParCatégorie->toAssociativeArray(),
             ]
         );
     }

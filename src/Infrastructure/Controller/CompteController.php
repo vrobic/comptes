@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Controller;
 
-use App\Domain\Categorie\Categorie;
 use App\Domain\Compte\Compte;
 use App\Domain\Compte\CompteId;
 use App\Domain\DataStructure\Maybe;
@@ -126,10 +125,7 @@ final class CompteController extends AbstractController
                     'end' => $dateEnd,
                 ],
                 'mouvements' => $mouvements,
-                'categories' => $categories->toArray(
-                    static fn (string $categorieId): string => $categorieId,
-                    static fn (Categorie $categorie): Categorie => $categorie
-                ),
+                'categories' => $categories->toAssociativeArray(),
                 'solde_start' => $soldeStart,
                 'balance' => $balance,
             ]

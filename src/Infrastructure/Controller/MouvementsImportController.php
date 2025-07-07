@@ -227,10 +227,7 @@ class MouvementsImportController extends AbstractController
             [
                 'handlers' => $this->handlers,
                 'comptes' => $comptes,
-                'categories' => $categories->toArray(
-                    static fn (string $categorieId): string => $categorieId,
-                    static fn (Categorie $categorie): Categorie => $categorie
-                ),
+                'categories' => $categories->toAssociativeArray(),
                 'categorized_mouvements' => $categorizedMouvements,
                 'uncategorized_mouvements' => $uncategorizedMouvements,
                 'ambiguous_mouvements' => $ambiguousMouvements,

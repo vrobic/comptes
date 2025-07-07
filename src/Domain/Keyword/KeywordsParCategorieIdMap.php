@@ -15,4 +15,15 @@ final class KeywordsParCategorieIdMap extends Map
             KeywordCollection::class
         );
     }
+
+    /** @return array<string, Keyword[]> */
+    public function toAssociativeArray(): array
+    {
+        return $this->toArray(
+            static fn (string $categorieId): string => $categorieId,
+            static fn (KeywordCollection $keywords): array => $keywords->toArray(
+                static fn (Keyword $keyword): Keyword => $keyword
+            )
+        );
+    }
 }

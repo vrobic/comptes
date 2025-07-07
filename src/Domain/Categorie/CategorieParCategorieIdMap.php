@@ -15,4 +15,13 @@ final class CategorieParCategorieIdMap extends Map
             Categorie::class
         );
     }
+
+    /** @return array<string, Categorie> */
+    public function toAssociativeArray(): array
+    {
+        return $this->toArray(
+            static fn (string $categorieId): string => $categorieId,
+            static fn (Categorie $categorie): Categorie => $categorie
+        );
+    }
 }
