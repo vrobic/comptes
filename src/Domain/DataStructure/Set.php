@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\DataStructure;
 
 /** @phpstan-consistent-constructor */
-class Set implements \Iterator, \Countable
+class Set implements \IteratorAggregate, \Countable
 {
     private array $uniqueKeys = [];
     private array $data = [];
@@ -17,6 +17,11 @@ class Set implements \Iterator, \Countable
     public function getType(): string
     {
         return $this->type;
+    }
+
+    public function getIterator(): \Traversable
+    {
+        return new \ArrayIterator($this->data);
     }
 
     public function add(mixed ...$values): static
@@ -158,31 +163,6 @@ class Set implements \Iterator, \Countable
         $set->data = $data;
 
         return $set;
-    }
-
-    public function current(): mixed
-    {
-        return current($this->data);
-    }
-
-    public function next(): void
-    {
-        next($this->data);
-    }
-
-    public function key(): mixed
-    {
-        return key($this->data);
-    }
-
-    public function valid(): bool
-    {
-        return null !== $this->key();
-    }
-
-    public function rewind(): void
-    {
-        reset($this->data);
     }
 
     public function first(): mixed
