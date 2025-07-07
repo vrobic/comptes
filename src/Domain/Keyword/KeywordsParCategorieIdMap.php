@@ -6,7 +6,7 @@ namespace App\Domain\Keyword;
 
 use App\Domain\DataStructure\Map;
 
-final class KeywordsParCategorieMap extends Map
+final class KeywordsParCategorieIdMap extends Map
 {
     public function __construct()
     {

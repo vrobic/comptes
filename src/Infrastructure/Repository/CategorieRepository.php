@@ -7,7 +7,7 @@ namespace App\Infrastructure\Repository;
 use App\Domain\Categorie\Categorie;
 use App\Domain\Categorie\CategorieId;
 use App\Domain\Categorie\CategorieIdCollection;
-use App\Domain\Categorie\CategorieParIdMap;
+use App\Domain\Categorie\CategorieParCategorieIdMap;
 use App\Domain\Compte\CompteId;
 use App\Infrastructure\Denormalizer\CategorieDenormalizer;
 use Doctrine\DBAL\ArrayParameterType;
@@ -24,7 +24,7 @@ final readonly class CategorieRepository
     ) {
     }
 
-    public function findAll(): CategorieParIdMap
+    public function findAll(): CategorieParCategorieIdMap
     {
         $rows = $this->getBaseQueryBuilder()
             ->executeQuery()
@@ -32,11 +32,11 @@ final readonly class CategorieRepository
 
         return array_reduce(
             $rows,
-            fn (CategorieParIdMap $map, array $row): CategorieParIdMap => $map->add(
+            fn (CategorieParCategorieIdMap $map, array $row): CategorieParCategorieIdMap => $map->add(
                 (string) $row['id'],
                 $this->categorieDenormalizer->denormalize($row)
             ),
-            new CategorieParIdMap()
+            new CategorieParCategorieIdMap()
         );
     }
 

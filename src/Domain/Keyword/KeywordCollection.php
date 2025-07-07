@@ -13,24 +13,24 @@ final class KeywordCollection extends Set
         parent::__construct(Keyword::class);
     }
 
-    public function trierParCatégorie(): KeywordsParCategorieMap
+    public function trierParCatégorie(): KeywordsParCategorieIdMap
     {
-        $keywordsParCategorie = new KeywordsParCategorieMap();
+        $map = new KeywordsParCategorieIdMap();
 
         /** @var Keyword $keyword */
         foreach ($this as $keyword) {
             $categorieId = $keyword->categorie->id;
 
-            $keywords = $keywordsParCategorie->has((string) $categorieId) ?
-                $keywordsParCategorie->get((string) $categorieId) :
+            $keywords = $map->has((string) $categorieId) ?
+                $map->get((string) $categorieId) :
                 new KeywordCollection();
 
             $keywords = $keywords->add($keyword);
 
-            $keywordsParCategorie = $keywordsParCategorie->add((string) $categorieId, $keywords);
+            $map = $map->add((string) $categorieId, $keywords);
         }
 
-        return $keywordsParCategorie;
+        return $map;
     }
 
     /** @param Keyword $value */
