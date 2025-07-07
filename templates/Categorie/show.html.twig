@@ -8,7 +8,7 @@
 
 {% macro categoriesFilles(categories, categorie, mouvement, depth) %}
 
-    {% set optgroup = not categorie.categorieParente %}
+    {% set optgroup = categorie.categorieParente is null %}
     {% if optgroup %}<optgroup label="{{ categorie }}">{% endif %}
 
         <option value="{{ categorie.id }}" style="padding-left: {{ (depth * 20) ~ "px" }};" {{ mouvement is not null and mouvement.categorie is not null and mouvement.categorie.id == categorie.id ? "selected" }}>{{ categorie }}</option>
@@ -186,7 +186,7 @@
                             <select id="categorie-{{ mouvement.id }}" name="mouvements[{{ mouvement.id }}][categorie]">
                                 <option value="">&nbsp;</option>
                                 {% for categorie in categories %}
-                                    {% if not categorie.categorieParente %}
+                                    {% if categorie.categorieParente is null %}
                                         {{ macros.categoriesFilles(categories, categorie, mouvement, 0) }}
                                     {% endif %}
                                 {% endfor %}

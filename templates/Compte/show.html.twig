@@ -148,7 +148,7 @@
                             <select id="categorie-{{ mouvement.id }}" name="mouvements[{{ mouvement.id }}][categorie]">
                                 <option value="">&nbsp;</option>
                                 {% for categorie in categories %}
-                                    {% if not categorie.categorieParente %}
+                                    {% if categorie.categorieParente is null %}
                                         {{ macros.categoriesFilles(categories, categorie, mouvement, 0) }}
                                     {% endif %}
                                 {% endfor %}
@@ -180,7 +180,7 @@
                         <select id="categorie--1" name="mouvements[-1][categorie]">
                             <option value="">&nbsp;</option>
                             {% for categorie in categories %}
-                                {% if not categorie.categorieParente %}
+                                {% if categorie.categorieParente is null %}
                                     {{ macros.categoriesFilles(categories, categorie, null, 0) }}
                                 {% endif %}
                             {% endfor %}

@@ -85,7 +85,7 @@
                                 url: '{{ path('categories_categorie', {'categorieId': 'aucune', 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y'), 'compteId': compte_filter is not null ? compte_filter.id : ''})|e('js') }}'
                             },
                             {% for categorie in categories %}
-                                {%  if not categorie.categorieParente and montants[categorie.id.__toString].period < 0 %}
+                                {%  if categorie.categorieParente is null and montants[categorie.id.__toString].period < 0 %}
                                     {
                                         name: "{{ categorie|e('js') }}",
                                         y: {{ montants[categorie.id.__toString].period|abs|e('js') }},
@@ -143,7 +143,7 @@
                 <td data-sparkline="{% for year, montant in yearly_montants %}{{ year ~ ':' ~ montant ~ (not loop.last ? ',') | e('js') }}{% endfor %}"></td>
             </tr>
             {% for categorie in categories %}
-                {% if not categorie.categorieParente %}
+                {% if categorie.categorieParente is null %}
                     {{ macros.categoriesFilles(categories, categorie, montants, 0, date_filter, compte_filter) }}
                 {% endif %}
             {% endfor %}

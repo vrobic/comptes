@@ -25,7 +25,7 @@
             <select id="categorie-parente-{{ currentCategorie.id }}" name="categories[{{ currentCategorie.id.__toString }}][categorieParente]">
                 <option value="">&nbsp;</option>
                 {% for categorie in categories %}
-                    {% if not categorie.categorieParente %}
+                    {% if categorie.categorieParente is null %}
                         {{ _self.categoriesFillesSelect(categories, categorie, currentCategorie, 0) }}
                     {% endif %}
                 {% endfor %}
@@ -89,7 +89,7 @@
             </thead>
             <tbody>
                 {% for categorie in categories %}
-                    {% if not categorie.categorieParente %}
+                    {% if categorie.categorieParente is null %}
                         {{ macros.categoriesFillesRow(categories, categorie, keywords, 0) }}
                     {% endif %}
                 {% endfor %}
@@ -111,7 +111,7 @@
                         <select id="categorie-parente--1" name="categories[-1][categorieParente]">
                             <option value="">&nbsp;</option>
                             {% for categorie in categories %}
-                                {% if not categorie.categorieParente %}
+                                {% if categorie.categorieParente is null %}
                                     {{ macros.categoriesFillesSelect(categories, categorie, null, 0) }}
                                 {% endif %}
                             {% endfor %}
