@@ -72,28 +72,25 @@ class MouvementsImportController extends AbstractController
     #[Route('/import/mouvements', name: 'import_mouvements')]
     public function __invoke(Request $request): Response
     {
-        // La session
-        $session = $request->getSession();
-
-        // Tous les comptes bancaires
-        $comptes = $this->compteRepository->findAll();
-
-        // Toutes les catégories de mouvements
-        $categories = $this->categorieRepository->findAll();
-
-        // Le dernier mouvement inséré
-        $latestMouvement = $this->mouvementRepository->findLatestOne();
-
         // Classification des mouvements
         $categorizedMouvements = new MouvementsParHash();
         $uncategorizedMouvements = new MouvementsParHash();
         $ambiguousMouvements = new MouvementsParHash();
         $waitingMouvements = new MouvementsParHash();
 
-        // Action : parsing ou import
-        $action = $request->get('action');
+        switch ($request->get('action')) {
+            case null:
+                return $this->render(
+                    'Import/mouvements.html.twig',
+                    [
+                        'handlers' => $this->handlers,
+                        'categorized_mouvements' => $categorizedMouvements,
+                        'uncategorized_mouvements' => $uncategorizedMouvements,
+                        'ambiguous_mouvements' => $ambiguousMouvements,
+                        'waiting_mouvements' => $waitingMouvements,
+                    ]
+                );
 
-        switch ($action) {
             case 'parse': // Parsing du fichier uploadé
                 /** @var MouvementsImportHandlerInterface $handler */
                 $handler = $this->getHandler($request);
@@ -127,6 +124,9 @@ class MouvementsImportController extends AbstractController
                 // Indique si on doit ignorer les mouvements anciens
                 $skipOldOnes = $request->get('skipOldOnes', false);
 
+                // Le dernier mouvement inséré
+                $latestMouvement = $this->mouvementRepository->findLatestOne();
+
                 /* Passage des mouvements en session.
                  * Ils sont identifiés par leur hash car leur id ne sera disponible
                  * qu'une fois qu'ils auront été persistés. */
@@ -149,9 +149,20 @@ class MouvementsImportController extends AbstractController
                     }
                 }
 
-                $session->set('mouvements', $mouvements);
+                $request->getSession()->set('mouvements', $mouvements);
 
-                break;
+                return $this->render(
+                    'Import/mouvements.html.twig',
+                    [
+                        'handlers' => $this->handlers,
+                        'categorized_mouvements' => $categorizedMouvements,
+                        'uncategorized_mouvements' => $uncategorizedMouvements,
+                        'ambiguous_mouvements' => $ambiguousMouvements,
+                        'waiting_mouvements' => $waitingMouvements,
+                        'comptes' => $this->compteRepository->findAll(),
+                        'categories' => $this->categorieRepository->findAll()->toAssociativeArray(),
+                    ]
+                );
 
             case 'import': // Import des mouvements après ajustements manuels
                 // Hash des mouvements à importer
@@ -165,7 +176,7 @@ class MouvementsImportController extends AbstractController
                  *
                  * @var Mouvement[] $mouvements
                  */
-                $mouvements = $session->get('mouvements');
+                $mouvements = $request->getSession()->get('mouvements');
 
                 foreach ($mouvements as $mouvement) {
                     // Identification du mouvement par son hash
@@ -235,23 +246,10 @@ class MouvementsImportController extends AbstractController
                 }
 
                 // Vidage de la session
-                $session->remove('mouvements');
+                $request->getSession()->remove('mouvements');
 
-                break;
+                return $this->redirectToRoute('import_mouvements');
         }
-
-        return $this->render(
-            'Import/mouvements.html.twig',
-            [
-                'handlers' => $this->handlers,
-                'comptes' => $comptes,
-                'categories' => $categories->toAssociativeArray(),
-                'categorized_mouvements' => $categorizedMouvements,
-                'uncategorized_mouvements' => $uncategorizedMouvements,
-                'ambiguous_mouvements' => $ambiguousMouvements,
-                'waiting_mouvements' => $waitingMouvements,
-            ]
-        );
     }
 
     /**

@@ -93,8 +93,8 @@ final readonly class MouvementRepository
     /**
      * @param Maybe<CategorieIdCollection|null> $categoriesIds
      * @param Maybe<CompteId>                   $compteId
-     * @param Maybe<\DateTimeImmutable>         $dateStart
-     * @param Maybe<\DateTimeImmutable>         $dateEnd
+     * @param Maybe<\DateTimeImmutable>         $dateStart     Date de début, incluse
+     * @param Maybe<\DateTimeImmutable>         $dateEnd       Date de fin, incluse
      * @param Maybe<float>                      $montant
      */
     public function findBy(

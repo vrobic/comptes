@@ -43,6 +43,8 @@ class CMExcelMouvementsImportHandler extends AbstractMouvementsImportHandler
          */
         $comptesBySheets = [];
 
+        $comptes = $this->compteRepository->findAll();
+
         /**
          * @var int    $sheetIndex
          * @var string $compteId
@@ -52,7 +54,9 @@ class CMExcelMouvementsImportHandler extends AbstractMouvementsImportHandler
                 throw new \RuntimeException(); // @todo
             }
 
-            $compte = $this->compteRepository->find(new CompteId($compteId));
+            $compte = $comptes->findFirst(
+                static fn (Compte $compte): bool => (string) $compte->id === $compteId
+            );
 
             if (!($compte instanceof Compte)) {
                 throw new \RuntimeException(); // @todo

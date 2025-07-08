@@ -39,6 +39,7 @@ final readonly class KeywordRepository
         );
     }
 
+    // @todo : ajouter du cache ?
     public function findAll(): KeywordCollection
     {
         $rows = $this->getBaseQueryBuilder()
