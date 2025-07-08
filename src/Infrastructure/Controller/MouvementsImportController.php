@@ -160,8 +160,8 @@ class MouvementsImportController extends AbstractController
                     // Modification éventuelle de la date
                     if (isset($mouvementsData[$hash]['date'])) {
                         $dateString = $mouvementsData[$hash]['date'];
-                        $date = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateString 00:00:00");
-                        if (!($date instanceof \DateTime)) {
+                        $date = \DateTimeImmutable::createFromFormat('d-m-Y H:i:s', "$dateString 00:00:00");
+                        if (!($date instanceof \DateTimeImmutable)) {
                             throw new BadRequestHttpException("Date du mouvement invalide : $dateString");
                         }
                         $mouvement->date = $date;

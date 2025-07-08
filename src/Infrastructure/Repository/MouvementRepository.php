@@ -93,8 +93,8 @@ final readonly class MouvementRepository
     /**
      * @param Maybe<CategorieIdCollection|null> $categoriesIds
      * @param Maybe<CompteId>                   $compteId
-     * @param Maybe<\DateTime>                  $dateStart
-     * @param Maybe<\DateTime>                  $dateEnd
+     * @param Maybe<\DateTimeImmutable>         $dateStart
+     * @param Maybe<\DateTimeImmutable>         $dateEnd
      * @param Maybe<float>                      $montant
      */
     public function findBy(
@@ -342,12 +342,12 @@ final readonly class MouvementRepository
     /**
      * Calcule le montant cumulé de tous les mouvements entre deux dates.
      *
-     * @param \DateTime $dateStart Date de début, incluse
-     * @param \DateTime $dateEnd   Date de fin, incluse
+     * @param \DateTimeImmutable $dateStart Date de début, incluse
+     * @param \DateTimeImmutable $dateEnd   Date de fin, incluse
      */
     public function getMontantTotalByDate(
-        \DateTime $dateStart,
-        \DateTime $dateEnd,
+        \DateTimeImmutable $dateStart,
+        \DateTimeImmutable $dateEnd,
         ?CompteId $compteId = null,
     ): float {
         $wheres[] = 'date >= :date_start AND date <= :date_end';

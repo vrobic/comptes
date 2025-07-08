@@ -66,8 +66,8 @@ final class CategorieController extends AbstractController
             $dateStartString = $dateFilterString['start'];
             $dateEndString = $dateFilterString['end'];
 
-            $dateStart = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateStartString 00:00:00");
-            $dateEnd = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateEndString 23:59:59");
+            $dateStart = \DateTimeImmutable::createFromFormat('d-m-Y H:i:s', "$dateStartString 00:00:00");
+            $dateEnd = \DateTimeImmutable::createFromFormat('d-m-Y H:i:s', "$dateEndString 23:59:59");
         } else { // Par défaut, depuis un an et jusqu'à la fin du mois
             list($year, $month, $lastDayOfMonth) = explode('-', date('Y-n-t'));
 
@@ -75,14 +75,14 @@ final class CategorieController extends AbstractController
             $year = (int) $year;
             $lastDayOfMonth = (int) $lastDayOfMonth;
 
-            $dateStart = \DateTime::createFromFormat('Y-n-j H:i:s', "$year-$month-1 00:00:00");
-            if ($dateStart instanceof \DateTime) {
-                $dateStart->modify('-1 year')->setTime(0, 0); // Depuis un an
+            $dateStart = \DateTimeImmutable::createFromFormat('Y-n-j H:i:s', "$year-$month-1 00:00:00");
+            if ($dateStart instanceof \DateTimeImmutable) {
+                $dateStart = $dateStart->modify('-1 year')->setTime(0, 0); // Depuis un an
             }
-            $dateEnd = \DateTime::createFromFormat('Y-n-j H:i:s', "$year-$month-$lastDayOfMonth 23:59:59");
+            $dateEnd = \DateTimeImmutable::createFromFormat('Y-n-j H:i:s', "$year-$month-$lastDayOfMonth 23:59:59");
         }
 
-        if (!($dateStart instanceof \DateTime) || !($dateEnd instanceof \DateTime) || $dateStart > $dateEnd) {
+        if (!($dateStart instanceof \DateTimeImmutable) || !($dateEnd instanceof \DateTimeImmutable) || $dateStart > $dateEnd) {
             throw new BadRequestHttpException('La période de dates est invalide.');
         }
 
@@ -205,8 +205,8 @@ final class CategorieController extends AbstractController
             $dateStartString = $dateFilterString['start'];
             $dateEndString = $dateFilterString['end'];
 
-            $dateStart = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateStartString 00:00:00");
-            $dateEnd = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateEndString 23:59:59");
+            $dateStart = \DateTimeImmutable::createFromFormat('d-m-Y H:i:s', "$dateStartString 00:00:00");
+            $dateEnd = \DateTimeImmutable::createFromFormat('d-m-Y H:i:s', "$dateEndString 23:59:59");
         } else { // Par défaut, depuis un an et jusqu'à la fin du mois
             list($year, $month, $lastDayOfMonth) = explode('-', date('Y-n-t'));
 
@@ -214,14 +214,14 @@ final class CategorieController extends AbstractController
             $year = (int) $year;
             $lastDayOfMonth = (int) $lastDayOfMonth;
 
-            $dateStart = \DateTime::createFromFormat('Y-n-j H:i:s', "$year-$month-1 00:00:00");
-            if ($dateStart instanceof \DateTime) {
-                $dateStart->modify('-1 year')->setTime(0, 0); // Depuis un an
+            $dateStart = \DateTimeImmutable::createFromFormat('Y-n-j H:i:s', "$year-$month-1 00:00:00");
+            if ($dateStart instanceof \DateTimeImmutable) {
+                $dateStart = $dateStart->modify('-1 year')->setTime(0, 0); // Depuis un an
             }
-            $dateEnd = \DateTime::createFromFormat('Y-n-j H:i:s', "$year-$month-$lastDayOfMonth 23:59:59");
+            $dateEnd = \DateTimeImmutable::createFromFormat('Y-n-j H:i:s', "$year-$month-$lastDayOfMonth 23:59:59");
         }
 
-        if (!($dateStart instanceof \DateTime) || !($dateEnd instanceof \DateTime) || $dateStart > $dateEnd) {
+        if (!($dateStart instanceof \DateTimeImmutable) || !($dateEnd instanceof \DateTimeImmutable) || $dateStart > $dateEnd) {
             throw new BadRequestHttpException('La période de dates est invalide.');
         }
 

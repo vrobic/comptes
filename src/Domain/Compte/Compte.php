@@ -19,8 +19,8 @@ final class Compte
         public int $plafond, // en euros
         public float $soldeInitial, // solde initial en euros, avant le premier mouvement rentré dans l'application
         public readonly float $solde, // solde en euros (cumul de tous les mouvements)
-        public \DateTime $dateOuverture,
-        public ?\DateTime $dateFermeture,
+        public \DateTimeImmutable $dateOuverture,
+        public ?\DateTimeImmutable $dateFermeture,
         public ?int $rang, // rang d'affichage
     ) {
     }
@@ -43,12 +43,12 @@ final class Compte
             $violations[] = "Le plafond du compte doit être supérieur ou égal à 0. La valeur 0 indique l'absence de plafond.";
         }
 
-        if ($this->dateOuverture > new \DateTime()) {
+        if ($this->dateOuverture > new \DateTimeImmutable()) {
             $violations[] = "La date d'ouverture du compte doit être située dans le passé.";
         }
 
-        if ($this->dateFermeture instanceof \DateTime) {
-            if ($this->dateFermeture > new \DateTime()) {
+        if ($this->dateFermeture instanceof \DateTimeImmutable) {
+            if ($this->dateFermeture > new \DateTimeImmutable()) {
                 $violations[] = 'La date de fermeture du compte doit être située dans le passé.';
             }
             if ($this->dateFermeture < $this->dateOuverture) {

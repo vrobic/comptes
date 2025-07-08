@@ -14,7 +14,7 @@ class Mouvement
 {
     public function __construct(
         public readonly MouvementId $id,
-        public \DateTime $date,
+        public \DateTimeImmutable $date,
         public ?Categorie $categorie,
         public Compte $compte,
         public float $montant, // montant en euros, positif (crédit) ou négatif (débit)
@@ -56,7 +56,7 @@ class Mouvement
     {
         $violations = [];
 
-        if ($this->date > new \DateTime()) {
+        if ($this->date > new \DateTimeImmutable()) {
             $violations[] = 'La date du mouvement doit être située dans le passé.';
         }
 

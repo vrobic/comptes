@@ -55,7 +55,7 @@ final readonly class CompteRepository
      */
     public function getSoldeÀDate(
         CompteId $compteId,
-        \DateTime $date,
+        \DateTimeImmutable $date,
     ): float {
         return (float) $this->getBaseQueryBuilder()
             ->select('compte.solde_initial + SUM(mouvement.montant) AS solde')

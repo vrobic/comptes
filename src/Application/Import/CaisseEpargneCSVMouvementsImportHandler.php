@@ -70,8 +70,8 @@ class CaisseEpargneCSVMouvementsImportHandler extends AbstractMouvementsImportHa
             // Si on a dépassé la ligne d'en-têtes
             if ($currentLine > $headersLine) {
                 // Si la date est valide et sans month shifting
-                $date = \DateTime::createFromFormat('d/m/y', $cols[0]);
-                $isValidDate = $date instanceof \DateTime && is_array($date->getLastErrors()) && 0 === array_sum($date->getLastErrors());
+                $date = \DateTimeImmutable::createFromFormat('d/m/y', $cols[0]);
+                $isValidDate = $date instanceof \DateTimeImmutable && is_array($date->getLastErrors()) && 0 === array_sum($date->getLastErrors());
 
                 // Alors la ligne en cours est un mouvement
                 if ($isValidDate) {
@@ -90,8 +90,8 @@ class CaisseEpargneCSVMouvementsImportHandler extends AbstractMouvementsImportHa
 
         foreach ($rows as $row) {
             // Date
-            $date = \DateTime::createFromFormat('d/m/y', (string) $row['date']);
-            if (!($date instanceof \DateTime)) {
+            $date = \DateTimeImmutable::createFromFormat('d/m/y', (string) $row['date']);
+            if (!($date instanceof \DateTimeImmutable)) {
                 throw new \Exception("Date du mouvement invalide : {$row['date']}");
             }
 

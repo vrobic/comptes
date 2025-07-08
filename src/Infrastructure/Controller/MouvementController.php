@@ -52,9 +52,9 @@ final class MouvementController extends AbstractController
                         // Date
                         if (isset($mouvementArray['date'])) {
                             $dateString = $mouvementArray['date'];
-                            $date = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateString 00:00:00");
+                            $date = \DateTimeImmutable::createFromFormat('d-m-Y H:i:s', "$dateString 00:00:00");
 
-                            if (!($date instanceof \DateTime)) {
+                            if (!($date instanceof \DateTimeImmutable)) {
                                 throw new BadRequestHttpException("Date du mouvement invalide : $dateString");
                             }
                         }

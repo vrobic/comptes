@@ -89,7 +89,7 @@ class CMExcelMouvementsImportHandler extends AbstractMouvementsImportHandler
 
                 $mouvement = new Mouvement(
                     new MouvementId((string) $this->idGenerator->générer()),
-                    new \DateTime($date),
+                    new \DateTimeImmutable($date),
                     null, // sera définie plus tard par la classification
                     $compte,
                     $montant,

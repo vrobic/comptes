@@ -39,10 +39,10 @@ final readonly class StatsProvider
         Maybe $categorie,
         Maybe $compte,
     ): array {
-        $dateStart = \DateTime::createFromFormat('Y-m-d H:i:s', "$yearStart-01-01 00:00:00");
-        $dateEnd = \DateTime::createFromFormat('Y-m-d H:i:s', "$yearEnd-12-31 23:59:59");
+        $dateStart = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', "$yearStart-01-01 00:00:00");
+        $dateEnd = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', "$yearEnd-12-31 23:59:59");
 
-        if (!($dateStart instanceof \DateTime) || !($dateEnd instanceof \DateTime)) {
+        if (!($dateStart instanceof \DateTimeImmutable) || !($dateEnd instanceof \DateTimeImmutable)) {
             throw new \Exception('Intervalle de dates invalide.');
         }
 
@@ -84,16 +84,16 @@ final readonly class StatsProvider
      * Calcule le montant mensuel total des mouvements d'une catégorie,
      * compris entre deux dates incluses.
      *
-     * @param \DateTime             $dateStart Date de début, incluse
-     * @param \DateTime             $dateEnd   Date de fin, incluse
+     * @param \DateTimeImmutable    $dateStart Date de début, incluse
+     * @param \DateTimeImmutable    $dateEnd   Date de fin, incluse
      * @param Maybe<Categorie|null> $categorie
      * @param Maybe<Compte>         $compte
      *
      * @return array<int, array<int, float>> les montants des mouvements, classés par mois
      */
     public function getMonthlyMontants(
-        \DateTime $dateStart,
-        \DateTime $dateEnd,
+        \DateTimeImmutable $dateStart,
+        \DateTimeImmutable $dateEnd,
         Maybe $categorie,
         Maybe $compte,
     ): array {
@@ -146,16 +146,16 @@ final readonly class StatsProvider
      * Calcule le montant mensuel moyen des mouvements d'une catégorie,
      * compris entre deux dates incluses.
      *
-     * @param \DateTime             $dateStart Date de début, incluse
-     * @param \DateTime             $dateEnd   Date de fin, incluse
+     * @param \DateTimeImmutable    $dateStart Date de début, incluse
+     * @param \DateTimeImmutable    $dateEnd   Date de fin, incluse
      * @param Maybe<Categorie|null> $categorie
      * @param Maybe<Compte>         $compte
      *
      * @return float Le montant mensuel moyen des mouvements
      */
     public function getAverageMonthlyMontants(
-        \DateTime $dateStart,
-        \DateTime $dateEnd,
+        \DateTimeImmutable $dateStart,
+        \DateTimeImmutable $dateEnd,
         Maybe $categorie,
         Maybe $compte,
     ): float {

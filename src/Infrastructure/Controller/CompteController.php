@@ -71,9 +71,9 @@ final class CompteController extends AbstractController
             $dateStartString = $dateFilterString['start'];
             $dateEndString = $dateFilterString['end'];
 
-            $dateStart = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateStartString 00:00:00");
-            $dateEnd = \DateTime::createFromFormat('d-m-Y H:i:s', "$dateEndString 23:59:59");
-        } elseif ($compte->dateFermeture instanceof \DateTime) { // Si le compte est clôturé, du début à la fin de sa vie
+            $dateStart = \DateTimeImmutable::createFromFormat('d-m-Y H:i:s', "$dateStartString 00:00:00");
+            $dateEnd = \DateTimeImmutable::createFromFormat('d-m-Y H:i:s', "$dateEndString 23:59:59");
+        } elseif ($compte->dateFermeture instanceof \DateTimeImmutable) { // Si le compte est clôturé, du début à la fin de sa vie
             $dateStart = $compte->dateOuverture;
             $dateEnd = $compte->dateFermeture;
         } else { // Sinon, le mois courant en entier
@@ -83,11 +83,11 @@ final class CompteController extends AbstractController
             $year = (int) $year;
             $lastDayOfMonth = (int) $lastDayOfMonth;
 
-            $dateStart = \DateTime::createFromFormat('Y-n-j H:i:s', "$year-$month-1 00:00:00");
-            $dateEnd = \DateTime::createFromFormat('Y-n-j H:i:s', "$year-$month-$lastDayOfMonth 23:59:59");
+            $dateStart = \DateTimeImmutable::createFromFormat('Y-n-j H:i:s', "$year-$month-1 00:00:00");
+            $dateEnd = \DateTimeImmutable::createFromFormat('Y-n-j H:i:s', "$year-$month-$lastDayOfMonth 23:59:59");
         }
 
-        if (!($dateStart instanceof \DateTime) || !($dateEnd instanceof \DateTime) || $dateStart > $dateEnd) {
+        if (!($dateStart instanceof \DateTimeImmutable) || !($dateEnd instanceof \DateTimeImmutable) || $dateStart > $dateEnd) {
             throw new BadRequestHttpException('La période de dates est invalide.');
         }
 

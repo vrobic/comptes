@@ -58,13 +58,13 @@ final readonly class CategorieRepository
     /**
      * Calcule le montant cumulé des mouvements d'une catégorie, entre deux dates.
      *
-     * @param \DateTime $dateStart Date de début, incluse
-     * @param \DateTime $dateEnd   Date de fin, incluse
+     * @param \DateTimeImmutable $dateStart Date de début, incluse
+     * @param \DateTimeImmutable $dateEnd   Date de fin, incluse
      */
     public function getMontantTotalByDate(
         CategorieId $categorieId,
-        \DateTime $dateStart,
-        \DateTime $dateEnd,
+        \DateTimeImmutable $dateStart,
+        \DateTimeImmutable $dateEnd,
         ?CompteId $compteId = null,
     ): float {
         $categoriesIds = $this->getCategoriesFillesRecursive($categorieId)->add($categorieId);
