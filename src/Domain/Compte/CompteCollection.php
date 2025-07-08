@@ -18,4 +18,20 @@ final class CompteCollection extends Set
     {
         return (string) $value->id;
     }
+
+    // Utilisé en Twig
+    public function ouverts(): self
+    {
+        return $this->filter(
+            static fn (Compte $compte): bool => is_null($compte->dateFermeture)
+        );
+    }
+
+    // Utilisé en Twig
+    public function fermés(): self
+    {
+        return $this->filter(
+            static fn (Compte $compte): bool => $compte->dateFermeture instanceof \DateTimeInterface
+        );
+    }
 }

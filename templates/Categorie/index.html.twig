@@ -42,7 +42,7 @@
                         <option value=""></option>
                         {% for compte in comptes %}
                             <option value="{{ compte.id }}" {{ compte_filter is not null and compte_filter.id == compte.id ? "selected" }}>
-                                {{ compte.dateFermeture is null ? compte : "%s (clôturé)"|format(compte) }}
+                                {{ compte.dateFermeture is null ? compte : "%s (fermé)"|format(compte) }}
                             </option>
                         {% endfor %}
                     </select>

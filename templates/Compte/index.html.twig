@@ -7,7 +7,7 @@
 {% block content %}
     <h1>Comptes</h1>
     <div class="row">
-        {% for compte in comptes %}
+        {% for compte in comptes.ouverts %}
             <div class="widget col-md-3">
                 <a href="{{ path('comptes_compte', {'compteId': compte.id}) }}">
                     <div class="widget-content">
@@ -15,15 +15,42 @@
                             <span class="glyphicon glyphicon-euro"></span>
                         </div>
                         <h3>
-                            {{ compte.solde < 0 ? "-" }} <{{ compte.dateFermeture is null ? 'strong' : 'del' }}>{{ compte.solde|abs|number_format(2, ",", " ") ~ " €" }}</{{ compte.dateFermeture is null ? 'strong' : 'del' }}>
-                            <small>{{ compte.dateFermeture is null ? compte : "%s (clôturé)"|format(compte) }}</small>
+                            {{ compte.solde < 0 ? "-" }} <strong>{{ compte.solde|abs|number_format(2, ",", " ") ~ " €" }}</strong>
+                            <small>{{ compte }}</small>
                         </h3>
                     </div>
                 </a>
             </div>
             {% if loop.index % 4 == 0 %}</div><div class="row">{% endif %}
         {% endfor %}
+        {% if comptes.fermés is not empty %}
+            <div class="widget col-md-12">
+                <button class="btn btn-default" data-toggle="collapse" data-target=".collapse">
+                    <span class="glyphicon glyphicon-eye-close"></span> Afficher les comptes fermés
+                </button>
+            </div>
+        {% endif %}
     </div>
+    {% if comptes.fermés is not empty %}
+        <div class="row collapse">
+            {% for compte in comptes.fermés %}
+                <div class="widget col-md-3">
+                    <a href="{{ path('comptes_compte', {'compteId': compte.id}) }}">
+                        <div class="widget-content">
+                            <div class="widget-icon pull-left">
+                                <span class="glyphicon glyphicon-euro"></span>
+                            </div>
+                            <h3>
+                                {{ compte.solde < 0 ? "-" }} <del>{{ compte.solde|abs|number_format(2, ",", " ") ~ " €" }}</del>
+                                <small>{{ compte }}</small>
+                            </h3>
+                        </div>
+                    </a>
+                </div>
+                {% if loop.index % 4 == 0 %}</div><div class="row collapse">{% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
     <div class="row">
         <div id="chart-1" class="chart col-md-12"></div>
         <script>
