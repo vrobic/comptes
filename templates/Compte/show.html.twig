@@ -33,7 +33,7 @@
                 <dt>Numéro</dt>
                     <dd>{{ compte.numero }}</dd>
                 <dt>Plafond</dt>
-                    <dd>{{ compte.plafond > 0 ? compte.plafond|number_format(2, ",", " ") ~ " €": "néant" }}</dd>
+                    <dd>{{ compte.plafond is not null ? compte.plafond|number_format(2, ",", " ") ~ " €": "néant" }}</dd>
                 <dt>Date d'ouverture</dt>
                     <dd>{{ compte.dateOuverture|date('d-m-Y') }}</dd>
                 {% if compte.dateFermeture is not null %}

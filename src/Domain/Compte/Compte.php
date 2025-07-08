@@ -16,14 +16,14 @@ final class Compte
         public string $nom,
         public string $numero,
         public string $banque,
-        public int $plafond, // en euros
+        public ?int $plafond, // en euros
         public float $soldeInitial, // solde initial en euros, avant le premier mouvement rentré dans l'application
         public readonly float $solde, // solde en euros (cumul de tous les mouvements)
         public \DateTimeImmutable $dateOuverture,
         public ?\DateTimeImmutable $dateFermeture,
         public ?int $rang, // rang d'affichage
     ) {
-        if ($this->plafond <= 0) {
+        if (is_int($this->plafond) && $this->plafond <= 0) {
             throw new \DomainException("Le plafond d'un compte bancaire doit être positif.");
         }
 

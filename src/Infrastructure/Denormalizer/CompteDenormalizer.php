@@ -29,7 +29,7 @@ final readonly class CompteDenormalizer implements Denormalizer
             (string) $data['nom'],
             (string) $data['numero'],
             (string) $data['banque'],
-            (int) $data['plafond'],
+            is_int($data['plafond']) ? $data['plafond'] : null,
             (float) $data['solde_initial'],
             (float) $data['solde'],
             $dateOuverture,
