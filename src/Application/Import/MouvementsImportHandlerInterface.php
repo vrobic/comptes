@@ -16,7 +16,9 @@ interface MouvementsImportHandlerInterface
     public function parse(\SplFileObject $file): void;
 
     /**
-     * Renvoie le tableau de classification des mouvements.
+     * @var MouvementsParHashParClassification Tableau de classification des mouvements
      */
-    public function getMouvementsParHashParClassification(): MouvementsParHashParClassification;
+    public MouvementsParHashParClassification $mouvementsParHashParClassification {
+        get;
+    }
 }

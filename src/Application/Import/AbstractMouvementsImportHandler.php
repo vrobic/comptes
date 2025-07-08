@@ -28,10 +28,11 @@ abstract class AbstractMouvementsImportHandler implements MouvementsImportHandle
      */
     protected array $configuration;
 
-    /**
-     * Tableau de classification des mouvements.
-     */
-    private MouvementsParHashParClassification $mouvementsParHashParClassification;
+    public MouvementsParHashParClassification $mouvementsParHashParClassification {
+        get {
+            return $this->mouvementsParHashParClassification;
+        }
+    }
 
     /**
      * Constructeur.
@@ -50,11 +51,6 @@ abstract class AbstractMouvementsImportHandler implements MouvementsImportHandle
     public function parse(\SplFileObject $file): void
     {
         throw new \Exception("Le handler d'import de mouvements doit implémenter la méthode parse.");
-    }
-
-    public function getMouvementsParHashParClassification(): MouvementsParHashParClassification
-    {
-        return $this->mouvementsParHashParClassification;
     }
 
     /**

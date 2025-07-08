@@ -97,7 +97,7 @@ class MouvementsImportController extends AbstractController
                 $splFile = $this->getFile($request);
                 $handler->parse($splFile);
 
-                $mouvementsParHashParClassification = $handler->getMouvementsParHashParClassification();
+                $mouvementsParHashParClassification = $handler->mouvementsParHashParClassification;
 
                 $mouvements = $mouvementsParHashParClassification->getMouvementsParHash();
 
