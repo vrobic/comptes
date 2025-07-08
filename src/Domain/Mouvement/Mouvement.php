@@ -46,22 +46,4 @@ class Mouvement
 
         return $hash;
     }
-
-    /**
-     * Valide le mouvement pour le moteur de validation.
-     *
-     * @todo : rebrancher
-     */
-    public function validate(ExecutionContextInterface $context): void
-    {
-        $violations = [];
-
-        if ($this->date > new \DateTimeImmutable()) {
-            $violations[] = 'La date du mouvement doit être située dans le passé.';
-        }
-
-        foreach ($violations as $violation) {
-            $context->addViolation($violation);
-        }
-    }
 }

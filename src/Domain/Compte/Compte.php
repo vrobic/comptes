@@ -23,41 +23,17 @@ final class Compte
         public ?\DateTimeImmutable $dateFermeture,
         public ?int $rang, // rang d'affichage
     ) {
+        if ($this->plafond <= 0) {
+            throw new \DomainException("Le plafond d'un compte bancaire doit être positif.");
+        }
+
+        if ($this->dateFermeture instanceof \DateTimeImmutable && $this->dateFermeture < $this->dateOuverture) {
+            throw new \DomainException("La date de fermeture d'un compte bancaire doit être postérieure ou égale à celle d'ouverture.");
+        }
     }
 
     public function __toString(): string
     {
         return $this->nom;
-    }
-
-    /**
-     * Valide le compte pour le moteur de validation.
-     *
-     * @todo : rebrancher
-     */
-    public function validate(ExecutionContextInterface $context): void
-    {
-        $violations = [];
-
-        if ($this->plafond < 0) {
-            $violations[] = "Le plafond du compte doit être supérieur ou égal à 0. La valeur 0 indique l'absence de plafond.";
-        }
-
-        if ($this->dateOuverture > new \DateTimeImmutable()) {
-            $violations[] = "La date d'ouverture du compte doit être située dans le passé.";
-        }
-
-        if ($this->dateFermeture instanceof \DateTimeImmutable) {
-            if ($this->dateFermeture > new \DateTimeImmutable()) {
-                $violations[] = 'La date de fermeture du compte doit être située dans le passé.';
-            }
-            if ($this->dateFermeture < $this->dateOuverture) {
-                $violations[] = "La date de fermeture doit être postérieure ou égale à celle d'ouverture.";
-            }
-        }
-
-        foreach ($violations as $violation) {
-            $context->addViolation($violation);
-        }
     }
 }
