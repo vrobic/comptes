@@ -27,7 +27,7 @@ final class CompteController extends AbstractController
     ) {
     }
 
-    #[Route('/comptes', name: 'comptes_comptes')]
+    #[Route('/', name: 'comptes_comptes')]
     public function liste(): Response
     {
         $comptes = $this->compteRepository->findAll();

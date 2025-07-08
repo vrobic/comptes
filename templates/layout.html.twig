@@ -30,11 +30,6 @@
                     <div class="sidebar col-md-2">
                         {% block sidebar %}
                             <ul class="nav nav-sidebar">
-                                <li{% if app.request.get('_route') == 'dashboard' %} class="active"{% endif %}>
-                                    <a href="{{ path('dashboard') }}">
-                                        <span class="glyphicon glyphicon-dashboard"></span> Dashboard
-                                    </a>
-                                </li>
                                 <li{% if app.request.get('_route') == 'comptes_comptes' %} class="active"{% endif %}>
                                     <a href="{{ path('comptes_comptes') }}">
                                         <span class="glyphicon glyphicon-euro"></span> Comptes
