@@ -4,22 +4,19 @@ declare(strict_types=1);
 
 namespace App\Application\Import;
 
-use App\Domain\Mouvement\Mouvement;
+use App\Domain\Mouvement\MouvementsParHashParClassification;
 
-interface MouvementsImportHandlerInterface extends ImportHandlerInterface
+interface MouvementsImportHandlerInterface
 {
-    /** @return array<string, Mouvement> */
-    public function getMouvements(): array;
+    public function supports(string $handlerId): bool;
 
-    /** @return array<string, Mouvement> */
-    public function getCategorizedMouvements(): array;
+    /**
+     * Parse le fichier pour remplir le tableau classification des mouvements.
+     */
+    public function parse(\SplFileObject $file): void;
 
-    /** @return array<string, Mouvement> */
-    public function getUncategorizedMouvements(): array;
-
-    /** @return array<string, Mouvement> */
-    public function getAmbiguousMouvements(): array;
-
-    /** @return array<string, Mouvement> */
-    public function getWaitingMouvements(): array;
+    /**
+     * Renvoie le tableau de classification des mouvements.
+     */
+    public function getMouvementsParHashParClassification(): MouvementsParHashParClassification;
 }

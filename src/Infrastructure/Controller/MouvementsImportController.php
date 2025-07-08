@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Controller;
 
-use App\Application\Import\ImportHandlerInterface;
 use App\Application\Import\MouvementsImportHandlerInterface;
 use App\Domain\Categorie\Categorie;
 use App\Domain\Categorie\CategorieId;
+use App\Domain\Categorie\Classification;
 use App\Domain\Compte\Compte;
 use App\Domain\Compte\CompteId;
 use App\Domain\Mouvement\Mouvement;
+use App\Domain\Mouvement\MouvementsParHash;
 use App\Infrastructure\Configuration\ConfigurationLoader;
 use App\Infrastructure\Repository\CategorieRepository;
 use App\Infrastructure\Repository\CompteRepository;
@@ -43,13 +44,13 @@ class MouvementsImportController extends AbstractController
     /**
      * Identifiant du service d'import, au sein de $this->handlers.
      *
-     * @todo : à supprimer car pas très utile, on peut utiliser directement l'objet ImportHandlerInterface
+     * @todo : à supprimer car pas très utile, on peut utiliser directement l'objet MouvementsImportHandlerInterface
      */
     private string $handlerIdentifier;
 
-    /** @param ImportHandlerInterface[] $importHandlers */
+    /** @param MouvementsImportHandlerInterface[] $mouvementsImportHandlers */
     public function __construct(
-        private readonly iterable $importHandlers,
+        private readonly iterable $mouvementsImportHandlers,
         private readonly CompteRepository $compteRepository,
         private readonly CategorieRepository $categorieRepository,
         private readonly MouvementRepository $mouvementRepository,
@@ -84,10 +85,10 @@ class MouvementsImportController extends AbstractController
         $latestMouvement = $this->mouvementRepository->findLatestOne();
 
         // Classification des mouvements
-        $categorizedMouvements = [];
-        $uncategorizedMouvements = [];
-        $ambiguousMouvements = [];
-        $waitingMouvements = [];
+        $categorizedMouvements = new MouvementsParHash();
+        $uncategorizedMouvements = new MouvementsParHash();
+        $ambiguousMouvements = new MouvementsParHash();
+        $waitingMouvements = new MouvementsParHash();
 
         // Action : parsing ou import
         $action = $request->get('action');
@@ -99,12 +100,29 @@ class MouvementsImportController extends AbstractController
                 $splFile = $this->getFile($request);
                 $handler->parse($splFile);
 
-                // Mouvements classifiés
-                $mouvements = $handler->getMouvements();
-                $categorizedMouvements = $handler->getCategorizedMouvements();
-                $uncategorizedMouvements = $handler->getUncategorizedMouvements();
-                $ambiguousMouvements = $handler->getAmbiguousMouvements();
-                $waitingMouvements = $handler->getWaitingMouvements();
+                $mouvementsParHashParClassification = $handler->getMouvementsParHashParClassification();
+
+                $mouvements = $mouvementsParHashParClassification->getMouvementsParHash();
+
+                /** @var MouvementsParHash $categorizedMouvements */
+                $categorizedMouvements = $mouvementsParHashParClassification->has(Classification::CATEGORIZED->name) ?
+                    $mouvementsParHashParClassification->get(Classification::CATEGORIZED->name) :
+                    new MouvementsParHash();
+
+                /** @var MouvementsParHash $uncategorizedMouvements */
+                $uncategorizedMouvements = $mouvementsParHashParClassification->has(Classification::UNCATEGORIZED->name) ?
+                    $mouvementsParHashParClassification->get(Classification::UNCATEGORIZED->name) :
+                    new MouvementsParHash();
+
+                /** @var MouvementsParHash $ambiguousMouvements */
+                $ambiguousMouvements = $mouvementsParHashParClassification->has(Classification::AMBIGUOUS->name) ?
+                    $mouvementsParHashParClassification->get(Classification::AMBIGUOUS->name) :
+                    new MouvementsParHash();
+
+                /** @var MouvementsParHash $waitingMouvements */
+                $waitingMouvements = $mouvementsParHashParClassification->has(Classification::WAITING->name) ?
+                    $mouvementsParHashParClassification->get(Classification::WAITING->name) :
+                    new MouvementsParHash();
 
                 // Indique si on doit ignorer les mouvements anciens
                 $skipOldOnes = $request->get('skipOldOnes', false);
@@ -120,11 +138,11 @@ class MouvementsImportController extends AbstractController
                         $latestMouvementDate = $latestMouvement->date;
 
                         if ($date < $latestMouvementDate) {
-                            unset($mouvements[$hash]);
-                            unset($categorizedMouvements[$hash]);
-                            unset($uncategorizedMouvements[$hash]);
-                            unset($ambiguousMouvements[$hash]);
-                            unset($waitingMouvements[$hash]);
+                            $mouvements = $mouvements->remove($hash);
+                            $categorizedMouvements = $categorizedMouvements->remove($hash);
+                            $uncategorizedMouvements = $uncategorizedMouvements->remove($hash);
+                            $ambiguousMouvements = $ambiguousMouvements->remove($hash);
+                            $waitingMouvements = $waitingMouvements->remove($hash);
 
                             continue;
                         }
@@ -241,7 +259,7 @@ class MouvementsImportController extends AbstractController
      *
      * @throws \Exception si le handler demandé est invalide
      */
-    private function getHandler(Request $request): ImportHandlerInterface
+    private function getHandler(Request $request): MouvementsImportHandlerInterface
     {
         $handlerIdentifier = $request->get('handlerIdentifier');
 
@@ -255,9 +273,9 @@ class MouvementsImportController extends AbstractController
 
         $this->handlerIdentifier = $handlerIdentifier;
 
-        foreach ($this->importHandlers as $importHandler) {
-            if ($importHandler->supports($handlerIdentifier)) {
-                return $importHandler;
+        foreach ($this->mouvementsImportHandlers as $mouvementImportHandler) {
+            if ($mouvementImportHandler->supports($handlerIdentifier)) {
+                return $mouvementImportHandler;
             }
         }
 

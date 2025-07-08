@@ -29,10 +29,10 @@ services:
             $configFilePath: 'config/comptes.yaml'
     
     _instanceof:
-        App\Application\Import\ImportHandlerInterface:
+        App\Application\Import\MouvementsImportHandlerInterface:
             tags:
-                - { name: 'import_handler' }
+                - { name: 'mouvements_import_handler' }
     
     App\Infrastructure\Controller\MouvementsImportController:
         arguments:
-            $importHandlers: !tagged_iterator { tag: 'import_handler' }
+            $mouvementsImportHandlers: !tagged_iterator { tag: 'mouvements_import_handler' }

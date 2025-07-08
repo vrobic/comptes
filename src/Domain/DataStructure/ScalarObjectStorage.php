@@ -57,6 +57,11 @@ final class ScalarObjectStorage implements ObjectStorage
         $this->storage[$key] = $data;
     }
 
+    public function detach(mixed $key): void
+    {
+        unset($this->storage[$key]);
+    }
+
     public function isTypeOf(mixed $key, string $keyType): bool
     {
         return match ($keyType) {

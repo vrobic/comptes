@@ -22,8 +22,6 @@ class CMCSVMouvementsImportHandler extends AbstractMouvementsImportHandler
     }
 
     /**
-     * Parse les mouvements et remplit les tableaux de classification du handler.
-     *
      * @param \SplFileObject $file Fichier CSV fourni par le Crédit Mutuel
      */
     public function parse(\SplFileObject $file): void
@@ -109,9 +107,7 @@ class CMCSVMouvementsImportHandler extends AbstractMouvementsImportHandler
                 $row['libelle']
             );
 
-            // Classification
-            $classification = $this->getClassification($mouvement);
-            $this->classify($mouvement, $classification);
+            $this->classify($mouvement);
         }
     }
 }

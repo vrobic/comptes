@@ -41,9 +41,6 @@ class Mouvement
      */
     public function getHash(): string
     {
-        $string = (string) $this;
-        $hash = md5($string);
-
-        return $hash;
+        return md5((string) $this);
     }
 }

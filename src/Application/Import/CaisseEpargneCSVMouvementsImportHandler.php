@@ -22,8 +22,6 @@ class CaisseEpargneCSVMouvementsImportHandler extends AbstractMouvementsImportHa
     }
 
     /**
-     * Parse les mouvements et remplit les tableaux de classification du handler.
-     *
      * @param \SplFileObject $file Fichier CSV fourni par la Caisse d'Épargne
      */
     public function parse(\SplFileObject $file): void
@@ -110,9 +108,7 @@ class CaisseEpargneCSVMouvementsImportHandler extends AbstractMouvementsImportHa
                 $row['libelle']
             );
 
-            // Classification
-            $classification = $this->getClassification($mouvement);
-            $this->classify($mouvement, $classification);
+            $this->classify($mouvement);
         }
     }
 }
