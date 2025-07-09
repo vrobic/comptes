@@ -17,7 +17,7 @@
         <td>
             {{ montants[categorie.id.__toString].average|number_format(2, ",", " ") ~ " €" }}
         </td>
-        <td data-sparkline="{% for year, montant in montants[categorie.id.__toString].yearly %}{{ year ~ ':' ~ montant ~ (not loop.last ? ',') | e('js') }}{% endfor %}"></td>
+        <td data-sparkline="{% for year, montant in montants[categorie.id.__toString].yearly %}{{ categorie.id ~ '|' ~ year|e('html') ~ '|' ~ montant|e('html') ~ (not loop.last ? ',') }}{% endfor %}"></td>
     </tr>
     {% if categorie.categoriesFilles is not empty %}
         {% set depth = depth + 1 %}
@@ -140,7 +140,7 @@
                     {{ montant_total|number_format(2, ",", " ") ~ " €" }}
                 </td>
                 <td></td>
-                <td data-sparkline="{% for year, montant in yearly_montants %}{{ year ~ ':' ~ montant ~ (not loop.last ? ',') | e('js') }}{% endfor %}"></td>
+                <td data-sparkline="{% for year, montant in yearly_montants %}{{ '' ~ '|' ~ year|e('html') ~ '|' ~ montant|e('html') ~ (not loop.last ? ',') }}{% endfor %}"></td>
             </tr>
             {% for categorie in categories %}
                 {% if categorie.categorieParente is null %}
@@ -154,18 +154,20 @@
             $('td[data-sparkline]').each(function()
             {
                 var td = this,
-                    stringData = $(td).data('sparkline'), // "2012:1890.36,2013:2559.62"
-                    arrayData = stringData.split(','), // ["2012:1890.36", "2013:2559.62"]
+                    stringData = $(td).data('sparkline'), // "af3a5291-ed90-41ad-9c33-c0bff7484051|2012|1890.36,c4663b2a-b9cd-45a3-a48d-d3e84906abde|2013|2559.62"
+                    arrayData = stringData.split(','), // ["af3a5291-ed90-41ad-9c33-c0bff7484051|2012|1890.36", "c4663b2a-b9cd-45a3-a48d-d3e84906abde|2013|2559.62"]
                     seriesData = [];
 
                 for (var i=0; i < arrayData.length; i++)
                 {
-                    var data = arrayData[i].split(':'), // ["2012", "1890.36"]
-                        year = data[0], // "2012"
-                        montant = data[1]; // "1890.36"
+                    var data = arrayData[i].split('|'), // ["af3a5291-ed90-41ad-9c33-c0bff7484051", "2012", "1890.36"]
+                        categorieId = data[0], // "af3a5291-ed90-41ad-9c33-c0bff7484051"
+                        annee = data[1], // "2012"
+                        montant = data[2]; // "1890.36"
 
                     seriesData.push({
-                        year: year, // "2012"
+                        categorieId: categorieId, // "af3a5291-ed90-41ad-9c33-c0bff7484051"
+                        annee: annee, // "2012"
                         y: parseFloat(montant) // 1890.36
                     });
                 }
@@ -180,8 +182,31 @@
                     }],
                     tooltip: {
                         headerFormat: "",
-                        pointFormat: "<strong>{point.year}</strong>: {point.y:.0f}€"
-                    }
+                        pointFormat: "<strong>{point.annee}</strong>: {point.y:.0f}€"
+                    },
+                    plotOptions: {
+                        series: {
+                            cursor: categorieId !== "" ? "pointer" : "default",
+                            point: {
+                                events: {
+                                    click: function () {
+                                        if (this.categorieId === "") {
+                                            return;
+                                        }
+
+                                        var url = "{{ path('categories_categorie', {'categorieId': 'categorie_id', 'date_filter[start]': 'date_filter_start', 'date_filter[end]': 'date_filter_end', 'compte_id': compte_filter is not null ? compte_filter.id : ''})|e('js') }}",
+                                            annee = String(this.annee).padStart(4, "0");
+
+                                        url = url.replace("categorie_id", this.categorieId);
+                                        url = url.replace("date_filter_start", "01-01-" + annee);
+                                        url = url.replace("date_filter_end", "31-12-" + annee);
+
+                                        window.location.href = url;
+                                    }
+                                }
+                            }
+                        }
+                    },
                 });
             });
         });
