@@ -96,7 +96,7 @@
                                 {% if compte.dateFermeture is null %}
                                     {
                                         y: {{ compte.solde|e('js') }},
-                                        url: '{{ path('comptes_compte', {'compteId': compte.id})|e('js') }}'
+                                        url: "{{ path('comptes_compte', {'compteId': compte.id})|e('js') }}"
                                     },
                                 {% endif %}
                             {% endfor %}

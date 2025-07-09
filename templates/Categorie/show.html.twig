@@ -129,20 +129,44 @@
                     },
                     series: [
                         {
-                            name: "{{ categorie is not null ? categorie|e('js') : "Mouvements non catégorisés" }}",
+                            name: "{{ (categorie is not null ? categorie : "Mouvements non catégorisés")|e('js') }}",
                             data: [
                                 {% for year, months in monthly_montants %}
                                     {% for month, montant in months %}
-                                        [
-                                            Date.UTC({{ year|e('js') }}, {{ (month-1)|e('js') }}),
-                                            {{ montant|e('js') }}
-                                        ]{{ not loop.last ? ','|e('js') }}
+                                        {
+                                            x: Date.UTC({{ year|e('js') }}, {{ (month-1)|e('js') }}),
+                                            y: {{ montant|e('js') }},
+                                            categorieId: "{{ (categorie is not null ? categorie.id : 'aucune')|e('js') }}",
+                                            annee: {{ year|e('js') }},
+                                            mois: {{ month|e('js') }}
+                                        }{{ not loop.last ? ','|e('js') }}
                                     {% endfor %}
                                     {{ not loop.last ? ','|e('js') }}
                                 {% endfor %}
                             ]
+                        },
+                    ],
+                    plotOptions: {
+                        series: {
+                            cursor: "pointer",
+                            point: {
+                                events: {
+                                    click: function () {
+                                        var url = "{{ path('categories_categorie', {'categorieId': 'categorie_id', 'date_filter[start]': 'date_filter_start', 'date_filter[end]': 'date_filter_end', 'compte_id': compte_filter is not null ? compte_filter.id : ''})|e('js') }}",
+                                            dernierJourDuMois = String(new Date(this.annee, this.mois, 0).getDate()).padStart(2, "0"),
+                                            mois = String(this.mois).padStart(2, "0"),
+                                            annee = String(this.annee).padStart(4, "0");
+
+                                        url = url.replace("categorie_id", this.categorieId);
+                                        url = url.replace("date_filter_start", "01-" + mois + "-" + annee);
+                                        url = url.replace("date_filter_end", dernierJourDuMois + "-" + mois + "-" + annee);
+
+                                        window.location.href = url;
+                                    }
+                                }
+                            }
                         }
-                    ]
+                    }
                 });
             });
         </script>
