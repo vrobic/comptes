@@ -29,7 +29,7 @@
         <div class="col-md-8">
             <form action="{{ path('categories_categorie', {'categorieId': categorie is not null ? categorie.id : 'aucune'}) }}" method="GET">
                 <div class="input-group">
-                    <label for="date-filter-start" class="input-group-addon">Du</label>
+                    <label for="date-filter-start" class="input-group-addon">Période du</label>
                     <input id="date-filter-start"class="form-control" type="text" name="date_filter[start]" value="{{ date_filter.start|date('d-m-Y') }}" placeholder="{{ date_filter.start|date('d-m-Y') }}">
                     <label for="date-filter-end" class="input-group-addon middle">au</label>
                     <input id="date-filter-end"class="form-control" type="text" name="date_filter[end]" value="{{ date_filter.end|date('d-m-Y') }}" placeholder="{{ date_filter.end|date('d-m-Y') }}">
