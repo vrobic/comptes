@@ -225,18 +225,11 @@ body {
 
 /* Sidebar */
 .sidebar {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    overflow-x: hidden;
-    overflow-y: auto;
-    border-right: 1px solid #eee;
     background-color: #fff;
     padding: 15px;
 }
 .sidebar .nav-sidebar {
-    margin: 0 -16px 15px -15px;
+    margin: 0 -15px;
 }
 .sidebar .nav-sidebar > li > a {
     font-family: "bebasneue_regular";
@@ -418,15 +411,34 @@ body:before {
     body:before {
         content: "xs";
     }
+    .sidebar {
+        border-right: none;
+        border-bottom: 1px solid #eee;
+    }
 }
 @media (min-width: 768px) { /* SM */
     body:before {
         content: "sm";
     }
+    .sidebar {
+        border-right: none;
+        border-bottom: 1px solid #eee;
+    }
 }
 @media (min-width: 992px) { /* MD */
     body:before {
         content: "md";
+    }
+    .sidebar {
+        border-right: 1px solid #eee;
+        border-bottom: none;
+
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        overflow-x: hidden;
+        overflow-y: auto;
     }
 }
 @media (min-width: 1200px) { /* LG */
