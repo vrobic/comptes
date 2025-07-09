@@ -26,7 +26,6 @@ final readonly class CategorieRepository implements CategorieRepositoryInterface
     ) {
     }
 
-    // @todo : ajouter du cache ?
     public function findAll(): CategorieParCategorieIdMap
     {
         $rows = $this->getBaseQueryBuilder()
@@ -43,7 +42,6 @@ final readonly class CategorieRepository implements CategorieRepositoryInterface
         );
     }
 
-    // @todo : ajouter du cache ?
     public function find(CategorieId $categorieId): ?Categorie
     {
         $row = $this->getBaseQueryBuilder()
@@ -95,7 +93,6 @@ final readonly class CategorieRepository implements CategorieRepositoryInterface
         );
     }
 
-    // @todo : ajouter du cache ?
     public function getCategoriesFillesRecursive(CategorieId $categorieId): CategorieIdCollection
     {
         $results = $this->connection->fetchFirstColumn(
