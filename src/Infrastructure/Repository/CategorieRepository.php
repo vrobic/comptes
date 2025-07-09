@@ -8,6 +8,7 @@ use App\Domain\Categorie\Categorie;
 use App\Domain\Categorie\CategorieId;
 use App\Domain\Categorie\CategorieIdCollection;
 use App\Domain\Categorie\CategorieParCategorieIdMap;
+use App\Domain\Categorie\CategorieRepositoryInterface;
 use App\Domain\Compte\CompteId;
 use App\Infrastructure\Denormalizer\CategorieDenormalizer;
 use Doctrine\DBAL\ArrayParameterType;
@@ -15,7 +16,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\DBAL\Types\Types;
 
-final readonly class CategorieRepository
+final readonly class CategorieRepository implements CategorieRepositoryInterface
 {
     use UpsertTrait;
 
@@ -58,12 +59,6 @@ final readonly class CategorieRepository
         return $this->categorieDenormalizer->denormalize($row);
     }
 
-    /**
-     * Calcule le montant cumulé des mouvements d'une catégorie, entre deux dates.
-     *
-     * @param \DateTimeImmutable $dateStart Date de début, incluse
-     * @param \DateTimeImmutable $dateEnd   Date de fin, incluse
-     */
     public function getMontantTotalByDate(
         CategorieId $categorieId,
         \DateTimeImmutable $dateStart,

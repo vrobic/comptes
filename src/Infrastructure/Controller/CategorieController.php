@@ -8,17 +8,17 @@ use App\Application\StatsProvider;
 use App\Domain\Categorie\Categorie;
 use App\Domain\Categorie\CategorieId;
 use App\Domain\Categorie\CategorieIdCollection;
+use App\Domain\Categorie\CategorieRepositoryInterface;
 use App\Domain\Compte\Compte;
 use App\Domain\Compte\CompteId;
+use App\Domain\Compte\CompteRepositoryInterface;
 use App\Domain\DataStructure\Maybe;
 use App\Domain\Id\IdGeneratorInterface;
 use App\Domain\Keyword\Keyword;
 use App\Domain\Keyword\KeywordId;
+use App\Domain\Keyword\KeywordRepositoryInterface;
 use App\Domain\Mouvement\Mouvement;
-use App\Infrastructure\Repository\CategorieRepository;
-use App\Infrastructure\Repository\CompteRepository;
-use App\Infrastructure\Repository\KeywordRepository;
-use App\Infrastructure\Repository\MouvementRepository;
+use App\Domain\Mouvement\MouvementRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,10 +29,10 @@ use Symfony\Component\Routing\Attribute\Route;
 final class CategorieController extends AbstractController
 {
     public function __construct(
-        private readonly CategorieRepository $categorieRepository,
-        private readonly CompteRepository $compteRepository,
-        private readonly MouvementRepository $mouvementRepository,
-        private readonly KeywordRepository $keywordRepository,
+        private readonly CategorieRepositoryInterface $categorieRepository,
+        private readonly CompteRepositoryInterface $compteRepository,
+        private readonly MouvementRepositoryInterface $mouvementRepository,
+        private readonly KeywordRepositoryInterface $keywordRepository,
         private readonly StatsProvider $statsProvider,
         private readonly IdGeneratorInterface $idGenerator,
     ) {

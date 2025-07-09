@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Application;
 
 use App\Domain\Categorie\Categorie;
+use App\Domain\Categorie\CategorieRepositoryInterface;
 use App\Domain\Compte\Compte;
 use App\Domain\DataStructure\Maybe;
 use App\Domain\Mouvement\Mouvement;
-use App\Infrastructure\Repository\CategorieRepository;
-use App\Infrastructure\Repository\MouvementRepository;
+use App\Domain\Mouvement\MouvementRepositoryInterface;
 
 /**
  * Fournisseur de statistiques.
@@ -17,8 +17,8 @@ use App\Infrastructure\Repository\MouvementRepository;
 final readonly class StatsProvider
 {
     public function __construct(
-        private MouvementRepository $mouvementRepository,
-        private CategorieRepository $categorieRepository,
+        private MouvementRepositoryInterface $mouvementRepository,
+        private CategorieRepositoryInterface $categorieRepository,
     ) {
     }
 

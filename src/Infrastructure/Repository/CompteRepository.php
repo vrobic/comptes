@@ -7,12 +7,13 @@ namespace App\Infrastructure\Repository;
 use App\Domain\Compte\Compte;
 use App\Domain\Compte\CompteCollection;
 use App\Domain\Compte\CompteId;
+use App\Domain\Compte\CompteRepositoryInterface;
 use App\Infrastructure\Denormalizer\CompteDenormalizer;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\DBAL\Types\Types;
 
-final readonly class CompteRepository
+final readonly class CompteRepository implements CompteRepositoryInterface
 {
     public function __construct(
         private Connection $connection,
@@ -49,11 +50,6 @@ final readonly class CompteRepository
         return $this->compteDenormalizer->denormalize($row);
     }
 
-    /**
-     * Le solde à date correspond au solde juste avant la date,
-     * pour ne pas comptabiliser les mouvements ayant eu lieu à cette date.
-     * C'est cette règle qui est appliquée sur les relevés bancaires.
-     */
     public function getSoldeÀDate(
         CompteId $compteId,
         \DateTimeImmutable $date,

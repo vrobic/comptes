@@ -6,8 +6,8 @@ namespace App\Application\Mouvement;
 
 use App\Domain\Categorie\CategorieCollection;
 use App\Domain\Keyword\Keyword;
+use App\Domain\Keyword\KeywordRepositoryInterface;
 use App\Domain\Mouvement\Mouvement;
-use App\Infrastructure\Repository\KeywordRepository;
 
 /**
  * Service permettant de catégoriser automatiquement
@@ -15,7 +15,7 @@ use App\Infrastructure\Repository\KeywordRepository;
  */
 final readonly class MouvementCategorizer
 {
-    public function __construct(private KeywordRepository $keywordRepository)
+    public function __construct(private KeywordRepositoryInterface $keywordRepository)
     {
     }
 

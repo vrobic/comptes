@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Controller;
 
+use App\Domain\Categorie\CategorieRepositoryInterface;
 use App\Domain\Compte\Compte;
 use App\Domain\Compte\CompteId;
+use App\Domain\Compte\CompteRepositoryInterface;
 use App\Domain\DataStructure\Maybe;
 use App\Domain\Mouvement\Mouvement;
-use App\Infrastructure\Repository\CategorieRepository;
-use App\Infrastructure\Repository\CompteRepository;
-use App\Infrastructure\Repository\MouvementRepository;
+use App\Domain\Mouvement\MouvementRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,9 +21,9 @@ use Symfony\Component\Routing\Attribute\Route;
 final class CompteController extends AbstractController
 {
     public function __construct(
-        private readonly CompteRepository $compteRepository,
-        private readonly MouvementRepository $mouvementRepository,
-        private readonly CategorieRepository $categorieRepository,
+        private readonly CompteRepositoryInterface $compteRepository,
+        private readonly MouvementRepositoryInterface $mouvementRepository,
+        private readonly CategorieRepositoryInterface $categorieRepository,
     ) {
     }
 

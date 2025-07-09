@@ -11,6 +11,7 @@ use App\Domain\DataStructure\Maybe;
 use App\Domain\Mouvement\Mouvement;
 use App\Domain\Mouvement\MouvementCollection;
 use App\Domain\Mouvement\MouvementId;
+use App\Domain\Mouvement\MouvementRepositoryInterface;
 use App\Infrastructure\Denormalizer\MouvementDenormalizer;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
@@ -20,7 +21,7 @@ use Doctrine\DBAL\Types\Types;
  * On ne peut pas utiliser de query builder pour récupérer des mouvements,
  * à cause du LEFT JOIN qui calcule le solde des comptes.
  */
-final readonly class MouvementRepository
+final readonly class MouvementRepository implements MouvementRepositoryInterface
 {
     use UpsertTrait;
 
@@ -91,13 +92,6 @@ final readonly class MouvementRepository
         );
     }
 
-    /**
-     * @param Maybe<CategorieIdCollection|null> $categoriesIds
-     * @param Maybe<CompteId>                   $compteId
-     * @param Maybe<\DateTimeImmutable>         $dateStart     Date de début, incluse
-     * @param Maybe<\DateTimeImmutable>         $dateEnd       Date de fin, incluse
-     * @param Maybe<float>                      $montant
-     */
     public function findBy(
         Maybe $categoriesIds,
         Maybe $compteId,
@@ -197,9 +191,6 @@ final readonly class MouvementRepository
         );
     }
 
-    /**
-     * Récupère le mouvement le plus ancien.
-     */
     public function findFirstOne(?CompteId $compteId = null): ?Mouvement
     {
         $row = $compteId instanceof CompteId ?
@@ -291,9 +282,6 @@ final readonly class MouvementRepository
         );
     }
 
-    /**
-     * Récupère le mouvement le plus récent.
-     */
     public function findLatestOne(): ?Mouvement
     {
         $row = $this->connection->fetchAssociative(
@@ -342,12 +330,6 @@ final readonly class MouvementRepository
         );
     }
 
-    /**
-     * Calcule le montant cumulé de tous les mouvements entre deux dates.
-     *
-     * @param \DateTimeImmutable $dateStart Date de début, incluse
-     * @param \DateTimeImmutable $dateEnd   Date de fin, incluse
-     */
     public function getMontantTotalByDate(
         \DateTimeImmutable $dateStart,
         \DateTimeImmutable $dateEnd,

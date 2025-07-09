@@ -6,14 +6,14 @@ namespace App\Application\Import;
 
 use App\Application\Mouvement\MouvementCategorizer;
 use App\Domain\Categorie\Classification;
+use App\Domain\Compte\CompteRepositoryInterface;
 use App\Domain\DataStructure\Maybe;
 use App\Domain\Id\IdGeneratorInterface;
 use App\Domain\Mouvement\Mouvement;
+use App\Domain\Mouvement\MouvementRepositoryInterface;
 use App\Domain\Mouvement\MouvementsParHash;
 use App\Domain\Mouvement\MouvementsParHashParClassification;
 use App\Infrastructure\Configuration\ConfigurationLoader;
-use App\Infrastructure\Repository\CompteRepository;
-use App\Infrastructure\Repository\MouvementRepository;
 
 /**
  * Décrit un handler d'import de mouvements.
@@ -38,8 +38,8 @@ abstract class AbstractMouvementsImportHandler implements MouvementsImportHandle
      * Constructeur.
      */
     public function __construct(
-        protected readonly MouvementRepository $mouvementRepository,
-        protected readonly CompteRepository $compteRepository,
+        protected readonly MouvementRepositoryInterface $mouvementRepository,
+        protected readonly CompteRepositoryInterface $compteRepository,
         protected readonly IdGeneratorInterface $idGenerator,
         private readonly MouvementCategorizer $mouvementCategorizer,
         ConfigurationLoader $configurationLoader,

@@ -6,14 +6,14 @@ namespace App\Infrastructure\Controller;
 
 use App\Domain\Categorie\Categorie;
 use App\Domain\Categorie\CategorieId;
+use App\Domain\Categorie\CategorieRepositoryInterface;
 use App\Domain\Compte\Compte;
 use App\Domain\Compte\CompteId;
+use App\Domain\Compte\CompteRepositoryInterface;
 use App\Domain\Id\IdGeneratorInterface;
 use App\Domain\Mouvement\Mouvement;
 use App\Domain\Mouvement\MouvementId;
-use App\Infrastructure\Repository\CategorieRepository;
-use App\Infrastructure\Repository\CompteRepository;
-use App\Infrastructure\Repository\MouvementRepository;
+use App\Domain\Mouvement\MouvementRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,9 +23,9 @@ use Symfony\Component\Routing\Attribute\Route;
 final class MouvementController extends AbstractController
 {
     public function __construct(
-        private readonly MouvementRepository $mouvementRepository,
-        private readonly CompteRepository $compteRepository,
-        private readonly CategorieRepository $categorieRepository,
+        private readonly MouvementRepositoryInterface $mouvementRepository,
+        private readonly CompteRepositoryInterface $compteRepository,
+        private readonly CategorieRepositoryInterface $categorieRepository,
         private readonly IdGeneratorInterface $idGenerator,
     ) {
     }

@@ -7,15 +7,15 @@ namespace App\Infrastructure\Controller;
 use App\Application\Import\MouvementsImportHandlerInterface;
 use App\Domain\Categorie\Categorie;
 use App\Domain\Categorie\CategorieId;
+use App\Domain\Categorie\CategorieRepositoryInterface;
 use App\Domain\Categorie\Classification;
 use App\Domain\Compte\Compte;
 use App\Domain\Compte\CompteId;
+use App\Domain\Compte\CompteRepositoryInterface;
 use App\Domain\Mouvement\Mouvement;
+use App\Domain\Mouvement\MouvementRepositoryInterface;
 use App\Domain\Mouvement\MouvementsParHash;
 use App\Infrastructure\Configuration\ConfigurationLoader;
-use App\Infrastructure\Repository\CategorieRepository;
-use App\Infrastructure\Repository\CompteRepository;
-use App\Infrastructure\Repository\MouvementRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
@@ -51,9 +51,9 @@ class MouvementsImportController extends AbstractController
     /** @param MouvementsImportHandlerInterface[] $mouvementsImportHandlers */
     public function __construct(
         private readonly iterable $mouvementsImportHandlers,
-        private readonly CompteRepository $compteRepository,
-        private readonly CategorieRepository $categorieRepository,
-        private readonly MouvementRepository $mouvementRepository,
+        private readonly CompteRepositoryInterface $compteRepository,
+        private readonly CategorieRepositoryInterface $categorieRepository,
+        private readonly MouvementRepositoryInterface $mouvementRepository,
         ConfigurationLoader $configurationLoader,
     ) {
         $this->handlers = $configurationLoader()['import']['handlers']['mouvements'];

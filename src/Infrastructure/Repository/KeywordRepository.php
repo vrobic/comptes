@@ -7,12 +7,13 @@ namespace App\Infrastructure\Repository;
 use App\Domain\Keyword\Keyword;
 use App\Domain\Keyword\KeywordCollection;
 use App\Domain\Keyword\KeywordId;
+use App\Domain\Keyword\KeywordRepositoryInterface;
 use App\Infrastructure\Denormalizer\KeywordDenormalizer;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;
 
-final readonly class KeywordRepository
+final readonly class KeywordRepository implements KeywordRepositoryInterface
 {
     use UpsertTrait;
 
