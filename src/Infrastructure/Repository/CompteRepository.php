@@ -10,6 +10,7 @@ use App\Domain\Compte\CompteId;
 use App\Infrastructure\Denormalizer\CompteDenormalizer;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;
+use Doctrine\DBAL\Types\Types;
 
 final readonly class CompteRepository
 {
@@ -62,7 +63,7 @@ final readonly class CompteRepository
             ->andWhere('compte.id = :compte_id')
             ->andWhere('mouvement.date < :date')
             ->setParameter('compte_id', (string) $compteId)
-            ->setParameter('date', $date->format('Y-m-d'))
+            ->setParameter('date', $date, Types::DATETIME_IMMUTABLE)
             ->executeQuery()
             ->fetchOne();
     }

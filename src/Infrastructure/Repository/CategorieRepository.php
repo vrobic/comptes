@@ -13,6 +13,7 @@ use App\Infrastructure\Denormalizer\CategorieDenormalizer;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;
+use Doctrine\DBAL\Types\Types;
 
 final readonly class CategorieRepository
 {
@@ -77,8 +78,8 @@ final readonly class CategorieRepository
             'categories_ids' => $categoriesIds->toArray(
                 static fn (CategorieId $id): string => (string) $id
             ),
-            'date_start' => $dateStart->format('Y-m-d'),
-            'date_end' => $dateEnd->format('Y-m-d'),
+            'date_start' => $dateStart,
+            'date_end' => $dateEnd,
         ];
 
         if ($compteId instanceof CompteId) {
@@ -93,6 +94,8 @@ final readonly class CategorieRepository
             $params,
             [
                 'categories_ids' => ArrayParameterType::STRING,
+                'date_start' => Types::DATETIME_IMMUTABLE,
+                'date_end' => Types::DATETIME_IMMUTABLE,
             ]
         );
     }

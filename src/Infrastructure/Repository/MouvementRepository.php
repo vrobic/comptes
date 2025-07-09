@@ -14,6 +14,7 @@ use App\Domain\Mouvement\MouvementId;
 use App\Infrastructure\Denormalizer\MouvementDenormalizer;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Types\Types;
 
 /**
  * On ne peut pas utiliser de query builder pour récupérer des mouvements,
@@ -127,11 +128,13 @@ final readonly class MouvementRepository
         }
         if ($dateStart->estDéfini) {
             $wheres[] = 'mouvement.date >= :date_start';
-            $params['date_start'] = $dateStart->getValeur()->format('Y-m-d');
+            $params['date_start'] = $dateStart->getValeur();
+            $types['date_start'] = Types::DATETIME_IMMUTABLE;
         }
         if ($dateEnd->estDéfini) {
             $wheres[] = 'mouvement.date <= :date_end';
-            $params['date_end'] = $dateEnd->getValeur()->format('Y-m-d');
+            $params['date_end'] = $dateEnd->getValeur();
+            $types['date_end'] = Types::DATETIME_IMMUTABLE;
         }
         if ($montant->estDéfini) {
             $wheres[] = 'mouvement.montant = :montant';
@@ -352,8 +355,8 @@ final readonly class MouvementRepository
     ): float {
         $wheres[] = 'date >= :date_start AND date <= :date_end';
         $params = [
-            'date_start' => $dateStart->format('Y-m-d'),
-            'date_end' => $dateEnd->format('Y-m-d'),
+            'date_start' => $dateStart,
+            'date_end' => $dateEnd,
         ];
 
         if ($compteId instanceof CompteId) {
@@ -365,7 +368,11 @@ final readonly class MouvementRepository
 
         return (float) $this->connection->fetchOne(
             $sql,
-            $params
+            $params,
+            [
+                'date_start' => Types::DATETIME_IMMUTABLE,
+                'date_end' => Types::DATETIME_IMMUTABLE,
+            ]
         );
     }
 
@@ -375,7 +382,7 @@ final readonly class MouvementRepository
             $data = [
                 'categorie_id' => $mouvement->categorie?->id->__toString(),
                 'compte_id' => $mouvement->compte->id,
-                'date' => $mouvement->date->format('Y-m-d'),
+                'date' => $mouvement->date,
                 'montant' => $mouvement->montant,
                 'description' => $mouvement->description,
             ];
@@ -388,6 +395,9 @@ final readonly class MouvementRepository
                     $data,
                 ),
                 $data,
+                [
+                    'date' => Types::DATETIME_IMMUTABLE,
+                ]
             );
         }
     }
