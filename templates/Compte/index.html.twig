@@ -57,7 +57,8 @@
             $(function(){
                 $('#chart-1').highcharts({
                     chart: {
-                        type: 'bar'
+                        type: 'bar',
+                        marginRight: 100 // empirique mais suffisant pour afficher le montant des histogrammes positifs, ainsi que la légende
                     },
                     title: {
                         text: "Situation financière"
@@ -65,9 +66,7 @@
                     xAxis: {
                         categories: [
                             {% for compte in comptes %}
-                                {% if compte.dateFermeture is null %}
-                                    `<a href="{{ path('comptes_compte', {'compteId': compte.id})|e('js') }}">{{ compte|e('js') }}</a>`,
-                                {% endif %}
+                                `<a href="{{ path('comptes_compte', {'compteId': compte.id})|e('js') }}">{{ compte|e('js') }}</a>`,
                             {% endfor %}
                         ],
                         labels: {
@@ -92,22 +91,34 @@
                                         window.location.href = this.url;
                                     }
                                 }
+                            },
+                            dataLabels: {
+                                enabled: true,
+                                crop: false,
+                                overflow: "allow",
+                                style: {
+                                    fontSize: "20px",
+                                    textShadow: "none",
+                                    textOutline: "none",
+                                    color: "#510477"
+                                },
+                                formatter: function() {
+                                    return new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(this.y) + ' €';
+                                }
                             }
                         }
                     },
                     tooltip: {
-                        valueSuffix: "€"
+                        enabled: false
                     },
                     series: [{
                         name: "Solde",
                         data: [
                             {% for compte in comptes %}
-                                {% if compte.dateFermeture is null %}
-                                    {
-                                        y: {{ compte.solde|e('js') }},
-                                        url: "{{ path('comptes_compte', {'compteId': compte.id})|e('js') }}"
-                                    },
-                                {% endif %}
+                                {
+                                    y: {{ compte.solde|e('js') }},
+                                    url: "{{ path('comptes_compte', {'compteId': compte.id})|e('js') }}"
+                                },
                             {% endfor %}
                         ],
                     }]
