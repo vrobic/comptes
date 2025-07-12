@@ -66,10 +66,13 @@
                         categories: [
                             {% for compte in comptes %}
                                 {% if compte.dateFermeture is null %}
-                                    "{{ compte|e('js') }}",
+                                    `<a href="{{ path('comptes_compte', {'compteId': compte.id})|e('js') }}">{{ compte|e('js') }}</a>`,
                                 {% endif %}
                             {% endfor %}
                         ],
+                        labels: {
+                            useHTML: true
+                        },
                         title: {
                             text: "Comptes"
                         }
