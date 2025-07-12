@@ -61,14 +61,19 @@
                             text: "Répartition des dépenses par sous catégorie"
                         },
                         tooltip: {
-                            pointFormat: "{point.y:.0f}€"
+                            formatter: function() {
+                                var categorie = this.point.name,
+                                    montant = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(this.y);
+
+                                return `${categorie} : ${montant} €`;
+                            }
                         },
                         plotOptions: {
                             pie: {
                                 allowPointSelect: false,
                                 cursor: 'pointer',
                                 dataLabels: {
-                                    format: "<strong>{point.name}</strong>: {point.percentage:.1f}%"
+                                    format: "<strong>{point.name}</strong> : {point.percentage:.1f} %"
                                 },
                                 point: {
                                     events: {
@@ -126,7 +131,12 @@
                         }
                     },
                     tooltip: {
-                        valueSuffix: "€"
+                        formatter: function () {
+                            var date = Highcharts.dateFormat('%B %Y', this.x),
+                                montant = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(this.y);
+
+                            return `<strong>${date}</strong> : ${montant} €`;
+                        }
                     },
                     series: [
                         {

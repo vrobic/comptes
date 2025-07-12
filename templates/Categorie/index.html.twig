@@ -64,14 +64,19 @@
                         text: "Répartition des dépenses par catégorie"
                     },
                     tooltip: {
-                        pointFormat: "{point.y:.0f}€"
+                        formatter: function() {
+                            var categorie = this.point.name,
+                                montant = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(this.y);
+
+                            return `${categorie} : ${montant} €`;
+                        }
                     },
                     plotOptions: {
                         pie: {
                             allowPointSelect: false,
                             cursor: 'pointer',
                             dataLabels: {
-                                format: "<strong>{point.name}</strong>: {point.percentage:.1f}%"
+                                format: "<strong>{point.name}</strong> : {point.percentage:.1f} %"
                             },
                             point: {
                                 events: {
@@ -168,7 +173,7 @@
 
                     seriesData.push({
                         categorieId: categorieId, // "af3a5291-ed90-41ad-9c33-c0bff7484051"
-                        annee: annee, // "2012"
+                        x: parseInt(annee), // 2012
                         y: parseFloat(montant) // 1890.36
                     });
                 }
@@ -178,12 +183,16 @@
                         renderTo: td
                     },
                     series: [{
-                        data: seriesData,
-                        pointStart: 1
+                        data: seriesData
                     }],
                     tooltip: {
                         headerFormat: "",
-                        pointFormat: "<strong>{point.annee}</strong>: {point.y:.0f}€"
+                        formatter: function () {
+                            var annee = this.x,
+                                montant = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(this.y);
+
+                            return `<strong>${annee}</strong> : ${montant} €`;
+                        }
                     },
                     plotOptions: {
                         series: {
@@ -196,7 +205,7 @@
                                         }
 
                                         var url = "{{ path('categories_categorie', {'categorieId': 'categorie_id', 'date_filter[start]': 'date_filter_start', 'date_filter[end]': 'date_filter_end', 'compte_id': compte_filter is not null ? compte_filter.id : ''})|e('js') }}",
-                                            annee = String(this.annee).padStart(4, "0");
+                                            annee = String(this.x).padStart(4, "0");
 
                                         url = url.replace("categorie_id", this.categorieId);
                                         url = url.replace("date_filter_start", "01-01-" + annee);
