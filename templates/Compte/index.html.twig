@@ -117,6 +117,75 @@
             $(function(){
                 $('#chart-2').highcharts({
                     chart: {
+                        type: 'bar',
+                        // marges empiriques mais suffisantes pour afficher...
+                        marginLeft: 100, // ... le montant des histogrammes négatifs
+                        marginRight: 100 // ... le montant des histogrammes positifs, ainsi que la légende
+                    },
+                    title: {
+                        text: "Balance des derniers mois"
+                    },
+                    subtitle: {
+                        text: "Moyenne mensuelle : {{ balance_moyenne_des_derniers_mois|number_format(2, ",", " ") ~ " €" }}{% if balance_moyenne_des_mois_positifs is not null %} ({{ balance_moyenne_des_mois_positifs|number_format(2, ",", " ") ~ " €" }} pour les mois positifs){% endif %}",
+                        x: -20 // centrage
+                    },
+                    xAxis: {
+                        categories: [
+                            {% for mois, balance in balance_des_derniers_mois %}
+                                "{{ mois|e('js') }}",
+                            {% endfor %}
+                        ],
+                        labels: {
+                            step: 1,
+                        },
+                    },
+                    yAxis: {
+                        title: {
+                            text: "Balance (€)",
+                            align: 'high'
+                        }
+                    },
+                    plotOptions: {
+                        bar: {
+                            dataLabels: {
+                                enabled: true,
+                                crop: false,
+                                overflow: "allow",
+                                style: {
+                                    fontSize: "20px",
+                                    textShadow: "none",
+                                    textOutline: "none",
+                                    color: "#510477"
+                                },
+                                formatter: function() {
+                                    return new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(this.y) + ' €';
+                                }
+                            }
+                        }
+                    },
+                    tooltip: {
+                        enabled: false
+                    },
+                    series: [{
+                        name: "Balance",
+                        data: [
+                            {% for mois, balance in balance_des_derniers_mois %}
+                                {
+                                    y: {{ balance|e('js') }}
+                                },
+                            {% endfor %}
+                        ],
+                    }]
+                });
+            });
+        </script>
+    </div>
+    <div class="row">
+        <div id="chart-3" class="chart col-md-12"></div>
+        <script>
+            $(function(){
+                $('#chart-3').highcharts({
+                    chart: {
                         zoomType: 'x'
                     },
                     title: {

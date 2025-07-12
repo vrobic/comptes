@@ -11,6 +11,8 @@ use App\Domain\Compte\CompteRepositoryInterface;
 use App\Domain\DataStructure\Maybe;
 use App\Domain\Mouvement\Mouvement;
 use App\Domain\Mouvement\MouvementRepositoryInterface;
+use App\Domain\Temps\Mois;
+use App\Domain\Temps\Periode;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -35,6 +37,22 @@ final class CompteController extends AbstractController
         $firstMouvement = $mouvements->first();
         $lastMouvement = $mouvements->last();
 
+        $balanceDesDerniersMois = [];
+        foreach (range(1, 4) as $nombreMois) {
+            $mois = Mois::fromDate(new \DateTimeImmutable("$nombreMois months ago"));
+
+            $balanceDesDerniersMois[(string) $mois] = $mouvements->balance(new Periode($mois->début(), $mois->fin()));
+        }
+
+        $balanceMoyenneDesDerniersMois = array_sum($balanceDesDerniersMois) / count($balanceDesDerniersMois);
+        $balanceDesMoisPositifs = array_filter(
+            $balanceDesDerniersMois,
+            static fn (float $balance): bool => $balance > 0
+        );
+        $balanceMoyenneDesMoisPositifs = count($balanceDesMoisPositifs) > 0 ?
+            array_sum($balanceDesMoisPositifs) / count($balanceDesMoisPositifs) :
+            null;
+
         return $this->render(
             'Compte/index.html.twig',
             [
@@ -42,6 +60,9 @@ final class CompteController extends AbstractController
                 'mouvements' => $mouvements,
                 'first_mouvement' => $firstMouvement,
                 'last_mouvement' => $lastMouvement,
+                'balance_des_derniers_mois' => $balanceDesDerniersMois,
+                'balance_moyenne_des_derniers_mois' => $balanceMoyenneDesDerniersMois,
+                'balance_moyenne_des_mois_positifs' => $balanceMoyenneDesMoisPositifs,
             ]
         );
     }
@@ -114,7 +135,7 @@ final class CompteController extends AbstractController
         }
 
         // Balance des mouvements
-        $balance = $mouvements->balance();
+        $balance = $mouvements->balance(null);
 
         return $this->render(
             'Compte/show.html.twig',
