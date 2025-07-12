@@ -158,7 +158,20 @@
             $(function(){
                 $('#chart-3').highcharts({
                     chart: {
-                        zoomType: 'x'
+                        zoomType: 'x',
+                        events: {
+                            load: function () {
+                                const data = this.series[0].data,
+                                    oneYearAgo = new Date().setFullYear(new Date().getFullYear() - 1),
+                                    firstDate = data[0].x,
+                                    lastDate = data[data.length - 1].x;
+
+                                if (firstDate < oneYearAgo) {
+                                    this.xAxis[0].setExtremes(oneYearAgo, lastDate);
+                                    this.showResetZoom();
+                                }
+                            }
+                        }
                     },
                     title: {
                         text: "Solde cumulé"
