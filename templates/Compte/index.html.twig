@@ -99,8 +99,7 @@
                         text: "Balance des derniers mois"
                     },
                     subtitle: {
-                        text: "Moyenne mensuelle : {{ balance_moyenne_des_derniers_mois|number_format(2, ",", " ") ~ " €" }}{% if balance_moyenne_des_mois_positifs is not null %} ({{ balance_moyenne_des_mois_positifs|number_format(2, ",", " ") ~ " €" }} pour les mois positifs){% endif %}",
-                        x: -20 // centrage
+                        text: "Moyenne mensuelle : {{ balance_moyenne_des_derniers_mois|number_format(2, ",", " ") ~ " €" }}{% if balance_moyenne_des_mois_positifs is not null %} ({{ balance_moyenne_des_mois_positifs|number_format(2, ",", " ") ~ " €" }} pour les mois positifs){% endif %}"
                     },
                     xAxis: {
                         categories: [
@@ -162,8 +161,7 @@
                         zoomType: 'x'
                     },
                     title: {
-                        text: "Solde cumulé",
-                        x: -20 // centrage
+                        text: "Solde cumulé"
                     },
                     xAxis: {
                         type: 'datetime'
