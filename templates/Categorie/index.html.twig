@@ -72,6 +72,13 @@
                             cursor: 'pointer',
                             dataLabels: {
                                 format: "<strong>{point.name}</strong>: {point.percentage:.1f}%"
+                            },
+                            point: {
+                                events: {
+                                    click: function () {
+                                        window.location.href = this.url;
+                                    }
+                                }
                             }
                         }
                     },
@@ -93,13 +100,7 @@
                                     },
                                 {% endif %}
                             {% endfor %}
-                        ],
-                        events: {
-                            click: function(e) {
-                                e.preventDefault();
-                                window.location.href = e.point.url;
-                            }
-                        }
+                        ]
                     }]
                 });
             });
