@@ -6,52 +6,13 @@
 
 {% block content %}
     <h1>Comptes</h1>
-    <div class="row">
-        {% for compte in comptes.ouverts %}
-            <div class="widget col-md-3">
-                <a href="{{ path('comptes_compte', {'compteId': compte.id}) }}">
-                    <div class="widget-content">
-                        <div class="widget-icon pull-left">
-                            <span class="glyphicon glyphicon-euro"></span>
-                        </div>
-                        <h3>
-                            {{ compte.solde < 0 ? "-" }} <strong>{{ compte.solde|abs|number_format(2, ",", " ") ~ " €" }}</strong>
-                            <small>{{ compte }}</small>
-                        </h3>
-                    </div>
-                </a>
-            </div>
-            {% if loop.index % 4 == 0 %}</div><div class="row">{% endif %}
-        {% endfor %}
-        {% if comptes.fermés is not empty %}
-            <div class="widget col-md-12">
-                <button class="btn btn-default" data-toggle="collapse" data-target=".collapse">
-                    <span class="glyphicon glyphicon-eye-close"></span> Afficher les comptes fermés
-                </button>
-            </div>
+    <div class="row" style="position: relative;">
+        {% if a_des_comptes_fermes %}
+            <a href="{{ path('comptes_comptes', {'avec_fermes': not avec_fermes }) }}" class="btn btn-default" style="position: absolute; top: 5px; right: 20px; z-index: 1;">
+                <span class="glyphicon {{ avec_fermes ? 'glyphicon-eye-close' : 'glyphicon-eye-open' }}"></span>
+                {{ avec_fermes ? 'Masquer les comptes fermés' : 'Afficher les comptes fermés' }}
+            </a>
         {% endif %}
-    </div>
-    {% if comptes.fermés is not empty %}
-        <div class="row collapse">
-            {% for compte in comptes.fermés %}
-                <div class="widget col-md-3">
-                    <a href="{{ path('comptes_compte', {'compteId': compte.id}) }}">
-                        <div class="widget-content">
-                            <div class="widget-icon pull-left">
-                                <span class="glyphicon glyphicon-euro"></span>
-                            </div>
-                            <h3>
-                                {{ compte.solde < 0 ? "-" }} <del>{{ compte.solde|abs|number_format(2, ",", " ") ~ " €" }}</del>
-                                <small>{{ compte }}</small>
-                            </h3>
-                        </div>
-                    </a>
-                </div>
-                {% if loop.index % 4 == 0 %}</div><div class="row collapse">{% endif %}
-            {% endfor %}
-        </div>
-    {% endif %}
-    <div class="row">
         <div id="chart-1" class="chart col-md-12"></div>
         <script>
             $(function(){
@@ -61,7 +22,7 @@
                         marginRight: 100 // empirique mais suffisant pour afficher le montant des histogrammes positifs, ainsi que la légende
                     },
                     title: {
-                        text: "Situation financière"
+                        text: "Solde par compte"
                     },
                     xAxis: {
                         categories: [
@@ -71,9 +32,6 @@
                         ],
                         labels: {
                             useHTML: true
-                        },
-                        title: {
-                            text: "Comptes"
                         }
                     },
                     yAxis: {

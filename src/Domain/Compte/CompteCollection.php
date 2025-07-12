@@ -19,7 +19,6 @@ final class CompteCollection extends Set
         return (string) $value->id;
     }
 
-    // Utilisé en Twig
     public function ouverts(): self
     {
         return $this->filter(
@@ -27,7 +26,6 @@ final class CompteCollection extends Set
         );
     }
 
-    // Utilisé en Twig
     public function fermés(): self
     {
         return $this->filter(

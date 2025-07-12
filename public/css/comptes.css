@@ -249,53 +249,6 @@ body {
     color: white;
 }
 
-/* Widgets */
-.content .widget {
-    margin-bottom: 15px;
-}
-.content .widget > a {
-    display: block;
-    border: 1px solid #eee;
-}
-.content .widget > a:hover {
-    text-decoration: none;
-    border-width: 0;
-}
-.content .widget .widget-content {
-    border: 1px solid #fff;
-    background-color: #fff;
-    padding: 15px;
-}
-.content .widget > a:hover .widget-content {
-    border-width: 2px;
-    border-color: #eee;
-}
-.content .widget .widget-content h3 {
-    text-align: right;
-    color: #510477;
-    margin: 12px 0;
-    letter-spacing: -2px;
-}
-.content .widget .widget-content h3 strong {
-    font-size: 27px;
-}
-.content .widget .widget-content h3 small {
-    color: #777;
-    display: block;
-    letter-spacing: 0;
-}
-.content .widget .widget-content .widget-icon {
-    display: inline-block;
-    height: 64px;
-    width: 64px;
-    border-radius: 32px;
-    line-height: 64px;
-    font-size: 28px;
-    text-align: center;
-    background-color: #510477;
-    color: #fff;
-}
-
 /* Tableaux */
 .content table caption {
     display: none;

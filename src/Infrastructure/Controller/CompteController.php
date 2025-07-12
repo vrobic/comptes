@@ -30,9 +30,16 @@ final class CompteController extends AbstractController
     }
 
     #[Route('/', name: 'comptes_comptes')]
-    public function liste(): Response
+    public function liste(Request $request): Response
     {
         $comptes = $this->compteRepository->findAll();
+        $aDesComptesFermés = !$comptes->fermés()->isEmpty();
+        $avecFermés = filter_var($request->query->get('avec_fermes', false), FILTER_VALIDATE_BOOL);
+
+        if (!$avecFermés) {
+            $comptes = $comptes->ouverts();
+        }
+
         $mouvements = $this->mouvementRepository->findAll();
         $firstMouvement = $mouvements->first();
         $lastMouvement = $mouvements->last();
@@ -57,6 +64,8 @@ final class CompteController extends AbstractController
             'Compte/index.html.twig',
             [
                 'comptes' => $comptes,
+                'a_des_comptes_fermes' => $aDesComptesFermés,
+                'avec_fermes' => $avecFermés,
                 'mouvements' => $mouvements,
                 'first_mouvement' => $firstMouvement,
                 'last_mouvement' => $lastMouvement,
