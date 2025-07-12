@@ -187,7 +187,7 @@
                     tooltip: {
                         crosshairs: true,
                         formatter: function () {
-                            var date = Highcharts.dateFormat('%d-%m-%Y', this.x),
+                            const date = Highcharts.dateFormat('%d-%m-%Y', this.x),
                                 montant = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(this.y);
 
                             return `<strong>${date}</strong> : ${montant} €`;

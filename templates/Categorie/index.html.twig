@@ -65,7 +65,7 @@
                     },
                     tooltip: {
                         formatter: function() {
-                            var categorie = this.point.name,
+                            const categorie = this.point.name,
                                 montant = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(this.y);
 
                             return `${categorie} : ${montant} €`;
@@ -159,22 +159,23 @@
         $(function() {
             $('td[data-sparkline]').each(function()
             {
-                var td = this,
-                    stringData = $(td).data('sparkline'), // "af3a5291-ed90-41ad-9c33-c0bff7484051|2012|1890.36,c4663b2a-b9cd-45a3-a48d-d3e84906abde|2013|2559.62"
-                    arrayData = stringData.split(','), // ["af3a5291-ed90-41ad-9c33-c0bff7484051|2012|1890.36", "c4663b2a-b9cd-45a3-a48d-d3e84906abde|2013|2559.62"]
-                    seriesData = [];
+                const td = this,
+                    stringData = $(td).data('sparkline'), // exemple : "af3a5291-ed90-41ad-9c33-c0bff7484051|2012|1890.36,c4663b2a-b9cd-45a3-a48d-d3e84906abde|2013|2559.62"
+                    arrayData = stringData.split(','), // exemple : ["af3a5291-ed90-41ad-9c33-c0bff7484051|2012|1890.36", "c4663b2a-b9cd-45a3-a48d-d3e84906abde|2013|2559.62"]
+                    categorieId = arrayData.length > 0 ? arrayData[0].split('|')[0] : ""; // la catégorie est la même pour tous les points de la série, exemple : "af3a5291-ed90-41ad-9c33-c0bff7484051"
 
-                for (var i=0; i < arrayData.length; i++)
+                let seriesData = [];
+
+                for (let i=0; i < arrayData.length; i++)
                 {
-                    var data = arrayData[i].split('|'), // ["af3a5291-ed90-41ad-9c33-c0bff7484051", "2012", "1890.36"]
-                        categorieId = data[0], // "af3a5291-ed90-41ad-9c33-c0bff7484051"
-                        annee = data[1], // "2012"
-                        montant = data[2]; // "1890.36"
+                    const data = arrayData[i].split('|'), // exemple : ["af3a5291-ed90-41ad-9c33-c0bff7484051", "2012", "1890.36"]
+                        annee = parseInt(data[1]), // exemple : 2012
+                        montant = parseFloat(data[2]); // exemple : 1890.36
 
                     seriesData.push({
-                        categorieId: categorieId, // "af3a5291-ed90-41ad-9c33-c0bff7484051"
-                        x: parseInt(annee), // 2012
-                        y: parseFloat(montant) // 1890.36
+                        categorieId: categorieId,
+                        x: annee,
+                        y: montant,
                     });
                 }
 
@@ -188,7 +189,7 @@
                     tooltip: {
                         headerFormat: "",
                         formatter: function () {
-                            var annee = this.x,
+                            const annee = this.x,
                                 montant = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(this.y);
 
                             return `<strong>${annee}</strong> : ${montant} €`;
@@ -204,9 +205,9 @@
                                             return;
                                         }
 
-                                        var url = "{{ path('categories_categorie', {'categorieId': 'categorie_id', 'date_filter[start]': 'date_filter_start', 'date_filter[end]': 'date_filter_end', 'compte_id': compte_filter is not null ? compte_filter.id : ''})|e('js') }}",
-                                            annee = String(this.x).padStart(4, "0");
+                                        const annee = String(this.x).padStart(4, "0");
 
+                                        let url = "{{ path('categories_categorie', {'categorieId': 'categorie_id', 'date_filter[start]': 'date_filter_start', 'date_filter[end]': 'date_filter_end', 'compte_id': compte_filter is not null ? compte_filter.id : ''})|e('js') }}";
                                         url = url.replace("categorie_id", this.categorieId);
                                         url = url.replace("date_filter_start", "01-01-" + annee);
                                         url = url.replace("date_filter_end", "31-12-" + annee);

@@ -62,7 +62,7 @@
                         },
                         tooltip: {
                             formatter: function() {
-                                var categorie = this.point.name,
+                                const categorie = this.point.name,
                                     montant = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(this.y);
 
                                 return `${categorie} : ${montant} €`;
@@ -130,7 +130,7 @@
                     },
                     tooltip: {
                         formatter: function () {
-                            var date = Highcharts.dateFormat('%B %Y', this.x),
+                            const date = Highcharts.dateFormat('%B %Y', this.x),
                                 montant = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(this.y);
 
                             return `<strong>${date}</strong> : ${montant} €`;
@@ -161,11 +161,11 @@
                             point: {
                                 events: {
                                     click: function () {
-                                        var url = "{{ path('categories_categorie', {'categorieId': 'categorie_id', 'date_filter[start]': 'date_filter_start', 'date_filter[end]': 'date_filter_end', 'compte_id': compte_filter is not null ? compte_filter.id : ''})|e('js') }}",
-                                            dernierJourDuMois = String(new Date(this.annee, this.mois, 0).getDate()).padStart(2, "0"),
+                                        const dernierJourDuMois = String(new Date(this.annee, this.mois, 0).getDate()).padStart(2, "0"),
                                             mois = String(this.mois).padStart(2, "0"),
                                             annee = String(this.annee).padStart(4, "0");
 
+                                        let url = "{{ path('categories_categorie', {'categorieId': 'categorie_id', 'date_filter[start]': 'date_filter_start', 'date_filter[end]': 'date_filter_end', 'compte_id': compte_filter is not null ? compte_filter.id : ''})|e('js') }}";
                                         url = url.replace("categorie_id", this.categorieId);
                                         url = url.replace("date_filter_start", "01-" + mois + "-" + annee);
                                         url = url.replace("date_filter_end", dernierJourDuMois + "-" + mois + "-" + annee);
