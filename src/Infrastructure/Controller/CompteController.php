@@ -44,6 +44,10 @@ final class CompteController extends AbstractController
         $firstMouvement = $mouvements->first();
         $lastMouvement = $mouvements->last();
 
+        // Balance
+        $balance = $mouvements->balance(null);
+
+        // Balance des derniers mois
         $balanceDesDerniersMois = [];
         foreach (range(1, 4) as $nombreMois) {
             $mois = Mois::fromDate(new \DateTimeImmutable("$nombreMois months ago"));
@@ -69,6 +73,7 @@ final class CompteController extends AbstractController
                 'mouvements' => $mouvements->getIterator(), // pour pouvoir faire mouvements[key+1] en Twig
                 'first_mouvement' => $firstMouvement,
                 'last_mouvement' => $lastMouvement,
+                'balance' => $balance,
                 'balance_des_derniers_mois' => $balanceDesDerniersMois,
                 'balance_moyenne_des_derniers_mois' => $balanceMoyenneDesDerniersMois,
                 'balance_moyenne_des_mois_positifs' => $balanceMoyenneDesMoisPositifs,
