@@ -66,9 +66,9 @@
                     tooltip: {
                         formatter: function() {
                             const categorie = this.point.name,
-                                montant = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(this.y);
+                                montant = new Intl.NumberFormat('fr-FR', { style: "currency", currency: "EUR" }).format(this.y);
 
-                            return `${categorie} : ${montant} €`;
+                            return `${categorie} : ${montant}`;
                         }
                     },
                     plotOptions: {
@@ -190,9 +190,9 @@
                         headerFormat: "",
                         formatter: function () {
                             const annee = this.x,
-                                montant = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(this.y);
+                                montant = new Intl.NumberFormat('fr-FR', { style: "currency", currency: "EUR" }).format(this.y);
 
-                            return `<strong>${annee}</strong> : ${montant} €`;
+                            return `<strong>${annee}</strong> : ${montant}`;
                         }
                     },
                     plotOptions: {

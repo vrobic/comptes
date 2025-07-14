@@ -63,9 +63,9 @@
                         tooltip: {
                             formatter: function() {
                                 const categorie = this.point.name,
-                                    montant = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(this.y);
+                                    montant = new Intl.NumberFormat('fr-FR', { style: "currency", currency: "EUR" }).format(this.y);
 
-                                return `${categorie} : ${montant} €`;
+                                return `${categorie} : ${montant}`;
                             }
                         },
                         plotOptions: {
@@ -131,9 +131,9 @@
                     tooltip: {
                         formatter: function () {
                             const date = Highcharts.dateFormat('%B %Y', this.x),
-                                montant = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(this.y);
+                                montant = new Intl.NumberFormat('fr-FR', { style: "currency", currency: "EUR" }).format(this.y);
 
-                            return `<strong>${date}</strong> : ${montant} €`;
+                            return `<strong>${date}</strong> : ${montant}`;
                         }
                     },
                     series: [

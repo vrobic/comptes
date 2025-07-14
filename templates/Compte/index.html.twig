@@ -61,7 +61,7 @@
                                     color: "#510477"
                                 },
                                 formatter: function() {
-                                    return new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(this.y) + ' €';
+                                    return new Intl.NumberFormat('fr-FR', { style: "currency", currency: "EUR" }).format(this.y);
                                 }
                             }
                         }
@@ -130,7 +130,7 @@
                                     color: "#510477"
                                 },
                                 formatter: function() {
-                                    return new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(this.y) + ' €';
+                                    return new Intl.NumberFormat('fr-FR', { style: "currency", currency: "EUR" }).format(this.y);
                                 }
                             }
                         }
@@ -191,9 +191,9 @@
                         crosshairs: true,
                         formatter: function () {
                             const date = Highcharts.dateFormat('%d-%m-%Y', this.x),
-                                montant = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(this.y);
+                                montant = new Intl.NumberFormat('fr-FR', { style: "currency", currency: "EUR" }).format(this.y);
 
-                            return `<strong>${date}</strong> : ${montant} €`;
+                            return `<strong>${date}</strong> : ${montant}`;
                         }
                     },
                     series: [{
