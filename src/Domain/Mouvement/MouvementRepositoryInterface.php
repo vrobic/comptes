@@ -40,12 +40,10 @@ interface MouvementRepositoryInterface
     public function findLatestOne(): ?Mouvement;
 
     /**
-     * Calcule le montant cumulé de tous les mouvements entre deux dates.
-     *
      * @param \DateTimeImmutable $dateStart Date de début, incluse
      * @param \DateTimeImmutable $dateEnd   Date de fin, incluse
      */
-    public function getMontantTotalByDate(
+    public function balancePériodique(
         \DateTimeImmutable $dateStart,
         \DateTimeImmutable $dateEnd,
         ?CompteId $compteId = null,

@@ -13,12 +13,10 @@ interface CategorieRepositoryInterface
     public function find(CategorieId $categorieId): ?Categorie;
 
     /**
-     * Calcule le montant cumulé des mouvements d'une catégorie, entre deux dates.
-     *
      * @param \DateTimeImmutable $dateStart Date de début, incluse
      * @param \DateTimeImmutable $dateEnd   Date de fin, incluse
      */
-    public function getMontantTotalByDate(
+    public function balancePériodique(
         CategorieId $categorieId,
         \DateTimeImmutable $dateStart,
         \DateTimeImmutable $dateEnd,

@@ -23,7 +23,7 @@ final readonly class StatsProvider
     }
 
     /**
-     * Calcule le montant total annuel des mouvements,
+     * Calcule la balance annuelle des mouvements,
      * pour toutes les années incluses dans un intervalle.
      *
      * @param int                   $yearStart Année de début, incluse
@@ -31,9 +31,9 @@ final readonly class StatsProvider
      * @param Maybe<Categorie|null> $categorie
      * @param Maybe<Compte>         $compte
      *
-     * @return array<int, float> les montants des mouvements, classés par années
+     * @return array<int, float> la balance des mouvements pour chaque année
      */
-    public function getYearlyMontants(
+    public function balanceAnnuelle(
         int $yearStart,
         int $yearEnd,
         Maybe $categorie,
@@ -62,26 +62,25 @@ final readonly class StatsProvider
             montant: Maybe::nothing(),
         );
 
-        $yearlyMontants = [];
+        $balanceAnnuelle = [];
 
         /** @var Mouvement $mouvement */
         foreach ($mouvements as $mouvement) {
             $montant = $mouvement->montant;
-            $date = $mouvement->date;
-            $year = (int) $date->format('Y');
+            $année = (int) $mouvement->date->format('Y');
 
-            if (!isset($yearlyMontants[$year])) {
-                $yearlyMontants[$year] = 0.;
+            if (!isset($balanceAnnuelle[$année])) {
+                $balanceAnnuelle[$année] = 0.;
             }
 
-            $yearlyMontants[$year] += $montant;
+            $balanceAnnuelle[$année] += $montant;
         }
 
-        return $yearlyMontants;
+        return $balanceAnnuelle;
     }
 
     /**
-     * Calcule le montant mensuel total des mouvements d'une catégorie,
+     * Calcule la balance des mouvements d'une catégorie,
      * compris entre deux dates incluses.
      *
      * @param \DateTimeImmutable    $dateStart Date de début, incluse
@@ -89,9 +88,9 @@ final readonly class StatsProvider
      * @param Maybe<Categorie|null> $categorie
      * @param Maybe<Compte>         $compte
      *
-     * @return array<int, array<int, float>> les montants des mouvements, classés par mois
+     * @return array<int, array<int, float>> la balance des mouvements pour chaque mois de chaque année
      */
-    public function getMonthlyMontants(
+    public function balanceMensuelle(
         \DateTimeImmutable $dateStart,
         \DateTimeImmutable $dateEnd,
         Maybe $categorie,
@@ -107,8 +106,7 @@ final readonly class StatsProvider
             ) :
             Maybe::nothing();
 
-        // Les montants totaux mensuels des mouvements
-        $montants = [];
+        $balanceMensuelle = [];
 
         // Tous les mois entre et sur les deux dates
         $interval = \DateInterval::createFromDateString('1 month');
@@ -116,10 +114,10 @@ final readonly class StatsProvider
 
         // Chaque mois de la période
         foreach ($periods as $date) {
-            $year = (int) $date->format('Y');
-            $month = (int) $date->format('m');
+            $année = (int) $date->format('Y');
+            $mois = (int) $date->format('m');
 
-            $montants[$year][$month] = 0.;
+            $balanceMensuelle[$année][$mois] = 0.;
         }
 
         $mouvements = $this->mouvementRepository->findBy(
@@ -133,44 +131,40 @@ final readonly class StatsProvider
         /** @var Mouvement $mouvement */
         foreach ($mouvements as $mouvement) {
             $date = $mouvement->date;
-            $year = (int) $date->format('Y');
-            $month = (int) $date->format('m');
+            $année = (int) $date->format('Y');
+            $mois = (int) $date->format('m');
 
-            $montants[$year][$month] += $mouvement->montant;
+            $balanceMensuelle[$année][$mois] += $mouvement->montant;
         }
 
-        return $montants;
+        return $balanceMensuelle;
     }
 
     /**
-     * Calcule le montant mensuel moyen des mouvements d'une catégorie,
+     * Calcule la balance mensuelle moyenne des mouvements d'une catégorie,
      * compris entre deux dates incluses.
      *
      * @param \DateTimeImmutable    $dateStart Date de début, incluse
      * @param \DateTimeImmutable    $dateEnd   Date de fin, incluse
      * @param Maybe<Categorie|null> $categorie
      * @param Maybe<Compte>         $compte
-     *
-     * @return float Le montant mensuel moyen des mouvements
      */
-    public function getAverageMonthlyMontants(
+    public function balanceMensuelleMoyenne(
         \DateTimeImmutable $dateStart,
         \DateTimeImmutable $dateEnd,
         Maybe $categorie,
         Maybe $compte,
     ): float {
-        $monthlyMontants = $this->getMonthlyMontants($dateStart, $dateEnd, $categorie, $compte);
+        $balanceTotale = 0.;
+        $nombreDeMois = 0;
 
-        $montantTotal = 0.;
-        $monthCount = 0;
-
-        foreach ($monthlyMontants as $months) {
-            foreach ($months as $montant) {
-                $montantTotal += $montant;
-                ++$monthCount;
+        foreach ($this->balanceMensuelle($dateStart, $dateEnd, $categorie, $compte) as $months) {
+            foreach ($months as $balanceMensuelle) {
+                $balanceTotale += $balanceMensuelle;
+                ++$nombreDeMois;
             }
         }
 
-        return $monthCount > 0 ? $montantTotal / $monthCount : 0.;
+        return $nombreDeMois > 0 ? $balanceTotale / $nombreDeMois : 0.;
     }
 }

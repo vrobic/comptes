@@ -57,7 +57,7 @@ final readonly class CategorieRepository implements CategorieRepositoryInterface
         return $this->categorieDenormalizer->denormalize($row);
     }
 
-    public function getMontantTotalByDate(
+    public function balancePériodique(
         CategorieId $categorieId,
         \DateTimeImmutable $dateStart,
         \DateTimeImmutable $dateEnd,

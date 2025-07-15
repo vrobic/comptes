@@ -63,9 +63,9 @@
                         tooltip: {
                             formatter: function() {
                                 const categorie = this.point.name,
-                                    montant = new Intl.NumberFormat('fr-FR', { style: "currency", currency: "EUR" }).format(this.y);
+                                    balance = new Intl.NumberFormat('fr-FR', { style: "currency", currency: "EUR" }).format(this.y);
 
-                                return `${categorie} : ${montant}`;
+                                return `${categorie} : ${balance}`;
                             }
                         },
                         plotOptions: {
@@ -89,10 +89,10 @@
                             name: "Répartition des dépenses par sous catégorie",
                             data: [
                                 {% for id in categorie.categoriesFilles %}
-                                    {% if montants[id.__toString] < 0 %}
+                                    {% if balance_periodique_par_categorie[id.__toString] < 0 %}
                                         {
                                             name: "{{ categories[id.__toString]|e('js') }}",
-                                            y: {{ montants[id.__toString]|abs|e('js') }},
+                                            y: {{ balance_periodique_par_categorie[id.__toString]|abs|e('js') }},
                                             url: '{{ path('categories_categorie', {'categorieId': id, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y'), 'compteId': compte_filter is not null ? compte_filter.id : ''})|e('js') }}'
                                         },
                                     {% endif %}
@@ -116,38 +116,38 @@
                         text: "Évolution mensuelle"
                     },
                     subtitle: {
-                        text: "Moyenne mensuelle sur la période : {{ average|number_format(2, ",", " ") ~ " €" }}"
+                        text: "Balance mensuelle moyenne : {{ balance_periodique_mensuelle_moyenne|number_format(2, ",", " ") ~ " €" }}"
                     },
                     xAxis: {
                         type: 'datetime',
                     },
                     yAxis: {
-                        {% if uniquement_des_debits %}max: 0,{% endif %}
-                        {% if uniquement_des_credits %}min: 0,{% endif %}
+                        {% if balance_periodique_mensuelle_contient_uniquement_des_debits %}max: 0,{% endif %}
+                        {% if balance_periodique_mensuelle_contient_uniquement_des_credits %}min: 0,{% endif %}
                         title: {
-                            text: "Total mensuel (€)"
+                            text: "Balance (€)"
                         }
                     },
                     tooltip: {
                         formatter: function () {
                             const date = Highcharts.dateFormat('%B %Y', this.x),
-                                montant = new Intl.NumberFormat('fr-FR', { style: "currency", currency: "EUR" }).format(this.y);
+                                balance = new Intl.NumberFormat('fr-FR', { style: "currency", currency: "EUR" }).format(this.y);
 
-                            return `<strong>${date}</strong> : ${montant}`;
+                            return `<strong>${date}</strong> : ${balance}`;
                         }
                     },
                     series: [
                         {
                             name: "{{ (categorie is not null ? categorie : "Mouvements non catégorisés")|e('js') }}",
                             data: [
-                                {% for year, months in monthly_montants %}
-                                    {% for month, montant in months %}
+                                {% for annee, mois in balance_periodique_mensuelle %}
+                                    {% for mois, balance in mois %}
                                         {
-                                            x: Date.UTC({{ year|e('js') }}, {{ (month-1)|e('js') }}),
-                                            y: {{ montant|e('js') }},
+                                            x: Date.UTC({{ annee|e('js') }}, {{ (mois-1)|e('js') }}),
+                                            y: {{ balance|e('js') }},
                                             categorieId: "{{ (categorie is not null ? categorie.id : 'aucune')|e('js') }}",
-                                            annee: {{ year|e('js') }},
-                                            mois: {{ month|e('js') }}
+                                            annee: {{ annee|e('js') }},
+                                            mois: {{ mois|e('js') }}
                                         }{{ not loop.last ? ','|e('js') }}
                                     {% endfor %}
                                     {{ not loop.last ? ','|e('js') }}
@@ -230,8 +230,8 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <th>Total</th>
-                    <td colspan="5">{{ total|number_format(2, ",", " ") ~ " €" }}</td>
+                    <th>Balance</th>
+                    <td colspan="5">{{ balance_periodique|number_format(2, ",", " ") ~ " €" }}</td>
                 </tr>
             </tfoot>
         </table>

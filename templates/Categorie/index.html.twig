@@ -6,23 +6,23 @@
 
 {% import _self as macros %}
 
-{% macro categoriesFilles(categories, categorie, montants, depth, date_filter, compte_filter) %}
+{% macro categoriesFilles(categories, categorie, balance_par_categorie, depth, date_filter, compte_filter) %}
     <tr>
         <td style="padding-left: {{ (5 + depth * 20) ~ "px" }};">
             <a href="{{ path('categories_categorie', {'categorieId': categorie.id, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y'), 'compteId': compte_filter is not null ? compte_filter.id : ''}) }}">{{ categorie }}</a>
         </td>
         <td>
-            {{ montants[categorie.id.__toString].period|number_format(2, ",", " ") ~ " €" }}
+            {{ balance_par_categorie[categorie.id.__toString].periodique|number_format(2, ",", " ") ~ " €" }}
         </td>
         <td>
-            {{ montants[categorie.id.__toString].average|number_format(2, ",", " ") ~ " €" }}
+            {{ balance_par_categorie[categorie.id.__toString].mensuelle_moyenne|number_format(2, ",", " ") ~ " €" }}
         </td>
-        <td data-sparkline="{% for year, montant in montants[categorie.id.__toString].yearly %}{{ categorie.id ~ '|' ~ year|e('html') ~ '|' ~ montant|e('html') ~ (not loop.last ? ',') }}{% endfor %}"></td>
+        <td data-sparkline="{% for annee, balance in balance_par_categorie[categorie.id.__toString].annuelle %}{{ categorie.id ~ '|' ~ annee|e('html') ~ '|' ~ balance|e('html') ~ (not loop.last ? ',') }}{% endfor %}"></td>
     </tr>
     {% if categorie.categoriesFilles is not empty %}
         {% set depth = depth + 1 %}
         {% for id in categorie.categoriesFilles %}
-            {{ _self.categoriesFilles(categories, categories[id.__toString], montants, depth, date_filter, compte_filter) }}
+            {{ _self.categoriesFilles(categories, categories[id.__toString], balance_par_categorie, depth, date_filter, compte_filter) }}
         {% endfor %}
     {% endif %}
 {% endmacro %}
@@ -66,9 +66,9 @@
                     tooltip: {
                         formatter: function() {
                             const categorie = this.point.name,
-                                montant = new Intl.NumberFormat('fr-FR', { style: "currency", currency: "EUR" }).format(this.y);
+                                balance = new Intl.NumberFormat('fr-FR', { style: "currency", currency: "EUR" }).format(this.y);
 
-                            return `${categorie} : ${montant}`;
+                            return `${categorie} : ${balance}`;
                         }
                     },
                     plotOptions: {
@@ -93,14 +93,14 @@
                         data: [
                             {
                                 name: "Non catégorisé",
-                                y: {{ montant_total_non_categorise|abs|e('js') }},
+                                y: {{ balance_periodique_mouvements_non_categorises|abs|e('js') }},
                                 url: '{{ path('categories_categorie', {'categorieId': 'aucune', 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y'), 'compteId': compte_filter is not null ? compte_filter.id : ''})|e('js') }}'
                             },
                             {% for categorie in categories %}
-                                {%  if categorie.categorieParente is null and montants[categorie.id.__toString].period < 0 %}
+                                {%  if categorie.categorieParente is null and balance_par_categorie[categorie.id.__toString].periodique < 0 %}
                                     {
                                         name: "{{ categorie|e('js') }}",
-                                        y: {{ montants[categorie.id.__toString].period|abs|e('js') }},
+                                        y: {{ balance_par_categorie[categorie.id.__toString].periodique|abs|e('js') }},
                                         url: '{{ path('categories_categorie', {'categorieId': categorie.id, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y'), 'compteId': compte_filter is not null ? compte_filter.id : ''})|e('js') }}'
                                     },
                                 {% endif %}
@@ -117,7 +117,7 @@
             <tr>
                 <th class="col-md-3">Catégorie</th>
                 <th class="col-md-3">
-                    Total
+                    Balance
                     <small>sur la période</small>
                 </th>
                 <th class="col-md-3">
@@ -133,7 +133,7 @@
                     <a href="{{ path('categories_categorie', {'categorieId': 'aucune', 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y'), 'compteId': compte_filter is not null ? compte_filter.id : ''}) }}">Non catégorisé</a>
                 </td>
                 <td>
-                    {{ montant_total_non_categorise|number_format(2, ",", " ") ~ " €" }}
+                    {{ balance_periodique_mouvements_non_categorises|number_format(2, ",", " ") ~ " €" }}
                 </td>
                 <td colspan="2"></td>
             </tr>
@@ -143,14 +143,14 @@
                     <small>(dont non catégorisé)</small>
                 </td>
                 <td>
-                    {{ montant_total|number_format(2, ",", " ") ~ " €" }}
+                    {{ balance_periodique|number_format(2, ",", " ") ~ " €" }}
                 </td>
                 <td></td>
-                <td data-sparkline="{% for year, montant in yearly_montants %}{{ '' ~ '|' ~ year|e('html') ~ '|' ~ montant|e('html') ~ (not loop.last ? ',') }}{% endfor %}"></td>
+                <td data-sparkline="{% for annee, balance in balance_annuelle %}{{ '' ~ '|' ~ annee|e('html') ~ '|' ~ balance|e('html') ~ (not loop.last ? ',') }}{% endfor %}"></td>
             </tr>
             {% for categorie in categories %}
                 {% if categorie.categorieParente is null %}
-                    {{ macros.categoriesFilles(categories, categorie, montants, 0, date_filter, compte_filter) }}
+                    {{ macros.categoriesFilles(categories, categorie, balance_par_categorie, 0, date_filter, compte_filter) }}
                 {% endif %}
             {% endfor %}
         </tbody>
@@ -170,12 +170,12 @@
                 {
                     const data = arrayData[i].split('|'), // exemple : ["af3a5291-ed90-41ad-9c33-c0bff7484051", "2012", "1890.36"]
                         annee = parseInt(data[1]), // exemple : 2012
-                        montant = parseFloat(data[2]); // exemple : 1890.36
+                        balance = parseFloat(data[2]); // exemple : 1890.36
 
                     seriesData.push({
                         categorieId: categorieId,
                         x: annee,
-                        y: montant,
+                        y: balance,
                     });
                 }
 
@@ -190,9 +190,9 @@
                         headerFormat: "",
                         formatter: function () {
                             const annee = this.x,
-                                montant = new Intl.NumberFormat('fr-FR', { style: "currency", currency: "EUR" }).format(this.y);
+                                balance = new Intl.NumberFormat('fr-FR', { style: "currency", currency: "EUR" }).format(this.y);
 
-                            return `<strong>${annee}</strong> : ${montant}`;
+                            return `<strong>${annee}</strong> : ${balance}`;
                         }
                     },
                     plotOptions: {

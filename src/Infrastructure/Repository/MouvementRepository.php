@@ -330,7 +330,7 @@ final readonly class MouvementRepository implements MouvementRepositoryInterface
         );
     }
 
-    public function getMontantTotalByDate(
+    public function balancePériodique(
         \DateTimeImmutable $dateStart,
         \DateTimeImmutable $dateEnd,
         ?CompteId $compteId = null,
