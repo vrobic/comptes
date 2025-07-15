@@ -63,7 +63,7 @@
                         tooltip: {
                             formatter: function() {
                                 const categorie = this.point.name,
-                                    balance = new Intl.NumberFormat('fr-FR', { style: "currency", currency: "EUR" }).format(this.y);
+                                    balance = new Intl.NumberFormat('fr-FR', { style: "currency", currency: "EUR", signDisplay: "always" }).format(this.y);
 
                                 return `${categorie} : ${balance}`;
                             }
@@ -116,7 +116,7 @@
                         text: "Évolution mensuelle"
                     },
                     subtitle: {
-                        text: "Balance mensuelle moyenne : {{ balance_periodique_mensuelle_moyenne|number_format(2, ",", " ") ~ " €" }}"
+                        text: "Balance mensuelle moyenne : {{ balance_periodique_mensuelle_moyenne|formater_balance }}"
                     },
                     xAxis: {
                         type: 'datetime',
@@ -131,7 +131,7 @@
                     tooltip: {
                         formatter: function () {
                             const date = Highcharts.dateFormat('%B %Y', this.x),
-                                balance = new Intl.NumberFormat('fr-FR', { style: "currency", currency: "EUR" }).format(this.y);
+                                balance = new Intl.NumberFormat('fr-FR', { style: "currency", currency: "EUR", signDisplay: "always" }).format(this.y);
 
                             return `<strong>${date}</strong> : ${balance}`;
                         }
@@ -207,7 +207,7 @@
                             <input id="batch-{{ mouvement.id }}" type="checkbox" name="batch[]" value="{{ mouvement.id }}">
                         </td>
                         <td>{{ mouvement.date|date('d-m-Y') }}</td>
-                        <td>{{ mouvement.montant ~ "€" }}</td>
+                        <td>{{ mouvement.montant|formater_montant }}</td>
                         <td>{{ mouvement.description }}</td>
                         <td>
                             <a href="{{ path('comptes_compte', {'compteId': mouvement.compte.id, 'date_filter[start]': mouvement.date|date('d-m-Y'), 'date_filter[end]': mouvement.date|date('d-m-Y')}) }}">
@@ -231,7 +231,7 @@
             <tfoot>
                 <tr>
                     <th>Balance</th>
-                    <td colspan="5">{{ balance_periodique|number_format(2, ",", " ") ~ " €" }}</td>
+                    <td colspan="5">{{ balance_periodique|formater_balance }}</td>
                 </tr>
             </tfoot>
         </table>

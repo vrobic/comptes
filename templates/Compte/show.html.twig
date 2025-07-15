@@ -33,7 +33,7 @@
                 <dt>Numéro</dt>
                     <dd>{{ compte.numero }}</dd>
                 <dt>Plafond</dt>
-                    <dd>{{ compte.plafond is not null ? compte.plafond|number_format(2, ",", " ") ~ " €": "néant" }}</dd>
+                    <dd>{{ compte.plafond is not null ? compte.plafond|formater_montant : "néant" }}</dd>
                 <dt>Date d'ouverture</dt>
                     <dd>{{ compte.dateOuverture|date('d-m-Y') }}</dd>
                 {% if compte.dateFermeture is not null %}
@@ -80,9 +80,9 @@
                         crosshairs: true,
                         formatter: function () {
                             const date = Highcharts.dateFormat('%d-%m-%Y', this.x),
-                                montant = new Intl.NumberFormat('fr-FR', { style: "currency", currency: "EUR" }).format(this.y);
+                                solde = new Intl.NumberFormat('fr-FR', { style: "currency", currency: "EUR" }).format(this.y);
 
-                            return `<strong>${date}</strong> : ${montant}`;
+                            return `<strong>${date}</strong> : ${solde}`;
                         }
                     },
                     series: [{
@@ -141,7 +141,7 @@
                             <input id="montant-{{ mouvement.id }}" type="text" name="mouvements[{{ mouvement.id }}][montant]" value="{{ mouvement.montant|number_format(2, ".", "") }}" placeholder="0.00">
                         </td>
                         <td>
-                            {{ solde_periode|number_format(2, ",", " ") ~ " €" }}
+                            {{ solde_periode|formater_solde }}
                         </td>
                         <td class="input-text">
                             <label for="description-{{ mouvement.id }}" class="sr-only">Description</label>
@@ -202,11 +202,11 @@
             <tfoot>
                 <tr>
                     <th colspan="3">Solde actuel</th>
-                    <td colspan="3">{{ compte.solde|number_format(2, ",", " ") ~ " €" }}</td>
+                    <td colspan="3">{{ compte.solde|formater_solde }}</td>
                 </tr>
                 <tr>
                     <th colspan="2">Balance</th>
-                    <td colspan="4">{{ balance|number_format(2, ",", " ") ~ " €" }}</td>
+                    <td colspan="4">{{ balance|formater_balance }}</td>
                 </tr>
             </tfoot>
         </table>

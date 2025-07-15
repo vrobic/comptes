@@ -99,7 +99,7 @@
                         text: "Balance des derniers mois"
                     },
                     subtitle: {
-                        text: "Moyenne mensuelle : {{ balance_moyenne_des_derniers_mois|number_format(2, ",", " ") ~ " €" }}{% if balance_moyenne_des_mois_positifs is not null %} ({{ balance_moyenne_des_mois_positifs|number_format(2, ",", " ") ~ " €" }} pour les mois positifs){% endif %}"
+                        text: "Moyenne mensuelle : {{ balance_moyenne_des_derniers_mois|formater_balance }}{% if balance_moyenne_des_mois_positifs is not null %} ({{ balance_moyenne_des_mois_positifs|formater_balance }} pour les mois positifs){% endif %}"
                     },
                     xAxis: {
                         categories: [
@@ -130,7 +130,7 @@
                                     color: "#510477"
                                 },
                                 formatter: function() {
-                                    return new Intl.NumberFormat('fr-FR', { style: "currency", currency: "EUR" }).format(this.y);
+                                    return new Intl.NumberFormat('fr-FR', { style: "currency", currency: "EUR", signDisplay: "always" }).format(this.y);
                                 }
                             }
                         }
@@ -177,7 +177,7 @@
                         text: "Solde cumulé"
                     },
                     subtitle: {
-                        text: "{{ balance|number_format(2, ",", " ") ~ " €" }}"
+                        text: "{{ balance|formater_balance }}"
                     },
                     xAxis: {
                         type: 'datetime'
@@ -191,9 +191,9 @@
                         crosshairs: true,
                         formatter: function () {
                             const date = Highcharts.dateFormat('%d-%m-%Y', this.x),
-                                montant = new Intl.NumberFormat('fr-FR', { style: "currency", currency: "EUR" }).format(this.y);
+                                solde = new Intl.NumberFormat('fr-FR', { style: "currency", currency: "EUR" }).format(this.y);
 
-                            return `<strong>${date}</strong> : ${montant}`;
+                            return `<strong>${date}</strong> : ${solde}`;
                         }
                     },
                     series: [{
