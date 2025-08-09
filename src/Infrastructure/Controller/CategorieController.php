@@ -352,13 +352,13 @@ final class CategorieController extends AbstractController
                                 if (!($categorieParente instanceof Categorie)) {
                                     throw new BadRequestHttpException("Catégorie $categorieId introuvable");
                                 }
+                            } else {
+                                $categorieParente = null;
                             }
                         }
 
                         // Rang
-                        if (isset($categorieArray['rang'])) {
-                            $rang = '' !== $categorieArray['rang'] ? (int) $categorieArray['rang'] : null;
-                        }
+                        $rang = isset($categorieArray['rang']) && '' !== $categorieArray['rang'] ? (int) $categorieArray['rang'] : null;
 
                         $variablesDéfinies = get_defined_vars();
 
@@ -392,7 +392,7 @@ final class CategorieController extends AbstractController
                             $categorie = new Categorie(
                                 $categorieId,
                                 $nom,
-                                $categorieParente->id,
+                                $categorieParente?->id,
                                 new CategorieIdCollection(),
                                 $rang
                             );
