@@ -6,7 +6,6 @@ namespace App\Infrastructure\Controller;
 
 use App\Domain\Categorie\CategorieRepositoryInterface;
 use App\Domain\Compte\Compte;
-use App\Domain\Compte\CompteId;
 use App\Domain\Compte\CompteRepositoryInterface;
 use App\Domain\DataStructure\Maybe;
 use App\Domain\Mouvement\Mouvement;
@@ -17,7 +16,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 final class CompteController extends AbstractController
@@ -84,29 +82,15 @@ final class CompteController extends AbstractController
     #[Route('/compte/{compteId}', name: 'comptes_compte')]
     public function détail(
         Request $request,
-        string $compteId, // @todo : utiliser un param converter
+        Compte $compte,
     ): Response {
-        $compteId = CompteId::estValide($compteId) ?
-            new CompteId($compteId) :
-            null;
-
-        if (!($compteId instanceof CompteId)) {
-            throw new BadRequestHttpException();
-        }
-
-        $compte = $this->compteRepository->find($compteId);
-
-        if (!($compte instanceof Compte)) {
-            throw new NotFoundHttpException();
-        }
-
         // Filtre sur la période
         $période = $this->getPériode($request, $compte);
 
         // Tous les mouvements de la période
         $mouvements = $this->mouvementRepository->findBy(
             categoriesIds: Maybe::nothing(),
-            compteId: Maybe::from($compteId),
+            compteId: Maybe::from($compte->id),
             dateStart: Maybe::from($période->début),
             dateEnd: Maybe::from($période->fin),
             montant: Maybe::nothing(),
@@ -120,7 +104,7 @@ final class CompteController extends AbstractController
             /** @var Mouvement $firstMouvement */
             $firstMouvement = $mouvements->first();
             $firstMouvementDate = $firstMouvement->date;
-            $soldeStart = $this->compteRepository->getSoldeÀDate($compteId, $firstMouvementDate);
+            $soldeStart = $this->compteRepository->getSoldeÀDate($compte->id, $firstMouvementDate);
         } else {
             $soldeStart = 0.;
         }
