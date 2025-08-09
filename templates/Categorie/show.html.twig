@@ -63,7 +63,7 @@
                         tooltip: {
                             formatter: function() {
                                 const categorie = this.point.name,
-                                    balance = new Intl.NumberFormat('fr-FR', { style: "currency", currency: "EUR", signDisplay: "always" }).format(this.y);
+                                    balance = new Intl.NumberFormat('fr-FR', { style: "currency", currency: "EUR", signDisplay: "always" }).format(-this.y);
 
                                 return `${categorie} : ${balance}`;
                             }
