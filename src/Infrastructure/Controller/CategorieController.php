@@ -123,21 +123,8 @@ final class CategorieController extends AbstractController
     #[Route('/categorie/{categorieId}', name: 'categories_categorie')]
     public function détail(
         Request $request,
-        string $categorieId, // @todo : utiliser un param converter
+        ?Categorie $categorie,
     ): Response {
-        $categorieId = CategorieId::estValide($categorieId) ?
-            new CategorieId($categorieId) :
-            null;
-
-        if ($categorieId instanceof CategorieId) {
-            $categorie = $this->categorieRepository->find($categorieId);
-            if (!($categorie instanceof Categorie)) {
-                throw new NotFoundHttpException("La catégorie $categorieId n'existe pas.");
-            }
-        } else {
-            $categorie = null;
-        }
-
         // Toutes les catégories
         $categories = $this->categorieRepository->findAll();
 
