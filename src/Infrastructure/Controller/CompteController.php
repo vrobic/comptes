@@ -101,6 +101,52 @@ final class CompteController extends AbstractController
         }
 
         // Filtre sur la période
+        $période = $this->getPériode($request, $compte);
+
+        // Tous les mouvements de la période
+        $mouvements = $this->mouvementRepository->findBy(
+            categoriesIds: Maybe::nothing(),
+            compteId: Maybe::from($compteId),
+            dateStart: Maybe::from($période->début),
+            dateEnd: Maybe::from($période->fin),
+            montant: Maybe::nothing(),
+        );
+
+        // Toutes les catégories de mouvements
+        $categories = $this->categorieRepository->findAll();
+
+        // Solde du compte en début de période
+        if (!$mouvements->isEmpty()) {
+            /** @var Mouvement $firstMouvement */
+            $firstMouvement = $mouvements->first();
+            $firstMouvementDate = $firstMouvement->date;
+            $soldeStart = $this->compteRepository->getSoldeÀDate($compteId, $firstMouvementDate);
+        } else {
+            $soldeStart = 0.;
+        }
+
+        // Balance des mouvements
+        $balance = $mouvements->balance(null);
+
+        return $this->render(
+            'Compte/show.html.twig',
+            [
+                'compte' => $compte,
+                'date_filter' => [
+                    'start' => $période->début,
+                    'end' => $période->fin,
+                ],
+                'mouvements' => $mouvements->getIterator(), // pour pouvoir faire mouvements[key+1] en Twig
+                'categories' => $categories->toAssociativeArray(),
+                'solde_start' => $soldeStart,
+                'balance' => $balance,
+            ]
+        );
+    }
+
+    // @todo : utiliser un param converter
+    private function getPériode(Request $request, Compte $compte): Periode
+    {
         if ($request->get('date_filter')) {
             $dateFilterString = $request->get('date_filter');
             $dateStartString = $dateFilterString['start'];
@@ -126,44 +172,6 @@ final class CompteController extends AbstractController
             throw new BadRequestHttpException('La période de dates est invalide.');
         }
 
-        // Tous les mouvements de la période
-        $mouvements = $this->mouvementRepository->findBy(
-            categoriesIds: Maybe::nothing(),
-            compteId: Maybe::from($compteId),
-            dateStart: Maybe::from($dateStart),
-            dateEnd: Maybe::from($dateEnd),
-            montant: Maybe::nothing(),
-        );
-
-        // Toutes les catégories de mouvements
-        $categories = $this->categorieRepository->findAll();
-
-        // Solde du compte en début de période
-        if (!$mouvements->isEmpty()) {
-            /** @var Mouvement $firstMouvement */
-            $firstMouvement = $mouvements->first();
-            $firstMouvementDate = $firstMouvement->date;
-            $soldeStart = $this->compteRepository->getSoldeÀDate($compteId, $firstMouvementDate);
-        } else {
-            $soldeStart = 0.;
-        }
-
-        // Balance des mouvements
-        $balance = $mouvements->balance(null);
-
-        return $this->render(
-            'Compte/show.html.twig',
-            [
-                'compte' => $compte,
-                'date_filter' => [
-                    'start' => $dateStart,
-                    'end' => $dateEnd,
-                ],
-                'mouvements' => $mouvements->getIterator(), // pour pouvoir faire mouvements[key+1] en Twig
-                'categories' => $categories->toAssociativeArray(),
-                'solde_start' => $soldeStart,
-                'balance' => $balance,
-            ]
-        );
+        return new Periode($dateStart, $dateEnd);
     }
 }

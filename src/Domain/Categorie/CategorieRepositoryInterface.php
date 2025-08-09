@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Categorie;
 
 use App\Domain\Compte\CompteId;
+use App\Domain\Temps\Periode;
 
 interface CategorieRepositoryInterface
 {
@@ -12,14 +13,9 @@ interface CategorieRepositoryInterface
 
     public function find(CategorieId $categorieId): ?Categorie;
 
-    /**
-     * @param \DateTimeImmutable $dateStart Date de début, incluse
-     * @param \DateTimeImmutable $dateEnd   Date de fin, incluse
-     */
     public function balancePériodique(
         CategorieId $categorieId,
-        \DateTimeImmutable $dateStart,
-        \DateTimeImmutable $dateEnd,
+        Periode $période,
         ?CompteId $compteId = null,
     ): float;
 

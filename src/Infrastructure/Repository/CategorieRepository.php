@@ -10,6 +10,7 @@ use App\Domain\Categorie\CategorieIdCollection;
 use App\Domain\Categorie\CategorieParCategorieIdMap;
 use App\Domain\Categorie\CategorieRepositoryInterface;
 use App\Domain\Compte\CompteId;
+use App\Domain\Temps\Periode;
 use App\Infrastructure\Denormalizer\CategorieDenormalizer;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
@@ -59,8 +60,7 @@ final readonly class CategorieRepository implements CategorieRepositoryInterface
 
     public function balancePériodique(
         CategorieId $categorieId,
-        \DateTimeImmutable $dateStart,
-        \DateTimeImmutable $dateEnd,
+        Periode $période,
         ?CompteId $compteId = null,
     ): float {
         $categoriesIds = $this->getCategoriesFillesRecursive($categorieId)->add($categorieId);
@@ -71,8 +71,8 @@ final readonly class CategorieRepository implements CategorieRepositoryInterface
             'categories_ids' => $categoriesIds->toArray(
                 static fn (CategorieId $id): string => (string) $id
             ),
-            'date_start' => $dateStart,
-            'date_end' => $dateEnd,
+            'date_start' => $période->début,
+            'date_end' => $période->fin,
         ];
 
         if ($compteId instanceof CompteId) {

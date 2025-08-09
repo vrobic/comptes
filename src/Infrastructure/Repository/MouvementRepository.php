@@ -12,6 +12,7 @@ use App\Domain\Mouvement\Mouvement;
 use App\Domain\Mouvement\MouvementCollection;
 use App\Domain\Mouvement\MouvementId;
 use App\Domain\Mouvement\MouvementRepositoryInterface;
+use App\Domain\Temps\Periode;
 use App\Infrastructure\Denormalizer\MouvementDenormalizer;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
@@ -331,14 +332,13 @@ final readonly class MouvementRepository implements MouvementRepositoryInterface
     }
 
     public function balancePériodique(
-        \DateTimeImmutable $dateStart,
-        \DateTimeImmutable $dateEnd,
+        Periode $période,
         ?CompteId $compteId = null,
     ): float {
         $wheres[] = 'date >= :date_start AND date <= :date_end';
         $params = [
-            'date_start' => $dateStart,
-            'date_end' => $dateEnd,
+            'date_start' => $période->début,
+            'date_end' => $période->fin,
         ];
 
         if ($compteId instanceof CompteId) {

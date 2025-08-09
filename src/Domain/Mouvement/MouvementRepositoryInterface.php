@@ -7,6 +7,7 @@ namespace App\Domain\Mouvement;
 use App\Domain\Categorie\CategorieIdCollection;
 use App\Domain\Compte\CompteId;
 use App\Domain\DataStructure\Maybe;
+use App\Domain\Temps\Periode;
 
 interface MouvementRepositoryInterface
 {
@@ -39,13 +40,8 @@ interface MouvementRepositoryInterface
      */
     public function findLatestOne(): ?Mouvement;
 
-    /**
-     * @param \DateTimeImmutable $dateStart Date de début, incluse
-     * @param \DateTimeImmutable $dateEnd   Date de fin, incluse
-     */
     public function balancePériodique(
-        \DateTimeImmutable $dateStart,
-        \DateTimeImmutable $dateEnd,
+        Periode $période,
         ?CompteId $compteId = null,
     ): float;
 

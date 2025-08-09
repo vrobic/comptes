@@ -10,6 +10,7 @@ use App\Domain\Compte\Compte;
 use App\Domain\DataStructure\Maybe;
 use App\Domain\Mouvement\Mouvement;
 use App\Domain\Mouvement\MouvementRepositoryInterface;
+use App\Domain\Temps\Periode;
 
 /**
  * Fournisseur de statistiques.
@@ -81,18 +82,15 @@ final readonly class StatsProvider
 
     /**
      * Calcule la balance des mouvements d'une catégorie,
-     * compris entre deux dates incluses.
+     * compris dans la période.
      *
-     * @param \DateTimeImmutable    $dateStart Date de début, incluse
-     * @param \DateTimeImmutable    $dateEnd   Date de fin, incluse
      * @param Maybe<Categorie|null> $categorie
      * @param Maybe<Compte>         $compte
      *
      * @return array<int, array<int, float>> la balance des mouvements pour chaque mois de chaque année
      */
     public function balanceMensuelle(
-        \DateTimeImmutable $dateStart,
-        \DateTimeImmutable $dateEnd,
+        Periode $période,
         Maybe $categorie,
         Maybe $compte,
     ): array {
@@ -110,7 +108,7 @@ final readonly class StatsProvider
 
         // Tous les mois entre et sur les deux dates
         $interval = \DateInterval::createFromDateString('1 month');
-        $periods = new \DatePeriod($dateStart, $interval, $dateEnd);
+        $periods = new \DatePeriod($période->début, $interval, $période->fin);
 
         // Chaque mois de la période
         foreach ($periods as $date) {
@@ -123,8 +121,8 @@ final readonly class StatsProvider
         $mouvements = $this->mouvementRepository->findBy(
             categoriesIds: $categoriesIds,
             compteId: $compte->estDéfini ? Maybe::from($compte->getValeur()->id) : Maybe::nothing(),
-            dateStart: Maybe::from($dateStart->modify('first day of this month')->setTime(0, 0, 0)),
-            dateEnd: Maybe::from($dateEnd->modify('last day of this month')->setTime(23, 59, 59)),
+            dateStart: Maybe::from($période->début->modify('first day of this month')->setTime(0, 0, 0)),
+            dateEnd: Maybe::from($période->fin->modify('last day of this month')->setTime(23, 59, 59)),
             montant: Maybe::nothing(),
         );
 
@@ -142,23 +140,20 @@ final readonly class StatsProvider
 
     /**
      * Calcule la balance mensuelle moyenne des mouvements d'une catégorie,
-     * compris entre deux dates incluses.
+     * compris dans la période.
      *
-     * @param \DateTimeImmutable    $dateStart Date de début, incluse
-     * @param \DateTimeImmutable    $dateEnd   Date de fin, incluse
      * @param Maybe<Categorie|null> $categorie
      * @param Maybe<Compte>         $compte
      */
     public function balanceMensuelleMoyenne(
-        \DateTimeImmutable $dateStart,
-        \DateTimeImmutable $dateEnd,
+        Periode $période,
         Maybe $categorie,
         Maybe $compte,
     ): float {
         $balanceTotale = 0.;
         $nombreDeMois = 0;
 
-        foreach ($this->balanceMensuelle($dateStart, $dateEnd, $categorie, $compte) as $months) {
+        foreach ($this->balanceMensuelle($période, $categorie, $compte) as $months) {
             foreach ($months as $balanceMensuelle) {
                 $balanceTotale += $balanceMensuelle;
                 ++$nombreDeMois;

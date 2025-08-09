@@ -49,50 +49,17 @@ final class CategorieController extends AbstractController
         $comptes = $this->compteRepository->findAll();
 
         // Filtre sur le compte
-        if ($request->get('compte_id')) {
-            if (CompteId::estValide((string) $request->get('compte_id'))) {
-                $compteId = new CompteId((string) $request->get('compte_id'));
-                $compte = $this->compteRepository->find($compteId);
-                if (!($compte instanceof Compte)) {
-                    throw new NotFoundHttpException("Le compte bancaire $compteId n'existe pas.");
-                }
-            }
-        } else {
-            $compte = null;
-        }
+        $compte = $this->getCompte($request);
 
         // Filtre sur la période
-        if ($request->get('date_filter')) {
-            $dateFilterString = $request->get('date_filter');
-            $dateStartString = $dateFilterString['start'];
-            $dateEndString = $dateFilterString['end'];
-
-            $dateStart = \DateTimeImmutable::createFromFormat('d-m-Y H:i:s', "$dateStartString 00:00:00");
-            $dateEnd = \DateTimeImmutable::createFromFormat('d-m-Y H:i:s', "$dateEndString 23:59:59");
-        } else { // Par défaut, depuis un an et jusqu'à la fin du mois
-            list($year, $month, $lastDayOfMonth) = explode('-', date('Y-n-t'));
-
-            $month = (int) $month;
-            $year = (int) $year;
-            $lastDayOfMonth = (int) $lastDayOfMonth;
-
-            $dateStart = \DateTimeImmutable::createFromFormat('Y-n-j H:i:s', "$year-$month-1 00:00:00");
-            if ($dateStart instanceof \DateTimeImmutable) {
-                $dateStart = $dateStart->modify('-1 year')->setTime(0, 0); // Depuis un an
-            }
-            $dateEnd = \DateTimeImmutable::createFromFormat('Y-n-j H:i:s', "$year-$month-$lastDayOfMonth 23:59:59");
-        }
-
-        if (!($dateStart instanceof \DateTimeImmutable) || !($dateEnd instanceof \DateTimeImmutable) || $dateStart > $dateEnd) {
-            throw new BadRequestHttpException('La période de dates est invalide.');
-        }
+        $période = $this->getPériode($request);
 
         // Années de début et de fin pour les classements par années
         $firstMouvement = $this->mouvementRepository->findFirstOne($compte?->id);
-        $yearStart = (int) ($firstMouvement instanceof Mouvement ? $firstMouvement->date : $dateStart)->format('Y');
-        $yearEnd = (int) $dateEnd->format('Y');
+        $yearStart = (int) ($firstMouvement instanceof Mouvement ? $firstMouvement->date : $période->début)->format('Y');
+        $yearEnd = (int) $période->fin->format('Y');
 
-        $balancePériodique = $this->mouvementRepository->balancePériodique($dateStart, $dateEnd, $compte?->id);
+        $balancePériodique = $this->mouvementRepository->balancePériodique($période, $compte?->id);
         $balancePériodiqueDesMouvementsCategorisés = 0;
         $balanceAnnuelle = $this->statsProvider->balanceAnnuelle(
             $yearStart,
@@ -106,7 +73,7 @@ final class CategorieController extends AbstractController
         foreach ($categories as $categorie) {
             $categorieId = $categorie->id;
 
-            $balancePériodiqueDeLaCatégorie = $this->categorieRepository->balancePériodique($categorieId, $dateStart, $dateEnd, $compte?->id);
+            $balancePériodiqueDeLaCatégorie = $this->categorieRepository->balancePériodique($categorieId, $période, $compte?->id);
 
             $balanceAnnuelleDeLaCatégorie = $this->statsProvider->balanceAnnuelle(
                 $yearStart,
@@ -116,8 +83,7 @@ final class CategorieController extends AbstractController
             );
 
             $balanceMensuelleMoyenneDeLaCatégorie = $this->statsProvider->balanceMensuelleMoyenne(
-                $dateStart,
-                $dateEnd,
+                $période,
                 Maybe::from($categorie),
                 $compte instanceof Compte ? Maybe::from($compte) : Maybe::nothing(),
             );
@@ -143,8 +109,8 @@ final class CategorieController extends AbstractController
                 'comptes' => $comptes,
                 'compte_filter' => $compte,
                 'date_filter' => [
-                    'start' => $dateStart,
-                    'end' => $dateEnd,
+                    'start' => $période->début,
+                    'end' => $période->fin,
                 ],
                 'balance_periodique' => $balancePériodique,
                 'balance_periodique_mouvements_non_categorises' => $balancePériodiqueDesMouvementsNonCatégorisés,
@@ -179,43 +145,10 @@ final class CategorieController extends AbstractController
         $comptes = $this->compteRepository->findAll();
 
         // Filtre sur le compte
-        if ($request->get('compte_id')) {
-            if (CompteId::estValide((string) $request->get('compte_id'))) {
-                $compteId = new CompteId((string) $request->get('compte_id'));
-                $compte = $this->compteRepository->find($compteId);
-                if (!($compte instanceof Compte)) {
-                    throw new NotFoundHttpException("Le compte bancaire $compteId n'existe pas.");
-                }
-            }
-        } else {
-            $compte = null;
-        }
+        $compte = $this->getCompte($request);
 
         // Filtre sur la période
-        if ($request->get('date_filter')) {
-            $dateFilterString = $request->get('date_filter');
-            $dateStartString = $dateFilterString['start'];
-            $dateEndString = $dateFilterString['end'];
-
-            $dateStart = \DateTimeImmutable::createFromFormat('d-m-Y H:i:s', "$dateStartString 00:00:00");
-            $dateEnd = \DateTimeImmutable::createFromFormat('d-m-Y H:i:s', "$dateEndString 23:59:59");
-        } else { // Par défaut, depuis un an et jusqu'à la fin du mois
-            list($year, $month, $lastDayOfMonth) = explode('-', date('Y-n-t'));
-
-            $month = (int) $month;
-            $year = (int) $year;
-            $lastDayOfMonth = (int) $lastDayOfMonth;
-
-            $dateStart = \DateTimeImmutable::createFromFormat('Y-n-j H:i:s', "$year-$month-1 00:00:00");
-            if ($dateStart instanceof \DateTimeImmutable) {
-                $dateStart = $dateStart->modify('-1 year')->setTime(0, 0); // Depuis un an
-            }
-            $dateEnd = \DateTimeImmutable::createFromFormat('Y-n-j H:i:s', "$year-$month-$lastDayOfMonth 23:59:59");
-        }
-
-        if (!($dateStart instanceof \DateTimeImmutable) || !($dateEnd instanceof \DateTimeImmutable) || $dateStart > $dateEnd) {
-            throw new BadRequestHttpException('La période de dates est invalide.');
-        }
+        $période = $this->getPériode($request);
 
         // Tous les mouvements de la catégorie sur la période donnée
         $mouvements = $this->mouvementRepository->findBy(
@@ -227,12 +160,12 @@ final class CategorieController extends AbstractController
                     null
             ),
             compteId: $compte instanceof Compte ? Maybe::from($compte->id) : Maybe::nothing(),
-            dateStart: Maybe::from($dateStart),
-            dateEnd: Maybe::from($dateEnd),
+            dateStart: Maybe::from($période->début),
+            dateEnd: Maybe::from($période->fin),
             montant: Maybe::nothing(),
         );
 
-        $balancePériodique = $mouvements->balance(new Periode($dateStart, $dateEnd));
+        $balancePériodique = $mouvements->balance($période);
         $balancePériodiqueMensuelle = [];
         $balancePériodiqueMensuelleMoyenne = 0;
         $balancePériodiqueMensuelleContientUniquementDesDébits = true;
@@ -242,8 +175,7 @@ final class CategorieController extends AbstractController
         if (!$mouvements->isEmpty()) {
             // @todo : déduire ça de la collection de mouvements
             $balancePériodiqueMensuelle = $this->statsProvider->balanceMensuelle(
-                $dateStart,
-                $dateEnd,
+                $période,
                 Maybe::from($categorie),
                 $compte instanceof Compte ? Maybe::from($compte) : Maybe::nothing(),
             );
@@ -260,8 +192,7 @@ final class CategorieController extends AbstractController
 
             // @todo : déduire ça de la collection de mouvements
             $balancePériodiqueMensuelleMoyenne = $this->statsProvider->balanceMensuelleMoyenne(
-                $dateStart,
-                $dateEnd,
+                $période,
                 Maybe::from($categorie),
                 $compte instanceof Compte ? Maybe::from($compte) : Maybe::nothing(),
             );
@@ -275,8 +206,7 @@ final class CategorieController extends AbstractController
                 foreach ($categorie->categoriesFilles as $categorieFilleId) {
                     $balancePéridioqueParCatégorie[(string) $categorieFilleId] = $this->categorieRepository->balancePériodique(
                         categorieId: $categorieFilleId,
-                        dateStart: $dateStart,
-                        dateEnd: $dateEnd,
+                        période: $période,
                         compteId: $compte?->id,
                     );
                 }
@@ -291,8 +221,8 @@ final class CategorieController extends AbstractController
                 'comptes' => $comptes,
                 'compte_filter' => $compte,
                 'date_filter' => [
-                    'start' => $dateStart,
-                    'end' => $dateEnd,
+                    'start' => $période->début,
+                    'end' => $période->fin,
                 ],
                 'mouvements' => $mouvements,
                 'balance_periodique' => $balancePériodique,
@@ -512,5 +442,55 @@ final class CategorieController extends AbstractController
                 'keywords' => $keywordsParCatégorieId->toAssociativeArray(),
             ]
         );
+    }
+
+    // @todo : utiliser un param converter
+    private function getCompte(Request $request): ?Compte
+    {
+        if ($request->get('compte_id')) {
+            if (CompteId::estValide((string) $request->get('compte_id'))) {
+                $compteId = new CompteId((string) $request->get('compte_id'));
+                $compte = $this->compteRepository->find($compteId);
+
+                if (!($compte instanceof Compte)) {
+                    throw new NotFoundHttpException("Le compte bancaire $compteId n'existe pas.");
+                }
+
+                return $compte;
+            }
+        }
+
+        return null;
+    }
+
+    // @todo : utiliser un param converter
+    private function getPériode(Request $request): Periode
+    {
+        if ($request->get('date_filter')) {
+            $dateFilterString = $request->get('date_filter');
+            $dateStartString = $dateFilterString['start'];
+            $dateEndString = $dateFilterString['end'];
+
+            $dateStart = \DateTimeImmutable::createFromFormat('d-m-Y H:i:s', "$dateStartString 00:00:00");
+            $dateEnd = \DateTimeImmutable::createFromFormat('d-m-Y H:i:s', "$dateEndString 23:59:59");
+        } else { // Par défaut, depuis un an et jusqu'à la fin du mois
+            list($year, $month, $lastDayOfMonth) = explode('-', date('Y-n-t'));
+
+            $month = (int) $month;
+            $year = (int) $year;
+            $lastDayOfMonth = (int) $lastDayOfMonth;
+
+            $dateStart = \DateTimeImmutable::createFromFormat('Y-n-j H:i:s', "$year-$month-1 00:00:00");
+            if ($dateStart instanceof \DateTimeImmutable) {
+                $dateStart = $dateStart->modify('-1 year')->setTime(0, 0); // Depuis un an
+            }
+            $dateEnd = \DateTimeImmutable::createFromFormat('Y-n-j H:i:s', "$year-$month-$lastDayOfMonth 23:59:59");
+        }
+
+        if (!($dateStart instanceof \DateTimeImmutable) || !($dateEnd instanceof \DateTimeImmutable) || $dateStart > $dateEnd) {
+            throw new BadRequestHttpException('La période de dates est invalide.');
+        }
+
+        return new Periode($dateStart, $dateEnd);
     }
 }
