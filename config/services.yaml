@@ -19,9 +19,15 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
+            - '../src/Domain/'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    App\Domain\:
+        resource: '../src/Domain/**/*Interface.php'
+        autowire: true
+        autoconfigure: true
 
     App\Infrastructure\Configuration\ConfigurationLoader:
         arguments:
