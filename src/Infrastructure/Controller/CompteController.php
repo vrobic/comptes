@@ -12,10 +12,11 @@ use App\Domain\Mouvement\Mouvement;
 use App\Domain\Mouvement\MouvementRepositoryInterface;
 use App\Domain\Temps\Mois;
 use App\Domain\Temps\Periode;
+use App\Domain\Temps\Depuis;
+use App\Infrastructure\ValueResolver\PeriodeParDefautAttribute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 final class CompteController extends AbstractController
@@ -83,9 +84,13 @@ final class CompteController extends AbstractController
     public function détail(
         Request $request,
         Compte $compte,
+        #[PeriodeParDefautAttribute(Depuis::UN_MOIS)]
+        Periode $période,
     ): Response {
-        // Filtre sur la période
-        $période = $this->getPériode($request, $compte);
+        // Sans filtre de période et si le compte est clôturé, du début à la fin de sa vie
+        if (!$request->get('date_filter') && $compte->dateFermeture instanceof \DateTimeImmutable) {
+            $période = new Periode($compte->dateOuverture, $compte->dateFermeture);
+        }
 
         // Tous les mouvements de la période
         $mouvements = $this->mouvementRepository->findBy(
@@ -126,36 +131,5 @@ final class CompteController extends AbstractController
                 'balance' => $balance,
             ]
         );
-    }
-
-    // @todo : utiliser un param converter
-    private function getPériode(Request $request, Compte $compte): Periode
-    {
-        if ($request->get('date_filter')) {
-            $dateFilterString = $request->get('date_filter');
-            $dateStartString = $dateFilterString['start'];
-            $dateEndString = $dateFilterString['end'];
-
-            $dateStart = \DateTimeImmutable::createFromFormat('d-m-Y H:i:s', "$dateStartString 00:00:00");
-            $dateEnd = \DateTimeImmutable::createFromFormat('d-m-Y H:i:s', "$dateEndString 23:59:59");
-        } elseif ($compte->dateFermeture instanceof \DateTimeImmutable) { // Si le compte est clôturé, du début à la fin de sa vie
-            $dateStart = $compte->dateOuverture;
-            $dateEnd = $compte->dateFermeture;
-        } else { // Sinon, le mois courant en entier
-            list($year, $month, $lastDayOfMonth) = explode('-', date('Y-n-t'));
-
-            $month = (int) $month;
-            $year = (int) $year;
-            $lastDayOfMonth = (int) $lastDayOfMonth;
-
-            $dateStart = \DateTimeImmutable::createFromFormat('Y-n-j H:i:s', "$year-$month-1 00:00:00");
-            $dateEnd = \DateTimeImmutable::createFromFormat('Y-n-j H:i:s', "$year-$month-$lastDayOfMonth 23:59:59");
-        }
-
-        if (!($dateStart instanceof \DateTimeImmutable) || !($dateEnd instanceof \DateTimeImmutable) || $dateStart > $dateEnd) {
-            throw new BadRequestHttpException('La période de dates est invalide.');
-        }
-
-        return new Periode($dateStart, $dateEnd);
     }
 }

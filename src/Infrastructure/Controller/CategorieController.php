@@ -20,6 +20,8 @@ use App\Domain\Keyword\KeywordRepositoryInterface;
 use App\Domain\Mouvement\Mouvement;
 use App\Domain\Mouvement\MouvementRepositoryInterface;
 use App\Domain\Temps\Periode;
+use App\Domain\Temps\Depuis;
+use App\Infrastructure\ValueResolver\PeriodeParDefautAttribute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -40,8 +42,11 @@ final class CategorieController extends AbstractController
     }
 
     #[Route('/categories', name: 'categories_categories')]
-    public function liste(Request $request): Response
-    {
+    public function liste(
+        Request $request,
+        #[PeriodeParDefautAttribute(Depuis::UN_AN)]
+        Periode $période,
+    ): Response {
         // Toutes les catégories
         $categories = $this->categorieRepository->findAll();
 
@@ -50,9 +55,6 @@ final class CategorieController extends AbstractController
 
         // Filtre sur le compte
         $compte = $this->getCompte($request);
-
-        // Filtre sur la période
-        $période = $this->getPériode($request);
 
         // Années de début et de fin pour les classements par années
         $firstMouvement = $this->mouvementRepository->findFirstOne($compte?->id);
@@ -124,6 +126,8 @@ final class CategorieController extends AbstractController
     public function détail(
         Request $request,
         ?Categorie $categorie,
+        #[PeriodeParDefautAttribute(Depuis::UN_AN)]
+        Periode $période,
     ): Response {
         // Toutes les catégories
         $categories = $this->categorieRepository->findAll();
@@ -133,9 +137,6 @@ final class CategorieController extends AbstractController
 
         // Filtre sur le compte
         $compte = $this->getCompte($request);
-
-        // Filtre sur la période
-        $période = $this->getPériode($request);
 
         // Tous les mouvements de la catégorie sur la période donnée
         $mouvements = $this->mouvementRepository->findBy(
@@ -448,36 +449,5 @@ final class CategorieController extends AbstractController
         }
 
         return null;
-    }
-
-    // @todo : utiliser un param converter
-    private function getPériode(Request $request): Periode
-    {
-        if ($request->get('date_filter')) {
-            $dateFilterString = $request->get('date_filter');
-            $dateStartString = $dateFilterString['start'];
-            $dateEndString = $dateFilterString['end'];
-
-            $dateStart = \DateTimeImmutable::createFromFormat('d-m-Y H:i:s', "$dateStartString 00:00:00");
-            $dateEnd = \DateTimeImmutable::createFromFormat('d-m-Y H:i:s', "$dateEndString 23:59:59");
-        } else { // Par défaut, depuis un an et jusqu'à la fin du mois
-            list($year, $month, $lastDayOfMonth) = explode('-', date('Y-n-t'));
-
-            $month = (int) $month;
-            $year = (int) $year;
-            $lastDayOfMonth = (int) $lastDayOfMonth;
-
-            $dateStart = \DateTimeImmutable::createFromFormat('Y-n-j H:i:s', "$year-$month-1 00:00:00");
-            if ($dateStart instanceof \DateTimeImmutable) {
-                $dateStart = $dateStart->modify('-1 year')->setTime(0, 0); // Depuis un an
-            }
-            $dateEnd = \DateTimeImmutable::createFromFormat('Y-n-j H:i:s', "$year-$month-$lastDayOfMonth 23:59:59");
-        }
-
-        if (!($dateStart instanceof \DateTimeImmutable) || !($dateEnd instanceof \DateTimeImmutable) || $dateStart > $dateEnd) {
-            throw new BadRequestHttpException('La période de dates est invalide.');
-        }
-
-        return new Periode($dateStart, $dateEnd);
     }
 }
