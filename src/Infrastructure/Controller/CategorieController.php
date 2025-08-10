@@ -10,7 +10,6 @@ use App\Domain\Categorie\CategorieId;
 use App\Domain\Categorie\CategorieIdCollection;
 use App\Domain\Categorie\CategorieRepositoryInterface;
 use App\Domain\Compte\Compte;
-use App\Domain\Compte\CompteId;
 use App\Domain\Compte\CompteRepositoryInterface;
 use App\Domain\DataStructure\Maybe;
 use App\Domain\Id\IdGeneratorInterface;
@@ -26,7 +25,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 final class CategorieController extends AbstractController
@@ -43,7 +41,7 @@ final class CategorieController extends AbstractController
 
     #[Route('/categories', name: 'categories_categories')]
     public function liste(
-        Request $request,
+        ?Compte $compte,
         #[PeriodeParDefautAttribute(Depuis::UN_AN)]
         Periode $période,
     ): Response {
@@ -52,9 +50,6 @@ final class CategorieController extends AbstractController
 
         // Tous les comptes
         $comptes = $this->compteRepository->findAll();
-
-        // Filtre sur le compte
-        $compte = $this->getCompte($request);
 
         // Années de début et de fin pour les classements par années
         $firstMouvement = $this->mouvementRepository->findFirstOne($compte?->id);
@@ -124,8 +119,8 @@ final class CategorieController extends AbstractController
 
     #[Route('/categorie/{categorieId}', name: 'categories_categorie')]
     public function détail(
-        Request $request,
         ?Categorie $categorie,
+        ?Compte $compte,
         #[PeriodeParDefautAttribute(Depuis::UN_AN)]
         Periode $période,
     ): Response {
@@ -134,9 +129,6 @@ final class CategorieController extends AbstractController
 
         // Tous les comptes
         $comptes = $this->compteRepository->findAll();
-
-        // Filtre sur le compte
-        $compte = $this->getCompte($request);
 
         // Tous les mouvements de la catégorie sur la période donnée
         $mouvements = $this->mouvementRepository->findBy(
@@ -430,24 +422,5 @@ final class CategorieController extends AbstractController
                 'keywords' => $keywordsParCatégorieId->toAssociativeArray(),
             ]
         );
-    }
-
-    // @todo : utiliser un param converter
-    private function getCompte(Request $request): ?Compte
-    {
-        if ($request->get('compte_id')) {
-            if (CompteId::estValide((string) $request->get('compte_id'))) {
-                $compteId = new CompteId((string) $request->get('compte_id'));
-                $compte = $this->compteRepository->find($compteId);
-
-                if (!($compte instanceof Compte)) {
-                    throw new NotFoundHttpException("Le compte bancaire $compteId n'existe pas.");
-                }
-
-                return $compte;
-            }
-        }
-
-        return null;
     }
 }

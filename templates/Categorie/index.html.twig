@@ -38,7 +38,7 @@
                     <label for="date-filter-end" class="input-group-addon middle">au</label>
                     <input id="date-filter-end" class="form-control" type="text" name="date_filter[end]" value="{{ date_filter.end|date('d-m-Y') }}" placeholder="{{ date_filter.end|date('d-m-Y') }}">
                     <label for="compte-id" class="input-group-addon middle">sur le compte</label>
-                    <select id="compte-id" class="form-control" name="compte_id">
+                    <select id="compte-id" class="form-control" name="compteId">
                         <option value=""></option>
                         {% for compte in comptes %}
                             <option value="{{ compte.id }}" {{ compte_filter is not null and compte_filter.id == compte.id ? "selected" }}>
@@ -207,7 +207,7 @@
 
                                         const annee = String(this.x).padStart(4, "0");
 
-                                        let url = "{{ path('categories_categorie', {'categorieId': 'categorie_id', 'date_filter[start]': 'date_filter_start', 'date_filter[end]': 'date_filter_end', 'compte_id': compte_filter is not null ? compte_filter.id : ''})|e('js') }}";
+                                        let url = "{{ path('categories_categorie', {'categorieId': 'categorie_id', 'compteId': compte_filter is not null ? compte_filter.id : '', 'date_filter[start]': 'date_filter_start', 'date_filter[end]': 'date_filter_end'})|e('js') }}";
                                         url = url.replace("categorie_id", this.categorieId);
                                         url = url.replace("date_filter_start", "01-01-" + annee);
                                         url = url.replace("date_filter_end", "31-12-" + annee);

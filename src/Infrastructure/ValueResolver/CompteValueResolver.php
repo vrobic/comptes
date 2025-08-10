@@ -20,14 +20,19 @@ final readonly class CompteValueResolver implements ValueResolverInterface
     ) {
     }
 
-    /** @return array<Compte> */
+    /** @return array<?Compte> */
     public function resolve(Request $request, ArgumentMetadata $argument): iterable
     {
-        if (Compte::class !== $argument->getType() || !$request->attributes->has('compteId')) {
+        if (Compte::class !== $argument->getType()) {
             return [];
         }
 
-        $compteId = $request->attributes->get('compteId');
+        // Le front peut envoyer une string vide, d'où la ternaire
+        $compteId = $request->get('compteId') ?: null;
+
+        if ($argument->isNullable() && is_null($compteId)) {
+            return [null];
+        }
 
         if (!is_string($compteId) || !CompteId::estValide($compteId)) {
             throw new BadRequestHttpException("Le compte $compteId est invalide.");
