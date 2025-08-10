@@ -12,7 +12,6 @@ use App\Domain\Mouvement\Mouvement;
 use App\Domain\Mouvement\MouvementCollection;
 use App\Domain\Mouvement\MouvementId;
 use App\Domain\Mouvement\MouvementRepositoryInterface;
-use App\Domain\Temps\Periode;
 use App\Infrastructure\Denormalizer\MouvementDenormalizer;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
@@ -328,33 +327,6 @@ final readonly class MouvementRepository implements MouvementRepositoryInterface
 
         return $this->mouvementDenormalizer->denormalize(
             $this->préparerRowPourDenormalizer($row)
-        );
-    }
-
-    public function balancePériodique(
-        Periode $période,
-        ?CompteId $compteId = null,
-    ): float {
-        $wheres[] = 'date >= :date_start AND date <= :date_end';
-        $params = [
-            'date_start' => $période->début,
-            'date_end' => $période->fin,
-        ];
-
-        if ($compteId instanceof CompteId) {
-            $wheres[] = 'compte_id = :compte_id';
-            $params['compte_id'] = (string) $compteId;
-        }
-
-        $sql = 'SELECT SUM(montant) FROM mouvements WHERE '.implode(' AND ', $wheres).';';
-
-        return (float) $this->connection->fetchOne(
-            $sql,
-            $params,
-            [
-                'date_start' => Types::DATETIME_IMMUTABLE,
-                'date_end' => Types::DATETIME_IMMUTABLE,
-            ]
         );
     }
 

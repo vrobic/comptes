@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Controller;
 
-use App\Application\StatsProvider;
 use App\Domain\Categorie\Categorie;
 use App\Domain\Categorie\CategorieId;
 use App\Domain\Categorie\CategorieIdCollection;
@@ -34,7 +33,6 @@ final class CategorieController extends AbstractController
         private readonly CompteRepositoryInterface $compteRepository,
         private readonly MouvementRepositoryInterface $mouvementRepository,
         private readonly KeywordRepositoryInterface $keywordRepository,
-        private readonly StatsProvider $statsProvider,
         private readonly IdGeneratorInterface $idGenerator,
     ) {
     }
@@ -45,56 +43,67 @@ final class CategorieController extends AbstractController
         #[PeriodeParDefautAttribute(Depuis::UN_AN)]
         Periode $période,
     ): Response {
+        $firstMouvement = $this->mouvementRepository->findFirstOne($compte?->id);
+        $périodeÉtendue = $firstMouvement instanceof Mouvement ?
+            new Periode($firstMouvement->date, $période->fin) :
+            $période;
+
         // Toutes les catégories
         $categories = $this->categorieRepository->findAll();
 
         // Tous les comptes
         $comptes = $this->compteRepository->findAll();
 
-        // Années de début et de fin pour les classements par années
-        $firstMouvement = $this->mouvementRepository->findFirstOne($compte?->id);
-        $yearStart = (int) ($firstMouvement instanceof Mouvement ? $firstMouvement->date : $période->début)->format('Y');
-        $yearEnd = (int) $période->fin->format('Y');
-
-        $balancePériodique = $this->mouvementRepository->balancePériodique($période, $compte?->id);
-        $balancePériodiqueDesMouvementsCategorisés = 0;
-        $balanceAnnuelle = $this->statsProvider->balanceAnnuelle(
-            $yearStart,
-            $yearEnd,
-            Maybe::nothing(), // toutes catégories confondues
-            $compte instanceof Compte ? Maybe::from($compte) : Maybe::nothing(),
+        // Tous les mouvements sur la période donnée
+        $mouvements = $this->mouvementRepository->findBy(
+            categoriesIds: Maybe::nothing(), // toutes catégories confondues
+            compteId: $compte instanceof Compte ? Maybe::from($compte->id) : Maybe::nothing(),
+            dateStart: Maybe::from($périodeÉtendue->début),
+            dateEnd: Maybe::from($périodeÉtendue->fin),
+            montant: Maybe::nothing(),
         );
+        $mouvementsSurLaPériode = $mouvements->filtrerParPériode($période);
+
+        $balancePériodique = $mouvementsSurLaPériode->balance();
+        $balancePériodiqueDesMouvementsCategorisés = 0;
+        $balanceAnnuelle = $mouvements->balanceAnnuelle($périodeÉtendue);
         $balanceParCatégorie = [];
 
         /** @var Categorie $categorie */
         foreach ($categories as $categorie) {
-            $categorieId = $categorie->id;
+            $mouvementsDeLaCatégorie = $mouvements->filtrerParCatégorieId($categorie->id);
+            $mouvementsDeLaCatégorieSurLaPériode = $mouvementsDeLaCatégorie->filtrerParPériode($période);
 
-            $balancePériodiqueDeLaCatégorie = $this->categorieRepository->balancePériodique($categorieId, $période, $compte?->id);
+            $balancePériodiqueDeLaCatégorie = $mouvementsDeLaCatégorieSurLaPériode->balance();
+            $balanceAnnuelleDeLaCatégorie = $mouvementsDeLaCatégorie->balanceAnnuelle($périodeÉtendue);
+            $balanceMensuelleMoyenneDeLaCatégorie = $mouvementsDeLaCatégorieSurLaPériode->balanceMensuelleMoyenne($période);
 
-            $balanceAnnuelleDeLaCatégorie = $this->statsProvider->balanceAnnuelle(
-                $yearStart,
-                $yearEnd,
-                Maybe::from($categorie),
-                $compte instanceof Compte ? Maybe::from($compte) : Maybe::nothing(),
-            );
+            $balancePériodiqueDesMouvementsCategorisés += $balancePériodiqueDeLaCatégorie;
 
-            $balanceMensuelleMoyenneDeLaCatégorie = $this->statsProvider->balanceMensuelleMoyenne(
-                $période,
-                Maybe::from($categorie),
-                $compte instanceof Compte ? Maybe::from($compte) : Maybe::nothing(),
-            );
-
-            // Si la catégorie est de premier niveau, on la prend en compte dans le calcul de la balance des mouvements catégorisés
-            if (null === $categorie->categorieParente) {
-                $balancePériodiqueDesMouvementsCategorisés += $balancePériodiqueDeLaCatégorie;
+            $clés = [(string) $categorie->id];
+            if ($categorie->categorieParente instanceof CategorieId) {
+                $clés[] = (string) $categorie->categorieParente;
             }
 
-            $balanceParCatégorie[(string) $categorieId] = [
-                'periodique' => $balancePériodiqueDeLaCatégorie,
-                'annuelle' => $balanceAnnuelleDeLaCatégorie,
-                'mensuelle_moyenne' => $balanceMensuelleMoyenneDeLaCatégorie,
-            ];
+            // Double ajout dans la catégorie et dans la catégorie parente
+            foreach ($clés as $clé) {
+                $balanceParCatégorie[$clé] ??= [
+                    'periodique' => 0.,
+                    'annuelle' => [],
+                    'mensuelle_moyenne' => 0.,
+                ];
+
+                $balanceParCatégorie[$clé]['periodique'] += $balancePériodiqueDeLaCatégorie;
+                foreach ($balanceAnnuelleDeLaCatégorie as $année => $balance) {
+                    $balanceParCatégorie[$clé]['annuelle'][$année] = ($balanceParCatégorie[$clé]['annuelle'][$année] ?? 0.) + $balance;
+                }
+                $balanceParCatégorie[$clé]['mensuelle_moyenne'] += $balanceMensuelleMoyenneDeLaCatégorie;
+            }
+        }
+
+        // Tri pour le graphique sparkline
+        foreach ($balanceParCatégorie as &$data) {
+            ksort($data['annuelle']);
         }
 
         $balancePériodiqueDesMouvementsNonCatégorisés = $balancePériodique - $balancePériodiqueDesMouvementsCategorisés;
@@ -130,52 +139,43 @@ final class CategorieController extends AbstractController
         // Tous les comptes
         $comptes = $this->compteRepository->findAll();
 
+        // Les identifiants de la catégorie (mère + filles)
+        $catégoriesFillesIds = $categorie instanceof Categorie ?
+            $this->categorieRepository
+                ->getCategoriesFillesRecursive($categorie->id)
+                ->add($categorie->id) :
+            null;
+
         // Tous les mouvements de la catégorie sur la période donnée
         $mouvements = $this->mouvementRepository->findBy(
-            categoriesIds: Maybe::from(
-                $categorie instanceof Categorie ?
-                    $this->categorieRepository
-                        ->getCategoriesFillesRecursive($categorie->id)
-                        ->add($categorie->id) :
-                    null
-            ),
+            categoriesIds: Maybe::from($catégoriesFillesIds),
             compteId: $compte instanceof Compte ? Maybe::from($compte->id) : Maybe::nothing(),
             dateStart: Maybe::from($période->début),
             dateEnd: Maybe::from($période->fin),
             montant: Maybe::nothing(),
         );
 
-        $balancePériodique = $mouvements->balance($période);
+        $balancePériodique = $mouvements->balance();
         $balancePériodiqueMensuelle = [];
         $balancePériodiqueMensuelleMoyenne = 0;
         $balancePériodiqueMensuelleContientUniquementDesDébits = true;
-        $balancePériodiqueMensuelleContentUniquementDesCrédits = true;
+        $balancePériodiqueMensuelleContientUniquementDesCrédits = true;
         $balancePéridioqueParCatégorie = [];
 
         if (!$mouvements->isEmpty()) {
-            // @todo : déduire ça de la collection de mouvements
-            $balancePériodiqueMensuelle = $this->statsProvider->balanceMensuelle(
-                $période,
-                Maybe::from($categorie),
-                $compte instanceof Compte ? Maybe::from($compte) : Maybe::nothing(),
-            );
+            $balancePériodiqueMensuelle = $mouvements->balanceMensuelle($période);
 
             foreach ($balancePériodiqueMensuelle as $months) {
                 foreach ($months as $montant) {
                     if ($montant > 0) {
                         $balancePériodiqueMensuelleContientUniquementDesDébits = false;
                     } elseif ($montant < 0) {
-                        $balancePériodiqueMensuelleContentUniquementDesCrédits = false;
+                        $balancePériodiqueMensuelleContientUniquementDesCrédits = false;
                     }
                 }
             }
 
-            // @todo : déduire ça de la collection de mouvements
-            $balancePériodiqueMensuelleMoyenne = $this->statsProvider->balanceMensuelleMoyenne(
-                $période,
-                Maybe::from($categorie),
-                $compte instanceof Compte ? Maybe::from($compte) : Maybe::nothing(),
-            );
+            $balancePériodiqueMensuelleMoyenne = $mouvements->balanceMensuelleMoyenne($période);
 
             if ($categorie instanceof Categorie) {
                 // La balance de la catégorie
@@ -184,11 +184,9 @@ final class CategorieController extends AbstractController
                 // La balance des catégories filles
                 /** @var CategorieId $categorieFilleId */
                 foreach ($categorie->categoriesFilles as $categorieFilleId) {
-                    $balancePéridioqueParCatégorie[(string) $categorieFilleId] = $this->categorieRepository->balancePériodique(
-                        categorieId: $categorieFilleId,
-                        période: $période,
-                        compteId: $compte?->id,
-                    );
+                    $balancePéridioqueParCatégorie[(string) $categorieFilleId] = $mouvements
+                        ->filtrerParCatégorieId($categorieFilleId)
+                        ->balance();
                 }
             }
         }
@@ -208,7 +206,7 @@ final class CategorieController extends AbstractController
                 'balance_periodique' => $balancePériodique,
                 'balance_periodique_mensuelle' => $balancePériodiqueMensuelle,
                 'balance_periodique_mensuelle_contient_uniquement_des_debits' => $balancePériodiqueMensuelleContientUniquementDesDébits,
-                'balance_periodique_mensuelle_contient_uniquement_des_credits' => $balancePériodiqueMensuelleContentUniquementDesCrédits,
+                'balance_periodique_mensuelle_contient_uniquement_des_credits' => $balancePériodiqueMensuelleContientUniquementDesCrédits,
                 'balance_periodique_mensuelle_moyenne' => $balancePériodiqueMensuelleMoyenne,
                 'balance_periodique_par_categorie' => $balancePéridioqueParCatégorie,
             ]

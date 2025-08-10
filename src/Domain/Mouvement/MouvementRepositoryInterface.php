@@ -7,7 +7,6 @@ namespace App\Domain\Mouvement;
 use App\Domain\Categorie\CategorieIdCollection;
 use App\Domain\Compte\CompteId;
 use App\Domain\DataStructure\Maybe;
-use App\Domain\Temps\Periode;
 
 interface MouvementRepositoryInterface
 {
@@ -39,11 +38,6 @@ interface MouvementRepositoryInterface
      * Récupère le mouvement le plus récent.
      */
     public function findLatestOne(): ?Mouvement;
-
-    public function balancePériodique(
-        Periode $période,
-        ?CompteId $compteId = null,
-    ): float;
 
     public function save(Mouvement ...$mouvements): void;
 

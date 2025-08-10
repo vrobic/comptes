@@ -44,14 +44,16 @@ final class CompteController extends AbstractController
         $lastMouvement = $mouvements->last();
 
         // Balance
-        $balance = $mouvements->balance(null);
+        $balance = $mouvements->balance();
 
         // Balance des derniers mois
         $balanceDesDerniersMois = [];
         foreach (range(1, 4) as $nombreMois) {
             $mois = Mois::fromDate(new \DateTimeImmutable("$nombreMois months ago"));
 
-            $balanceDesDerniersMois[(string) $mois] = $mouvements->balance(new Periode($mois->début(), $mois->fin()));
+            $balanceDesDerniersMois[(string) $mois] = $mouvements
+                ->filtrerParPériode(new Periode($mois->début(), $mois->fin()))
+                ->balance();
         }
 
         $balanceMoyenneDesDerniersMois = array_sum($balanceDesDerniersMois) / count($balanceDesDerniersMois);
@@ -115,7 +117,7 @@ final class CompteController extends AbstractController
         }
 
         // Balance des mouvements
-        $balance = $mouvements->balance(null);
+        $balance = $mouvements->balance();
 
         return $this->render(
             'Compte/show.html.twig',

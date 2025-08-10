@@ -9,13 +9,10 @@ use App\Domain\Categorie\CategorieId;
 use App\Domain\Categorie\CategorieIdCollection;
 use App\Domain\Categorie\CategorieParCategorieIdMap;
 use App\Domain\Categorie\CategorieRepositoryInterface;
-use App\Domain\Compte\CompteId;
-use App\Domain\Temps\Periode;
 use App\Infrastructure\Denormalizer\CategorieDenormalizer;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;
-use Doctrine\DBAL\Types\Types;
 
 final readonly class CategorieRepository implements CategorieRepositoryInterface
 {
@@ -56,41 +53,6 @@ final readonly class CategorieRepository implements CategorieRepositoryInterface
         }
 
         return $this->categorieDenormalizer->denormalize($row);
-    }
-
-    public function balancePériodique(
-        CategorieId $categorieId,
-        Periode $période,
-        ?CompteId $compteId = null,
-    ): float {
-        $categoriesIds = $this->getCategoriesFillesRecursive($categorieId)->add($categorieId);
-
-        $wheres[] = 'categorie_id IN (:categories_ids)';
-        $wheres[] = 'date >= :date_start AND date <= :date_end';
-        $params = [
-            'categories_ids' => $categoriesIds->toArray(
-                static fn (CategorieId $id): string => (string) $id
-            ),
-            'date_start' => $période->début,
-            'date_end' => $période->fin,
-        ];
-
-        if ($compteId instanceof CompteId) {
-            $wheres[] = 'compte_id = :compte_id';
-            $params['compte_id'] = (string) $compteId;
-        }
-
-        $sql = 'SELECT SUM(montant) FROM mouvements WHERE '.implode(' AND ', $wheres).';';
-
-        return (float) $this->connection->fetchOne(
-            $sql,
-            $params,
-            [
-                'categories_ids' => ArrayParameterType::STRING,
-                'date_start' => Types::DATETIME_IMMUTABLE,
-                'date_end' => Types::DATETIME_IMMUTABLE,
-            ]
-        );
     }
 
     public function getCategoriesFillesRecursive(CategorieId $categorieId): CategorieIdCollection
