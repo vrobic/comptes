@@ -1,51 +1,75 @@
-# Symfony Docker
+# Comptes
 
-A [Docker](https://www.docker.com/)-based installer and runtime for the [Symfony](https://symfony.com) web framework,
-with [FrankenPHP](https://frankenphp.dev) and [Caddy](https://caddyserver.com/) inside!
+_Comptes_ est une application web permettant de suivre ses comptes bancaires en proposant des outils d'analyse.
 
-![CI](https://github.com/dunglas/symfony-docker/workflows/CI/badge.svg)
+Elle a été créée en 2014 sur un socle [Symfony 2](https://symfony.com/releases/2.8) en MVC avec Doctrine et Twig, une architecture populaire à l'époque.
 
-## Getting Started
+En plus des comptes bancaires, elle permettait également de suivre ses dépenses de transport.
+Cette fonctionnalité a été abandonnée lors de la refonte de 2025, qui a passé le projet sur [Symfony 7](https://symfony.com/7.2), avec une architecture hexagonale en DDD.
 
-1. If not already done, [install Docker Compose](https://docs.docker.com/compose/install/) (v2.10+)
-2. Run `docker compose build --pull --no-cache` to build fresh images
-3. Run `docker compose up --wait` to set up and start a fresh Symfony project
-4. Open `https://localhost` in your favorite web browser and [accept the auto-generated TLS certificate](https://stackoverflow.com/a/15076602/1352334)
-5. Run `docker compose down --remove-orphans` to stop the Docker containers.
+L'infrastructure repose désormais sur [Symfony Docker](https://github.com/dunglas/symfony-docker).
 
-## Features
+## ✨ Fonctionnalités
 
-* Production, development and CI ready
-* Just 1 service by default
-* Blazing-fast performance thanks to [the worker mode of FrankenPHP](https://github.com/dunglas/frankenphp/blob/main/docs/worker.md) (automatically enabled in prod mode)
-* [Installation of extra Docker Compose services](docs/extra-services.md) with Symfony Flex
-* Automatic HTTPS (in dev and prod)
-* HTTP/3 and [Early Hints](https://symfony.com/blog/new-in-symfony-6-3-early-hints) support
-* Real-time messaging thanks to a built-in [Mercure hub](https://symfony.com/doc/current/mercure.html)
-* [Vulcain](https://vulcain.rocks) support
-* Native [XDebug](docs/xdebug.md) integration
-* Super-readable configuration
+* gestion et catégorisation de mouvements de comptes bancaires
+* statistiques : solde des comptes, dépenses par catégories, épargne mensuelle moyenne
+* import de relevés de compte depuis un export bancaire
 
-**Enjoy!**
+🚧 À venir :
 
-## Docs
+* poursuite de la migration DDD et architecture hexagonale
+* simplification de la configuration d'import
+* recherche de mouvements
+* recatégorisation en masse
+* création, modification et suppression de comptes
 
-1. [Options available](docs/options.md)
-2. [Using Symfony Docker with an existing project](docs/existing-project.md)
-3. [Support for extra services](docs/extra-services.md)
-4. [Deploying in production](docs/production.md)
-5. [Debugging with Xdebug](docs/xdebug.md)
-6. [TLS Certificates](docs/tls.md)
-7. [Using MySQL instead of PostgreSQL](docs/mysql.md)
-8. [Using Alpine Linux instead of Debian](docs/alpine.md)
-9. [Using a Makefile](docs/makefile.md)
-10. [Updating the template](docs/updating.md)
-11. [Troubleshooting](docs/troubleshooting.md)
+## 📦️ Installation
 
-## License
+```
+make install
+make up
+```
 
-Symfony Docker is available under the MIT License.
+Pour éteindre la stack :
 
-## Credits
+```
+make down
+```
 
-Created by [Kévin Dunglas](https://dunglas.dev), co-maintained by [Maxime Helias](https://twitter.com/maxhelias) and sponsored by [Les-Tilleuls.coop](https://les-tilleuls.coop).
+## ⚙️ Paramétrage
+
+### Création des comptes
+
+Puisqu'il n'existe pas encore d'interface pour administrer les comptes, il faut les créer directement en base de données.
+
+### Moteur d'import
+
+En attendant que sa configuration soit simplifiée, le moteur d'import requiert un rapide paramétrage dans `config/comptes.yaml`. Modifier le tableau `handlers` pour ajuster les identifiants de comptes bancaires.
+
+### Catégories
+
+Le moteur d'import est capable de catégoriser automatiquement les mouvements importés, en analysant les mots-clés contenus dans leur description. Pour bénéficier de cette fonctionnalité, se rendre sur la page d'édition des catégories et renseigner les mots-clés associés à chaque catégorie de mouvement.
+
+## 🚀 Accès
+
+https://localhost
+
+Le certificat SSL étant auto-signé, il est normal d'avoir une alerte de confidentialité.
+
+## 💼️ Portabilité des données
+
+### Export
+
+Génère un fichier `~/Downloads/comptes.sql` :
+
+```
+make export-bdd
+```
+
+### Import
+
+Importe un fichier `~/Downloads/comptes.sql` :
+
+```
+make import-bdd
+```

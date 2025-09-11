@@ -7,6 +7,16 @@ DOCKER_PHP=docker compose exec php
 help: ## Affiche cette aide
 	@awk -F ':.*?## ' '/^[a-zA-Z0-9_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
+install: ## Installe le projet et démarre la stack
+	docker compose build --pull --no-cache
+
+up: ## Démarre la stack
+	docker compose up --wait
+	@echo "🚀 https://localhost"
+
+down: ## Éteint la stack
+	docker compose down --remove-orphans
+
 export-bdd: ## Export base de données
 	docker compose exec database mysqldump -u${MYSQL_USER} -p${MYSQL_PASSWORD} ${MYSQL_DATABASE} --no-tablespaces > ~/Downloads/comptes.sql
 
