@@ -15,4 +15,10 @@ final class MouvementsParHash extends Map
             Mouvement::class
         );
     }
+
+    /** @param string $key */
+    public function getUniqueKey(mixed $key): string
+    {
+        return $key;
+    }
 }

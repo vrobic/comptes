@@ -11,9 +11,15 @@ final class CategorieParCategorieIdMap extends Map
     public function __construct()
     {
         parent::__construct(
-            'string', // Le map ne supporte pas bien d'avoir des objets comme clés
+            'string',
             Categorie::class
         );
+    }
+
+    /** @param string $key */
+    public function getUniqueKey(mixed $key): string
+    {
+        return $key;
     }
 
     /** @return array<string, Categorie> */

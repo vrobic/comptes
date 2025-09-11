@@ -31,6 +31,7 @@ RUN set -eux; \
 		intl \
 		opcache \
 		zip \
+		ds \
 	;
 
 # https://getcomposer.org/doc/03-cli.md#composer-allow-superuser

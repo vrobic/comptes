@@ -11,9 +11,15 @@ final class KeywordsParCategorieIdMap extends Map
     public function __construct()
     {
         parent::__construct(
-            'string', // Le map ne supporte pas bien d'avoir des objets comme clés
+            'string',
             KeywordCollection::class
         );
+    }
+
+    /** @param string $key */
+    public function getUniqueKey(mixed $key): string
+    {
+        return $key;
     }
 
     /** @return array<string, Keyword[]> */
