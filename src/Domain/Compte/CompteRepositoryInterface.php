@@ -18,5 +18,5 @@ interface CompteRepositoryInterface
     public function getSoldeÀDate(
         CompteId $compteId,
         \DateTimeImmutable $date,
-    ): float;
+    ): Solde;
 }

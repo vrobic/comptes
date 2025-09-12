@@ -8,6 +8,7 @@ use App\Domain\Categorie\CategorieId;
 use App\Domain\Categorie\CategorieIdCollection;
 use App\Domain\Compte\CompteId;
 use App\Domain\DataStructure\Maybe;
+use App\Domain\Mouvement\Montant;
 use App\Domain\Mouvement\Mouvement;
 use App\Domain\Mouvement\MouvementCollection;
 use App\Domain\Mouvement\MouvementId;
@@ -84,55 +85,65 @@ final readonly class MouvementRepository implements MouvementRepositoryInterface
     public function findAll(): MouvementCollection
     {
         return $this->findBy(
-            categoriesIds: Maybe::nothing(),
-            compteId: Maybe::nothing(),
-            dateStart: Maybe::nothing(),
-            dateEnd: Maybe::nothing(),
-            montant: Maybe::nothing(),
+            maybeCategoriesIds: Maybe::nothing(),
+            maybeCompteId: Maybe::nothing(),
+            maybeDateStart: Maybe::nothing(),
+            maybeDateEnd: Maybe::nothing(),
+            maybeMontant: Maybe::nothing(),
         );
     }
 
     public function findBy(
-        Maybe $categoriesIds,
-        Maybe $compteId,
-        Maybe $dateStart,
-        Maybe $dateEnd,
-        Maybe $montant,
+        Maybe $maybeCategoriesIds,
+        Maybe $maybeCompteId,
+        Maybe $maybeDateStart,
+        Maybe $maybeDateEnd,
+        Maybe $maybeMontant,
     ): MouvementCollection {
         $wheres = [];
         $params = [];
         $types = [];
 
-        if ($compteId->estDéfini) {
+        if ($maybeCompteId->estDéfini) {
             $wheres[] = 'mouvement.compte_id = :compte_id';
-            $params['compte_id'] = (string) $compteId->getValeur();
+            /** @var CompteId $compteId */
+            $compteId = $maybeCompteId->getValeur();
+            $params['compte_id'] = (string) $compteId;
         }
-        if ($categoriesIds->estDéfini) {
-            if ($categoriesIds->getValeur() instanceof CategorieIdCollection) {
+        if ($maybeCategoriesIds->estDéfini) {
+            /** @var ?CategorieIdCollection $categoriesIds */
+            $categoriesIds = $maybeCategoriesIds->getValeur();
+            if ($categoriesIds instanceof CategorieIdCollection) {
                 $wheres[] = 'mouvement.categorie_id IN (:categories_ids)';
-                $params['categories_ids'] = $categoriesIds->getValeur()->toArray(
+                $params['categories_ids'] = $categoriesIds->toArray(
                     static fn (CategorieId $id): string => (string) $id
                 );
                 $types['categories_ids'] = ArrayParameterType::STRING;
-            } elseif (is_null($categoriesIds->getValeur())) {
+            } elseif (is_null($categoriesIds)) {
                 $wheres[] = 'mouvement.categorie_id IS NULL';
             } else {
                 throw new \RuntimeException();
             }
         }
-        if ($dateStart->estDéfini) {
+        if ($maybeDateStart->estDéfini) {
             $wheres[] = 'mouvement.date >= :date_start';
-            $params['date_start'] = $dateStart->getValeur();
+            /** @var \DateTimeImmutable $dateStart */
+            $dateStart = $maybeDateStart->getValeur();
+            $params['date_start'] = $dateStart;
             $types['date_start'] = Types::DATETIME_IMMUTABLE;
         }
-        if ($dateEnd->estDéfini) {
+        if ($maybeDateEnd->estDéfini) {
             $wheres[] = 'mouvement.date <= :date_end';
-            $params['date_end'] = $dateEnd->getValeur();
+            /** @var \DateTimeImmutable $dateEnd */
+            $dateEnd = $maybeDateEnd->getValeur();
+            $params['date_end'] = $dateEnd;
             $types['date_end'] = Types::DATETIME_IMMUTABLE;
         }
-        if ($montant->estDéfini) {
+        if ($maybeMontant->estDéfini) {
             $wheres[] = 'mouvement.montant = :montant';
-            $params['montant'] = $montant->getValeur();
+            /** @var Montant $montant */
+            $montant = $maybeMontant->getValeur();
+            $params['montant'] = $montant->montant;
         }
 
         $sql = <<<SQL
@@ -337,7 +348,7 @@ final readonly class MouvementRepository implements MouvementRepositoryInterface
                 'categorie_id' => $mouvement->categorie?->id->__toString(),
                 'compte_id' => $mouvement->compte->id,
                 'date' => $mouvement->date,
-                'montant' => $mouvement->montant,
+                'montant' => $mouvement->montant->montant,
                 'description' => $mouvement->description,
             ];
 

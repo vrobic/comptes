@@ -89,10 +89,10 @@
                             name: "Répartition des dépenses par sous catégorie",
                             data: [
                                 {% for id in categorie.categoriesFilles %}
-                                    {% if balance_periodique_par_categorie[id.__toString] < 0 %}
+                                    {% if balance_periodique_par_categorie.has(id) and balance_periodique_par_categorie.get(id).estNégative %}
                                         {
                                             name: "{{ categories[id.__toString]|e('js') }}",
-                                            y: {{ balance_periodique_par_categorie[id.__toString]|abs|e('js') }},
+                                            y: {{ balance_periodique_par_categorie.get(id).montant|abs|e('js') }},
                                             url: '{{ path('categories_categorie', {'categorieId': id, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y'), 'compteId': compte_filter is not null ? compte_filter.id : ''})|e('js') }}'
                                         },
                                     {% endif %}
@@ -116,7 +116,7 @@
                         text: "Évolution mensuelle"
                     },
                     subtitle: {
-                        text: "Balance mensuelle moyenne : {{ balance_periodique_mensuelle_moyenne|formater_balance }}"
+                        text: "Balance mensuelle moyenne : {{ balance_periodique_mensuelle_moyenne }}"
                     },
                     xAxis: {
                         type: 'datetime',
@@ -140,17 +140,14 @@
                         {
                             name: "{{ (categorie is not null ? categorie : "Mouvements non catégorisés")|e('js') }}",
                             data: [
-                                {% for annee, mois in balance_periodique_mensuelle %}
-                                    {% for mois, balance in mois %}
-                                        {
-                                            x: Date.UTC({{ annee|e('js') }}, {{ (mois-1)|e('js') }}),
-                                            y: {{ balance|e('js') }},
-                                            categorieId: "{{ (categorie is not null ? categorie.id : 'aucune')|e('js') }}",
-                                            annee: {{ annee|e('js') }},
-                                            mois: {{ mois|e('js') }}
-                                        }{{ not loop.last ? ','|e('js') }}
-                                    {% endfor %}
-                                    {{ not loop.last ? ','|e('js') }}
+                                {% for mois, balance in balance_periodique_mensuelle %}
+                                    {
+                                        x: Date.UTC({{ mois.année|e('js') }}, {{ (mois.mois-1)|e('js') }}),
+                                        y: {{ balance.montant|e('js') }},
+                                        categorieId: "{{ (categorie is not null ? categorie.id : 'aucune')|e('js') }}",
+                                        annee: {{ mois.année|e('js') }},
+                                        mois: {{ mois.mois|e('js') }}
+                                    }{{ not loop.last ? ','|e('js') }}
                                 {% endfor %}
                             ]
                         },
@@ -207,7 +204,7 @@
                             <input id="batch-{{ mouvement.id }}" type="checkbox" name="batch[]" value="{{ mouvement.id }}">
                         </td>
                         <td>{{ mouvement.date|date('d-m-Y') }}</td>
-                        <td>{{ mouvement.montant|formater_montant }}</td>
+                        <td>{{ mouvement.montant }}</td>
                         <td>{{ mouvement.description }}</td>
                         <td>
                             <a href="{{ path('comptes_compte', {'compteId': mouvement.compte.id, 'date_filter[start]': mouvement.date|date('d-m-Y'), 'date_filter[end]': mouvement.date|date('d-m-Y')}) }}">
@@ -231,7 +228,7 @@
             <tfoot>
                 <tr>
                     <th>Balance</th>
-                    <td colspan="5">{{ balance_periodique|formater_balance }}</td>
+                    <td colspan="5">{{ balance_periodique }}</td>
                 </tr>
             </tfoot>
         </table>

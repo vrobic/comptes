@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Controller;
 
+use App\Domain\BalanceAnnuelle;
+use App\Domain\BalanceMensuelle;
+use App\Domain\Categorie\BalanceParCategorie;
 use App\Domain\Categorie\Categorie;
 use App\Domain\Categorie\CategorieId;
 use App\Domain\Categorie\CategorieIdCollection;
@@ -15,10 +18,12 @@ use App\Domain\Id\IdGeneratorInterface;
 use App\Domain\Keyword\Keyword;
 use App\Domain\Keyword\KeywordId;
 use App\Domain\Keyword\KeywordRepositoryInterface;
+use App\Domain\Mouvement\Balance;
 use App\Domain\Mouvement\Mouvement;
 use App\Domain\Mouvement\MouvementRepositoryInterface;
-use App\Domain\Temps\Periode;
+use App\Domain\Temps\Annee;
 use App\Domain\Temps\Depuis;
+use App\Domain\Temps\Periode;
 use App\Infrastructure\ValueResolver\PeriodeParDefautAttribute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -56,29 +61,29 @@ final class CategorieController extends AbstractController
 
         // Tous les mouvements sur la période donnée
         $mouvements = $this->mouvementRepository->findBy(
-            categoriesIds: Maybe::nothing(), // toutes catégories confondues
-            compteId: $compte instanceof Compte ? Maybe::from($compte->id) : Maybe::nothing(),
-            dateStart: Maybe::from($périodeÉtendue->début),
-            dateEnd: Maybe::from($périodeÉtendue->fin),
-            montant: Maybe::nothing(),
+            maybeCategoriesIds: Maybe::nothing(), // toutes catégories confondues
+            maybeCompteId: $compte instanceof Compte ? Maybe::from($compte->id) : Maybe::nothing(),
+            maybeDateStart: Maybe::from($périodeÉtendue->début),
+            maybeDateEnd: Maybe::from($périodeÉtendue->fin),
+            maybeMontant: Maybe::nothing(),
         );
         $mouvementsSurLaPériode = $mouvements->filtrerParPériode($période);
 
         $balancePériodique = $mouvementsSurLaPériode->balance();
-        $balancePériodiqueDesMouvementsCategorisés = 0;
-        $balanceAnnuelle = $mouvements->balanceAnnuelle($périodeÉtendue);
+        $balancePériodiqueDesMouvementsCategorisés = Balance::nulle();
+        $balanceAnnuelle = $mouvements->balanceAnnuelle($périodeÉtendue)->trierParDate();
         $balanceParCatégorie = [];
 
         /** @var Categorie $categorie */
         foreach ($categories as $categorie) {
-            $mouvementsDeLaCatégorie = $mouvements->filtrerParCatégorieId($categorie->id);
+            $mouvementsDeLaCatégorie = $mouvements->filtrerParCatégorie($categorie->id);
             $mouvementsDeLaCatégorieSurLaPériode = $mouvementsDeLaCatégorie->filtrerParPériode($période);
 
             $balancePériodiqueDeLaCatégorie = $mouvementsDeLaCatégorieSurLaPériode->balance();
-            $balanceAnnuelleDeLaCatégorie = $mouvementsDeLaCatégorie->balanceAnnuelle($périodeÉtendue);
-            $balanceMensuelleMoyenneDeLaCatégorie = $mouvementsDeLaCatégorieSurLaPériode->balanceMensuelleMoyenne($période);
+            $balanceAnnuelleDeLaCatégorie = $mouvementsDeLaCatégorie->balanceAnnuelle($périodeÉtendue)->trierParDate();
+            $balanceMensuelleMoyenneDeLaCatégorie = $mouvementsDeLaCatégorieSurLaPériode->balanceMensuelle($période)->moyenne();
 
-            $balancePériodiqueDesMouvementsCategorisés += $balancePériodiqueDeLaCatégorie;
+            $balancePériodiqueDesMouvementsCategorisés = $balancePériodiqueDesMouvementsCategorisés->additionner($balancePériodiqueDeLaCatégorie);
 
             $clés = [(string) $categorie->id];
             if ($categorie->categorieParente instanceof CategorieId) {
@@ -88,25 +93,32 @@ final class CategorieController extends AbstractController
             // Double ajout dans la catégorie et dans la catégorie parente
             foreach ($clés as $clé) {
                 $balanceParCatégorie[$clé] ??= [
-                    'periodique' => 0.,
-                    'annuelle' => [],
-                    'mensuelle_moyenne' => 0.,
+                    'periodique' => Balance::nulle(),
+                    'annuelle' => new BalanceAnnuelle(),
+                    'mensuelle_moyenne' => Balance::nulle(),
                 ];
 
-                $balanceParCatégorie[$clé]['periodique'] += $balancePériodiqueDeLaCatégorie;
+                /** @var Balance $valeur */
+                $valeur = $balanceParCatégorie[$clé]['periodique'];
+                $balanceParCatégorie[$clé]['periodique'] = $valeur->additionner($balancePériodiqueDeLaCatégorie);
+
+                /**
+                 * @var Annee   $année
+                 * @var Balance $balance
+                 */
                 foreach ($balanceAnnuelleDeLaCatégorie as $année => $balance) {
-                    $balanceParCatégorie[$clé]['annuelle'][$année] = ($balanceParCatégorie[$clé]['annuelle'][$année] ?? 0.) + $balance;
+                    /** @var BalanceAnnuelle $valeur */
+                    $valeur = $balanceParCatégorie[$clé]['annuelle'];
+                    $balanceParCatégorie[$clé]['annuelle'] = $valeur->ajouter($année, $balance);
                 }
-                $balanceParCatégorie[$clé]['mensuelle_moyenne'] += $balanceMensuelleMoyenneDeLaCatégorie;
+
+                /** @var Balance $valeur */
+                $valeur = $balanceParCatégorie[$clé]['mensuelle_moyenne'];
+                $balanceParCatégorie[$clé]['mensuelle_moyenne'] = $valeur->additionner($balanceMensuelleMoyenneDeLaCatégorie);
             }
         }
 
-        // Tri pour le graphique sparkline
-        foreach ($balanceParCatégorie as &$data) {
-            ksort($data['annuelle']);
-        }
-
-        $balancePériodiqueDesMouvementsNonCatégorisés = $balancePériodique - $balancePériodiqueDesMouvementsCategorisés;
+        $balancePériodiqueDesMouvementsNonCatégorisés = $balancePériodique->soustraire($balancePériodiqueDesMouvementsCategorisés);
 
         return $this->render(
             'Categorie/index.html.twig',
@@ -148,45 +160,47 @@ final class CategorieController extends AbstractController
 
         // Tous les mouvements de la catégorie sur la période donnée
         $mouvements = $this->mouvementRepository->findBy(
-            categoriesIds: Maybe::from($catégoriesFillesIds),
-            compteId: $compte instanceof Compte ? Maybe::from($compte->id) : Maybe::nothing(),
-            dateStart: Maybe::from($période->début),
-            dateEnd: Maybe::from($période->fin),
-            montant: Maybe::nothing(),
+            maybeCategoriesIds: Maybe::from($catégoriesFillesIds),
+            maybeCompteId: $compte instanceof Compte ? Maybe::from($compte->id) : Maybe::nothing(),
+            maybeDateStart: Maybe::from($période->début),
+            maybeDateEnd: Maybe::from($période->fin),
+            maybeMontant: Maybe::nothing(),
         );
 
         $balancePériodique = $mouvements->balance();
-        $balancePériodiqueMensuelle = [];
-        $balancePériodiqueMensuelleMoyenne = 0;
+        $balancePériodiqueMensuelle = new BalanceMensuelle();
+        $balancePériodiqueMensuelleMoyenne = Balance::nulle();
         $balancePériodiqueMensuelleContientUniquementDesDébits = true;
         $balancePériodiqueMensuelleContientUniquementDesCrédits = true;
-        $balancePéridioqueParCatégorie = [];
+        $balancePériodiqueParCatégorie = new BalanceParCategorie();
 
         if (!$mouvements->isEmpty()) {
-            $balancePériodiqueMensuelle = $mouvements->balanceMensuelle($période);
+            $balancePériodiqueMensuelle = $mouvements->balanceMensuelle($période)->trierParDate();
 
-            foreach ($balancePériodiqueMensuelle as $months) {
-                foreach ($months as $montant) {
-                    if ($montant > 0) {
-                        $balancePériodiqueMensuelleContientUniquementDesDébits = false;
-                    } elseif ($montant < 0) {
-                        $balancePériodiqueMensuelleContientUniquementDesCrédits = false;
-                    }
+            /** @var Balance $balance */
+            foreach ($balancePériodiqueMensuelle as $balance) {
+                if ($balance->estPositive()) {
+                    $balancePériodiqueMensuelleContientUniquementDesDébits = false;
+                } elseif ($balance->estNégative()) {
+                    $balancePériodiqueMensuelleContientUniquementDesCrédits = false;
                 }
             }
 
-            $balancePériodiqueMensuelleMoyenne = $mouvements->balanceMensuelleMoyenne($période);
+            $balancePériodiqueMensuelleMoyenne = $balancePériodiqueMensuelle->moyenne();
 
             if ($categorie instanceof Categorie) {
                 // La balance de la catégorie
-                $balancePéridioqueParCatégorie[(string) $categorie->id] = $balancePériodique;
+                $balancePériodiqueParCatégorie = $balancePériodiqueParCatégorie->add($categorie->id, $balancePériodique);
 
                 // La balance des catégories filles
                 /** @var CategorieId $categorieFilleId */
                 foreach ($categorie->categoriesFilles as $categorieFilleId) {
-                    $balancePéridioqueParCatégorie[(string) $categorieFilleId] = $mouvements
-                        ->filtrerParCatégorieId($categorieFilleId)
-                        ->balance();
+                    $balancePériodiqueParCatégorie = $balancePériodiqueParCatégorie->add(
+                        $categorieFilleId,
+                        $mouvements
+                            ->filtrerParCatégorie($categorieFilleId)
+                            ->balance()
+                    );
                 }
             }
         }
@@ -208,7 +222,7 @@ final class CategorieController extends AbstractController
                 'balance_periodique_mensuelle_contient_uniquement_des_debits' => $balancePériodiqueMensuelleContientUniquementDesDébits,
                 'balance_periodique_mensuelle_contient_uniquement_des_credits' => $balancePériodiqueMensuelleContientUniquementDesCrédits,
                 'balance_periodique_mensuelle_moyenne' => $balancePériodiqueMensuelleMoyenne,
-                'balance_periodique_par_categorie' => $balancePéridioqueParCatégorie,
+                'balance_periodique_par_categorie' => $balancePériodiqueParCatégorie,
             ]
         );
     }
@@ -377,11 +391,11 @@ final class CategorieController extends AbstractController
                     case 'delete': // Suppression
                         if ($categorieId instanceof CategorieId) {
                             $mouvementsDeLaCatégorie = $this->mouvementRepository->findBy(
-                                categoriesIds: Maybe::from(new CategorieIdCollection()->add($categorieId)),
-                                compteId: Maybe::nothing(),
-                                dateStart: Maybe::nothing(),
-                                dateEnd: Maybe::nothing(),
-                                montant: Maybe::nothing(),
+                                maybeCategoriesIds: Maybe::from(new CategorieIdCollection()->add($categorieId)),
+                                maybeCompteId: Maybe::nothing(),
+                                maybeDateStart: Maybe::nothing(),
+                                maybeDateEnd: Maybe::nothing(),
+                                maybeMontant: Maybe::nothing(),
                             );
 
                             if (!$mouvementsDeLaCatégorie->isEmpty()) {

@@ -12,12 +12,12 @@
             <a href="{{ path('categories_categorie', {'categorieId': categorie.id, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y'), 'compteId': compte_filter is not null ? compte_filter.id : ''}) }}">{{ categorie }}</a>
         </td>
         <td>
-            {{ balance_par_categorie[categorie.id.__toString].periodique|formater_balance }}
+            {{ balance_par_categorie[categorie.id.__toString].periodique }}
         </td>
         <td>
-            {{ balance_par_categorie[categorie.id.__toString].mensuelle_moyenne|formater_balance }}
+            {{ balance_par_categorie[categorie.id.__toString].mensuelle_moyenne }}
         </td>
-        <td data-sparkline="{% for annee, balance in balance_par_categorie[categorie.id.__toString].annuelle %}{{ categorie.id ~ '|' ~ annee|e('html') ~ '|' ~ balance|e('html') ~ (not loop.last ? ',') }}{% endfor %}"></td>
+        <td data-sparkline="{% for annee, balance in balance_par_categorie[categorie.id.__toString].annuelle %}{{ categorie.id ~ '|' ~ annee|e('html') ~ '|' ~ balance.montant|e('html') ~ (not loop.last ? ',') }}{% endfor %}"></td>
     </tr>
     {% if categorie.categoriesFilles is not empty %}
         {% set depth = depth + 1 %}
@@ -93,14 +93,14 @@
                         data: [
                             {
                                 name: "Non catégorisé",
-                                y: {{ balance_periodique_mouvements_non_categorises|abs|e('js') }},
+                                y: {{ balance_periodique_mouvements_non_categorises.montant|abs|e('js') }},
                                 url: '{{ path('categories_categorie', {'categorieId': 'aucune', 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y'), 'compteId': compte_filter is not null ? compte_filter.id : ''})|e('js') }}'
                             },
                             {% for categorie in categories %}
-                                {%  if categorie.categorieParente is null and balance_par_categorie[categorie.id.__toString].periodique < 0 %}
+                                {%  if categorie.categorieParente is null and balance_par_categorie[categorie.id.__toString].periodique.estNégative %}
                                     {
                                         name: "{{ categorie|e('js') }}",
-                                        y: {{ balance_par_categorie[categorie.id.__toString].periodique|abs|e('js') }},
+                                        y: {{ balance_par_categorie[categorie.id.__toString].periodique.montant|abs|e('js') }},
                                         url: '{{ path('categories_categorie', {'categorieId': categorie.id, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y'), 'compteId': compte_filter is not null ? compte_filter.id : ''})|e('js') }}'
                                     },
                                 {% endif %}
@@ -133,7 +133,7 @@
                     <a href="{{ path('categories_categorie', {'categorieId': 'aucune', 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y'), 'compteId': compte_filter is not null ? compte_filter.id : ''}) }}">Non catégorisé</a>
                 </td>
                 <td>
-                    {{ balance_periodique_mouvements_non_categorises|formater_balance }}
+                    {{ balance_periodique_mouvements_non_categorises }}
                 </td>
                 <td colspan="2"></td>
             </tr>
@@ -143,10 +143,10 @@
                     <small>(dont non catégorisé)</small>
                 </td>
                 <td>
-                    {{ balance_periodique|formater_balance }}
+                    {{ balance_periodique }}
                 </td>
                 <td></td>
-                <td data-sparkline="{% for annee, balance in balance_annuelle %}{{ '' ~ '|' ~ annee|e('html') ~ '|' ~ balance|e('html') ~ (not loop.last ? ',') }}{% endfor %}"></td>
+                <td data-sparkline="{% for annee, balance in balance_annuelle %}{{ '' ~ '|' ~ annee|e('html') ~ '|' ~ balance.montant|e('html') ~ (not loop.last ? ',') }}{% endfor %}"></td>
             </tr>
             {% for categorie in categories %}
                 {% if categorie.categorieParente is null %}

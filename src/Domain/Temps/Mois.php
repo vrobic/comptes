@@ -15,16 +15,38 @@ final readonly class Mois
         }
     }
 
+    public static function fromDate(\DateTimeImmutable $date): self
+    {
+        return new self(
+            (int) $date->format('Y'),
+            (int) $date->format('m')
+        );
+    }
+
     public function __toString(): string
     {
         return sprintf(
             '%s %s',
             $this->nom(),
-            str_pad((string) $this->année, 4, '0', STR_PAD_LEFT),
+            $this->année,
         );
     }
 
-    public function nom(): string
+    public function début(): \DateTimeImmutable
+    {
+        return new \DateTimeImmutable()
+            ->setDate($this->année, $this->mois, 1)
+            ->setTime(0, 0, 0, 0);
+    }
+
+    public function fin(): \DateTimeImmutable
+    {
+        return $this->début()
+            ->modify('last day of this month')
+            ->setTime(23, 59, 59, 999999);
+    }
+
+    private function nom(): string
     {
         return match ($this->mois) {
             1 => 'janvier',
@@ -41,27 +63,5 @@ final readonly class Mois
             12 => 'décembre',
             default => throw new \RuntimeException(),
         };
-    }
-
-    public static function fromDate(\DateTimeImmutable $date): self
-    {
-        return new self(
-            (int) $date->format('Y'),
-            (int) $date->format('m')
-        );
-    }
-
-    public function début(): \DateTimeImmutable
-    {
-        return new \DateTimeImmutable()
-            ->setDate($this->année, $this->mois, 1)
-            ->setTime(0, 0, 0, 0);
-    }
-
-    public function fin(): \DateTimeImmutable
-    {
-        return $this->début()
-            ->modify('last day of this month')
-            ->setTime(23, 59, 59, 999999);
     }
 }

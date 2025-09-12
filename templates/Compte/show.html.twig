@@ -33,7 +33,7 @@
                 <dt>Numéro</dt>
                     <dd>{{ compte.numero }}</dd>
                 <dt>Plafond</dt>
-                    <dd>{{ compte.plafond is not null ? compte.plafond|formater_montant : "néant" }}</dd>
+                    <dd>{{ compte.plafond is not null ? compte.plafond : "néant" }}</dd>
                 <dt>Date d'ouverture</dt>
                     <dd>{{ compte.dateOuverture|date('d-m-Y') }}</dd>
                 {% if compte.dateFermeture is not null %}
@@ -90,11 +90,11 @@
                         data: [
                             {% set solde_periode = solde_start %}
                             {% for key, mouvement in mouvements %}
-                                {% set solde_periode = solde_periode + mouvement.montant %}
+                                {% set solde_periode = solde_periode.additionner(mouvement.montant.montant|solde) %}
                                 {% if (mouvements[key+1] is not defined) or (mouvements[key+1] is defined and mouvements[key+1].date != mouvement.date) %}
                                     [
                                         Date.UTC({{ mouvement.date|date('Y')|e('js') }}, {{ (mouvement.date|date('m')-1)|e('js') }}, {{ mouvement.date|date('d')|e('js') }}),
-                                        {{ solde_periode|e('js') }}
+                                        {{ solde_periode.montant|e('js') }}
                                     ],
                                 {% endif %}
                             {% endfor %}
@@ -126,7 +126,7 @@
             <tbody>
                 {% set solde_periode = solde_start %}
                 {% for mouvement in mouvements %}
-                    {% set solde_periode = solde_periode + mouvement.montant %}
+                    {% set solde_periode = solde_periode.additionner(mouvement.montant.montant|solde) %}
                     <tr>
                         <td>
                             <label for="batch-{{ mouvement.id }}" class="sr-only">Éditer</label>
@@ -138,10 +138,10 @@
                         </td>
                         <td class="input-text">
                             <label for="montant-{{ mouvement.id }}" class="sr-only">Montant <small>(en €)</small></label>
-                            <input id="montant-{{ mouvement.id }}" type="text" name="mouvements[{{ mouvement.id }}][montant]" value="{{ mouvement.montant|number_format(2, ".", "") }}" placeholder="0.00">
+                            <input id="montant-{{ mouvement.id }}" type="text" name="mouvements[{{ mouvement.id }}][montant]" value="{{ mouvement.montant.montant|number_format(2, ".", "") }}" placeholder="0.00">
                         </td>
                         <td>
-                            {{ solde_periode|formater_solde }}
+                            {{ solde_periode }}
                         </td>
                         <td class="input-text">
                             <label for="description-{{ mouvement.id }}" class="sr-only">Description</label>
@@ -202,11 +202,11 @@
             <tfoot>
                 <tr>
                     <th colspan="3">Solde actuel</th>
-                    <td colspan="3">{{ compte.solde|formater_solde }}</td>
+                    <td colspan="3">{{ compte.solde }}</td>
                 </tr>
                 <tr>
                     <th colspan="2">Balance</th>
-                    <td colspan="4">{{ balance|formater_balance }}</td>
+                    <td colspan="4">{{ balance }}</td>
                 </tr>
             </tfoot>
         </table>

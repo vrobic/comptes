@@ -6,6 +6,7 @@ namespace App\Application\Import;
 
 use App\Domain\Compte\Compte;
 use App\Domain\Compte\CompteId;
+use App\Domain\Mouvement\Montant;
 use App\Domain\Mouvement\Mouvement;
 use App\Domain\Mouvement\MouvementId;
 
@@ -96,7 +97,7 @@ class CMCSVMouvementsImportHandler extends AbstractMouvementsImportHandler
             $montant = '' !== $row['debit'] ? $row['debit'] : $row['credit'];
             $montant = str_replace(',', '.', $montant);
             $montant = sprintf('%0.2f', $montant);
-            $montant = (float) $montant;
+            $montant = new Montant((float) $montant);
 
             $mouvement = new Mouvement(
                 new MouvementId((string) $this->idGenerator->générer()),

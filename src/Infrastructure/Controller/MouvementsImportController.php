@@ -12,6 +12,7 @@ use App\Domain\Categorie\Classification;
 use App\Domain\Compte\Compte;
 use App\Domain\Compte\CompteId;
 use App\Domain\Compte\CompteRepositoryInterface;
+use App\Domain\Mouvement\Montant;
 use App\Domain\Mouvement\Mouvement;
 use App\Domain\Mouvement\MouvementRepositoryInterface;
 use App\Domain\Mouvement\MouvementsParHash;
@@ -231,7 +232,7 @@ class MouvementsImportController extends AbstractController
 
                     // Modification éventuelle du montant
                     if (isset($mouvementsData[$hash]['montant'])) {
-                        $montant = (float) $mouvementsData[$hash]['montant'];
+                        $montant = new Montant((float) $mouvementsData[$hash]['montant']);
                         $mouvement->montant = $montant;
                     }
 

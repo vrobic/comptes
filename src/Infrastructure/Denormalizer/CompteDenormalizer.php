@@ -6,6 +6,8 @@ namespace App\Infrastructure\Denormalizer;
 
 use App\Domain\Compte\Compte;
 use App\Domain\Compte\CompteId;
+use App\Domain\Compte\Plafond;
+use App\Domain\Compte\Solde;
 
 final readonly class CompteDenormalizer implements Denormalizer
 {
@@ -29,9 +31,9 @@ final readonly class CompteDenormalizer implements Denormalizer
             (string) $data['nom'],
             (string) $data['numero'],
             (string) $data['banque'],
-            is_int($data['plafond']) ? $data['plafond'] : null,
-            (float) $data['solde_initial'],
-            (float) $data['solde'],
+            is_int($data['plafond']) ? new Plafond((float) $data['plafond']) : null,
+            new Solde((float) $data['solde_initial']),
+            new Solde((float) $data['solde']),
             $dateOuverture,
             $dateFermeture,
             is_int($data['rang']) ? $data['rang'] : null,

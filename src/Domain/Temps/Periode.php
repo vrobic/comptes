@@ -15,15 +15,31 @@ final readonly class Periode
         }
     }
 
-    /** @return int[] */
-    public function années(): array
+    public function étendre(self $période): self
     {
-        $années = [];
+        $dates = [
+            $this->début,
+            $this->fin,
+            $période->début,
+            $période->fin,
+        ];
 
-        $i = $this->début->modify('first day of this year');
+        return new self(min($dates), max($dates));
+    }
+
+    public function années(): AnneeCollection
+    {
+        $années = new AnneeCollection();
+
+        // Premier jour de l'année de début
+        $i = $this->début->setDate(
+            (int) $this->début->format('Y'),
+            1,
+            1
+        );
 
         while ($i <= $this->fin) {
-            $années[] = (int) $i->format('Y');
+            $années = $années->add(Annee::fromDate($i));
 
             $i = $i->modify('+1 year');
         }
@@ -31,22 +47,23 @@ final readonly class Periode
         return $années;
     }
 
-    /** @return array<int, int[]> */
-    public function mois(): array
+    public function mois(): MoisCollection
     {
-        $moisParAnnée = [];
+        $mois = new MoisCollection();
 
-        $i = $this->début->modify('first day of this month');
+        // Premier jour du mois de début
+        $i = $this->début->setDate(
+            (int) $this->début->format('Y'),
+            (int) $this->début->format('n'),
+            1,
+        );
 
         while ($i <= $this->fin) {
-            $année = (int) $i->format('Y');
-            $mois = (int) $i->format('m');
-
-            $moisParAnnée[$année][] = $mois;
+            $mois = $mois->add(Mois::fromDate($i));
 
             $i = $i->modify('+1 month');
         }
 
-        return $moisParAnnée;
+        return $mois;
     }
 }

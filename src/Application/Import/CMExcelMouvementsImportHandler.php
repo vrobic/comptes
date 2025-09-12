@@ -6,6 +6,7 @@ namespace App\Application\Import;
 
 use App\Domain\Compte\Compte;
 use App\Domain\Compte\CompteId;
+use App\Domain\Mouvement\Montant;
 use App\Domain\Mouvement\Mouvement;
 use App\Domain\Mouvement\MouvementId;
 use Shuchkin\SimpleXLSX;
@@ -87,7 +88,7 @@ class CMExcelMouvementsImportHandler extends AbstractMouvementsImportHandler
                 // Montant
                 $montant = '' !== $debit ? $debit : $credit;
                 $montant = sprintf('%0.2f', $montant);
-                $montant = (float) $montant;
+                $montant = new Montant((float) $montant);
 
                 $mouvement = new Mouvement(
                     new MouvementId((string) $this->idGenerator->générer()),

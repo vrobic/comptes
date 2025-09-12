@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace App\Domain\Mouvement;
 
+use App\Domain\BalanceAnnuelle;
+use App\Domain\BalanceMensuelle;
 use App\Domain\Categorie\CategorieId;
 use App\Domain\DataStructure\Set;
+use App\Domain\Temps\Annee;
+use App\Domain\Temps\Mois;
 use App\Domain\Temps\Periode;
 
 final class MouvementCollection extends Set
@@ -21,6 +25,13 @@ final class MouvementCollection extends Set
         return (string) $value->id;
     }
 
+    public function trierParDate(): self
+    {
+        return $this->sort(
+            static fn (Mouvement $mouvement1, Mouvement $mouvement2): int => $mouvement1->date <=> $mouvement2->date
+        );
+    }
+
     public function filtrerParPériode(Periode $période): self
     {
         return $this->filter(
@@ -28,102 +39,91 @@ final class MouvementCollection extends Set
         );
     }
 
-    public function filtrerParCatégorieId(CategorieId $catégorieId): self
+    public function filtrerParCatégorie(CategorieId $catégorieId): self
     {
         return $this->filter(
             static fn (Mouvement $mouvement): bool => true === $mouvement->categorie?->id->estÉgalÀ($catégorieId)
         );
     }
 
-    /**
-     * Calcule la balance (débit/crédit) de la liste de mouvements.
-     */
-    public function balance(): float
+    public function getPériode(): Periode
+    {
+        if ($this->isEmpty()) {
+            throw new \LogicException('Impossible de calculer une période sur une collection vide.');
+        }
+
+        $set = $this->trierParDate();
+
+        /** @var Mouvement $premierMouvement */
+        $premierMouvement = $set->first();
+
+        /** @var Mouvement $dernierMouvement */
+        $dernierMouvement = $set->last();
+
+        return new Periode($premierMouvement->date, $dernierMouvement->date);
+    }
+
+    public function balance(): Balance
     {
         return $this->reduce(
-            static fn (float $balance, Mouvement $mouvement): float => $balance + $mouvement->montant,
-            0.
+            static fn (Balance $balance, Mouvement $mouvement): Balance => $balance->additionner(
+                new Balance($mouvement->montant->montant)
+            ),
+            Balance::nulle()
         );
     }
 
-    /**
-     * @return array<int, float> la balance des mouvements pour chaque année
-     */
-    public function balanceAnnuelle(Periode $période): array
+    public function balanceAnnuelle(Periode $période): BalanceAnnuelle
     {
-        $balanceAnnuelle = [];
+        $balanceAnnuelle = new BalanceAnnuelle();
 
         if ($this->isEmpty()) {
             return $balanceAnnuelle;
         }
 
-        // Initialise tous les mois de la période à zéro
-        foreach ($période->années() as $année) {
-            $balanceAnnuelle[$année] = 0.;
+        /**
+         * Initialise toutes les années de la période à zéro.
+         *
+         * @var Annee $année
+         */
+        foreach ($this->getPériode()->étendre($période)->années() as $année) {
+            $balanceAnnuelle = $balanceAnnuelle->ajouter($année, Balance::nulle());
         }
 
         /** @var Mouvement $mouvement */
         foreach ($this as $mouvement) {
-            $année = (int) $mouvement->date->format('Y');
+            $année = Annee::fromDate($mouvement->date);
 
-            $balanceAnnuelle[$année] = ($balanceAnnuelle[$année] ?? 0.) + $mouvement->montant;
+            $balanceAnnuelle = $balanceAnnuelle->ajouter($année, new Balance($mouvement->montant->montant));
         }
-
-        /* Le tableau était initialement trié mais la boucle ci-dessus peut avoir mis le bazar.
-         * Trier ici est plus performant que de boucler sur une collection déjà triée. */
-        ksort($balanceAnnuelle);
 
         return $balanceAnnuelle;
     }
 
-    /**
-     * @return array<int, array<int, float>> la balance des mouvements pour chaque mois de chaque année
-     */
-    public function balanceMensuelle(Periode $période): array
+    public function balanceMensuelle(Periode $période): BalanceMensuelle
     {
-        $balanceMensuelle = [];
+        $balanceMensuelle = new BalanceMensuelle();
 
         if ($this->isEmpty()) {
             return $balanceMensuelle;
         }
 
-        // Initialise tous les mois de la période à zéro
-        foreach ($période->mois() as $année => $m) {
-            foreach ($m as $mois) {
-                $balanceMensuelle[$année][$mois] = 0.;
-            }
+        /**
+         * Initialise tous les mois de la période à zéro.
+         *
+         * @var Mois $mois
+         */
+        foreach ($this->getPériode()->étendre($période)->mois() as $mois) {
+            $balanceMensuelle = $balanceMensuelle->ajouter($mois, Balance::nulle());
         }
 
         /** @var Mouvement $mouvement */
         foreach ($this as $mouvement) {
-            $année = (int) $mouvement->date->format('Y');
-            $mois = (int) $mouvement->date->format('m');
+            $mois = Mois::fromDate($mouvement->date);
 
-            $balanceMensuelle[$année][$mois] = ($balanceMensuelle[$année][$mois] ?? 0.) + $mouvement->montant;
+            $balanceMensuelle = $balanceMensuelle->ajouter($mois, new Balance($mouvement->montant->montant));
         }
-
-        /* Le tableau était initialement trié mais la boucle ci-dessus peut avoir mis le bazar.
-         * Trier ici est plus performant que de boucler sur une collection déjà triée. */
-        foreach ($balanceMensuelle as &$mois) {
-            ksort($mois);
-        }
-        ksort($balanceMensuelle);
 
         return $balanceMensuelle;
-    }
-
-    public function balanceMensuelleMoyenne(Periode $période): float
-    {
-        $balanceTotale = 0.;
-        $nombreDeMois = 0;
-
-        foreach ($this->balanceMensuelle($période) as $months) {
-            foreach ($months as $balanceMensuelle) {
-                $balanceTotale += $balanceMensuelle;
-                ++$nombreDeMois;
-            }
-        }
-
-        return $nombreDeMois > 0 ? $balanceTotale / $nombreDeMois : 0.;
     }
 }

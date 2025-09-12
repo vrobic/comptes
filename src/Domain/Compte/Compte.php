@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domain\Compte;
 
-use App\Domain\Mouvement\Mouvement;
-
 /**
  * Compte bancaire.
  */
@@ -16,14 +14,14 @@ final class Compte
         public string $nom,
         public string $numero,
         public string $banque,
-        public ?int $plafond, // en euros
-        public float $soldeInitial, // solde initial en euros, avant le premier mouvement rentré dans l'application
-        public readonly float $solde, // solde en euros (cumul de tous les mouvements)
+        public ?Plafond $plafond,
+        public Solde $soldeInitial, // solde initial, avant le premier mouvement rentré dans l'application
+        public readonly Solde $solde,
         public \DateTimeImmutable $dateOuverture,
         public ?\DateTimeImmutable $dateFermeture,
         public ?int $rang, // rang d'affichage
     ) {
-        if (is_int($this->plafond) && $this->plafond <= 0) {
+        if ($this->plafond instanceof Plafond && !$this->plafond->estPositif()) {
             throw new \DomainException("Le plafond d'un compte bancaire doit être positif.");
         }
 

@@ -66,7 +66,7 @@
                     </td>
                     <td class="input-text">
                         <label for="montant-{{ mouvement.hash }}" class="sr-only">Montant <small>(en €)</small></label>
-                        <input id="montant-{{ mouvement.hash }}" type="text" name="mouvements[{{ mouvement.hash }}][montant]" value="{{ mouvement.montant|number_format(2, ".", "") }}" placeholder="0.00">
+                        <input id="montant-{{ mouvement.hash }}" type="text" name="mouvements[{{ mouvement.hash }}][montant]" value="{{ mouvement.montant.montant|number_format(2, ".", "") }}" placeholder="0.00">
                     </td>
                     <td class="input-text">
                         <label for="description-{{ mouvement.hash }}" class="sr-only">Description</label>

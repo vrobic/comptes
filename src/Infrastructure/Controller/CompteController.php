@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Controller;
 
+use App\Domain\BalanceMensuelle;
 use App\Domain\Categorie\CategorieRepositoryInterface;
 use App\Domain\Compte\Compte;
 use App\Domain\Compte\CompteRepositoryInterface;
+use App\Domain\Compte\Solde;
 use App\Domain\DataStructure\Maybe;
 use App\Domain\Mouvement\Mouvement;
 use App\Domain\Mouvement\MouvementRepositoryInterface;
+use App\Domain\Temps\Depuis;
 use App\Domain\Temps\Mois;
 use App\Domain\Temps\Periode;
-use App\Domain\Temps\Depuis;
 use App\Infrastructure\ValueResolver\PeriodeParDefautAttribute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -47,23 +49,17 @@ final class CompteController extends AbstractController
         $balance = $mouvements->balance();
 
         // Balance des derniers mois
-        $balanceDesDerniersMois = [];
+        $balanceDesDerniersMois = new BalanceMensuelle();
         foreach (range(1, 4) as $nombreMois) {
             $mois = Mois::fromDate(new \DateTimeImmutable("$nombreMois months ago"));
 
-            $balanceDesDerniersMois[(string) $mois] = $mouvements
-                ->filtrerParPériode(new Periode($mois->début(), $mois->fin()))
-                ->balance();
+            $balanceDesDerniersMois = $balanceDesDerniersMois->add(
+                $mois,
+                $mouvements
+                    ->filtrerParPériode(new Periode($mois->début(), $mois->fin()))
+                    ->balance()
+            );
         }
-
-        $balanceMoyenneDesDerniersMois = array_sum($balanceDesDerniersMois) / count($balanceDesDerniersMois);
-        $balanceDesMoisPositifs = array_filter(
-            $balanceDesDerniersMois,
-            static fn (float $balance): bool => $balance > 0
-        );
-        $balanceMoyenneDesMoisPositifs = count($balanceDesMoisPositifs) > 0 ?
-            array_sum($balanceDesMoisPositifs) / count($balanceDesMoisPositifs) :
-            null;
 
         return $this->render(
             'Compte/index.html.twig',
@@ -76,8 +72,8 @@ final class CompteController extends AbstractController
                 'last_mouvement' => $lastMouvement,
                 'balance' => $balance,
                 'balance_des_derniers_mois' => $balanceDesDerniersMois,
-                'balance_moyenne_des_derniers_mois' => $balanceMoyenneDesDerniersMois,
-                'balance_moyenne_des_mois_positifs' => $balanceMoyenneDesMoisPositifs,
+                'balance_moyenne_des_derniers_mois' => $balanceDesDerniersMois->moyenne(),
+                'balance_moyenne_des_mois_positifs' => $balanceDesDerniersMois->moyenneDesMoisPositifs(),
             ]
         );
     }
@@ -96,11 +92,11 @@ final class CompteController extends AbstractController
 
         // Tous les mouvements de la période
         $mouvements = $this->mouvementRepository->findBy(
-            categoriesIds: Maybe::nothing(),
-            compteId: Maybe::from($compte->id),
-            dateStart: Maybe::from($période->début),
-            dateEnd: Maybe::from($période->fin),
-            montant: Maybe::nothing(),
+            maybeCategoriesIds: Maybe::nothing(),
+            maybeCompteId: Maybe::from($compte->id),
+            maybeDateStart: Maybe::from($période->début),
+            maybeDateEnd: Maybe::from($période->fin),
+            maybeMontant: Maybe::nothing(),
         );
 
         // Toutes les catégories de mouvements
@@ -113,7 +109,7 @@ final class CompteController extends AbstractController
             $firstMouvementDate = $firstMouvement->date;
             $soldeStart = $this->compteRepository->getSoldeÀDate($compte->id, $firstMouvementDate);
         } else {
-            $soldeStart = 0.;
+            $soldeStart = Solde::nul();
         }
 
         // Balance des mouvements

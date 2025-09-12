@@ -74,7 +74,7 @@
                         data: [
                             {% for compte in comptes %}
                                 {
-                                    y: {{ compte.solde|e('js') }},
+                                    y: {{ compte.solde.montant|e('js') }},
                                     url: "{{ path('comptes_compte', {'compteId': compte.id})|e('js') }}"
                                 },
                             {% endfor %}
@@ -99,7 +99,7 @@
                         text: "Balance des derniers mois"
                     },
                     subtitle: {
-                        text: "Moyenne mensuelle : {{ balance_moyenne_des_derniers_mois|formater_balance }}{% if balance_moyenne_des_mois_positifs is not null %} ({{ balance_moyenne_des_mois_positifs|formater_balance }} pour les mois positifs){% endif %}"
+                        text: "Moyenne mensuelle : {{ balance_moyenne_des_derniers_mois }}{% if balance_moyenne_des_mois_positifs is not null %} ({{ balance_moyenne_des_mois_positifs }} pour les mois positifs){% endif %}"
                     },
                     xAxis: {
                         categories: [
@@ -143,7 +143,7 @@
                         data: [
                             {% for mois, balance in balance_des_derniers_mois %}
                                 {
-                                    y: {{ balance|e('js') }}
+                                    y: {{ balance.montant|e('js') }}
                                 },
                             {% endfor %}
                         ],
@@ -177,7 +177,7 @@
                         text: "Solde cumulé"
                     },
                     subtitle: {
-                        text: "{{ balance|formater_balance }}"
+                        text: "{{ balance }}"
                     },
                     xAxis: {
                         type: 'datetime'
@@ -199,13 +199,13 @@
                     series: [{
                         name: "Solde cumulé",
                         data: [
-                            {% set solde_total = 0 %}
+                            {% set solde_total = 0|solde %}
                             {% for key, mouvement in mouvements %}
-                                {% set solde_total = solde_total + mouvement.montant %}
+                                {% set solde_total = solde_total.additionner(mouvement.montant.montant|solde) %}
                                 {% if (first_mouvement.date <= mouvement.date and mouvement.date <= last_mouvement.date) and ((mouvements[key+1] is not defined) or (mouvements[key+1] is defined and mouvements[key+1].date != mouvement.date)) %}
                                     [
                                         Date.UTC({{ mouvement.date|date('Y')|e('js') }}, {{ (mouvement.date|date('m')-1)|e('js') }}, {{ mouvement.date|date('d')|e('js') }}),
-                                        {{ solde_total|e('js') }}
+                                        {{ solde_total.montant|e('js') }}
                                     ],
                                 {% endif %}
                             {% endfor %}

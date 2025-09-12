@@ -11,6 +11,7 @@ use App\Domain\Compte\Compte;
 use App\Domain\Compte\CompteId;
 use App\Domain\Compte\CompteRepositoryInterface;
 use App\Domain\Id\IdGeneratorInterface;
+use App\Domain\Mouvement\Montant;
 use App\Domain\Mouvement\Mouvement;
 use App\Domain\Mouvement\MouvementId;
 use App\Domain\Mouvement\MouvementRepositoryInterface;
@@ -90,7 +91,7 @@ final class MouvementController extends AbstractController
 
                         // Montant
                         if (isset($mouvementArray['montant'])) {
-                            $montant = (float) str_replace(',', '.', $mouvementArray['montant']);
+                            $montant = new Montant((float) str_replace(',', '.', $mouvementArray['montant']));
                         }
 
                         // Description

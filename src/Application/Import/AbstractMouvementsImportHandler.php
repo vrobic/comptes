@@ -94,11 +94,11 @@ abstract class AbstractMouvementsImportHandler implements MouvementsImportHandle
 
         // Recherche d'un éventuel doublon
         $similarMouvements = $this->mouvementRepository->findBy(
-            categoriesIds: Maybe::nothing(),
-            compteId: Maybe::from($mouvement->compte->id),
-            dateStart: Maybe::from($mouvement->date),
-            dateEnd: Maybe::from($mouvement->date),
-            montant: Maybe::from($mouvement->montant),
+            maybeCategoriesIds: Maybe::nothing(),
+            maybeCompteId: Maybe::from($mouvement->compte->id),
+            maybeDateStart: Maybe::from($mouvement->date),
+            maybeDateEnd: Maybe::from($mouvement->date),
+            maybeMontant: Maybe::from($mouvement->montant),
         );
 
         if (!$similarMouvements->isEmpty()) {

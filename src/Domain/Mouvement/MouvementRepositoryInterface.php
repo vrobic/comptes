@@ -15,18 +15,18 @@ interface MouvementRepositoryInterface
     public function findAll(): MouvementCollection;
 
     /**
-     * @param Maybe<CategorieIdCollection|null> $categoriesIds
-     * @param Maybe<CompteId>                   $compteId
-     * @param Maybe<\DateTimeImmutable>         $dateStart     Date de début, incluse
-     * @param Maybe<\DateTimeImmutable>         $dateEnd       Date de fin, incluse
-     * @param Maybe<float>                      $montant
+     * @param Maybe<CategorieIdCollection|null> $maybeCategoriesIds
+     * @param Maybe<CompteId>                   $maybeCompteId
+     * @param Maybe<\DateTimeImmutable>         $maybeDateStart     Date de début, incluse
+     * @param Maybe<\DateTimeImmutable>         $maybeDateEnd       Date de fin, incluse
+     * @param Maybe<Montant>                    $maybeMontant
      */
     public function findBy(
-        Maybe $categoriesIds,
-        Maybe $compteId,
-        Maybe $dateStart,
-        Maybe $dateEnd,
-        Maybe $montant,
+        Maybe $maybeCategoriesIds,
+        Maybe $maybeCompteId,
+        Maybe $maybeDateStart,
+        Maybe $maybeDateEnd,
+        Maybe $maybeMontant,
     ): MouvementCollection;
 
     /**

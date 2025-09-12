@@ -17,22 +17,19 @@ class Mouvement
         public \DateTimeImmutable $date,
         public ?Categorie $categorie,
         public Compte $compte,
-        public float $montant, // montant en euros, positif (crédit) ou négatif (débit)
+        public Montant $montant,
         public string $description,
     ) {
     }
 
-    /**
-     * Méthode toString.
-     */
     public function __toString(): string
     {
         $compte = $this->compte;
         $date = $this->date->format('d-m-Y');
         $description = $this->description;
-        $montant = number_format($this->montant, 2, ',', ' ');
+        $montant = $this->montant;
 
-        return "$compte $date {$montant} € $description";
+        return "$compte $date $montant € $description";
     }
 
     /**
