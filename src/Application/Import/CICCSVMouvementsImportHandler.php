@@ -11,10 +11,10 @@ namespace App\Application\Import;
  */
 class CICCSVMouvementsImportHandler extends CMCSVMouvementsImportHandler
 {
-    private const string HANDLER_ID = 'cic.csv';
+    protected const string HANDLER_ID = 'cic.csv';
 
     public function supports(string $handlerId): bool
     {
-        return self::HANDLER_ID === $handlerId;
+        return static::HANDLER_ID === $handlerId;
     }
 }

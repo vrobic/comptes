@@ -15,11 +15,11 @@ use App\Domain\Mouvement\MouvementId;
  */
 class CaisseEpargneCSVMouvementsImportHandler extends AbstractMouvementsImportHandler
 {
-    private const string HANDLER_ID = 'caissedepargne.csv';
+    protected const string HANDLER_ID = 'caissedepargne.csv';
 
     public function supports(string $handlerId): bool
     {
-        return self::HANDLER_ID === $handlerId;
+        return static::HANDLER_ID === $handlerId;
     }
 
     /**
@@ -28,7 +28,7 @@ class CaisseEpargneCSVMouvementsImportHandler extends AbstractMouvementsImportHa
     public function parse(\SplFileObject $file): void
     {
         // Configuration du handler
-        $configuration = $this->configuration[self::HANDLER_ID]['config'];
+        $configuration = $this->configuration[static::HANDLER_ID]['config'];
 
         if (!CompteId::estValide($configuration['compte'])) {
             throw new \RuntimeException(); // @todo

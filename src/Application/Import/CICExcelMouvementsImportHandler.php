@@ -11,10 +11,10 @@ namespace App\Application\Import;
  */
 class CICExcelMouvementsImportHandler extends CMExcelMouvementsImportHandler
 {
-    private const string HANDLER_ID = 'cic.excel';
+    protected const string HANDLER_ID = 'cic.excel';
 
     public function supports(string $handlerId): bool
     {
-        return self::HANDLER_ID === $handlerId;
+        return static::HANDLER_ID === $handlerId;
     }
 }
