@@ -11,7 +11,7 @@ import:
                 # Description de la source. HTML autorisé.
                 description: |-
                     Import multicompte.
-                    Feuille 2 : LDD, feuille 3 : livret A, feuille 4 : compte courant.
+                    Feuille 2 : compte courant.
                 # L'extension du fichier attendu par le handler d'import
                 extension: xlsx
                 # Autres paramètres propres à ce handler
@@ -21,9 +21,7 @@ import:
                     # et les identifiants des comptes bancaires correspondants.
                     # La numérotation des feuilles commence à zéro.
                     sheets:
-                        2: f1c41ed8-5a95-11f0-9189-6ee01aa22bdc
-                        3: f1c41c53-5a95-11f0-9189-6ee01aa22bdc
-                        4: f1c41947-5a95-11f0-9189-6ee01aa22bdc
+                        2: f1c41947-5a95-11f0-9189-6ee01aa22bdc
             # Identifiant du service d'import, ici "comptes.import.mouvements.cic.csv".
             cic.csv:
                 # Nom de la source
@@ -56,9 +54,8 @@ import:
                     # et les identifiants des comptes bancaires correspondants.
                     # La numérotation des feuilles commence à zéro.
                     sheets:
-                        2: f1c41ed8-5a95-11f0-9189-6ee01aa22bdc
-                        3: f1c41c53-5a95-11f0-9189-6ee01aa22bdc
-                        4: f1c41947-5a95-11f0-9189-6ee01aa22bdc
+                        1: 20520515-38a5-471c-af44-76fe77ab6e13
+                        2: e25b85a2-8bbc-460f-bcd9-00c8cdabb49b
             # Identifiant du service d'import, ici "comptes.import.mouvements.cm.csv".
             cm.csv:
                 # Nom de la source
