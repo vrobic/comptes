@@ -295,7 +295,7 @@ final class CategorieController extends AbstractController
                                 $categorie->nom = $nom;
                             }
                             if (array_key_exists('categorieParente', $variablesDéfinies)) {
-                                $categorie->categorieParente = $categorieParente->id;
+                                $categorie->categorieParente = $categorieParente?->id;
                             }
                             if (array_key_exists('rang', $variablesDéfinies)) {
                                 $categorie->rang = $rang;
