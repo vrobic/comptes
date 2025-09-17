@@ -6,7 +6,7 @@ namespace App\Domain\Categorie;
 
 interface CategorieRepositoryInterface
 {
-    public function findAll(): CategorieParCategorieIdMap;
+    public function findAll(): CategorieCollection;
 
     public function find(CategorieId $categorieId): ?Categorie;
 

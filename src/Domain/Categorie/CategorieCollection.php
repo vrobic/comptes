@@ -18,4 +18,16 @@ final class CategorieCollection extends Set
     {
         return (string) $value->id;
     }
+
+    /** @return array<string, Categorie> */
+    public function toAssociativeArray(): array
+    {
+        $array = [];
+
+        foreach ($this as $categorie) {
+            $array[(string) $categorie->id] = $categorie;
+        }
+
+        return $array;
+    }
 }

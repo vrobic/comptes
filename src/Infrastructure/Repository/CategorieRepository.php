@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Infrastructure\Repository;
 
 use App\Domain\Categorie\Categorie;
+use App\Domain\Categorie\CategorieCollection;
 use App\Domain\Categorie\CategorieId;
 use App\Domain\Categorie\CategorieIdCollection;
-use App\Domain\Categorie\CategorieParCategorieIdMap;
 use App\Domain\Categorie\CategorieRepositoryInterface;
 use App\Infrastructure\Denormalizer\CategorieDenormalizer;
 use Doctrine\DBAL\ArrayParameterType;
@@ -24,7 +24,7 @@ final readonly class CategorieRepository implements CategorieRepositoryInterface
     ) {
     }
 
-    public function findAll(): CategorieParCategorieIdMap
+    public function findAll(): CategorieCollection
     {
         $rows = $this->getBaseQueryBuilder()
             ->executeQuery()
@@ -32,11 +32,8 @@ final readonly class CategorieRepository implements CategorieRepositoryInterface
 
         return array_reduce(
             $rows,
-            fn (CategorieParCategorieIdMap $map, array $row): CategorieParCategorieIdMap => $map->add(
-                (string) $row['id'],
-                $this->categorieDenormalizer->denormalize($row)
-            ),
-            new CategorieParCategorieIdMap()
+            fn (CategorieCollection $catégories, array $row): CategorieCollection => $catégories->add($this->categorieDenormalizer->denormalize($row)),
+            new CategorieCollection()
         );
     }
 
