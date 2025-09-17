@@ -325,8 +325,8 @@ final class CategorieController extends AbstractController
                         // Mots-clés
                         if (isset($categorieArray['keywords'])) {
                             /** @var string[] $motsAvant */
-                            $motsAvant = $keywordsParCatégorieId->has((string) $categorieId) ?
-                                $keywordsParCatégorieId->get((string) $categorieId)->toArray(
+                            $motsAvant = $keywordsParCatégorieId->has($categorieId) ?
+                                $keywordsParCatégorieId->get($categorieId)->toArray(
                                     static fn (Keyword $keyword): string => $keyword->word
                                 ) :
                                 [];
@@ -402,9 +402,9 @@ final class CategorieController extends AbstractController
                                 throw new BadRequestHttpException("La catégorie $categorieId ne peut pas être supprimée car elle est utilisée par {$mouvementsDeLaCatégorie->count()} mouvements.");
                             }
 
-                            if ($keywordsParCatégorieId->has((string) $categorieId)) {
+                            if ($keywordsParCatégorieId->has($categorieId)) {
                                 $this->keywordRepository->delete(
-                                    ...$keywordsParCatégorieId->get((string) $categorieId)->toArray(
+                                    ...$keywordsParCatégorieId->get($categorieId)->toArray(
                                         static fn (Keyword $keyword): KeywordId => $keyword->id
                                     )
                                 );

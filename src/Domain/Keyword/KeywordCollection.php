@@ -21,16 +21,16 @@ final class KeywordCollection extends Set
         foreach ($this as $keyword) {
             $categorieId = $keyword->categorie->id;
 
-            if ($map->has((string) $categorieId)) {
-                $keywords = $map->get((string) $categorieId);
-                $map = $map->remove((string) $categorieId);
+            if ($map->has($categorieId)) {
+                $keywords = $map->get($categorieId);
+                $map = $map->remove($categorieId);
             } else {
                 $keywords = new KeywordCollection();
             }
 
             $keywords = $keywords->add($keyword);
 
-            $map = $map->add((string) $categorieId, $keywords);
+            $map = $map->add($categorieId, $keywords);
         }
 
         return $map;
