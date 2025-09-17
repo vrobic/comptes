@@ -9,6 +9,7 @@ use App\Domain\Compte\CompteId;
 use App\Domain\Mouvement\Montant;
 use App\Domain\Mouvement\Mouvement;
 use App\Domain\Mouvement\MouvementId;
+use App\Domain\Mouvement\MouvementsParClassification;
 
 /**
  * Implémente un handler CSV d'import de mouvements de la banque Caisse d'Épargne.
@@ -25,8 +26,10 @@ class CaisseEpargneCSVMouvementsImportHandler extends AbstractMouvementsImportHa
     /**
      * @param \SplFileObject $file Fichier CSV fourni par la Caisse d'Épargne
      */
-    public function parse(\SplFileObject $file): void
+    public function parse(\SplFileObject $file): MouvementsParClassification
     {
+        $mouvementsParClassification = new MouvementsParClassification();
+
         // Configuration du handler
         $configuration = $this->configuration[static::HANDLER_ID]['config'];
 
@@ -109,7 +112,11 @@ class CaisseEpargneCSVMouvementsImportHandler extends AbstractMouvementsImportHa
                 $row['libelle']
             );
 
-            $this->classify($mouvement);
+            $classification = $this->getClassification($mouvement);
+
+            $mouvementsParClassification = $mouvementsParClassification->ajouter($classification, $mouvement);
         }
+
+        return $mouvementsParClassification;
     }
 }

@@ -13,12 +13,5 @@ interface MouvementsImportHandlerInterface
     /**
      * Parse le fichier pour remplir le tableau classification des mouvements.
      */
-    public function parse(\SplFileObject $file): void;
-
-    /**
-     * @var MouvementsParClassification Tableau de classification des mouvements
-     */
-    public MouvementsParClassification $mouvementsParClassification {
-        get;
-    }
+    public function parse(\SplFileObject $file): MouvementsParClassification;
 }

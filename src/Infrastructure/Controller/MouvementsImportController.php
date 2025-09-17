@@ -16,7 +16,6 @@ use App\Domain\Mouvement\Montant;
 use App\Domain\Mouvement\Mouvement;
 use App\Domain\Mouvement\MouvementCollection;
 use App\Domain\Mouvement\MouvementRepositoryInterface;
-use App\Domain\Mouvement\MouvementsParClassification;
 use App\Infrastructure\Configuration\ConfigurationLoader;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -97,9 +96,7 @@ class MouvementsImportController extends AbstractController
                 /** @var MouvementsImportHandlerInterface $handler */
                 $handler = $this->getHandler($request);
                 $splFile = $this->getFile($request);
-                $handler->parse($splFile);
-
-                $mouvementsParClassification = $handler->mouvementsParClassification;
+                $mouvementsParClassification = $handler->parse($splFile);
 
                 $mouvements = $mouvementsParClassification->getMouvements();
 

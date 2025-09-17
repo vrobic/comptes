@@ -10,16 +10,11 @@ use App\Domain\Compte\CompteRepositoryInterface;
 use App\Domain\DataStructure\Maybe;
 use App\Domain\Id\IdGeneratorInterface;
 use App\Domain\Mouvement\Mouvement;
-use App\Domain\Mouvement\MouvementCollection;
 use App\Domain\Mouvement\MouvementRepositoryInterface;
-use App\Domain\Mouvement\MouvementsParClassification;
 use App\Infrastructure\Configuration\ConfigurationLoader;
 
 /**
  * Décrit un handler d'import de mouvements.
- *
- * Il doit être surchargé par une classe concrète implémentant la méthode parse.
- * Cette méthode doit parser le fichier d'entrée et remplir le tableau de classification des mouvements.
  */
 abstract class AbstractMouvementsImportHandler implements MouvementsImportHandlerInterface
 {
@@ -27,12 +22,6 @@ abstract class AbstractMouvementsImportHandler implements MouvementsImportHandle
      * Configuration des imports.
      */
     protected array $configuration;
-
-    public MouvementsParClassification $mouvementsParClassification {
-        get {
-            return $this->mouvementsParClassification;
-        }
-    }
 
     /**
      * Constructeur.
@@ -45,37 +34,12 @@ abstract class AbstractMouvementsImportHandler implements MouvementsImportHandle
         ConfigurationLoader $configurationLoader,
     ) {
         $this->configuration = $configurationLoader()['import']['handlers']['mouvements'];
-        $this->mouvementsParClassification = new MouvementsParClassification();
-    }
-
-    public function parse(\SplFileObject $file): void
-    {
-        throw new \Exception("Le handler d'import de mouvements doit implémenter la méthode parse.");
-    }
-
-    /**
-     * Insère le mouvement dans le tableau de classification.
-     */
-    protected function classify(Mouvement $mouvement): void
-    {
-        $classification = $this->getClassification($mouvement);
-
-        /** @var MouvementCollection $mouvements */
-        $mouvements = $this->mouvementsParClassification->has($classification->name) ?
-            $this->mouvementsParClassification->get($classification->name) :
-            new MouvementCollection();
-
-        $mouvements = $mouvements->add($mouvement);
-
-        $this->mouvementsParClassification = $this->mouvementsParClassification
-            ->remove($classification->name)
-            ->add($classification->name, $mouvements);
     }
 
     /**
      * Détermine la classification d'un mouvement.
      */
-    private function getClassification(Mouvement $mouvement): Classification
+    protected function getClassification(Mouvement $mouvement): Classification
     {
         // Service de catégorisation automatique des mouvements
         $categories = $this->mouvementCategorizer->getCategories($mouvement);

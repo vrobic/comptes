@@ -9,6 +9,7 @@ use App\Domain\Compte\CompteId;
 use App\Domain\Mouvement\Montant;
 use App\Domain\Mouvement\Mouvement;
 use App\Domain\Mouvement\MouvementId;
+use App\Domain\Mouvement\MouvementsParClassification;
 use Shuchkin\SimpleXLSX;
 
 /**
@@ -32,8 +33,10 @@ class CMExcelMouvementsImportHandler extends AbstractMouvementsImportHandler
     /**
      * @param \SplFileObject $file Fichier Excel fourni par le Crédit Mutuel
      */
-    public function parse(\SplFileObject $file): void
+    public function parse(\SplFileObject $file): MouvementsParClassification
     {
+        $mouvementsParClassification = new MouvementsParClassification();
+
         // Configuration du handler
         $configuration = $this->configuration[static::HANDLER_ID]['config'];
 
@@ -99,8 +102,12 @@ class CMExcelMouvementsImportHandler extends AbstractMouvementsImportHandler
                     $description
                 );
 
-                $this->classify($mouvement);
+                $classification = $this->getClassification($mouvement);
+
+                $mouvementsParClassification = $mouvementsParClassification->ajouter($classification, $mouvement);
             }
         }
+
+        return $mouvementsParClassification;
     }
 }
