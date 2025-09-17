@@ -12,30 +12,30 @@ final class MouvementsParClassification extends Map
     public function __construct()
     {
         parent::__construct(
-            'string',
+            Classification::class,
             MouvementCollection::class
         );
     }
 
-    /** @param string $key */
+    /** @param Classification $key */
     public function getUniqueKey(mixed $key): string
     {
-        return $key;
+        return $key->name;
     }
 
     public function ajouter(Classification $classification, Mouvement $mouvement): self
     {
         $map = clone $this;
 
-        if ($map->has($classification->name)) {
-            $mouvements = $map->get($classification->name);
-            $map = $map->remove($classification->name);
+        if ($map->has($classification)) {
+            $mouvements = $map->get($classification);
+            $map = $map->remove($classification);
         } else {
             $mouvements = new MouvementCollection();
         }
 
         return $map->add(
-            $classification->name,
+            $classification,
             $mouvements->add($mouvement)
         );
     }
@@ -43,7 +43,7 @@ final class MouvementsParClassification extends Map
     public function getMouvements(): MouvementCollection
     {
         return $this->reduce(
-            static fn (MouvementCollection $carry, string $classification, MouvementCollection $mouvements): MouvementCollection => $carry->add(...$mouvements),
+            static fn (MouvementCollection $carry, Classification $classification, MouvementCollection $mouvements): MouvementCollection => $carry->add(...$mouvements),
             new MouvementCollection()
         );
     }

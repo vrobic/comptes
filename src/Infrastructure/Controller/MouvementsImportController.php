@@ -101,23 +101,23 @@ class MouvementsImportController extends AbstractController
                 $mouvements = $mouvementsParClassification->getMouvements();
 
                 /** @var MouvementCollection $categorizedMouvements */
-                $categorizedMouvements = $mouvementsParClassification->has(Classification::CATEGORIZED->name) ?
-                    $mouvementsParClassification->get(Classification::CATEGORIZED->name) :
+                $categorizedMouvements = $mouvementsParClassification->has(Classification::CATEGORIZED) ?
+                    $mouvementsParClassification->get(Classification::CATEGORIZED) :
                     new MouvementCollection();
 
                 /** @var MouvementCollection $uncategorizedMouvements */
-                $uncategorizedMouvements = $mouvementsParClassification->has(Classification::UNCATEGORIZED->name) ?
-                    $mouvementsParClassification->get(Classification::UNCATEGORIZED->name) :
+                $uncategorizedMouvements = $mouvementsParClassification->has(Classification::UNCATEGORIZED) ?
+                    $mouvementsParClassification->get(Classification::UNCATEGORIZED) :
                     new MouvementCollection();
 
                 /** @var MouvementCollection $ambiguousMouvements */
-                $ambiguousMouvements = $mouvementsParClassification->has(Classification::AMBIGUOUS->name) ?
-                    $mouvementsParClassification->get(Classification::AMBIGUOUS->name) :
+                $ambiguousMouvements = $mouvementsParClassification->has(Classification::AMBIGUOUS) ?
+                    $mouvementsParClassification->get(Classification::AMBIGUOUS) :
                     new MouvementCollection();
 
                 /** @var MouvementCollection $waitingMouvements */
-                $waitingMouvements = $mouvementsParClassification->has(Classification::WAITING->name) ?
-                    $mouvementsParClassification->get(Classification::WAITING->name) :
+                $waitingMouvements = $mouvementsParClassification->has(Classification::WAITING) ?
+                    $mouvementsParClassification->get(Classification::WAITING) :
                     new MouvementCollection();
 
                 // Indique si on doit ignorer les mouvements anciens
