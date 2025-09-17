@@ -14,8 +14,9 @@ use App\Domain\Compte\CompteId;
 use App\Domain\Compte\CompteRepositoryInterface;
 use App\Domain\Mouvement\Montant;
 use App\Domain\Mouvement\Mouvement;
+use App\Domain\Mouvement\MouvementCollection;
 use App\Domain\Mouvement\MouvementRepositoryInterface;
-use App\Domain\Mouvement\MouvementsParHash;
+use App\Domain\Mouvement\MouvementsParClassification;
 use App\Infrastructure\Configuration\ConfigurationLoader;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -74,10 +75,10 @@ class MouvementsImportController extends AbstractController
     public function __invoke(Request $request): Response
     {
         // Classification des mouvements
-        $categorizedMouvements = new MouvementsParHash();
-        $uncategorizedMouvements = new MouvementsParHash();
-        $ambiguousMouvements = new MouvementsParHash();
-        $waitingMouvements = new MouvementsParHash();
+        $categorizedMouvements = new MouvementCollection();
+        $uncategorizedMouvements = new MouvementCollection();
+        $ambiguousMouvements = new MouvementCollection();
+        $waitingMouvements = new MouvementCollection();
 
         switch ($request->get('action')) {
             case null:
@@ -98,29 +99,29 @@ class MouvementsImportController extends AbstractController
                 $splFile = $this->getFile($request);
                 $handler->parse($splFile);
 
-                $mouvementsParHashParClassification = $handler->mouvementsParHashParClassification;
+                $mouvementsParClassification = $handler->mouvementsParClassification;
 
-                $mouvements = $mouvementsParHashParClassification->getMouvementsParHash();
+                $mouvements = $mouvementsParClassification->getMouvements();
 
-                /** @var MouvementsParHash $categorizedMouvements */
-                $categorizedMouvements = $mouvementsParHashParClassification->has(Classification::CATEGORIZED->name) ?
-                    $mouvementsParHashParClassification->get(Classification::CATEGORIZED->name) :
-                    new MouvementsParHash();
+                /** @var MouvementCollection $categorizedMouvements */
+                $categorizedMouvements = $mouvementsParClassification->has(Classification::CATEGORIZED->name) ?
+                    $mouvementsParClassification->get(Classification::CATEGORIZED->name) :
+                    new MouvementCollection();
 
-                /** @var MouvementsParHash $uncategorizedMouvements */
-                $uncategorizedMouvements = $mouvementsParHashParClassification->has(Classification::UNCATEGORIZED->name) ?
-                    $mouvementsParHashParClassification->get(Classification::UNCATEGORIZED->name) :
-                    new MouvementsParHash();
+                /** @var MouvementCollection $uncategorizedMouvements */
+                $uncategorizedMouvements = $mouvementsParClassification->has(Classification::UNCATEGORIZED->name) ?
+                    $mouvementsParClassification->get(Classification::UNCATEGORIZED->name) :
+                    new MouvementCollection();
 
-                /** @var MouvementsParHash $ambiguousMouvements */
-                $ambiguousMouvements = $mouvementsParHashParClassification->has(Classification::AMBIGUOUS->name) ?
-                    $mouvementsParHashParClassification->get(Classification::AMBIGUOUS->name) :
-                    new MouvementsParHash();
+                /** @var MouvementCollection $ambiguousMouvements */
+                $ambiguousMouvements = $mouvementsParClassification->has(Classification::AMBIGUOUS->name) ?
+                    $mouvementsParClassification->get(Classification::AMBIGUOUS->name) :
+                    new MouvementCollection();
 
-                /** @var MouvementsParHash $waitingMouvements */
-                $waitingMouvements = $mouvementsParHashParClassification->has(Classification::WAITING->name) ?
-                    $mouvementsParHashParClassification->get(Classification::WAITING->name) :
-                    new MouvementsParHash();
+                /** @var MouvementCollection $waitingMouvements */
+                $waitingMouvements = $mouvementsParClassification->has(Classification::WAITING->name) ?
+                    $mouvementsParClassification->get(Classification::WAITING->name) :
+                    new MouvementCollection();
 
                 // Indique si on doit ignorer les mouvements anciens
                 $skipOldOnes = $request->get('skipOldOnes', false);
@@ -128,10 +129,8 @@ class MouvementsImportController extends AbstractController
                 // Le dernier mouvement inséré
                 $latestMouvement = $this->mouvementRepository->findLatestOne();
 
-                /* Passage des mouvements en session.
-                 * Ils sont identifiés par leur hash car leur id ne sera disponible
-                 * qu'une fois qu'ils auront été persistés. */
-                foreach ($mouvements as $hash => $mouvement) {
+                // Passage des mouvements en session
+                foreach ($mouvements as $mouvement) {
                     /* Si on doit ignorer les mouvements anciens,
                      * alors on n'importe le mouvement que s'il est plus récent que le dernier présent en base. */
                     if (false !== $skipOldOnes && $latestMouvement instanceof Mouvement) {
@@ -139,11 +138,11 @@ class MouvementsImportController extends AbstractController
                         $latestMouvementDate = $latestMouvement->date;
 
                         if ($date < $latestMouvementDate) {
-                            $mouvements = $mouvements->remove($hash);
-                            $categorizedMouvements = $categorizedMouvements->remove($hash);
-                            $uncategorizedMouvements = $uncategorizedMouvements->remove($hash);
-                            $ambiguousMouvements = $ambiguousMouvements->remove($hash);
-                            $waitingMouvements = $waitingMouvements->remove($hash);
+                            $mouvements = $mouvements->remove($mouvement);
+                            $categorizedMouvements = $categorizedMouvements->remove($mouvement);
+                            $uncategorizedMouvements = $uncategorizedMouvements->remove($mouvement);
+                            $ambiguousMouvements = $ambiguousMouvements->remove($mouvement);
+                            $waitingMouvements = $waitingMouvements->remove($mouvement);
 
                             continue;
                         }
@@ -166,8 +165,8 @@ class MouvementsImportController extends AbstractController
                 );
 
             case 'import': // Import des mouvements après ajustements manuels
-                // Hash des mouvements à importer
-                $mouvementsHashToImport = $request->get('mouvements_hash_to_import', []);
+                // Identifiants des mouvements à importer
+                $idsToImport = $request->get('ids_to_import', []);
 
                 // Données de mouvements à modifier
                 $mouvementsData = $request->get('mouvements', []);
@@ -180,16 +179,15 @@ class MouvementsImportController extends AbstractController
                 $mouvements = $request->getSession()->get('mouvements');
 
                 foreach ($mouvements as $mouvement) {
-                    // Identification du mouvement par son hash
-                    $hash = $mouvement->getHash();
+                    $id = (string) $mouvement->id;
 
-                    if (!in_array($hash, $mouvementsHashToImport)) {
+                    if (!in_array($id, $idsToImport)) {
                         continue;
                     }
 
                     // Modification éventuelle de la date
-                    if (isset($mouvementsData[$hash]['date'])) {
-                        $dateString = $mouvementsData[$hash]['date'];
+                    if (isset($mouvementsData[$id]['date'])) {
+                        $dateString = $mouvementsData[$id]['date'];
                         $date = \DateTimeImmutable::createFromFormat('d-m-Y H:i:s', "$dateString 00:00:00");
                         if (!($date instanceof \DateTimeImmutable)) {
                             throw new BadRequestHttpException("Date du mouvement invalide : $dateString");
@@ -198,9 +196,9 @@ class MouvementsImportController extends AbstractController
                     }
 
                     // Modification éventuelle de la catégorie
-                    if (isset($mouvementsData[$hash]['categorie'])) {
-                        $categorieId = CategorieId::estValide((string) $mouvementsData[$hash]['categorie']) ?
-                            new CategorieId((string) $mouvementsData[$hash]['categorie']) :
+                    if (isset($mouvementsData[$id]['categorie'])) {
+                        $categorieId = CategorieId::estValide((string) $mouvementsData[$id]['categorie']) ?
+                            new CategorieId((string) $mouvementsData[$id]['categorie']) :
                             null;
 
                         if ($categorieId instanceof CategorieId) {
@@ -217,9 +215,9 @@ class MouvementsImportController extends AbstractController
                     }
 
                     // Modification éventuelle du compte
-                    if (isset($mouvementsData[$hash]['compte'])) {
-                        if (CompteId::estValide((string) $mouvementsData[$hash]['compte'])) {
-                            $compteId = new CompteId((string) $mouvementsData[$hash]['compte']);
+                    if (isset($mouvementsData[$id]['compte'])) {
+                        if (CompteId::estValide((string) $mouvementsData[$id]['compte'])) {
+                            $compteId = new CompteId((string) $mouvementsData[$id]['compte']);
                             $compte = $this->compteRepository->find($compteId);
 
                             if (!($compte instanceof Compte)) {
@@ -231,14 +229,14 @@ class MouvementsImportController extends AbstractController
                     }
 
                     // Modification éventuelle du montant
-                    if (isset($mouvementsData[$hash]['montant'])) {
-                        $montant = new Montant((float) $mouvementsData[$hash]['montant']);
+                    if (isset($mouvementsData[$id]['montant'])) {
+                        $montant = new Montant((float) $mouvementsData[$id]['montant']);
                         $mouvement->montant = $montant;
                     }
 
                     // Modification éventuelle de la description
-                    if (isset($mouvementsData[$hash]['description'])) {
-                        $description = $mouvementsData[$hash]['description'];
+                    if (isset($mouvementsData[$id]['description'])) {
+                        $description = $mouvementsData[$id]['description'];
                         $mouvement->description = $description;
                     }
 

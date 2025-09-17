@@ -10,9 +10,9 @@ use App\Domain\Compte\CompteRepositoryInterface;
 use App\Domain\DataStructure\Maybe;
 use App\Domain\Id\IdGeneratorInterface;
 use App\Domain\Mouvement\Mouvement;
+use App\Domain\Mouvement\MouvementCollection;
 use App\Domain\Mouvement\MouvementRepositoryInterface;
-use App\Domain\Mouvement\MouvementsParHash;
-use App\Domain\Mouvement\MouvementsParHashParClassification;
+use App\Domain\Mouvement\MouvementsParClassification;
 use App\Infrastructure\Configuration\ConfigurationLoader;
 
 /**
@@ -28,9 +28,9 @@ abstract class AbstractMouvementsImportHandler implements MouvementsImportHandle
      */
     protected array $configuration;
 
-    public MouvementsParHashParClassification $mouvementsParHashParClassification {
+    public MouvementsParClassification $mouvementsParClassification {
         get {
-            return $this->mouvementsParHashParClassification;
+            return $this->mouvementsParClassification;
         }
     }
 
@@ -45,7 +45,7 @@ abstract class AbstractMouvementsImportHandler implements MouvementsImportHandle
         ConfigurationLoader $configurationLoader,
     ) {
         $this->configuration = $configurationLoader()['import']['handlers']['mouvements'];
-        $this->mouvementsParHashParClassification = new MouvementsParHashParClassification();
+        $this->mouvementsParClassification = new MouvementsParClassification();
     }
 
     public function parse(\SplFileObject $file): void
@@ -60,17 +60,16 @@ abstract class AbstractMouvementsImportHandler implements MouvementsImportHandle
     {
         $classification = $this->getClassification($mouvement);
 
-        /** @var MouvementsParHash $mouvementsParHash */
-        $mouvementsParHash = $this->mouvementsParHashParClassification->has($classification->name) ?
-            $this->mouvementsParHashParClassification->get($classification->name) :
-            new MouvementsParHash();
+        /** @var MouvementCollection $mouvements */
+        $mouvements = $this->mouvementsParClassification->has($classification->name) ?
+            $this->mouvementsParClassification->get($classification->name) :
+            new MouvementCollection();
 
-        // @todo : permettre de classifier plusieurs mouvements identiques (donc ayant le même hash)
-        $mouvementsParHash = $mouvementsParHash->add($mouvement->getHash(), $mouvement);
+        $mouvements = $mouvements->add($mouvement);
 
-        $this->mouvementsParHashParClassification = $this->mouvementsParHashParClassification
+        $this->mouvementsParClassification = $this->mouvementsParClassification
             ->remove($classification->name)
-            ->add($classification->name, $mouvementsParHash);
+            ->add($classification->name, $mouvements);
     }
 
     /**

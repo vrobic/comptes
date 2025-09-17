@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Import;
 
-use App\Domain\Mouvement\MouvementsParHashParClassification;
+use App\Domain\Mouvement\MouvementsParClassification;
 
 interface MouvementsImportHandlerInterface
 {
@@ -16,9 +16,9 @@ interface MouvementsImportHandlerInterface
     public function parse(\SplFileObject $file): void;
 
     /**
-     * @var MouvementsParHashParClassification Tableau de classification des mouvements
+     * @var MouvementsParClassification Tableau de classification des mouvements
      */
-    public MouvementsParHashParClassification $mouvementsParHashParClassification {
+    public MouvementsParClassification $mouvementsParClassification {
         get;
     }
 }

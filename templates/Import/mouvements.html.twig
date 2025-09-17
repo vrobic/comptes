@@ -33,8 +33,8 @@
                 <th class="col-md-1">
                     Importer
                     <small>
-                        <span class="glyphicon glyphicon-check trigger" data-trigger="check-all" data-target-name="mouvements_hash_to_import[]" title="Cocher tout"></span>
-                        <span class="glyphicon glyphicon-unchecked trigger" data-trigger="uncheck-all" data-target-name="mouvements_hash_to_import[]" title="Décocher tout"></span>
+                        <span class="glyphicon glyphicon-check trigger" data-trigger="check-all" data-target-name="ids_to_import[]" title="Cocher tout"></span>
+                        <span class="glyphicon glyphicon-unchecked trigger" data-trigger="uncheck-all" data-target-name="ids_to_import[]" title="Décocher tout"></span>
                     </small>
                 </th>
                 <th class="col-md-2">Compte</th>
@@ -48,12 +48,12 @@
             {% for mouvement in mouvements %}
                 <tr>
                     <td>
-                        <label for="mouvement-{{ mouvement.hash }}" class="sr-only">Importer</label>
-                        <input id="mouvement-{{ mouvement.hash }}" type="checkbox" name="mouvements_hash_to_import[]" value="{{ mouvement.hash }}" {{ type != 'waiting' ? "checked" }}>
+                        <label for="mouvement-{{ mouvement.id }}" class="sr-only">Importer</label>
+                        <input id="mouvement-{{ mouvement.id }}" type="checkbox" name="ids_to_import[]" value="{{ mouvement.id }}" {{ type != 'waiting' ? "checked" }}>
                     </td>
                     <td>
-                        <label for="compte-{{ mouvement.hash }}" class="sr-only">Compte</label>
-                        <select id="compte-{{ mouvement.hash }}" name="mouvements[{{ mouvement.hash }}][compte]">
+                        <label for="compte-{{ mouvement.id }}" class="sr-only">Compte</label>
+                        <select id="compte-{{ mouvement.id }}" name="mouvements[{{ mouvement.id }}][compte]">
                             <option value="">&nbsp;</option>
                             {% for compte in comptes %}
                                 <option value="{{ compte.id }}" {{ mouvement.compte.id == compte.id ? "selected" }}>{{ compte }}</option>
@@ -61,20 +61,20 @@
                         </select>
                     </td>
                     <td class="input-text">
-                        <label for="date-{{ mouvement.hash }}" class="sr-only">Date</label>
-                        <input id="date-{{ mouvement.hash }}" type="text" name="mouvements[{{ mouvement.hash }}][date]" value="{{ mouvement.date|date('d-m-Y') }}" placeholder="{{ date()|date('d-m-Y') }}">
+                        <label for="date-{{ mouvement.id }}" class="sr-only">Date</label>
+                        <input id="date-{{ mouvement.id }}" type="text" name="mouvements[{{ mouvement.id }}][date]" value="{{ mouvement.date|date('d-m-Y') }}" placeholder="{{ date()|date('d-m-Y') }}">
                     </td>
                     <td class="input-text">
-                        <label for="montant-{{ mouvement.hash }}" class="sr-only">Montant <small>(en €)</small></label>
-                        <input id="montant-{{ mouvement.hash }}" type="text" name="mouvements[{{ mouvement.hash }}][montant]" value="{{ mouvement.montant.montant|number_format(2, ".", "") }}" placeholder="0.00">
+                        <label for="montant-{{ mouvement.id }}" class="sr-only">Montant <small>(en €)</small></label>
+                        <input id="montant-{{ mouvement.id }}" type="text" name="mouvements[{{ mouvement.id }}][montant]" value="{{ mouvement.montant.montant|number_format(2, ".", "") }}" placeholder="0.00">
                     </td>
                     <td class="input-text">
-                        <label for="description-{{ mouvement.hash }}" class="sr-only">Description</label>
-                        <input id="description-{{ mouvement.hash }}" type="text" name="mouvements[{{ mouvement.hash }}][description]" value="{{ mouvement.description }}" placeholder="Description">
+                        <label for="description-{{ mouvement.id }}" class="sr-only">Description</label>
+                        <input id="description-{{ mouvement.id }}" type="text" name="mouvements[{{ mouvement.id }}][description]" value="{{ mouvement.description }}" placeholder="Description">
                     </td>
                     <td class="input-select2">
-                        <label for="categorie-{{ mouvement.hash }}" class="sr-only">Catégorie</label>
-                        <select id="categorie-{{ mouvement.hash }}" name="mouvements[{{ mouvement.hash }}][categorie]">
+                        <label for="categorie-{{ mouvement.id }}" class="sr-only">Catégorie</label>
+                        <select id="categorie-{{ mouvement.id }}" name="mouvements[{{ mouvement.id }}][categorie]">
                             <option value="">&nbsp;</option>
                             {% for categorie in categories %}
                                 {% if categorie.categorieParente is null %}
