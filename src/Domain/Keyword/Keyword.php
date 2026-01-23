@@ -12,7 +12,6 @@ use App\Domain\Categorie\Categorie;
 final class Keyword
 {
     public function __construct(
-        // @todo : supprimer $id car $word est unique
         public readonly KeywordId $id,
         public readonly string $word, // mot-clé
         public Categorie $categorie, // catégorie utilisant ce mot-clé
