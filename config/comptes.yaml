@@ -4,39 +4,6 @@ import:
     # et "extension", les autres sont libres et propres à chaque implémentation.
     handlers:
         mouvements:
-            # Identifiant du service d'import, ici "comptes.import.mouvements.cic.excel".
-            cic.excel:
-                # Nom de la source
-                name: CIC - Excel
-                # Description de la source. HTML autorisé.
-                description: |-
-                    Import multicompte.
-                    Feuille 2 : compte courant.
-                # L'extension du fichier attendu par le handler d'import
-                extension: xlsx
-                # Autres paramètres propres à ce handler
-                config:
-                    # Le fichier Excel contient un compte par feuille.
-                    # Ce paramètre établit la correspondance entre les numéros de feuille
-                    # et les identifiants des comptes bancaires correspondants.
-                    # La numérotation des feuilles commence à zéro.
-                    sheets:
-                        2: f1c41947-5a95-11f0-9189-6ee01aa22bdc
-            # Identifiant du service d'import, ici "comptes.import.mouvements.cic.csv".
-            cic.csv:
-                # Nom de la source
-                name: CIC - CSV
-                # Description de la source. HTML autorisé.
-                description: |-
-                    Import monocompte, montants sur deux colonnes, dates au format JJ/MM/AAAA, séparateur : point-virgule, séparateur décimales : virgule.
-                    Destination : compte courant.
-                # L'extension du fichier attendu par le handler d'import
-                extension: csv
-                # Autres paramètres propres à ce handler
-                config:
-                    # Le fichier CSV ne contient les mouvements que d'un seul compte.
-                    # Ce paramètre indique l'identifiant du compte sur lequel les importer.
-                    compte: f1c41947-5a95-11f0-9189-6ee01aa22bdc
             # Identifiant du service d'import, ici "comptes.import.mouvements.cm.excel".
             cm.excel:
                 # Nom de la source
@@ -60,6 +27,39 @@ import:
             cm.csv:
                 # Nom de la source
                 name: Crédit Mutuel - CSV
+                # Description de la source. HTML autorisé.
+                description: |-
+                    Import monocompte, montants sur deux colonnes, dates au format JJ/MM/AAAA, séparateur : point-virgule, séparateur décimales : virgule.
+                    Destination : compte courant.
+                # L'extension du fichier attendu par le handler d'import
+                extension: csv
+                # Autres paramètres propres à ce handler
+                config:
+                    # Le fichier CSV ne contient les mouvements que d'un seul compte.
+                    # Ce paramètre indique l'identifiant du compte sur lequel les importer.
+                    compte: f1c41947-5a95-11f0-9189-6ee01aa22bdc
+            # Identifiant du service d'import, ici "comptes.import.mouvements.cic.excel".
+            cic.excel:
+                # Nom de la source
+                name: CIC - Excel
+                # Description de la source. HTML autorisé.
+                description: |-
+                    Import multicompte.
+                    Feuille 2 : compte courant.
+                # L'extension du fichier attendu par le handler d'import
+                extension: xlsx
+                # Autres paramètres propres à ce handler
+                config:
+                    # Le fichier Excel contient un compte par feuille.
+                    # Ce paramètre établit la correspondance entre les numéros de feuille
+                    # et les identifiants des comptes bancaires correspondants.
+                    # La numérotation des feuilles commence à zéro.
+                    sheets:
+                        2: f1c41947-5a95-11f0-9189-6ee01aa22bdc
+            # Identifiant du service d'import, ici "comptes.import.mouvements.cic.csv".
+            cic.csv:
+                # Nom de la source
+                name: CIC - CSV
                 # Description de la source. HTML autorisé.
                 description: |-
                     Import monocompte, montants sur deux colonnes, dates au format JJ/MM/AAAA, séparateur : point-virgule, séparateur décimales : virgule.
