@@ -1,5 +1,5 @@
 import:
-    # Configuration des handlers d'import de mouvements et de pleins.
+    # Configuration des handlers d'import de mouvements.
     # Chaque handler doit définir au moins les paramètres "name", "description"
     # et "extension", les autres sont libres et propres à chaque implémentation.
     handlers:
