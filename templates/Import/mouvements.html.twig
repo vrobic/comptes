@@ -91,7 +91,7 @@
 
 {% block content %}
     <h1>Import des mouvements</h1>
-    <form action="{{ path('import_mouvements') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ path('import_mouvements_parse') }}" method="POST" enctype="multipart/form-data">
 
         <div class="form-group">
             <table class="table table-condensed">
@@ -135,13 +135,17 @@
             </p>
         </div>
         <div class="form-group">
-            <button class="btn btn-default" type="submit" name="action" value="parse">Analyser le fichier</button>
+            <button class="btn btn-default" type="submit">Analyser le fichier</button>
         </div>
 
-        {% if categorized_mouvements is not empty or
-              uncategorized_mouvements is not empty or
-              ambiguous_mouvements is not empty or
-              waiting_mouvements is not empty %}
+    </form>
+
+    {% if categorized_mouvements is not empty or
+          uncategorized_mouvements is not empty or
+          ambiguous_mouvements is not empty or
+          waiting_mouvements is not empty %}
+
+        <form action="{{ path('import_mouvements_import') }}" method="POST">
 
             {% if categorized_mouvements is not empty %}
                 <h2>Mouvements catégorisés</h2>
@@ -167,9 +171,9 @@
                 {{ macros.mouvements('waiting', waiting_mouvements, comptes, categories) }}
             {% endif %}
 
-            <button class="btn btn-default" type="submit" name="action" value="import">Importer</button>
+            <button class="btn btn-default" type="submit">Importer</button>
 
-        {% endif %}
+        </form>
 
-    </form>
+    {% endif %}
 {% endblock %}

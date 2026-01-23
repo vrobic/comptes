@@ -40,7 +40,7 @@
                                         <span class="glyphicon glyphicon-list-alt"></span> Catégories
                                     </a>
                                 </li>
-                                <li{% if app.request.get('_route') == 'import_mouvements' %} class="active"{% endif %}>
+                                <li{% if app.request.get('_route') starts with 'import_mouvements' %} class="active"{% endif %}>
                                     <a href="{{ path('import_mouvements') }}">
                                         <span class="glyphicon glyphicon-import"></span> Import mouvements
                                     </a>
