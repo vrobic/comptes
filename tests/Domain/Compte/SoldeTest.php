@@ -25,6 +25,13 @@ final class SoldeTest extends TestCase
         );
     }
 
+    public function test_est_nul(): void
+    {
+        self::assertTrue(Solde::nul()->estNul());
+        self::assertFalse(new Solde(3.)->estNul());
+        self::assertFalse(new Solde(-3.)->estNul());
+    }
+
     public function test_additionner(): void
     {
         self::assertSame(

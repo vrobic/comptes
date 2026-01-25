@@ -10,7 +10,9 @@ use App\Domain\Compte\Compte;
 use App\Domain\Compte\CompteRepositoryInterface;
 use App\Domain\Compte\Solde;
 use App\Domain\DataStructure\Maybe;
+use App\Domain\Mouvement\Montant;
 use App\Domain\Mouvement\Mouvement;
+use App\Domain\Mouvement\MouvementId;
 use App\Domain\Mouvement\MouvementRepositoryInterface;
 use App\Domain\Temps\Depuis;
 use App\Domain\Temps\Mois;
@@ -37,11 +39,30 @@ final class CompteController extends AbstractController
         $aDesComptesFermés = !$comptes->fermés()->isEmpty();
         $avecFermés = filter_var($request->query->get('avec_fermes', false), FILTER_VALIDATE_BOOL);
 
-        if (!$avecFermés) {
-            $comptes = $comptes->ouverts();
+        $mouvements = $this->mouvementRepository->findAll();
+
+        $comptesAvecSoldeInitial = $comptes->filter(
+            static fn (Compte $compte): bool => !$compte->soldeInitial->estNul()
+        );
+
+        // Intercale les soldes initiaux de chaque compte
+        if (!$comptesAvecSoldeInitial->isEmpty()) {
+            /** @var Compte $compteAvecSoldeInitial */
+            foreach ($comptesAvecSoldeInitial as $compteAvecSoldeInitial) {
+                $mouvement = new Mouvement(
+                    new MouvementId((string) $compteAvecSoldeInitial->id),
+                    $compteAvecSoldeInitial->dateOuverture,
+                    null,
+                    $compteAvecSoldeInitial,
+                    new Montant($compteAvecSoldeInitial->soldeInitial->montant),
+                    sprintf("Solde initial à l'ouverture du compte « %s »", $compteAvecSoldeInitial->nom)
+                );
+                $mouvements = $mouvements->add($mouvement);
+            }
+
+            $mouvements = $mouvements->trierParDate();
         }
 
-        $mouvements = $this->mouvementRepository->findAll();
         $firstMouvement = $mouvements->first();
         $lastMouvement = $mouvements->last();
 
@@ -64,12 +85,13 @@ final class CompteController extends AbstractController
         return $this->render(
             'Compte/index.html.twig',
             [
-                'comptes' => $comptes,
+                'comptes' => !$avecFermés ? $comptes->ouverts() : $comptes,
                 'a_des_comptes_fermes' => $aDesComptesFermés,
                 'avec_fermes' => $avecFermés,
                 'mouvements' => $mouvements->getIterator(), // pour pouvoir faire mouvements[key+1] en Twig
                 'first_mouvement' => $firstMouvement,
                 'last_mouvement' => $lastMouvement,
+                'solde' => $comptes->solde(),
                 'balance' => $balance,
                 'balance_des_derniers_mois' => $balanceDesDerniersMois,
                 'balance_moyenne_des_derniers_mois' => $balanceDesDerniersMois->moyenne(),

@@ -30,7 +30,11 @@ final class Solde
         return new self(0.);
     }
 
-    // Utilisé en Twig
+    public function estNul(): bool
+    {
+        return 0. === $this->montant;
+    }
+
     public function additionner(self $valeur): self
     {
         return new self($this->montant + $valeur->montant);

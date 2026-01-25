@@ -32,4 +32,12 @@ final class CompteCollection extends Set
             static fn (Compte $compte): bool => $compte->dateFermeture instanceof \DateTimeInterface
         );
     }
+
+    public function solde(): Solde
+    {
+        return $this->reduce(
+            static fn (Solde $solde, Compte $compte): Solde => $solde->additionner($compte->solde),
+            Solde::nul()
+        );
+    }
 }
