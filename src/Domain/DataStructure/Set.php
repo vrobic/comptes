@@ -4,14 +4,44 @@ declare(strict_types=1);
 
 namespace App\Domain\DataStructure;
 
-/** @phpstan-consistent-constructor */
-class Set implements \IteratorAggregate, \Countable
+use Ds\Set as BaseSet;
+
+/**
+ * Comme pour le Map, on pourrait implémenter \IteratorAggrege,
+ * ce qui éviterait d'avoir à redéfinir current, next, key, valid et rewind.
+ *
+ * @template T of object
+ *
+ * @implements \Iterator<int, T>
+ */
+class Set implements \Iterator, \Countable
 {
+    /**
+     * Si le Set surcharge la méthode getUniqueKey pour retourner une clé textuelle unique de chaque élément,
+     * cette propriété sera utilisée pour que la méthode contains base sa comparaison
+     * sur cette clé (même clé textuelle), plutôt que sur une égalité stricte (même référence mémoire).
+     *
+     * C'est très utile pour les value objects
+     * qu'on considère égaux par les valeurs qu'ils contiennent,
+     * plutôt que par leur référence mémoire.
+     *
+     * @var array<string, true>
+     */
     private array $uniqueKeys = [];
-    private array $data = [];
+    /** @var BaseSet<T> */
+    private BaseSet $data;
+    private int $position = 0;
 
     public function __construct(private readonly string $type)
     {
+        $this->data = new BaseSet();
+    }
+
+    public function __clone(): void
+    {
+        $this->data = $this->data->copy();
+        // uniqueKeys est un array, il est copié par valeur automatiquement
+        $this->position = 0;
     }
 
     public function getType(): string
@@ -19,82 +49,83 @@ class Set implements \IteratorAggregate, \Countable
         return $this->type;
     }
 
-    public function getIterator(): \Traversable
-    {
-        return new \ArrayIterator($this->data);
-    }
-
+    /** @param T ...$values */
     public function add(mixed ...$values): static
     {
         $set = clone $this;
 
         foreach ($values as $value) {
-            if (!$value instanceof $this->type) {
-                throw new \InvalidArgumentException();
-            }
-
             if ($set->contains($value)) {
                 continue;
             }
 
-            $set->data[] = $value;
-            $set->uniqueKeys[$this->getUniqueKey($value)] = true;
+            $set->data->add($value);
+
+            $uniqueKey = $this->getUniqueKey($value);
+            if (is_string($uniqueKey)) {
+                $set->uniqueKeys[$uniqueKey] = true;
+            }
         }
 
         return $set;
     }
 
-    public static function from(mixed ...$values): static
-    {
-        return (new static())->add(...$values);
-    }
-
+    /** @param T ...$values */
     public function remove(mixed ...$values): static
     {
         $set = clone $this;
 
         foreach ($values as $value) {
-            if (!$value instanceof $this->type) {
-                throw new \InvalidArgumentException();
-            }
-
-            if (!$this->contains($value)) {
+            if (!$set->contains($value)) {
                 continue;
             }
 
-            unset($set->data[array_search($value, $this->data)]);
-            unset($set->uniqueKeys[$this->getUniqueKey($value)]);
-        }
+            $uniqueKey = $this->getUniqueKey($value);
 
-        // Reindexer les clefs
-        $set->data = array_values($set->data);
+            // Si on utilise les clés uniques, on doit trouver l'élément par sa clé
+            if (is_string($uniqueKey)) {
+                // Trouver et retirer l'élément correspondant à cette clé unique
+                foreach ($set->data as $existingValue) {
+                    if ($this->getUniqueKey($existingValue) === $uniqueKey) {
+                        $set->data->remove($existingValue);
+                        break;
+                    }
+                }
+
+                unset($set->uniqueKeys[$uniqueKey]);
+            } else {
+                $set->data->remove($value);
+            }
+        }
 
         return $set;
     }
 
     public function count(): int
     {
-        return \count($this->data);
+        return $this->data->count();
     }
 
     public function isEmpty(): bool
     {
-        return 0 === $this->count();
+        return $this->data->isEmpty();
     }
 
+    /** @param T $value */
     public function contains(mixed $value): bool
     {
-        if (!$value instanceof $this->type) {
-            throw new \InvalidArgumentException();
-        }
+        $uniqueKey = $this->getUniqueKey($value);
 
-        return isset($this->uniqueKeys[$this->getUniqueKey($value)]);
+        return is_string($uniqueKey) ?
+            isset($this->uniqueKeys[$uniqueKey]) :
+            $this->data->contains($value);
     }
 
-    public function findFirst(callable $f): mixed
+    /** @return ?T */
+    public function findFirst(callable $fn): mixed
     {
         foreach ($this->data as $value) {
-            if ($f($value)) {
+            if ($fn($value)) {
                 return $value;
             }
         }
@@ -102,10 +133,10 @@ class Set implements \IteratorAggregate, \Countable
         return null;
     }
 
-    public function hasOne(callable $f): bool
+    public function hasOne(callable $fn): bool
     {
         foreach ($this->data as $value) {
-            if ($f($value)) {
+            if ($fn($value)) {
                 return true;
             }
         }
@@ -113,36 +144,51 @@ class Set implements \IteratorAggregate, \Countable
         return false;
     }
 
-    public function filter(callable $f): static
+    public function filter(callable $fn): static
     {
-        $data = array_filter($this->data, $f);
-
-        $set = $this->vider();
-
-        return $set->add(...$data);
+        return $this->createSubset($this->data->filter($fn)->toArray());
     }
 
-    public function reduce(callable $f, mixed $initial): mixed
+    public function reduce(callable $fn, mixed $initial): mixed
     {
-        return array_reduce($this->data, $f, $initial);
+        return $this->data->reduce($fn, $initial);
     }
 
-    public function map(callable $f): static
+    public function map(callable $fn): static
     {
-        $data = array_map($f, $this->data);
+        /** @var static $set */
+        $set = new static($this->type);
+        $seenKeys = [];
 
-        $set = $this->vider();
+        foreach ($this->data as $value) {
+            $newValue = $fn($value);
+            $uniqueKey = $this->getUniqueKey($newValue);
 
-        return $set->add(...$data);
+            // Déduplication via uniqueKey si disponible, sinon via contains()
+            if (is_string($uniqueKey)) {
+                if (isset($seenKeys[$uniqueKey])) {
+                    continue;
+                }
+                $seenKeys[$uniqueKey] = true;
+            } elseif ($set->contains($newValue)) {
+                continue;
+            }
+
+            $set->data->add($newValue);
+        }
+
+        $set->uniqueKeys = $seenKeys;
+
+        return $set;
     }
 
     public function toArray(?callable $fn = null): array
     {
         if (null === $fn) {
-            return $this->data;
+            return $this->data->toArray();
         }
 
-        return array_map($fn, $this->data);
+        return array_map($fn, $this->data->toArray());
     }
 
     /**
@@ -153,43 +199,91 @@ class Set implements \IteratorAggregate, \Countable
         return json_encode($this->toArray($fn), JSON_THROW_ON_ERROR);
     }
 
-    public function sort(callable $f): static
+    public function sort(callable $fn): static
     {
-        $data = $this->data;
+        $array = $this->data->toArray();
+        usort($array, $fn);
 
-        usort($data, $f);
-
-        $set = clone $this;
-        $set->data = $data;
+        /** @var static $set */
+        $set = new static($this->type);
+        $set->data = new BaseSet($array);
+        $set->uniqueKeys = $this->uniqueKeys;
 
         return $set;
     }
 
+    /**
+     * @return T
+     */
+    public function current(): mixed
+    {
+        return $this->data->get($this->position);
+    }
+
+    public function next(): void
+    {
+        ++$this->position;
+    }
+
+    /** @return int */
+    public function key(): mixed
+    {
+        return $this->position;
+    }
+
+    public function valid(): bool
+    {
+        return $this->position < $this->data->count();
+    }
+
+    public function rewind(): void
+    {
+        $this->position = 0;
+    }
+
+    /**
+     * @return T
+     */
     public function first(): mixed
     {
-        return reset($this->data);
+        return $this->data->first();
     }
 
+    /**
+     * @return T
+     */
     public function last(): mixed
     {
-        return end($this->data);
+        return $this->data->last();
     }
 
-    public function merge(self $collection): static
+    /** @param static $set2 */
+    public function merge(self $set2): static
     {
-        $self = clone $this;
+        $set = clone $this;
 
-        foreach ($collection as $item) {
-            $self = $self->add($item);
+        /** @var T $value */
+        foreach ($set2 as $value) {
+            if ($set->contains($value)) {
+                continue;
+            }
+
+            $set->data->add($value);
+
+            $uniqueKey = $this->getUniqueKey($value);
+            if (is_string($uniqueKey)) {
+                $set->uniqueKeys[$uniqueKey] = true;
+            }
         }
 
-        return $self;
+        return $set;
     }
 
     public function vider(): static
     {
-        $set = clone $this;
-        $set->data = [];
+        /** @var static $set */
+        $set = new static($this->type);
+        $set->data = new BaseSet();
         $set->uniqueKeys = [];
 
         return $set;
@@ -199,6 +293,8 @@ class Set implements \IteratorAggregate, \Countable
      * @param static $set2
      *                     Retourne un nouveau Set avec les élements communs
      *                     aux deux Sets selon la méthode contains()
+     *
+     * @throws \RuntimeException
      */
     public function intersect(self $set2): static
     {
@@ -206,42 +302,34 @@ class Set implements \IteratorAggregate, \Countable
             throw new \RuntimeException();
         }
 
-        $set = $this->vider();
+        $intersectData = [];
 
-        foreach ($this as $el) {
-            if ($set2->contains($el)) {
-                $set = $set->add($el);
+        foreach ($this->data as $value) {
+            if ($set2->contains($value)) {
+                $intersectData[] = $value;
             }
         }
 
-        return $set;
+        return $this->createSubset($intersectData);
     }
 
-    public function implode(string $delimiter = ','): string
-    {
-        try {
-            (string) $this->first();
-        } catch (\Error $e) {
-            throw new \InvalidArgumentException(previous: $e);
-        }
-
-        return implode($delimiter, $this->data);
-    }
-
+    /** @param T $value */
     public function prepend(mixed $value): static
     {
-        if (!$value instanceof $this->type) {
-            throw new \InvalidArgumentException();
-        }
-
-        $set = clone $this;
-
         if ($this->contains($value)) {
-            return $set;
+            return clone $this;
         }
 
-        array_unshift($set->data, $value);
-        $set->uniqueKeys[$this->getUniqueKey($value)] = true;
+        /** @var static $set */
+        $set = new static($this->type);
+        $newData = array_merge([$value], $this->data->toArray());
+        $set->data = new BaseSet($newData);
+        $set->uniqueKeys = $this->uniqueKeys;
+
+        $uniqueKey = $this->getUniqueKey($value);
+        if (is_string($uniqueKey)) {
+            $set->uniqueKeys[$uniqueKey] = true;
+        }
 
         return $set;
     }
@@ -254,23 +342,19 @@ class Set implements \IteratorAggregate, \Countable
         }
 
         $chunks = [];
-        $currentSet = $this->vider();
+        $currentData = [];
 
-        $i = 0;
-        foreach ($this as $object) {
-            ++$i;
+        foreach ($this->data as $value) {
+            $currentData[] = $value;
 
-            $currentSet = $currentSet->add($object);
-
-            if ($i === $size) {
-                $i = 0;
-                $chunks[] = $currentSet;
-                $currentSet = $this->vider();
+            if (count($currentData) === $size) {
+                $chunks[] = $this->createSubset($currentData);
+                $currentData = [];
             }
         }
 
-        if (false === $currentSet->isEmpty()) {
-            $chunks[] = $currentSet;
+        if (!empty($currentData)) {
+            $chunks[] = $this->createSubset($currentData);
         }
 
         return $chunks;
@@ -278,26 +362,66 @@ class Set implements \IteratorAggregate, \Countable
 
     public function slice(int $offset, ?int $length = null): static
     {
-        $set = clone $this;
-        $data = $set->data;
-        $dataLength = count($set->data);
-
-        $set = $set->vider();
-
-        if (null === $length) {
-            $length = $dataLength - $offset;
+        // Si length est 0 ou négatif, retourner un set vide
+        if (null !== $length && $length <= 0) {
+            return $this->createSubset([]);
         }
 
-        $dataToAdd = [];
-        for ($i = $offset; $i < min($dataLength, $length + $offset); ++$i) {
-            $dataToAdd[] = $data[$i];
-        }
+        $sliced = $this->data->slice($offset, $length)->toArray();
 
-        return $set->add(...$dataToAdd);
+        return $this->createSubset($sliced);
     }
 
-    protected function getUniqueKey(mixed $value): string
+    /** @param T $value */
+    public function getUniqueKey(mixed $value): ?string
     {
-        return spl_object_hash($value);
+        return null;
+    }
+
+    /**
+     * Crée un nouveau Set du même type à partir d'un tableau de valeurs
+     * déjà présentes dans le Set d'origine, donc déjà validées.
+     *
+     * En n'utilisant pas la méthode add, on évite
+     * la vérification des doublons, un clone, et l'ajout des éléments un par un.
+     *
+     * L'objectif de cette méthode est d'optimiser les performances du Set, en prenant quelques raccourcis.
+     *
+     * @param T[] $values
+     */
+    private function createSubset(array $values): static
+    {
+        /** @var static $set */
+        $set = new static($this->type);
+        $set->data = new BaseSet($values);
+
+        if (!empty($this->uniqueKeys)) {
+            $set->uniqueKeys = $this->buildUniqueKeys($values);
+        }
+
+        return $set;
+    }
+
+    /**
+     * Reconstruit le tableau des clés uniques à partir des données,
+     * pour les Set qui utilisent des clés uniques.
+     *
+     * @param T[] $values
+     *
+     * @return array<string, true>
+     */
+    private function buildUniqueKeys(array $values): array
+    {
+        $keys = [];
+
+        foreach ($values as $value) {
+            $uniqueKey = $this->getUniqueKey($value);
+
+            if (is_string($uniqueKey)) {
+                $keys[$uniqueKey] = true;
+            }
+        }
+
+        return $keys;
     }
 }

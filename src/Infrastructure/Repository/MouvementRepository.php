@@ -194,7 +194,7 @@ final readonly class MouvementRepository implements MouvementRepositoryInterface
             $types
         );
 
-        return MouvementCollection::from(
+        return new MouvementCollection()->add(
             ...array_map(
                 fn (array $row): Mouvement => $this->mouvementDenormalizer->denormalize($row),
                 $this->préparerRowsPourDenormalizer($rows)

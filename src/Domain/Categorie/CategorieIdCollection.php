@@ -6,6 +6,9 @@ namespace App\Domain\Categorie;
 
 use App\Domain\DataStructure\Set;
 
+/**
+ * @extends Set<CategorieId>
+ */
 final class CategorieIdCollection extends Set
 {
     public function __construct()

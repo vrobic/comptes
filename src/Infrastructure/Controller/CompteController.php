@@ -88,7 +88,7 @@ final class CompteController extends AbstractController
                 'comptes' => !$avecFermés ? $comptes->ouverts() : $comptes,
                 'a_des_comptes_fermes' => $aDesComptesFermés,
                 'avec_fermes' => $avecFermés,
-                'mouvements' => $mouvements->getIterator(), // pour pouvoir faire mouvements[key+1] en Twig
+                'mouvements' => $mouvements->toArray(), // pour pouvoir faire mouvements[key+1] en Twig
                 'first_mouvement' => $firstMouvement,
                 'last_mouvement' => $lastMouvement,
                 'solde' => $comptes->solde(),
@@ -145,7 +145,7 @@ final class CompteController extends AbstractController
                     'start' => $période->début,
                     'end' => $période->fin,
                 ],
-                'mouvements' => $mouvements->getIterator(), // pour pouvoir faire mouvements[key+1] en Twig
+                'mouvements' => $mouvements->toArray(), // pour pouvoir faire mouvements[key+1] en Twig
                 'categories' => $categories->toAssociativeArray(),
                 'solde_start' => $soldeStart,
                 'balance' => $balance,

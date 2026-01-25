@@ -6,6 +6,9 @@ namespace App\Domain\Keyword;
 
 use App\Domain\DataStructure\Set;
 
+/**
+ * @extends Set<Keyword>
+ */
 final class KeywordCollection extends Set
 {
     public function __construct()

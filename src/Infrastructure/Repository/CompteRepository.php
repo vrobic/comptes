@@ -28,7 +28,7 @@ final readonly class CompteRepository implements CompteRepositoryInterface
             ->executeQuery()
             ->fetchAllAssociative();
 
-        return CompteCollection::from(
+        return new CompteCollection()->add(
             ...array_map(
                 fn (array $row): Compte => $this->compteDenormalizer->denormalize($row),
                 $rows

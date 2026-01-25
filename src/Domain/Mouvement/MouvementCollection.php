@@ -12,6 +12,9 @@ use App\Domain\Temps\Annee;
 use App\Domain\Temps\Mois;
 use App\Domain\Temps\Periode;
 
+/**
+ * @extends Set<Mouvement>
+ */
 final class MouvementCollection extends Set
 {
     public function __construct()

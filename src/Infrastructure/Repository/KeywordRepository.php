@@ -46,7 +46,7 @@ final readonly class KeywordRepository implements KeywordRepositoryInterface
             ->executeQuery()
             ->fetchAllAssociative();
 
-        return KeywordCollection::from(
+        return new KeywordCollection()->add(
             ...array_map(
                 fn (array $row): Keyword => $this->keywordDenormalizer->denormalize($row),
                 $this->préparerRowsPourDenormalizer($rows)

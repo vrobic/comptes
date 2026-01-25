@@ -6,6 +6,9 @@ namespace App\Domain\Compte;
 
 use App\Domain\DataStructure\Set;
 
+/**
+ * @extends Set<Compte>
+ */
 final class CompteCollection extends Set
 {
     public function __construct()
