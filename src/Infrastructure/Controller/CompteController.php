@@ -72,7 +72,7 @@ final class CompteController extends AbstractController
         // Balance des derniers mois
         $balanceDesDerniersMois = new BalanceMensuelle();
         foreach (range(1, 4) as $nombreMois) {
-            $mois = Mois::fromDate(new \DateTimeImmutable("$nombreMois months ago"));
+            $mois = Mois::fromDate(new \DateTimeImmutable("first day of $nombreMois months ago"));
 
             $balanceDesDerniersMois = $balanceDesDerniersMois->add(
                 $mois,
