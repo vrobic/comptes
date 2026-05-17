@@ -56,10 +56,12 @@ final readonly class CompteRepository implements CompteRepositoryInterface
         \DateTimeImmutable $date,
     ): Solde {
         return new Solde(
-            (float) $this->getBaseQueryBuilder()
-                ->select('compte.solde_initial + SUM(mouvement.montant) AS solde')
-                ->andWhere('compte.id = :compte_id')
-                ->andWhere('mouvement.date < :date')
+            (float) $this->connection->createQueryBuilder()
+                ->select('compte.solde_initial + COALESCE(SUM(mouvement.montant), 0) AS solde')
+                ->from('comptes', 'compte')
+                ->leftJoin('compte', 'mouvements', 'mouvement', 'mouvement.compte_id = compte.id AND mouvement.date < :date')
+                ->where('compte.id = :compte_id')
+                ->groupBy('compte.id')
                 ->setParameter('compte_id', (string) $compteId)
                 ->setParameter('date', $date, Types::DATETIME_IMMUTABLE)
                 ->executeQuery()
@@ -72,7 +74,7 @@ final readonly class CompteRepository implements CompteRepositoryInterface
         return $this->connection->createQueryBuilder()
             ->select(
                 'compte.*',
-                'compte.solde_initial + SUM(mouvement.montant) AS solde',
+                'compte.solde_initial + COALESCE(SUM(mouvement.montant), 0) AS solde',
             )
             ->from('comptes', 'compte')
             ->leftJoin('compte', 'mouvements', 'mouvement', 'mouvement.compte_id = compte.id')
