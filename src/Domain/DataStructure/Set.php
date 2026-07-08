@@ -7,14 +7,11 @@ namespace App\Domain\DataStructure;
 use Ds\Set as BaseSet;
 
 /**
- * Comme pour le Map, on pourrait implémenter \IteratorAggrege,
- * ce qui éviterait d'avoir à redéfinir current, next, key, valid et rewind.
- *
  * @template T of object
  *
- * @implements \Iterator<int, T>
+ * @implements \IteratorAggregate<int, T>
  */
-class Set implements \Iterator, \Countable
+class Set implements \IteratorAggregate, \Countable
 {
     /**
      * Si le Set surcharge la méthode getUniqueKey pour retourner une clé textuelle unique de chaque élément,
@@ -30,7 +27,6 @@ class Set implements \Iterator, \Countable
     private array $uniqueKeys = [];
     /** @var BaseSet<T> */
     private BaseSet $data;
-    private int $position = 0;
 
     public function __construct(private readonly string $type)
     {
@@ -41,7 +37,6 @@ class Set implements \Iterator, \Countable
     {
         $this->data = $this->data->copy();
         // uniqueKeys est un array, il est copié par valeur automatiquement
-        $this->position = 0;
     }
 
     public function getType(): string
@@ -212,33 +207,9 @@ class Set implements \Iterator, \Countable
         return $set;
     }
 
-    /**
-     * @return T
-     */
-    public function current(): mixed
+    public function getIterator(): \Traversable
     {
-        return $this->data->get($this->position);
-    }
-
-    public function next(): void
-    {
-        ++$this->position;
-    }
-
-    /** @return int */
-    public function key(): mixed
-    {
-        return $this->position;
-    }
-
-    public function valid(): bool
-    {
-        return $this->position < $this->data->count();
-    }
-
-    public function rewind(): void
-    {
-        $this->position = 0;
+        return $this->data->getIterator();
     }
 
     /**

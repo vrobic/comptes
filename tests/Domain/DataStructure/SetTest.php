@@ -461,64 +461,25 @@ class SetTest extends TestCase
         self::assertFalse(new Set(Foo::class)->first());
     }
 
-    public function test_current(): void
+    public function test_iterations_imbriquées(): void
     {
-        $set = new Set(Foo::class)
-            ->add($foo1 = new Foo(1), $foo2 = new Foo(2));
-
-        self::assertSame($foo1, $set->current());
-
-        $set->next();
-        self::assertSame($foo2, $set->current());
-    }
-
-    public function test_current_set_vide(): void
-    {
-        self::expectException(\OutOfRangeException::class);
-
-        self::assertFalse(new Set(Foo::class)->current());
-    }
-
-    public function test_key(): void
-    {
+        // Itérer le Set une deuxième fois pendant qu'une première itération est en cours ne doit pas perturber la première itération
         $set = new Set(Foo::class)
             ->add(new Foo(1), new Foo(2), new Foo(3));
 
-        self::assertSame(0, $set->key());
+        $outerCount = 0;
+        foreach ($set as $value) {
+            ++$outerCount;
 
-        $set->next();
-        self::assertSame(1, $set->key());
+            $innerCount = 0;
+            foreach ($set as $innerValue) {
+                ++$innerCount;
+            }
 
-        $set->next();
-        self::assertSame(2, $set->key());
-    }
+            self::assertSame(3, $innerCount);
+        }
 
-    public function test_valid(): void
-    {
-        $set = new Set(Foo::class)
-            ->add(new Foo(1), new Foo(2));
-
-        self::assertTrue($set->valid());
-
-        $set->next();
-        self::assertTrue($set->valid());
-
-        $set->next();
-        self::assertFalse($set->valid());
-    }
-
-    public function test_rewind(): void
-    {
-        $set = new Set(Foo::class)
-            ->add($foo1 = new Foo(1), new Foo(2), new Foo(3));
-
-        $set->next();
-        $set->next();
-        self::assertSame(2, $set->key());
-
-        $set->rewind();
-        self::assertSame(0, $set->key());
-        self::assertSame($foo1, $set->current());
+        self::assertSame(3, $outerCount);
     }
 
     public function test_merge(): void
@@ -624,7 +585,7 @@ class SetTest extends TestCase
         $set2 = $set1->prepend(new Bar());
 
         self::assertInstanceOf(Set::class, $set2);
-        self::assertEquals(new Bar(), $set2->current());
+        self::assertEquals(new Bar(), $set2->first());
 
         // Vérification immuabilité
         self::assertNotSame($set1, $set2);
