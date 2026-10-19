@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Tests\Domain\DataStructure;
 
 use App\Domain\DataStructure\Map;
-use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 use App\Tests\Domain\DataStructure\Map\EnumNative;
 use App\Tests\Domain\DataStructure\Map\Key;
 use App\Tests\Domain\DataStructure\Map\Value;
 use App\Tests\Domain\DataStructure\Map\ValueParKey;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\TestCase;
 
 class MapTest extends TestCase
 {

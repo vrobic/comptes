@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests;
 
 use App\Domain\Categorie\Categorie;
@@ -9,7 +11,6 @@ use App\Domain\Compte\Compte;
 use App\Domain\Compte\CompteId;
 use App\Domain\Compte\Plafond;
 use App\Domain\Compte\Solde;
-use App\Domain\Mouvement\Montant;
 
 final class GenererInstance
 {
@@ -24,8 +25,7 @@ final class GenererInstance
         string $dateOuverture = '2000-01-01',
         ?string $dateFermeture = null,
         ?int $rang = null,
-    ): Compte
-    {
+    ): Compte {
         return new Compte(
             new CompteId($id),
             $nom,
@@ -45,8 +45,7 @@ final class GenererInstance
         string $nom = 'Sport',
         ?string $catégorieParente = null,
         ?int $rang = null,
-    ): Categorie
-    {
+    ): Categorie {
         return new Categorie(
             new CategorieId($id),
             $nom,

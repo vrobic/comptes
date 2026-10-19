@@ -261,11 +261,11 @@ class SetTest extends TestCase
         $set = $set->add(new Foo(2));
         $set = $set->add(new Foo(1));
 
-        $actual = $set->findFirst(static fn(Foo $element): bool => $element->id === 1);
+        $actual = $set->findFirst(static fn (Foo $element): bool => 1 === $element->id);
         self::assertInstanceOf(Foo::class, $actual);
         self::assertSame($expected, $actual);
 
-        $actual = $set->findFirst(static fn(Foo $element): bool => $element->id === 0);
+        $actual = $set->findFirst(static fn (Foo $element): bool => 0 === $element->id);
         self::assertNull($actual);
     }
 
@@ -276,11 +276,11 @@ class SetTest extends TestCase
         $set = $set->add(new Foo(1));
         $set = $set->add(new Foo(2));
 
-        self::assertTrue($set->hasOne(static fn(Foo $element): bool => $element->id === 1));
+        self::assertTrue($set->hasOne(static fn (Foo $element): bool => 1 === $element->id));
 
-        self::assertTrue($set->hasOne(static fn(Foo $element): bool => $element->id === 2));
+        self::assertTrue($set->hasOne(static fn (Foo $element): bool => 2 === $element->id));
 
-        self::assertFalse($set->hasOne(static fn(Foo $element): bool => $element->id === 0));
+        self::assertFalse($set->hasOne(static fn (Foo $element): bool => 0 === $element->id));
     }
 
     public function test_filter(): void
@@ -291,7 +291,7 @@ class SetTest extends TestCase
         $set = $set->add($value = new Foo());
 
         $filteredSet = $set->filter(
-            static fn(Foo $element): bool => $element === $value
+            static fn (Foo $element): bool => $element === $value
         );
 
         self::assertInstanceOf(Set::class, $filteredSet);
@@ -303,7 +303,7 @@ class SetTest extends TestCase
         self::assertCount(3, $set);
 
         // Aucun résultat
-        $filteredSet = $set->filter(static fn(Foo $element): bool => $element->id > 100);
+        $filteredSet = $set->filter(static fn (Foo $element): bool => $element->id > 100);
 
         self::assertEmpty($filteredSet);
         self::assertInstanceOf(Set::class, $filteredSet);
@@ -316,7 +316,7 @@ class SetTest extends TestCase
             ->add(new Foo(2))
             ->add(new Foo(3));
 
-        self::assertSame(16, $set->reduce(function(int $carry, Foo $foo) {
+        self::assertSame(16, $set->reduce(function (int $carry, Foo $foo) {
             $carry += $foo->id;
 
             return $carry;
@@ -324,7 +324,7 @@ class SetTest extends TestCase
 
         // Set vide
         $emptySet = new Set(Foo::class);
-        $result = $emptySet->reduce(fn(int $carry, Foo $foo) => $carry + $foo->id, 0);
+        $result = $emptySet->reduce(fn (int $carry, Foo $foo) => $carry + $foo->id, 0);
         self::assertSame(0, $result);
     }
 
@@ -335,9 +335,9 @@ class SetTest extends TestCase
             ->add(new Foo(2))
             ->add(new Foo(3));
 
-        $fn = fn(Foo $foo): int => $foo->id;
+        $fn = fn (Foo $foo): int => $foo->id;
 
-        $mappedSet = $set->map(fn(Foo $foo): Foo => new Foo($foo->id + 1));
+        $mappedSet = $set->map(fn (Foo $foo): Foo => new Foo($foo->id + 1));
 
         self::assertInstanceOf(FooCollection::class, $mappedSet);
         self::assertSame([2, 3, 4], $mappedSet->toArray($fn));
@@ -347,7 +347,7 @@ class SetTest extends TestCase
         self::assertSame([1, 2, 3], $set->toArray($fn));
 
         // Avec doublons : tous les éléments sont mappés sur la même valeur
-        $mappedSet = $set->map(fn(Foo $foo): Foo => new Foo(1));
+        $mappedSet = $set->map(fn (Foo $foo): Foo => new Foo(1));
         self::assertCount(1, $mappedSet);
         self::assertSame([1], $mappedSet->toArray($fn));
     }
@@ -361,7 +361,7 @@ class SetTest extends TestCase
             ->add(new Foo(2))
             ->add(new Foo(3));
 
-        $set->map(fn(Foo $foo): int => $foo->id);
+        $set->map(fn (Foo $foo): int => $foo->id);
     }
 
     public function test_to_array(): void
@@ -375,7 +375,7 @@ class SetTest extends TestCase
             ['id' => 3],
         ];
 
-        $fn = fn(Foo $foo): array => ['id' => $foo->id];
+        $fn = fn (Foo $foo): array => ['id' => $foo->id];
 
         self::assertSame($expected, $set->toArray($fn));
         self::assertSame([$f1, $f2, $f3], $set->toArray());
@@ -383,7 +383,7 @@ class SetTest extends TestCase
         // Set vide
         $emptySet = new Set(Foo::class);
         self::assertSame([], $emptySet->toArray());
-        self::assertSame([], $emptySet->toArray(fn(Foo $foo): int => $foo->id));
+        self::assertSame([], $emptySet->toArray(fn (Foo $foo): int => $foo->id));
     }
 
     public function test_to_json(): void
@@ -396,8 +396,8 @@ class SetTest extends TestCase
             new Foo(5),
         );
 
-        self::assertSame("[1,2,3,4,5]", $set->toJson(
-            static fn(Foo $foo): int => $foo->id,
+        self::assertSame('[1,2,3,4,5]', $set->toJson(
+            static fn (Foo $foo): int => $foo->id,
         ));
         self::assertSame('[{"id":1},{"id":2},{"id":3},{"id":4},{"id":5}]', $set->toJson());
 
@@ -414,7 +414,7 @@ class SetTest extends TestCase
         $set = $set->add($value3 = new Foo(2));
 
         $sortedSet = $set->sort(
-            static fn(Foo $element1, Foo $element2): int => $element1->id <=> $element2->id
+            static fn (Foo $element1, Foo $element2): int => $element1->id <=> $element2->id
         );
 
         self::assertInstanceOf(Set::class, $sortedSet);
@@ -492,7 +492,7 @@ class SetTest extends TestCase
 
         $result = $set->merge($set2);
 
-        $fn = fn(Foo $foo): int => $foo->id;
+        $fn = fn (Foo $foo): int => $foo->id;
 
         self::assertCount(3, $result);
         self::assertInstanceOf(FooCollection::class, $result);
@@ -540,7 +540,7 @@ class SetTest extends TestCase
         $intersect23 = $set2->intersect($set3);
         $intersect14 = $set1->intersect($set4);
 
-        $toArray = fn(Foo $el) => $el->id;
+        $toArray = fn (Foo $el) => $el->id;
 
         // Vérification immuabilité
         self::assertNotSame($set1, $intersect12);
@@ -594,7 +594,7 @@ class SetTest extends TestCase
         $set1 = new FooCollection()->add(new Foo(2), new Foo(3));
         $set2 = $set1->prepend(new Foo(1));
 
-        $fn = fn(Foo $foo): int => $foo->id;
+        $fn = fn (Foo $foo): int => $foo->id;
 
         self::assertSame([1, 2, 3], $set2->toArray($fn));
 
@@ -623,7 +623,7 @@ class SetTest extends TestCase
     {
         $set = new FooCollection();
 
-        for ($i=0; $i < $setSize; $i++) {
+        for ($i = 0; $i < $setSize; ++$i) {
             $set = $set->add(new Foo($i));
         }
 
@@ -666,7 +666,7 @@ class SetTest extends TestCase
             new Foo(5),
         );
 
-        $fn = static fn(Foo $el): int => $el->id;
+        $fn = static fn (Foo $el): int => $el->id;
 
         $sliced = $set->slice(0, 1);
         self::assertCount(1, $sliced);
