@@ -5,3 +5,7 @@ parameters:
     level: 7
     paths:
         - src
+        - tests
+    excludePaths:
+        # Fichier de la recette Symfony
+        - tests/bootstrap.php
