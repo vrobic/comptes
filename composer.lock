@@ -966,16 +966,16 @@
         },
         {
             "name": "shuchkin/simplexlsx",
-            "version": "1.1.14",
+            "version": "1.1.19",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shuchkin/simplexlsx.git",
-                "reference": "00006719a4d5df6426fa86c6586a5804941e8c38"
+                "reference": "aa94c940c46ec5ee545ed1808c2aefeb26767cf8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shuchkin/simplexlsx/zipball/00006719a4d5df6426fa86c6586a5804941e8c38",
-                "reference": "00006719a4d5df6426fa86c6586a5804941e8c38",
+                "url": "https://api.github.com/repos/shuchkin/simplexlsx/zipball/aa94c940c46ec5ee545ed1808c2aefeb26767cf8",
+                "reference": "aa94c940c46ec5ee545ed1808c2aefeb26767cf8",
                 "shasum": ""
             },
             "require": {
@@ -1014,9 +1014,9 @@
             ],
             "support": {
                 "issues": "https://github.com/shuchkin/simplexlsx/issues",
-                "source": "https://github.com/shuchkin/simplexlsx/tree/1.1.14"
+                "source": "https://github.com/shuchkin/simplexlsx/tree/1.1.19"
             },
-            "time": "2025-05-21T14:34:33+00:00"
+            "time": "2026-09-10T06:32:09+00:00"
         },
         {
             "name": "symfony/cache",
