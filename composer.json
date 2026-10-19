@@ -10,7 +10,7 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "ext-intl": "*",
-        "doctrine/doctrine-bundle": ">=2.15",
+        "doctrine/doctrine-bundle": "^2.15",
         "doctrine/doctrine-migrations-bundle": "^3.4.2",
         "runtime/frankenphp-symfony": "^0.2.0",
         "shuchkin/simplexlsx": "^1.1.14",
