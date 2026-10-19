@@ -1,0 +1,31 @@
+version: 2
+
+updates:
+  - package-ecosystem: composer
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: ⬆️
+    groups:
+      # Une seule PR pour tous les composants Symfony
+      symfony:
+        patterns:
+          - symfony/*
+    ignore:
+      # Les montées de version majeure de Symfony se font à la main
+      - dependency-name: symfony/*
+        update-types:
+          - version-update:semver-major
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: ⬆️
+    groups:
+      # Une seule PR pour toutes les actions
+      github-actions:
+        patterns:
+          - '*'
