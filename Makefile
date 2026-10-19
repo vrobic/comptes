@@ -1,7 +1,7 @@
 include .env
 export
 
-DOCKER_PHP=docker compose exec php
+DOCKER_PHP?=docker compose exec php
 
 .PHONY: help
 help: ## Affiche cette aide
