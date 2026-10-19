@@ -32,15 +32,30 @@ migration-generate: ## Génère le squelette d'un nouvelle migration de base de 
 migration-migrate: ## Exécute les migrations qui n'ont pas été jouées sur la base de données
 	$(DOCKER_PHP) bin/console doctrine:migrations:migrate
 
-lint: ## Exécute PHPCS et PHPStan
+lint: ## Exécute PHPCS, PHPStan et les linters Symfony
 	make cs-fix
 	make stan
+	make lint-symfony
+
+lint-symfony: ## Exécute les linters Symfony (conteneur de services, Twig, YAML)
+	$(DOCKER_PHP) bin/console lint:container
+	$(DOCKER_PHP) bin/console lint:twig templates
+	$(DOCKER_PHP) bin/console lint:yaml config --parse-tags
 
 cs-fix: ## Exécute PHPCS
 	$(DOCKER_PHP) vendor/bin/php-cs-fixer fix src --allow-risky=yes
+
+cs-check: ## Exécute PHPCS sans modifier les fichiers
+	$(DOCKER_PHP) vendor/bin/php-cs-fixer fix src --allow-risky=yes --dry-run --diff
 
 stan: ## Exécute PHPStan
 	$(DOCKER_PHP) vendor/bin/phpstan analyse --memory-limit 256M
 
 stan-baseline: ## Régénère la baseline PHPStan
 	$(DOCKER_PHP) vendor/bin/phpstan analyse --memory-limit 256M --generate-baseline phpstan-baseline.neon
+
+test: ## Exécute PHPUnit
+	$(DOCKER_PHP) bin/phpunit
+
+audit: ## Vérifie les vulnérabilités connues des dépendances
+	$(DOCKER_PHP) composer audit
