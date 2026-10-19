@@ -43,10 +43,10 @@ lint-symfony: ## Exécute les linters Symfony (conteneur de services, Twig, YAML
 	$(DOCKER_PHP) bin/console lint:yaml config --parse-tags
 
 cs-fix: ## Exécute PHPCS
-	$(DOCKER_PHP) vendor/bin/php-cs-fixer fix src --allow-risky=yes
+	$(DOCKER_PHP) vendor/bin/php-cs-fixer fix --allow-risky=yes
 
 cs-check: ## Exécute PHPCS sans modifier les fichiers
-	$(DOCKER_PHP) vendor/bin/php-cs-fixer fix src --allow-risky=yes --dry-run --diff
+	$(DOCKER_PHP) vendor/bin/php-cs-fixer fix --allow-risky=yes --dry-run --diff
 
 stan: ## Exécute PHPStan
 	$(DOCKER_PHP) vendor/bin/phpstan analyse --memory-limit 256M
