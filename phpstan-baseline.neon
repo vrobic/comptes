@@ -1,0 +1,205 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Property App\\Application\\Import\\AbstractMouvementsImportHandler\:\:\$configuration type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Application/Import/AbstractMouvementsImportHandler.php
+
+		-
+			message: '#^Call to function is_array\(\) with array\<''credit''\|''date_operation''\|''date_valeur''\|''debit''\|''libelle''\|''solde'', string\|null\> will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Application/Import/CMCSVMouvementsImportHandler.php
+
+		-
+			message: '#^Call to function is_array\(\) with array\<''''\|''credit''\|''date''\|''debit''\|''detail''\|''libelle''\|''numero_operation'', string\|null\> will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Application/Import/CaisseEpargneCSVMouvementsImportHandler.php
+
+		-
+			message: '#^Class App\\Domain\\DataStructure\\Map implements generic interface IteratorAggregate but does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Domain/DataStructure/Map.php
+
+		-
+			message: '#^Method App\\Domain\\DataStructure\\Map\:\:fromRaw\(\) has parameter \$data with generic class Ds\\Map but does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Domain/DataStructure/Map.php
+
+		-
+			message: '#^Method App\\Domain\\DataStructure\\Map\:\:getKeys\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Domain/DataStructure/Map.php
+
+		-
+			message: '#^Method App\\Domain\\DataStructure\\Map\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Domain/DataStructure/Map.php
+
+		-
+			message: '#^Property App\\Domain\\DataStructure\\Map\:\:\$data with generic class Ds\\Map does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Domain/DataStructure/Map.php
+
+		-
+			message: '#^Unsafe usage of new static\(\)\.$#'
+			identifier: new.static
+			count: 1
+			path: src/Domain/DataStructure/Map.php
+
+		-
+			message: '#^Method App\\Domain\\DataStructure\\Maybe\:\:nothing\(\) return type with generic class App\\Domain\\DataStructure\\Maybe does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Domain/DataStructure/Maybe.php
+
+		-
+			message: '#^Method App\\Domain\\DataStructure\\Set\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Domain/DataStructure/Set.php
+
+		-
+			message: '#^Unsafe usage of new static\(\)\.$#'
+			identifier: new.static
+			count: 5
+			path: src/Domain/DataStructure/Set.php
+
+		-
+			message: '#^Method App\\Infrastructure\\Configuration\\ConfigurationLoader\:\:__invoke\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Infrastructure/Configuration/ConfigurationLoader.php
+
+		-
+			message: '#^Call to function array_key_exists\(\) with ''rang'' and array\{this\: \$this\(App\\Infrastructure\\Controller\\CategorieController\), request\: Symfony\\Component\\HttpFoundation\\Request, keywords\: App\\Domain\\Keyword\\KeywordCollection, keywordsParCatégorieId\: App\\Domain\\Keyword\\KeywordsParCategorieIdMap, action\: mixed, batchArray\: mixed, categoriesArray\: mixed, categorieArray\: mixed, \.\.\.\} will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 2
+			path: src/Infrastructure/Controller/CategorieController.php
+
+		-
+			message: '#^Variable \$nom might not be defined\.$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/Infrastructure/Controller/CategorieController.php
+
+		-
+			message: '#^Variable \$categorie might not be defined\.$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/Infrastructure/Controller/MouvementController.php
+
+		-
+			message: '#^Variable \$compte might not be defined\.$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/Infrastructure/Controller/MouvementController.php
+
+		-
+			message: '#^Variable \$date might not be defined\.$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/Infrastructure/Controller/MouvementController.php
+
+		-
+			message: '#^Variable \$description might not be defined\.$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/Infrastructure/Controller/MouvementController.php
+
+		-
+			message: '#^Variable \$montant might not be defined\.$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/Infrastructure/Controller/MouvementController.php
+
+		-
+			message: '#^Property App\\Infrastructure\\Controller\\MouvementsImportController\:\:\$handlers type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Infrastructure/Controller/MouvementsImportController.php
+
+		-
+			message: '#^Method App\\Infrastructure\\Denormalizer\\CategorieDenormalizer\:\:denormalize\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Infrastructure/Denormalizer/CategorieDenormalizer.php
+
+		-
+			message: '#^Method App\\Infrastructure\\Denormalizer\\CompteDenormalizer\:\:denormalize\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Infrastructure/Denormalizer/CompteDenormalizer.php
+
+		-
+			message: '#^Method App\\Infrastructure\\Denormalizer\\Denormalizer\:\:denormalize\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Infrastructure/Denormalizer/Denormalizer.php
+
+		-
+			message: '#^Method App\\Infrastructure\\Denormalizer\\KeywordDenormalizer\:\:denormalize\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Infrastructure/Denormalizer/KeywordDenormalizer.php
+
+		-
+			message: '#^Method App\\Infrastructure\\Denormalizer\\MouvementDenormalizer\:\:denormalize\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Infrastructure/Denormalizer/MouvementDenormalizer.php
+
+		-
+			message: '#^Method App\\Infrastructure\\Repository\\KeywordRepository\:\:préparerRowPourDenormalizer\(\) has parameter \$row with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Infrastructure/Repository/KeywordRepository.php
+
+		-
+			message: '#^Method App\\Infrastructure\\Repository\\KeywordRepository\:\:préparerRowPourDenormalizer\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Infrastructure/Repository/KeywordRepository.php
+
+		-
+			message: '#^Method App\\Infrastructure\\Repository\\KeywordRepository\:\:préparerRowsPourDenormalizer\(\) has parameter \$rows with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Infrastructure/Repository/KeywordRepository.php
+
+		-
+			message: '#^Method App\\Infrastructure\\Repository\\KeywordRepository\:\:préparerRowsPourDenormalizer\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Infrastructure/Repository/KeywordRepository.php
+
+		-
+			message: '#^Method App\\Infrastructure\\Repository\\MouvementRepository\:\:préparerRowPourDenormalizer\(\) has parameter \$row with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Infrastructure/Repository/MouvementRepository.php
+
+		-
+			message: '#^Method App\\Infrastructure\\Repository\\MouvementRepository\:\:préparerRowPourDenormalizer\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Infrastructure/Repository/MouvementRepository.php
+
+		-
+			message: '#^Method App\\Infrastructure\\Repository\\MouvementRepository\:\:préparerRowsPourDenormalizer\(\) has parameter \$rows with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Infrastructure/Repository/MouvementRepository.php
+
+		-
+			message: '#^Method App\\Infrastructure\\Repository\\MouvementRepository\:\:préparerRowsPourDenormalizer\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Infrastructure/Repository/MouvementRepository.php
