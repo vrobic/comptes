@@ -12,7 +12,7 @@
         "ext-intl": "*",
         "doctrine/doctrine-bundle": "^2.15",
         "doctrine/doctrine-migrations-bundle": "^3.4.2",
-        "runtime/frankenphp-symfony": "^0.2.0",
+        "runtime/frankenphp-symfony": "^1.0.0",
         "shuchkin/simplexlsx": "^1.1.14",
         "symfony/console": "7.4.*",
         "symfony/dotenv": "7.4.*",
