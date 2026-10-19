@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Domain\Mouvement;
 
 use App\Domain\Categorie\CategorieId;
@@ -98,7 +100,7 @@ final class MouvementCollectionTest extends TestCase
             [
                 ...$set->filtrerParPériode(
                     new Periode(new \DateTimeImmutable('2025-06-01'), new \DateTimeImmutable('2025-09-30'))
-                )
+                ),
             ]
         );
     }
@@ -142,7 +144,7 @@ final class MouvementCollectionTest extends TestCase
             [
                 ...$set->filtrerParCatégorie(
                     new CategorieId('592608a2-aa28-4d96-8615-d0aec2d09467')
-                )
+                ),
             ]
         );
     }
