@@ -128,7 +128,7 @@ class MapTest extends TestCase
     {
         self::expectExceptionObject(new \InvalidArgumentException('type de la clé invalide'));
 
-        $map->remove($clé, new Value());
+        $map->remove($clé);
     }
 
     #[DataProvider('couplesClésObjetValides')]
@@ -165,7 +165,7 @@ class MapTest extends TestCase
     {
         self::expectExceptionObject(new \InvalidArgumentException('type de la clé invalide'));
 
-        $map->get($clé, new Value());
+        $map->get($clé);
     }
 
     #[DataProvider('couplesClésObjetValides')]
@@ -198,7 +198,7 @@ class MapTest extends TestCase
     {
         self::expectExceptionObject(new \InvalidArgumentException('type de la clé invalide'));
 
-        $map->tryGet($clé, new Value());
+        $map->tryGet($clé);
     }
 
     #[DataProvider('couplesClésObjetValides')]
@@ -559,7 +559,7 @@ class MapTest extends TestCase
                     parent::__construct(\Exception::class, Value::class);
                 }
 
-                /** @param \Exception */
+                /** @param \Exception $key */
                 public function getUniqueKey(mixed $key): string
                 {
                     return $key::class.$key->getMessage();
@@ -692,7 +692,7 @@ class MapTest extends TestCase
                     parent::__construct(Value::class, \Exception::class);
                 }
 
-                /** @param \Exception */
+                /** @param \Exception $key */
                 public function getUniqueKey(mixed $key): string
                 {
                     return $key::class.$key->getMessage();

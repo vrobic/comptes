@@ -561,6 +561,7 @@ class SetTest extends TestCase
 
         $this->expectException(\RuntimeException::class);
 
+        // @phpstan-ignore argument.type (on vérifie justement le rejet d'un Set d'un autre type)
         $fooCollection->intersect($set);
     }
 
@@ -618,6 +619,7 @@ class SetTest extends TestCase
         self::assertNotEmpty($set);
     }
 
+    /** @param int[] $counts */
     #[DataProvider('chunks')]
     public function test_chunk(int $setSize, int $chunksSize, array $counts): void
     {
@@ -642,6 +644,7 @@ class SetTest extends TestCase
         }
     }
 
+    /** @return array{int, int, int[]}[] */
     public static function chunks(): array
     {
         return [

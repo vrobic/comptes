@@ -49,7 +49,7 @@ final class GenererInstance
         return new Categorie(
             new CategorieId($id),
             $nom,
-            $catégorieParente,
+            is_string($catégorieParente) ? new CategorieId($catégorieParente) : null,
             new CategorieIdCollection(),
             $rang
         );
