@@ -40,4 +40,7 @@ cs-fix: ## Exécute PHPCS
 	$(DOCKER_PHP) vendor/bin/php-cs-fixer fix src --allow-risky=yes
 
 stan: ## Exécute PHPStan
-	$(DOCKER_PHP) vendor/bin/phpstan analyse -l 7 src --memory-limit 256M
+	$(DOCKER_PHP) vendor/bin/phpstan analyse --memory-limit 256M
+
+stan-baseline: ## Régénère la baseline PHPStan
+	$(DOCKER_PHP) vendor/bin/phpstan analyse --memory-limit 256M --generate-baseline phpstan-baseline.neon
