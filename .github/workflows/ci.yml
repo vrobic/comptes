@@ -53,6 +53,9 @@ jobs:
         name: Check Mercure reachability
         run: curl -vkI --fail-with-body https://localhost/.well-known/mercure?topic=test
       -
+        name: Run Composer validate
+        run: make validate
+      -
         name: Run PHP-CS-Fixer
         run: make cs-check
       -

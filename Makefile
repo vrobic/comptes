@@ -57,5 +57,8 @@ stan-baseline: ## Régénère la baseline PHPStan
 test: ## Exécute PHPUnit
 	$(DOCKER_PHP) bin/phpunit
 
+validate: ## Vérifie composer.json et sa synchronisation avec composer.lock
+	$(DOCKER_PHP) composer validate --strict
+
 audit: ## Vérifie les vulnérabilités connues des dépendances
 	$(DOCKER_PHP) composer audit
