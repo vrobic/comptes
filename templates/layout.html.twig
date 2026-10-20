@@ -30,17 +30,17 @@
                     <div class="sidebar col-md-2">
                         {% block sidebar %}
                             <ul class="nav nav-sidebar">
-                                <li{% if app.request.get('_route') == 'comptes_comptes' %} class="active"{% endif %}>
+                                <li{% if app.current_route == 'comptes_comptes' %} class="active"{% endif %}>
                                     <a href="{{ path('comptes_comptes') }}">
                                         <span class="glyphicon glyphicon-euro"></span> Comptes
                                     </a>
                                 </li>
-                                <li{% if app.request.get('_route') == 'categories_categories' %} class="active"{% endif %}>
+                                <li{% if app.current_route == 'categories_categories' %} class="active"{% endif %}>
                                     <a href="{{ path('categories_categories') }}">
                                         <span class="glyphicon glyphicon-list-alt"></span> Catégories
                                     </a>
                                 </li>
-                                <li{% if app.request.get('_route') starts with 'import_mouvements' %} class="active"{% endif %}>
+                                <li{% if app.current_route starts with 'import_mouvements' %} class="active"{% endif %}>
                                     <a href="{{ path('import_mouvements') }}">
                                         <span class="glyphicon glyphicon-import"></span> Import mouvements
                                     </a>
