@@ -98,7 +98,7 @@ final readonly class KeywordRepository implements KeywordRepositoryInterface
                 'categorie.nom AS categorie_nom',
                 'categorie.rang AS categorie_rang',
                 'categorie.categorie_parente_id AS categorie_categorie_parente_id',
-                'GROUP_CONCAT(DISTINCT categories_filles.id) AS categorie_categories_filles',
+                'GROUP_CONCAT(DISTINCT categories_filles.id ORDER BY categories_filles.id) AS categorie_categories_filles',
             )
             ->from('keywords', 'keyword')
             ->leftJoin('keyword', 'categories', 'categorie', 'categorie.id = keyword.categorie_id')

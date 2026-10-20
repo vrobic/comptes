@@ -110,11 +110,12 @@ final readonly class CategorieRepository implements CategorieRepositoryInterface
         return $this->connection->createQueryBuilder()
             ->select(
                 'categorie.*',
-                'GROUP_CONCAT(DISTINCT categorie_fille.id) AS categories_filles',
+                'GROUP_CONCAT(DISTINCT categorie_fille.id ORDER BY categorie_fille.id) AS categories_filles',
             )
             ->from('categories', 'categorie')
             ->leftJoin('categorie', 'categories', 'categorie_fille', 'categorie_fille.categorie_parente_id = categorie.id')
             ->groupBy('categorie.id')
-            ->orderBy('categorie.rang', 'ASC');
+            ->orderBy('categorie.rang', 'ASC')
+            ->addOrderBy('categorie.id', 'ASC');
     }
 }
