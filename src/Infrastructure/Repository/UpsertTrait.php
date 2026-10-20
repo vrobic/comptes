@@ -31,11 +31,11 @@ trait UpsertTrait
               %s
             ) ON DUPLICATE KEY UPDATE %s;
             SQL,
-            $connection->quoteIdentifier($table),
+            $connection->quoteSingleIdentifier($table),
             implode(
                 ",\n  ",
                 array_map(
-                    static fn (string $key): string => $connection->quoteIdentifier($key),
+                    static fn (string $key): string => $connection->quoteSingleIdentifier($key),
                     $keysToInsert
                 )
             ),
@@ -49,7 +49,7 @@ trait UpsertTrait
             implode(
                 ",\n  ",
                 array_map(
-                    static fn (string $key): string => sprintf('%s = :%s', $connection->quoteIdentifier($key), $key),
+                    static fn (string $key): string => sprintf('%s = :%s', $connection->quoteSingleIdentifier($key), $key),
                     $keysToUpdate,
                 )
             ),
@@ -82,11 +82,11 @@ trait UpsertTrait
               %s
             );
             SQL,
-            $connection->quoteIdentifier($table),
+            $connection->quoteSingleIdentifier($table),
             implode(
                 ",\n  ",
                 array_map(
-                    static fn (string $key): string => $connection->quoteIdentifier($key),
+                    static fn (string $key): string => $connection->quoteSingleIdentifier($key),
                     $keys
                 )
             ),
