@@ -27,8 +27,10 @@ final readonly class CompteValueResolver implements ValueResolverInterface
             return [];
         }
 
+        // compteId a deux sources légitimes : la route sur /compte/{compteId}, et à défaut la query string
+        // sur /categories et /categorie/{categorieId}, où le <select name="compteId"> des formulaires GET et les liens l'ajoutent
         // Le front peut envoyer une string vide, d'où la ternaire
-        $compteId = $request->get('compteId') ?: null;
+        $compteId = ($request->attributes->get('compteId') ?? $request->query->get('compteId')) ?: null;
 
         if ($argument->isNullable() && is_null($compteId)) {
             return [null];
