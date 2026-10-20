@@ -66,7 +66,7 @@ class CaisseEpargneCSVMouvementsImportHandler extends AbstractMouvementsImportHa
         $currentLine = 0;
         $headersLine = 4;
 
-        while (is_array($cols = $file->fgetcsv(';'))) {
+        while (is_array($cols = $file->fgetcsv(';', '"', '\\'))) {
             /* @var string[] $cols */
 
             // Si on a dépassé la ligne d'en-têtes
