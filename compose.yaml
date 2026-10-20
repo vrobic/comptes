@@ -39,7 +39,8 @@ services:
       retries: 5
       start_period: 60s
     volumes:
-      - database_data:/var/lib/mysql:rw
+      # Volume propre à MySQL 8.4 : l'ancien volume database_data, créé par MySQL 5.7, est incompatible et n'est plus monté
+      - database_data_mysql84:/var/lib/mysql:rw
       # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
       # - ./docker/db/data:/var/lib/mysql:rw
     ports:
@@ -48,4 +49,4 @@ services:
 volumes:
   caddy_data:
   caddy_config:
-  database_data:
+  database_data_mysql84:
