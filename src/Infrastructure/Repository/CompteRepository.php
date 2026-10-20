@@ -80,6 +80,7 @@ final readonly class CompteRepository implements CompteRepositoryInterface
             ->leftJoin('compte', 'mouvements', 'mouvement', 'mouvement.compte_id = compte.id')
             ->addGroupBy('compte.id')
             ->addOrderBy('compte.rang', 'ASC')
-            ->addOrderBy('compte.date_fermeture', 'DESC');
+            ->addOrderBy('compte.date_fermeture', 'DESC')
+            ->addOrderBy('compte.id', 'ASC');
     }
 }

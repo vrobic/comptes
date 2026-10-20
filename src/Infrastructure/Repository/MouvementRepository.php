@@ -45,7 +45,7 @@ final readonly class MouvementRepository implements MouvementRepositoryInterface
                         categorie.nom AS categorie_nom,
                         categorie.rang AS categorie_rang,
                         categorie.categorie_parente_id AS categorie_categorie_parente_id,
-                        GROUP_CONCAT(DISTINCT categories_filles.id) AS categorie_categories_filles,
+                        GROUP_CONCAT(DISTINCT categories_filles.id ORDER BY categories_filles.id) AS categorie_categories_filles,
                         compte.id AS compte_id,
                         compte.nom AS compte_nom,
                         compte.numero AS compte_numero,
@@ -156,7 +156,7 @@ final readonly class MouvementRepository implements MouvementRepositoryInterface
                 categorie.nom AS categorie_nom,
                 categorie.rang AS categorie_rang,
                 categorie.categorie_parente_id AS categorie_categorie_parente_id,
-                GROUP_CONCAT(DISTINCT categories_filles.id) AS categorie_categories_filles,
+                GROUP_CONCAT(DISTINCT categories_filles.id ORDER BY categories_filles.id) AS categorie_categories_filles,
                 compte.id AS compte_id,
                 compte.nom AS compte_nom,
                 compte.numero AS compte_numero,
@@ -185,7 +185,7 @@ final readonly class MouvementRepository implements MouvementRepositoryInterface
 
         $sql .= <<<SQL
             GROUP BY mouvement.id
-            ORDER BY mouvement.date ASC;
+            ORDER BY mouvement.date ASC, mouvement.id ASC;
         SQL;
 
         $rows = $this->connection->fetchAllAssociative(
@@ -216,7 +216,7 @@ final readonly class MouvementRepository implements MouvementRepositoryInterface
                         categorie.nom AS categorie_nom,
                         categorie.rang AS categorie_rang,
                         categorie.categorie_parente_id AS categorie_categorie_parente_id,
-                        GROUP_CONCAT(DISTINCT categories_filles.id) AS categorie_categories_filles,
+                        GROUP_CONCAT(DISTINCT categories_filles.id ORDER BY categories_filles.id) AS categorie_categories_filles,
                         compte.id AS compte_id,
                         compte.nom AS compte_nom,
                         compte.numero AS compte_numero,
@@ -239,7 +239,7 @@ final readonly class MouvementRepository implements MouvementRepositoryInterface
                     WHERE
                         mouvement.compte_id = :compte_id
                     GROUP BY mouvement.id
-                    ORDER BY mouvement.date ASC
+                    ORDER BY mouvement.date ASC, mouvement.id ASC
                     LIMIT 1;
                 SQL,
                 [
@@ -257,7 +257,7 @@ final readonly class MouvementRepository implements MouvementRepositoryInterface
                         categorie.nom AS categorie_nom,
                         categorie.rang AS categorie_rang,
                         categorie.categorie_parente_id AS categorie_categorie_parente_id,
-                        GROUP_CONCAT(DISTINCT categories_filles.id) AS categorie_categories_filles,
+                        GROUP_CONCAT(DISTINCT categories_filles.id ORDER BY categories_filles.id) AS categorie_categories_filles,
                         compte.id AS compte_id,
                         compte.nom AS compte_nom,
                         compte.numero AS compte_numero,
@@ -278,7 +278,7 @@ final readonly class MouvementRepository implements MouvementRepositoryInterface
                         GROUP BY compte_id
                     ) compte_solde ON compte.id = compte_solde.compte_id
                     GROUP BY mouvement.id
-                    ORDER BY mouvement.date ASC
+                    ORDER BY mouvement.date ASC, mouvement.id ASC
                     LIMIT 1;
                 SQL
             )
@@ -306,7 +306,7 @@ final readonly class MouvementRepository implements MouvementRepositoryInterface
                     categorie.nom AS categorie_nom,
                     categorie.rang AS categorie_rang,
                     categorie.categorie_parente_id AS categorie_categorie_parente_id,
-                    GROUP_CONCAT(DISTINCT categories_filles.id) AS categorie_categories_filles,
+                    GROUP_CONCAT(DISTINCT categories_filles.id ORDER BY categories_filles.id) AS categorie_categories_filles,
                     compte.id AS compte_id,
                     compte.nom AS compte_nom,
                     compte.numero AS compte_numero,
@@ -327,7 +327,7 @@ final readonly class MouvementRepository implements MouvementRepositoryInterface
                     GROUP BY compte_id
                 ) compte_solde ON compte.id = compte_solde.compte_id
                 GROUP BY mouvement.id
-                ORDER BY mouvement.date DESC
+                ORDER BY mouvement.date DESC, mouvement.id DESC
                 LIMIT 1;
             SQL
         );
