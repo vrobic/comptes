@@ -234,9 +234,9 @@ final class CategorieController extends AbstractController
         $keywordsParCatégorieId = $keywords->trierParCatégorie();
 
         // Valeurs postées
-        $action = $request->get('action');
-        $batchArray = $request->get('batch', []);
-        $categoriesArray = $request->get('categories', []);
+        $action = $request->request->get('action');
+        $batchArray = $request->request->all('batch');
+        $categoriesArray = $request->request->all('categories');
 
         /** @var string $categorieId */
         foreach ($batchArray as $categorieId) {
@@ -419,7 +419,7 @@ final class CategorieController extends AbstractController
         }
 
         // URL de redirection
-        $redirectURL = $request->get('redirect_url');
+        $redirectURL = $request->request->get('redirect_url');
 
         if (is_string($redirectURL)) {
             return $this->redirect($redirectURL);
