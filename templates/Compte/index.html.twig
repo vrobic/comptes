@@ -161,6 +161,11 @@
                         zoomType: 'x',
                         events: {
                             load: function () {
+                                // Aucun mouvement : rien à zoomer
+                                if (this.series[0].data.length === 0) {
+                                    return;
+                                }
+
                                 const data = this.series[0].data,
                                     oneYearAgo = new Date().setFullYear(new Date().getFullYear() - 1),
                                     firstDate = data[0].x,
