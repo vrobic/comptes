@@ -63,8 +63,9 @@ final class CompteController extends AbstractController
             $mouvements = $mouvements->trierParDate();
         }
 
-        $firstMouvement = $mouvements->first();
-        $lastMouvement = $mouvements->last();
+        // Sans aucun mouvement (ni solde initial), la collection est vide
+        $firstMouvement = $mouvements->isEmpty() ? null : $mouvements->first();
+        $lastMouvement = $mouvements->isEmpty() ? null : $mouvements->last();
 
         // Balance
         $balance = $mouvements->balance();
