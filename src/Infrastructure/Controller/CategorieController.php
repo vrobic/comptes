@@ -48,8 +48,9 @@ final class CategorieController extends AbstractController
         #[PeriodeParDefautAttribute(Depuis::UN_AN)]
         Periode $période,
     ): Response {
+        // Depuis le premier mouvement, pour l'évolution annuelle, sauf si la période lui est antérieure
         $firstMouvement = $this->mouvementRepository->findFirstOne($compte?->id);
-        $périodeÉtendue = $firstMouvement instanceof Mouvement ?
+        $périodeÉtendue = $firstMouvement instanceof Mouvement && $firstMouvement->date <= $période->fin ?
             new Periode($firstMouvement->date, $période->fin) :
             $période;
 
