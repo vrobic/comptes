@@ -7,13 +7,13 @@ parameters:
 			path: src/Application/Import/AbstractMouvementsImportHandler.php
 
 		-
-			message: '#^Call to function is_array\(\) with array\<''credit''\|''date_operation''\|''date_valeur''\|''debit''\|''libelle''\|''solde'', string\|null\> will always evaluate to true\.$#'
+			message: '#^Call to function is_array\(\) with non\-empty\-array\<''credit''\|''date_operation''\|''date_valeur''\|''debit''\|''libelle''\|''solde'', string\|null\> will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 1
 			path: src/Application/Import/CMCSVMouvementsImportHandler.php
 
 		-
-			message: '#^Call to function is_array\(\) with array\<''''\|''credit''\|''date''\|''debit''\|''detail''\|''libelle''\|''numero_operation'', string\|null\> will always evaluate to true\.$#'
+			message: '#^Call to function is_array\(\) with non\-empty\-array\<''''\|''credit''\|''date''\|''debit''\|''detail''\|''libelle''\|''numero_operation'', string\|null\> will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 1
 			path: src/Application/Import/CaisseEpargneCSVMouvementsImportHandler.php
@@ -79,8 +79,14 @@ parameters:
 			path: src/Infrastructure/Configuration/ConfigurationLoader.php
 
 		-
-			message: '#^Call to function array_key_exists\(\) with ''rang'' and array\{this\: \$this\(App\\Infrastructure\\Controller\\CategorieController\), request\: Symfony\\Component\\HttpFoundation\\Request, keywords\: App\\Domain\\Keyword\\KeywordCollection, keywordsParCatégorieId\: App\\Domain\\Keyword\\KeywordsParCategorieIdMap, action\: mixed, batchArray\: mixed, categoriesArray\: mixed, categorieArray\: mixed, \.\.\.\} will always evaluate to true\.$#'
+			message: '#^Call to function array_key_exists\(\) with ''rang'' and array\{action\: mixed, request\: Symfony\\Component\\HttpFoundation\\Request, keywords\: App\\Domain\\Keyword\\KeywordCollection, batchArray\: mixed, categoriesArray\: mixed, keywordsParCatégorieId\: App\\Domain\\Keyword\\KeywordsParCategorieIdMap, categorieArray\: mixed, categorieId\: App\\Domain\\Categorie\\CategorieId\|null, \.\.\.\} will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
+			count: 2
+			path: src/Infrastructure/Controller/CategorieController.php
+
+		-
+			message: '#^Variable \$categorieParente might not be defined\.$#'
+			identifier: variable.undefined
 			count: 2
 			path: src/Infrastructure/Controller/CategorieController.php
 
