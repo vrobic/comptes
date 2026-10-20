@@ -9,7 +9,6 @@ doctrine:
         charset: '%env(resolve:MYSQL_CHARSET)%'
 
         profiling_collect_backtrace: '%kernel.debug%'
-        use_savepoints: true
 
 when@test:
     doctrine:
