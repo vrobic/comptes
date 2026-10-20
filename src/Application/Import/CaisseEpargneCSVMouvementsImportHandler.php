@@ -92,7 +92,7 @@ class CaisseEpargneCSVMouvementsImportHandler extends AbstractMouvementsImportHa
 
         foreach ($rows as $row) {
             // Date
-            $date = \DateTimeImmutable::createFromFormat('d/m/y', (string) $row['date']);
+            $date = \DateTimeImmutable::createFromFormat('!d/m/y', (string) $row['date']);
             if (!$date instanceof \DateTimeImmutable) {
                 throw new \Exception("Date du mouvement invalide : {$row['date']}");
             }

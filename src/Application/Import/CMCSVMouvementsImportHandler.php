@@ -91,7 +91,7 @@ class CMCSVMouvementsImportHandler extends AbstractMouvementsImportHandler
 
         foreach ($rows as $row) {
             // Date
-            $date = \DateTimeImmutable::createFromFormat('d/m/Y', (string) $row['date_operation']);
+            $date = \DateTimeImmutable::createFromFormat('!d/m/Y', (string) $row['date_operation']);
             if (!$date instanceof \DateTimeImmutable) {
                 throw new \Exception("Date du mouvement invalide : {$row['date_operation']}");
             }
