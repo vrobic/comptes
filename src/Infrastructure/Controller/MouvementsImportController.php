@@ -182,7 +182,7 @@ class MouvementsImportController extends AbstractController
             if (isset($mouvementsData[$id]['date'])) {
                 $dateString = $mouvementsData[$id]['date'];
                 $date = \DateTimeImmutable::createFromFormat('d-m-Y H:i:s', "$dateString 00:00:00");
-                if (!($date instanceof \DateTimeImmutable)) {
+                if (!$date instanceof \DateTimeImmutable) {
                     throw new BadRequestHttpException("Date du mouvement invalide : $dateString");
                 }
                 $mouvement->date = $date;
@@ -197,7 +197,7 @@ class MouvementsImportController extends AbstractController
                 if ($categorieId instanceof CategorieId) {
                     $categorie = $this->categorieRepository->find($categorieId);
 
-                    if (!($categorie instanceof Categorie)) {
+                    if (!$categorie instanceof Categorie) {
                         throw new BadRequestHttpException("Catégorie $categorieId introuvable");
                     }
                 } else {
@@ -213,7 +213,7 @@ class MouvementsImportController extends AbstractController
                     $compteId = new CompteId((string) $mouvementsData[$id]['compte']);
                     $compte = $this->compteRepository->find($compteId);
 
-                    if (!($compte instanceof Compte)) {
+                    if (!$compte instanceof Compte) {
                         throw new BadRequestHttpException("Compte $compteId introuvable");
                     }
 
@@ -282,7 +282,7 @@ class MouvementsImportController extends AbstractController
         /** @var ?UploadedFile $file */
         $file = $request->files->get('file');
 
-        if (!($file instanceof UploadedFile)) {
+        if (!$file instanceof UploadedFile) {
             throw new BadRequestHttpException('Fichier manquant.');
         }
         if (!$file->isValid()) {

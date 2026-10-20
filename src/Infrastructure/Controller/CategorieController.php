@@ -271,7 +271,7 @@ final class CategorieController extends AbstractController
                             if ($categorieParenteId instanceof CategorieId) {
                                 $categorieParente = $this->categorieRepository->find($categorieParenteId);
 
-                                if (!($categorieParente instanceof Categorie)) {
+                                if (!$categorieParente instanceof Categorie) {
                                     throw new BadRequestHttpException("Catégorie $categorieId introuvable");
                                 }
                             } else {
@@ -287,7 +287,7 @@ final class CategorieController extends AbstractController
                         if ($categorieId instanceof CategorieId) { // Édition
                             $categorie = $this->categorieRepository->find($categorieId);
 
-                            if (!($categorie instanceof Categorie)) {
+                            if (!$categorie instanceof Categorie) {
                                 throw new BadRequestHttpException("Catégorie $categorieId introuvable");
                             }
 
@@ -351,7 +351,7 @@ final class CategorieController extends AbstractController
                                     static fn (Keyword $keyword): bool => $keyword->word === $motAjouté,
                                 );
 
-                                if (!($keyword instanceof Keyword)) { // Si non, on le crée
+                                if (!$keyword instanceof Keyword) { // Si non, on le crée
                                     $keyword = new Keyword(
                                         new KeywordId((string) $this->idGenerator->générer()),
                                         $motAjouté,
@@ -377,7 +377,7 @@ final class CategorieController extends AbstractController
                                     static fn (Keyword $keyword): bool => $keyword->word === $motSupprimé,
                                 );
 
-                                if (!($keyword instanceof Keyword)) {
+                                if (!$keyword instanceof Keyword) {
                                     continue;
                                 }
 

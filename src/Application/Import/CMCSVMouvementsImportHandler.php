@@ -40,7 +40,7 @@ class CMCSVMouvementsImportHandler extends AbstractMouvementsImportHandler
         // Le compte bancaire dans lequel importer les mouvements
         $compte = $this->compteRepository->find(new CompteId($configuration['compte']));
 
-        if (!($compte instanceof Compte)) {
+        if (!$compte instanceof Compte) {
             throw new \RuntimeException(); // @todo
         }
 
@@ -92,7 +92,7 @@ class CMCSVMouvementsImportHandler extends AbstractMouvementsImportHandler
         foreach ($rows as $row) {
             // Date
             $date = \DateTimeImmutable::createFromFormat('d/m/Y', (string) $row['date_operation']);
-            if (!($date instanceof \DateTimeImmutable)) {
+            if (!$date instanceof \DateTimeImmutable) {
                 throw new \Exception("Date du mouvement invalide : {$row['date_operation']}");
             }
 
