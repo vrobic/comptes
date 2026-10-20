@@ -43,7 +43,8 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_USER: ${MYSQL_USER}
     healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      # 127.0.0.1 force TCP : le serveur temporaire qui initialise une base neuve n'écoute que sur la socket
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "127.0.0.1"]
       timeout: 5s
       retries: 5
       start_period: 60s
