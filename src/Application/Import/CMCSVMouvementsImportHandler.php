@@ -72,7 +72,7 @@ class CMCSVMouvementsImportHandler extends AbstractMouvementsImportHandler
             if ($currentLine > $headersLine) {
                 // Si la date est valide et sans month shifting
                 $date = \DateTimeImmutable::createFromFormat('d/m/Y', $cols[0]);
-                $isValidDate = $date instanceof \DateTimeImmutable && is_array($date->getLastErrors()) && 0 === array_sum($date->getLastErrors());
+                $isValidDate = $date instanceof \DateTimeImmutable && false === $date->getLastErrors();
 
                 // Alors la ligne en cours est un mouvement
                 if ($isValidDate) {
