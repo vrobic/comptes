@@ -40,11 +40,10 @@ For instance, to use self-signed certificates created with [mkcert](https://gith
 
 ## Disabling HTTPS for Local Development
 
-To disable HTTPS, configure your environment to use HTTP by setting the following variables and starting the project with this command:
+To disable HTTPS, configure your environment to use HTTP by setting the following variable and starting the project with this command:
 
 ```bash
 SERVER_NAME=http://localhost \
-MERCURE_PUBLIC_URL=http://localhost/.well-known/mercure \
 docker compose up --wait
 ```
 
