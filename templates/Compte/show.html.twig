@@ -210,7 +210,7 @@
                 </tr>
             </tfoot>
         </table>
-        <input type="hidden" name="redirect_url" value="{{ path(app.request.get('_route'), {'compteId': compte.id, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y')}) }}">
+        <input type="hidden" name="redirect_url" value="{{ path(app.current_route, {'compteId': compte.id, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y')}) }}">
         <div class="btn-group">
             <button class="btn btn-default" type="submit" name="action" value="save">
                 <span class="glyphicon glyphicon-floppy-disk"></span> Enregistrer
