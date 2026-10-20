@@ -109,7 +109,7 @@ final class CompteController extends AbstractController
         Periode $période,
     ): Response {
         // Sans filtre de période et si le compte est clôturé, du début à la fin de sa vie
-        if (!$request->get('date_filter') && $compte->dateFermeture instanceof \DateTimeImmutable) {
+        if (!$request->query->all('date_filter') && $compte->dateFermeture instanceof \DateTimeImmutable) {
             $période = new Periode($compte->dateOuverture, $compte->dateFermeture);
         }
 

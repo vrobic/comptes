@@ -20,8 +20,9 @@ final readonly class PeriodeValueResolver implements ValueResolverInterface
             return [];
         }
 
-        if ($request->get('date_filter')) {
-            $dateFilterString = $request->get('date_filter');
+        $dateFilterString = $request->query->all('date_filter');
+
+        if ($dateFilterString) {
             $dateStartString = $dateFilterString['start'];
             $dateEndString = $dateFilterString['end'];
 
