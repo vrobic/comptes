@@ -109,7 +109,7 @@ class MouvementsImportController extends AbstractController
             new MouvementCollection();
 
         // Indique si on doit ignorer les mouvements anciens
-        $skipOldOnes = $request->get('skipOldOnes', false);
+        $skipOldOnes = $request->request->get('skipOldOnes', false);
 
         // Le dernier mouvement inséré
         $latestMouvement = $this->mouvementRepository->findLatestOne();
@@ -159,10 +159,10 @@ class MouvementsImportController extends AbstractController
     public function import(Request $request): Response
     {
         // Identifiants des mouvements à importer
-        $idsToImport = $request->get('ids_to_import', []);
+        $idsToImport = $request->request->all('ids_to_import');
 
         // Données de mouvements à modifier
-        $mouvementsData = $request->get('mouvements', []);
+        $mouvementsData = $request->request->all('mouvements');
 
         /**
          * Récupération des mouvements.
@@ -250,7 +250,7 @@ class MouvementsImportController extends AbstractController
      */
     private function getHandler(Request $request): MouvementsImportHandlerInterface
     {
-        $handlerIdentifier = $request->get('handlerIdentifier');
+        $handlerIdentifier = $request->request->get('handlerIdentifier');
 
         if (!is_string($handlerIdentifier)) {
             throw new \Exception('Handler manquant.');

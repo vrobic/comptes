@@ -35,9 +35,9 @@ final class MouvementController extends AbstractController
     public function __invoke(Request $request): RedirectResponse
     {
         // Valeurs postées
-        $action = $request->get('action');
-        $batchArray = $request->get('batch', []);
-        $mouvementsArray = $request->get('mouvements', []);
+        $action = $request->request->get('action');
+        $batchArray = $request->request->all('batch');
+        $mouvementsArray = $request->request->all('mouvements');
 
         /** @var string $mouvementId */
         foreach ($batchArray as $mouvementId) {
@@ -159,7 +159,7 @@ final class MouvementController extends AbstractController
         }
 
         // URL de redirection
-        $redirectURL = $request->get('redirect_url');
+        $redirectURL = $request->request->getString('redirect_url');
 
         return $this->redirect($redirectURL);
     }
