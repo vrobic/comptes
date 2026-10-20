@@ -56,6 +56,9 @@ jobs:
         name: Run Composer validate
         run: make validate
       -
+        name: Check Symfony version
+        run: make check-symfony
+      -
         name: Run PHP-CS-Fixer
         run: make cs-check
       -

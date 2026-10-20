@@ -60,5 +60,8 @@ test: ## Exécute PHPUnit
 validate: ## Vérifie composer.json et sa synchronisation avec composer.lock
 	$(DOCKER_PHP) composer validate --strict
 
+check-symfony: ## Vérifie qu'aucun composant Symfony du lock n'est passé en 8.x
+	versions=$$($(DOCKER_PHP) composer show --locked "symfony/*") && ! echo "$$versions" | grep -E '^symfony/\S+ +v?8\.'
+
 audit: ## Vérifie les vulnérabilités connues des dépendances
 	$(DOCKER_PHP) composer audit
