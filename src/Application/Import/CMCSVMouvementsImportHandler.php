@@ -76,13 +76,11 @@ class CMCSVMouvementsImportHandler extends AbstractMouvementsImportHandler
 
                 // Alors la ligne en cours est un mouvement
                 if ($isValidDate) {
-                    $row = array_combine($headers, $cols);
-
-                    if (!is_array($row)) {
+                    if (count($cols) !== count($headers)) {
                         throw new \Exception("La ligne $currentLine ne comporte pas le même nombre de colonnes que la ligne $headersLine (en-tête).");
                     }
 
-                    $rows[] = $row;
+                    $rows[] = array_combine($headers, $cols);
                 }
             }
 

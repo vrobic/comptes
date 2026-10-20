@@ -7,18 +7,6 @@ parameters:
 			path: src/Application/Import/AbstractMouvementsImportHandler.php
 
 		-
-			message: '#^Call to function is_array\(\) with non\-empty\-array\<''credit''\|''date_operation''\|''date_valeur''\|''debit''\|''libelle''\|''solde'', string\|null\> will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: src/Application/Import/CMCSVMouvementsImportHandler.php
-
-		-
-			message: '#^Call to function is_array\(\) with non\-empty\-array\<''''\|''credit''\|''date''\|''debit''\|''detail''\|''libelle''\|''numero_operation'', string\|null\> will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: src/Application/Import/CaisseEpargneCSVMouvementsImportHandler.php
-
-		-
 			message: '#^Class App\\Domain\\DataStructure\\Map implements generic interface IteratorAggregate but does not specify its types\: TKey, TValue$#'
 			identifier: missingType.generics
 			count: 1
