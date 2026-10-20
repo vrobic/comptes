@@ -65,7 +65,7 @@ class CMCSVMouvementsImportHandler extends AbstractMouvementsImportHandler
         $currentLine = 0;
         $headersLine = 0;
 
-        while (is_array($cols = $file->fgetcsv(';'))) {
+        while (is_array($cols = $file->fgetcsv(';', '"', '\\'))) {
             /* @var string[] $cols */
 
             // Si on a dépassé la ligne d'en-têtes
