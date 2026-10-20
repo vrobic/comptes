@@ -45,7 +45,7 @@ final readonly class CategorieValueResolver implements ValueResolverInterface
 
         $categorie = $this->categorieRepository->find($categorieId);
 
-        if (!($categorie instanceof Categorie)) {
+        if (!$categorie instanceof Categorie) {
             throw new NotFoundHttpException("La catégorie $categorieId n'existe pas.");
         }
 

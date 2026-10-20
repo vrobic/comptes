@@ -55,7 +55,7 @@ final class MouvementController extends AbstractController
                             $dateString = $mouvementArray['date'];
                             $date = \DateTimeImmutable::createFromFormat('d-m-Y H:i:s', "$dateString 00:00:00");
 
-                            if (!($date instanceof \DateTimeImmutable)) {
+                            if (!$date instanceof \DateTimeImmutable) {
                                 throw new BadRequestHttpException("Date du mouvement invalide : $dateString");
                             }
                         }
@@ -69,7 +69,7 @@ final class MouvementController extends AbstractController
                             if ($categorieId instanceof CategorieId) {
                                 $categorie = $this->categorieRepository->find($categorieId);
 
-                                if (!($categorie instanceof Categorie)) {
+                                if (!$categorie instanceof Categorie) {
                                     throw new BadRequestHttpException("Catégorie $categorieId introuvable");
                                 }
                             } else {
@@ -83,7 +83,7 @@ final class MouvementController extends AbstractController
                                 $compteId = new CompteId((string) $mouvementArray['compte']);
                                 $compte = $this->compteRepository->find($compteId);
 
-                                if (!($compte instanceof Compte)) {
+                                if (!$compte instanceof Compte) {
                                     throw new BadRequestHttpException("Compte $compteId introuvable");
                                 }
                             }
@@ -104,7 +104,7 @@ final class MouvementController extends AbstractController
                         if ($mouvementId instanceof MouvementId) { // Édition
                             $mouvement = $this->mouvementRepository->find($mouvementId);
 
-                            if (!($mouvement instanceof Mouvement)) {
+                            if (!$mouvement instanceof Mouvement) {
                                 throw new BadRequestHttpException("Mouvement $mouvementId introuvable");
                             }
 

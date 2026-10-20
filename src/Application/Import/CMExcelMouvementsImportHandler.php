@@ -62,7 +62,7 @@ class CMExcelMouvementsImportHandler extends AbstractMouvementsImportHandler
                 static fn (Compte $compte): bool => (string) $compte->id === $compteId
             );
 
-            if (!($compte instanceof Compte)) {
+            if (!$compte instanceof Compte) {
                 throw new \RuntimeException(); // @todo
             }
 

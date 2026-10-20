@@ -40,7 +40,7 @@ class CaisseEpargneCSVMouvementsImportHandler extends AbstractMouvementsImportHa
         // Le compte bancaire dans lequel importer les mouvements
         $compte = $this->compteRepository->find(new CompteId($configuration['compte']));
 
-        if (!($compte instanceof Compte)) {
+        if (!$compte instanceof Compte) {
             throw new \RuntimeException(); // @todo
         }
 
@@ -93,7 +93,7 @@ class CaisseEpargneCSVMouvementsImportHandler extends AbstractMouvementsImportHa
         foreach ($rows as $row) {
             // Date
             $date = \DateTimeImmutable::createFromFormat('d/m/y', (string) $row['date']);
-            if (!($date instanceof \DateTimeImmutable)) {
+            if (!$date instanceof \DateTimeImmutable) {
                 throw new \Exception("Date du mouvement invalide : {$row['date']}");
             }
 

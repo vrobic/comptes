@@ -42,7 +42,7 @@ final readonly class CompteValueResolver implements ValueResolverInterface
 
         $compte = $this->compteRepository->find($compteId);
 
-        if (!($compte instanceof Compte)) {
+        if (!$compte instanceof Compte) {
             throw new NotFoundHttpException("Le compte $compteId n'existe pas.");
         }
 
