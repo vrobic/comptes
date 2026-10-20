@@ -43,11 +43,13 @@ jobs:
         name: Start services
         run: make up
       -
+        name: Run migrations for the homepage check
+        run: make migration-migrate MIGRATE_ARGS=--no-interaction
+      -
         name: Check HTTP reachability
         run: curl -v --fail-with-body http://localhost
       -
         name: Check HTTPS reachability
-        if: false # Remove this line when the homepage will be configured, or change the path to check
         run: curl -vk --fail-with-body https://localhost
       -
         name: Check Mercure reachability

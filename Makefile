@@ -30,7 +30,7 @@ migration-generate: ## Génère le squelette d'un nouvelle migration de base de 
 	$(DOCKER_PHP) bin/console doctrine:migrations:generate
 
 migration-migrate: ## Exécute les migrations qui n'ont pas été jouées sur la base de données
-	$(DOCKER_PHP) bin/console doctrine:migrations:migrate
+	$(DOCKER_PHP) bin/console doctrine:migrations:migrate $(MIGRATE_ARGS)
 
 lint: ## Exécute PHPCS, PHPStan et les linters Symfony
 	make cs-fix
