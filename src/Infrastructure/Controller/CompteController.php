@@ -32,7 +32,7 @@ final class CompteController extends AbstractController
     ) {
     }
 
-    #[Route('/', name: 'comptes_comptes')]
+    #[Route('/', name: 'comptes_comptes', methods: ['GET'])]
     public function liste(Request $request): Response
     {
         $comptes = $this->compteRepository->findAll();
@@ -101,7 +101,7 @@ final class CompteController extends AbstractController
         );
     }
 
-    #[Route('/compte/{compteId}', name: 'comptes_compte')]
+    #[Route('/compte/{compteId}', name: 'comptes_compte', methods: ['GET'])]
     public function détail(
         Request $request,
         Compte $compte,
