@@ -34,6 +34,11 @@ final readonly class PeriodeValueResolver implements ValueResolverInterface
                 throw new BadRequestHttpException('La période de dates est invalide.');
             }
 
+            // createFromFormat décale les dates impossibles (31-02 devient 03-03) et lit 25 comme l'an 25 : la date relue doit être celle reçue
+            if ($dateStart->format('d-m-Y') !== $dateStartString || $dateEnd->format('d-m-Y') !== $dateEndString) {
+                throw new BadRequestHttpException('La période de dates est invalide.');
+            }
+
             return [new Periode($dateStart, $dateEnd)];
         }
 
