@@ -55,7 +55,8 @@ final class MouvementController extends AbstractController
                             $dateString = $mouvementArray['date'];
                             $date = \DateTimeImmutable::createFromFormat('d-m-Y H:i:s', "$dateString 00:00:00");
 
-                            if (!$date instanceof \DateTimeImmutable) {
+                            // createFromFormat décale les dates impossibles (31-02 devient 03-03) et lit 26 comme l'an 26 : la date relue doit être celle saisie
+                            if (!$date instanceof \DateTimeImmutable || $date->format('d-m-Y') !== $dateString) {
                                 throw new BadRequestHttpException("Date du mouvement invalide : $dateString");
                             }
                         }
