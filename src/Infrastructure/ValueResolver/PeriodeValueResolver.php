@@ -6,6 +6,7 @@ namespace App\Infrastructure\ValueResolver;
 
 use App\Domain\Temps\Depuis;
 use App\Domain\Temps\Periode;
+use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
@@ -20,11 +21,11 @@ final readonly class PeriodeValueResolver implements ValueResolverInterface
             return [];
         }
 
-        $dateFilterString = $request->query->all('date_filter');
+        $dateFilter = new InputBag($request->query->all('date_filter'));
 
-        if ($dateFilterString) {
-            $dateStartString = $dateFilterString['start'];
-            $dateEndString = $dateFilterString['end'];
+        if ($dateFilter->count() > 0) {
+            $dateStartString = $dateFilter->getString('start');
+            $dateEndString = $dateFilter->getString('end');
 
             $dateStart = \DateTimeImmutable::createFromFormat('d-m-Y H:i:s', "$dateStartString 00:00:00");
             $dateEnd = \DateTimeImmutable::createFromFormat('d-m-Y H:i:s', "$dateEndString 23:59:59");
