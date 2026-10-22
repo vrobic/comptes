@@ -42,7 +42,7 @@ final class CategorieController extends AbstractController
     ) {
     }
 
-    #[Route('/categories', name: 'categories_categories')]
+    #[Route('/categories', name: 'categories_categories', methods: ['GET'])]
     public function liste(
         ?Compte $compte,
         #[PeriodeParDefautAttribute(Depuis::UN_AN)]
@@ -139,7 +139,7 @@ final class CategorieController extends AbstractController
         );
     }
 
-    #[Route('/categorie/{categorieId}', name: 'categories_categorie')]
+    #[Route('/categorie/{categorieId}', name: 'categories_categorie', methods: ['GET'])]
     public function détail(
         ?Categorie $categorie,
         ?Compte $compte,
@@ -228,7 +228,7 @@ final class CategorieController extends AbstractController
         );
     }
 
-    #[Route('/categories/edit', name: 'categories_edit')]
+    #[Route('/categories/edit', name: 'categories_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request): Response
     {
         $keywords = $this->keywordRepository->findAll();

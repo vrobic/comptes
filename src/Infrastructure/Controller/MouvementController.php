@@ -31,7 +31,7 @@ final class MouvementController extends AbstractController
     ) {
     }
 
-    #[Route('/mouvements/edit', name: 'mouvements_edit')]
+    #[Route('/mouvements/edit', name: 'mouvements_edit', methods: ['POST'])]
     public function __invoke(Request $request): RedirectResponse
     {
         // Valeurs postées
