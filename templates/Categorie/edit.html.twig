@@ -138,6 +138,7 @@
                 </tr>
             </tbody>
         </table>
+        <input type="hidden" name="_token" value="{{ csrf_token('categories_edit') }}">
         <input type="hidden" name="redirect_route" value="{{ app.current_route }}">
         <div class="btn-group">
             <button class="btn btn-default" type="submit" name="action" value="save">

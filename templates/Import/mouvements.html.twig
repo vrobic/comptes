@@ -132,6 +132,7 @@
                 Décoche cette case si tu veux importer des mouvements antérieurs au dernier mouvement inséré.
             </p>
         </div>
+        <input type="hidden" name="_token" value="{{ csrf_token('import_mouvements_parse') }}">
         <div class="form-group">
             <button class="btn btn-default" type="submit">Analyser le fichier</button>
         </div>
@@ -179,6 +180,7 @@
                 {{ macros.mouvements('waiting', waiting_mouvements, comptes, categories) }}
             {% endif %}
 
+            <input type="hidden" name="_token" value="{{ csrf_token('import_mouvements_import') }}">
             <button class="btn btn-default" type="submit">Importer</button>
 
         </form>

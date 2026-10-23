@@ -217,6 +217,7 @@
                 </tr>
             </tfoot>
         </table>
+        <input type="hidden" name="_token" value="{{ csrf_token('mouvements_edit') }}">
         <input type="hidden" name="redirect_route" value="{{ app.current_route }}">
         <input type="hidden" name="redirect_params[compteId]" value="{{ compte.id }}">
         <input type="hidden" name="redirect_params[date_filter][start]" value="{{ date_filter.start|date('d-m-Y') }}">

@@ -18,6 +18,7 @@ use App\Domain\Mouvement\MouvementRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -34,6 +35,10 @@ final class MouvementController extends AbstractController
     #[Route('/mouvements/edit', name: 'mouvements_edit', methods: ['POST'])]
     public function __invoke(Request $request): RedirectResponse
     {
+        if (!$this->isCsrfTokenValid('mouvements_edit', $request->request->getString('_token'))) {
+            throw new AccessDeniedHttpException('Jeton CSRF invalide');
+        }
+
         // Valeurs postées
         $action = $request->request->get('action');
         $batchArray = $request->request->all('batch');
