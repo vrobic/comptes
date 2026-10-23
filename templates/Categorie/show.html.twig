@@ -24,6 +24,15 @@
 {% endmacro %}
 
 {% block content %}
+    {# Toutes les catégories, rendues une seule fois : le sélecteur de chaque mouvement ne contient que la sienne, et reçoit les autres à son ouverture #}
+    <template id="options-categories">
+        <option value="">&nbsp;</option>
+        {% for categorie in categories %}
+            {% if categorie.categorieParente is null %}
+                {{ macros.categoriesFilles(categories, categorie, null, 0) }}
+            {% endif %}
+        {% endfor %}
+    </template>
     <h1>{{ categorie is not null ? categorie : "Mouvements non catégorisés" }}</h1>
     <div class="row">
         <div class="col-md-8">
@@ -213,13 +222,11 @@
                         </td>
                         <td class="input-select2">
                             <label for="categorie-{{ mouvement.id }}" class="sr-only">Catégorie</label>
-                            <select id="categorie-{{ mouvement.id }}" name="mouvements[{{ mouvement.id }}][categorie]">
+                            <select id="categorie-{{ mouvement.id }}" name="mouvements[{{ mouvement.id }}][categorie]" data-options="#options-categories">
                                 <option value="">&nbsp;</option>
-                                {% for categorie in categories %}
-                                    {% if categorie.categorieParente is null %}
-                                        {{ macros.categoriesFilles(categories, categorie, mouvement, 0) }}
-                                    {% endif %}
-                                {% endfor %}
+                                {% if mouvement.categorie is not null %}
+                                    <option value="{{ mouvement.categorie.id }}" selected>{{ mouvement.categorie }}</option>
+                                {% endif %}
                             </select>
                         </td>
                     </tr>

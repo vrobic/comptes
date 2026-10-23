@@ -6,6 +6,19 @@ window.forms = function()
     };
     $('form table.table td.input-select2 select').css('width', '100%').select2(select2Options);
 
+    // Sélecteurs dont les options, communes à toute la page, ne sont ajoutées qu'à la première ouverture
+    $('form table.table td.input-select2 select[data-options]').one('select2:opening', function() {
+        var value = $(this).val(),
+            disabledOption = $(this).data('disabled-option');
+
+        $(this).html($($(this).data('options')).html()).val(value);
+
+        // Option à ne pas proposer, comme une catégorie pour sa propre catégorie parente
+        if (disabledOption) {
+            $(this).find('option[value="' + disabledOption + '"]').prop('disabled', true);
+        }
+    });
+
     // Mots-clés
     var tagEditorOptions = {
         delimiter: '|',

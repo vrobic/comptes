@@ -11,7 +11,7 @@
     {% set optgroup = categorie.categorieParente is null %}
     {% if optgroup %}<optgroup label="{{ categorie }}">{% endif %}
 
-        <option value="{{ categorie.id }}" style="padding-left: {{ (depth * 20) ~ "px" }};" {{ mouvement.categorie is not null and mouvement.categorie.id == categorie.id ? "selected" }}>{{ categorie }}</option>
+        <option value="{{ categorie.id }}" style="padding-left: {{ (depth * 20) ~ "px" }};" {{ mouvement is not null and mouvement.categorie is not null and mouvement.categorie.id == categorie.id ? "selected" }}>{{ categorie }}</option>
         {% if categorie.categoriesFilles is not empty %}
             {% set depth = depth + 1 %}
             {% for id in categorie.categoriesFilles %}
@@ -74,13 +74,11 @@
                     </td>
                     <td class="input-select2">
                         <label for="categorie-{{ mouvement.id }}" class="sr-only">Catégorie</label>
-                        <select id="categorie-{{ mouvement.id }}" name="mouvements[{{ mouvement.id }}][categorie]">
+                        <select id="categorie-{{ mouvement.id }}" name="mouvements[{{ mouvement.id }}][categorie]" data-options="#options-categories">
                             <option value="">&nbsp;</option>
-                            {% for categorie in categories %}
-                                {% if categorie.categorieParente is null %}
-                                    {{ macros.categoriesFilles(categories, categorie, mouvement, 0) }}
-                                {% endif %}
-                            {% endfor %}
+                            {% if mouvement.categorie is not null %}
+                                <option value="{{ mouvement.categorie.id }}" selected>{{ mouvement.categorie }}</option>
+                            {% endif %}
                         </select>
                     </td>
                 </tr>
@@ -144,6 +142,16 @@
           uncategorized_mouvements is not empty or
           ambiguous_mouvements is not empty or
           waiting_mouvements is not empty %}
+
+        {# Toutes les catégories, rendues une seule fois : le sélecteur de chaque mouvement ne contient que la sienne, et reçoit les autres à son ouverture #}
+        <template id="options-categories">
+            <option value="">&nbsp;</option>
+            {% for categorie in categories %}
+                {% if categorie.categorieParente is null %}
+                    {{ macros.categoriesFilles(categories, categorie, null, 0) }}
+                {% endif %}
+            {% endfor %}
+        </template>
 
         <form action="{{ path('import_mouvements_import') }}" method="POST">
 

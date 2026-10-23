@@ -22,13 +22,11 @@
         </td>
         <td class="input-select2">
             <label for="categorie-parente-{{ currentCategorie.id }}" class="sr-only">Catégorie parente</label>
-            <select id="categorie-parente-{{ currentCategorie.id }}" name="categories[{{ currentCategorie.id.__toString }}][categorieParente]">
+            <select id="categorie-parente-{{ currentCategorie.id }}" name="categories[{{ currentCategorie.id.__toString }}][categorieParente]" data-options="#options-categories" data-disabled-option="{{ currentCategorie.id }}">
                 <option value="">&nbsp;</option>
-                {% for categorie in categories %}
-                    {% if categorie.categorieParente is null %}
-                        {{ _self.categoriesFillesSelect(categories, categorie, currentCategorie, 0) }}
-                    {% endif %}
-                {% endfor %}
+                {% if currentCategorie.categorieParente is not null %}
+                    <option value="{{ currentCategorie.categorieParente }}" selected>{{ categories[currentCategorie.categorieParente.__toString] }}</option>
+                {% endif %}
             </select>
         </td>
         <td class="input-tags">
@@ -62,6 +60,15 @@
 {% endmacro %}
 
 {% block content %}
+    {# Toutes les catégories, rendues une seule fois : le sélecteur de catégorie parente de chaque catégorie ne contient que la sienne, et reçoit les autres à son ouverture #}
+    <template id="options-categories">
+        <option value="">&nbsp;</option>
+        {% for categorie in categories %}
+            {% if categorie.categorieParente is null %}
+                {{ macros.categoriesFillesSelect(categories, categorie, null, 0) }}
+            {% endif %}
+        {% endfor %}
+    </template>
     <h1>Édition des catégories</h1>
     <form action="{{ path('categories_edit') }}" method="POST">
         <table class="table table-condensed table-striped table-hover">
