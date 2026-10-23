@@ -28,6 +28,7 @@ use App\Infrastructure\ValueResolver\PeriodeParDefautAttribute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -231,6 +232,10 @@ final class CategorieController extends AbstractController
     #[Route('/categories/edit', name: 'categories_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request): Response
     {
+        if ($request->isMethod('POST') && !$this->isCsrfTokenValid('categories_edit', $request->request->getString('_token'))) {
+            throw new AccessDeniedHttpException('Jeton CSRF invalide');
+        }
+
         $keywords = $this->keywordRepository->findAll();
         $keywordsParCatégorieId = $keywords->trierParCatégorie();
 

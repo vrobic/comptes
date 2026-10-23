@@ -21,6 +21,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException;
 use Symfony\Component\Routing\Attribute\Route;
@@ -81,6 +82,10 @@ class MouvementsImportController extends AbstractController
     #[Route('/import/mouvements/parse', name: 'import_mouvements_parse', methods: ['POST'])]
     public function parse(Request $request): Response
     {
+        if (!$this->isCsrfTokenValid('import_mouvements_parse', $request->request->getString('_token'))) {
+            throw new AccessDeniedHttpException('Jeton CSRF invalide');
+        }
+
         /** @var MouvementsImportHandlerInterface $handler */
         $handler = $this->getHandler($request);
         $splFile = $this->getFile($request);
@@ -158,6 +163,10 @@ class MouvementsImportController extends AbstractController
     #[Route('/import/mouvements/import', name: 'import_mouvements_import', methods: ['POST'])]
     public function import(Request $request): Response
     {
+        if (!$this->isCsrfTokenValid('import_mouvements_import', $request->request->getString('_token'))) {
+            throw new AccessDeniedHttpException('Jeton CSRF invalide');
+        }
+
         // Identifiants des mouvements à importer
         $idsToImport = $request->request->all('ids_to_import');
 
