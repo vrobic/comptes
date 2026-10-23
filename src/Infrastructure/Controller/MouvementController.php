@@ -159,9 +159,9 @@ final class MouvementController extends AbstractController
             }
         }
 
-        // URL de redirection
-        $redirectURL = $request->request->getString('redirect_url');
-
-        return $this->redirect($redirectURL);
+        return $this->redirectToRoute(
+            $request->request->getString('redirect_route'),
+            $request->request->all('redirect_params')
+        );
     }
 }

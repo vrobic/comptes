@@ -239,7 +239,10 @@
                 </tr>
             </tfoot>
         </table>
-        <input type="hidden" name="redirect_url" value="{{ path(app.current_route, {'categorieId': categorie is null ? 'aucune' : categorie.id, 'date_filter[start]': date_filter.start|date('d-m-Y'), 'date_filter[end]': date_filter.end|date('d-m-Y')}) }}">
+        <input type="hidden" name="redirect_route" value="{{ app.current_route }}">
+        <input type="hidden" name="redirect_params[categorieId]" value="{{ categorie is null ? 'aucune' : categorie.id }}">
+        <input type="hidden" name="redirect_params[date_filter][start]" value="{{ date_filter.start|date('d-m-Y') }}">
+        <input type="hidden" name="redirect_params[date_filter][end]" value="{{ date_filter.end|date('d-m-Y') }}">
         <div class="btn-group">
             <button class="btn btn-default" type="submit" name="action" value="save">
                 <span class="glyphicon glyphicon-floppy-disk"></span> Enregistrer

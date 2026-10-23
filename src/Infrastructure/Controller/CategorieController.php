@@ -419,11 +419,11 @@ final class CategorieController extends AbstractController
             }
         }
 
-        // URL de redirection
-        $redirectURL = $request->request->get('redirect_url');
-
-        if (is_string($redirectURL)) {
-            return $this->redirect($redirectURL);
+        if ($request->request->has('redirect_route')) {
+            return $this->redirectToRoute(
+                $request->request->getString('redirect_route'),
+                $request->request->all('redirect_params')
+            );
         }
 
         $categories = $this->categorieRepository->findAll();
