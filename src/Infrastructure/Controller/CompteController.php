@@ -108,9 +108,9 @@ final class CompteController extends AbstractController
         #[PeriodeParDefautAttribute(Depuis::UN_MOIS)]
         Periode $période,
     ): Response {
-        // Sans filtre de période et si le compte est clôturé, du début à la fin de sa vie
+        // Sans filtre de période et si le compte est clôturé, sa dernière année
         if (!$request->query->all('date_filter') && $compte->dateFermeture instanceof \DateTimeImmutable) {
-            $période = new Periode($compte->dateOuverture, $compte->dateFermeture);
+            $période = new Periode(max($compte->dateOuverture, $compte->dateFermeture->modify('-1 year')), $compte->dateFermeture);
         }
 
         // Tous les mouvements de la période
