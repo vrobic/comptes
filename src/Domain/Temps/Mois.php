@@ -11,7 +11,7 @@ final readonly class Mois
         public int $mois,
     ) {
         if ($mois < 1 || $mois > 12) {
-            throw new \LogicException();
+            throw new \LogicException(sprintf('Le mois [%d] doit être compris entre 1 et 12.', $mois));
         }
     }
 
@@ -61,7 +61,7 @@ final readonly class Mois
             10 => 'octobre',
             11 => 'novembre',
             12 => 'décembre',
-            default => throw new \RuntimeException(),
+            default => throw new \RuntimeException(sprintf("Le mois [%d] n'a pas de nom.", $this->mois)),
         };
     }
 }
