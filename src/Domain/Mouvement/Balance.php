@@ -19,7 +19,7 @@ final class Balance
             ->formatCurrency($this->montant, 'EUR');
 
         if (false === $string) {
-            throw new \RuntimeException();
+            throw new \RuntimeException("Échec du formatage de la balance $this->montant.");
         }
 
         if ($this->estPositive()) {
@@ -57,7 +57,7 @@ final class Balance
     public function diviser(int|float $valeur): self
     {
         if (0 === $valeur || 0. === $valeur) {
-            throw new \LogicException();
+            throw new \InvalidArgumentException('Impossible de diviser une balance par zéro.');
         }
 
         return new self($this->montant / $valeur);

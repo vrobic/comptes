@@ -77,7 +77,7 @@ class MouvementsImportController extends AbstractController
     /**
      * Parse le fichier uploadé et affiche les mouvements à importer.
      *
-     * @throws \Exception en cas d'erreur d'import du fichier
+     * @throws \RuntimeException en cas d'erreur d'import du fichier
      */
     #[Route('/import/mouvements/parse', name: 'import_mouvements_parse', methods: ['POST'])]
     public function parse(Request $request): Response
@@ -256,18 +256,19 @@ class MouvementsImportController extends AbstractController
     /**
      * Renvoie une instance du handler d'import.
      *
-     * @throws \Exception si le handler demandé est invalide
+     * @throws BadRequestHttpException si le handler demandé est absent ou non configuré
+     * @throws \RuntimeException       si le handler demandé n'est pas implémenté
      */
     private function getHandler(Request $request): MouvementsImportHandlerInterface
     {
         $handlerIdentifier = $request->request->get('handlerIdentifier');
 
         if (!is_string($handlerIdentifier)) {
-            throw new \Exception('Handler manquant.');
+            throw new BadRequestHttpException('Handler manquant.');
         }
 
         if (!in_array($handlerIdentifier, array_keys($this->handlers))) {
-            throw new \Exception(sprintf("Le handler [%s] n'est pas configuré.", $handlerIdentifier));
+            throw new BadRequestHttpException(sprintf("Le handler [%s] n'est pas configuré.", $handlerIdentifier));
         }
 
         $this->handlerIdentifier = $handlerIdentifier;
@@ -278,7 +279,7 @@ class MouvementsImportController extends AbstractController
             }
         }
 
-        throw new \Exception(sprintf("Le handler [%s] n'est pas implémenté.", $handlerIdentifier));
+        throw new \RuntimeException(sprintf("Le handler [%s] n'est pas implémenté.", $handlerIdentifier));
     }
 
     /**

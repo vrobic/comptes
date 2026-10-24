@@ -559,7 +559,7 @@ class SetTest extends TestCase
         $fooCollection = new FooCollection()->add(new Foo(1));
         $set = new Set(Foo::class)->add(new Foo(1));
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(\InvalidArgumentException::class);
 
         // @phpstan-ignore argument.type (on vérifie justement le rejet d'un Set d'un autre type)
         $fooCollection->intersect($set);

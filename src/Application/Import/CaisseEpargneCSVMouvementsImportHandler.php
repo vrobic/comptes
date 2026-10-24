@@ -34,14 +34,14 @@ class CaisseEpargneCSVMouvementsImportHandler extends AbstractMouvementsImportHa
         $configuration = $this->configuration[static::HANDLER_ID]['config'];
 
         if (!CompteId::estValide($configuration['compte'])) {
-            throw new \RuntimeException(); // @todo
+            throw new \UnexpectedValueException(sprintf("Le compte [%s] configuré pour le handler [%s] n'est pas un UUID valide.", $configuration['compte'], static::HANDLER_ID));
         }
 
         // Le compte bancaire dans lequel importer les mouvements
         $compte = $this->compteRepository->find(new CompteId($configuration['compte']));
 
         if (!$compte instanceof Compte) {
-            throw new \RuntimeException(); // @todo
+            throw new \RuntimeException(sprintf("Le compte [%s] configuré pour le handler [%s] n'existe pas.", $configuration['compte'], static::HANDLER_ID));
         }
 
         /**
@@ -78,7 +78,7 @@ class CaisseEpargneCSVMouvementsImportHandler extends AbstractMouvementsImportHa
                 // Alors la ligne en cours est un mouvement
                 if ($isValidDate) {
                     if (count($cols) !== count($headers)) {
-                        throw new \Exception("La ligne $currentLine ne comporte pas le même nombre de colonnes que la ligne $headersLine (en-tête).");
+                        throw new \UnexpectedValueException("La ligne $currentLine ne comporte pas le même nombre de colonnes que la ligne $headersLine (en-tête).");
                     }
 
                     $rows[] = array_combine($headers, $cols);
@@ -92,7 +92,7 @@ class CaisseEpargneCSVMouvementsImportHandler extends AbstractMouvementsImportHa
             // Date
             $date = \DateTimeImmutable::createFromFormat('d/m/y H:i:s', "{$row['date']} 00:00:00");
             if (!$date instanceof \DateTimeImmutable) {
-                throw new \Exception("Date du mouvement invalide : {$row['date']}");
+                throw new \UnexpectedValueException("Date du mouvement invalide : {$row['date']}");
             }
 
             // Montant

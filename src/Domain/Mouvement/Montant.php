@@ -19,7 +19,7 @@ final class Montant
             ->formatCurrency($this->montant, 'EUR');
 
         if (false === $string) {
-            throw new \RuntimeException();
+            throw new \RuntimeException("Échec du formatage du montant $this->montant.");
         }
 
         return $string;

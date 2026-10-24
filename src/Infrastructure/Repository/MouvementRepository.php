@@ -119,10 +119,8 @@ final readonly class MouvementRepository implements MouvementRepositoryInterface
                     static fn (CategorieId $id): string => (string) $id
                 );
                 $types['categories_ids'] = ArrayParameterType::STRING;
-            } elseif (is_null($categoriesIds)) {
-                $wheres[] = 'mouvement.categorie_id IS NULL';
             } else {
-                throw new \RuntimeException();
+                $wheres[] = 'mouvement.categorie_id IS NULL';
             }
         }
         if ($maybeDateStart->estDéfini) {

@@ -24,13 +24,13 @@ readonly class ConfigurationLoader
      *
      * @return array la configuration
      *
-     * @throws \Exception s'il est impossible de récupérer la configuration
+     * @throws \RuntimeException s'il est impossible de récupérer la configuration
      */
     public function __invoke(): array
     {
         $fileContent = file_get_contents(sprintf('%s/%s', $this->projectDir, $this->configFilePath));
         if (false === $fileContent) {
-            throw new \Exception(sprintf('Échec de lecture du fichier de configuration %s.', $this->configFilePath));
+            throw new \RuntimeException(sprintf('Échec de lecture du fichier de configuration %s.', $this->configFilePath));
         }
 
         try {
@@ -41,7 +41,7 @@ readonly class ConfigurationLoader
                 ]
             );
         } catch (ParseException $e) {
-            throw new \Exception(sprintf('Fichier YAML %s invalide.', $this->configFilePath), previous: $e);
+            throw new \RuntimeException(sprintf('Fichier YAML %s invalide.', $this->configFilePath), previous: $e);
         }
 
         return $processedConfiguration;

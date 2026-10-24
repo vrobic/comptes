@@ -278,7 +278,7 @@ final class CategorieController extends AbstractController
                                 $categorieParente = $this->categorieRepository->find($categorieParenteId);
 
                                 if (!$categorieParente instanceof Categorie) {
-                                    throw new BadRequestHttpException("Catégorie $categorieId introuvable");
+                                    throw new BadRequestHttpException("Catégorie $categorieParenteId introuvable");
                                 }
                             } else {
                                 $categorieParente = null;
