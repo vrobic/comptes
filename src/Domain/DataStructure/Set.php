@@ -270,7 +270,7 @@ class Set implements \IteratorAggregate, \Countable
     public function intersect(self $set2): static
     {
         if ($this::class !== $set2::class) {
-            throw new \RuntimeException();
+            throw new \RuntimeException("L'intersection de deux collections de types différents est impossible.");
         }
 
         $intersectData = [];
