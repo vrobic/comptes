@@ -19,7 +19,7 @@ final class Plafond
             ->formatCurrency($this->montant, 'EUR');
 
         if (false === $string) {
-            throw new \RuntimeException();
+            throw new \RuntimeException(sprintf('Échec du formatage du plafond [%s].', $this->montant));
         }
 
         return $string;
