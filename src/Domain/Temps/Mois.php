@@ -61,7 +61,7 @@ final readonly class Mois
             10 => 'octobre',
             11 => 'novembre',
             12 => 'décembre',
-            default => throw new \RuntimeException("Le mois $this->mois n'a pas de nom."),
+            default => throw new \LogicException("Le mois $this->mois n'a pas de nom."),
         };
     }
 }
