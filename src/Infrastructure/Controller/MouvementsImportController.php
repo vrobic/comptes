@@ -77,7 +77,7 @@ class MouvementsImportController extends AbstractController
     /**
      * Parse le fichier uploadé et affiche les mouvements à importer.
      *
-     * @throws \Exception en cas d'erreur d'import du fichier
+     * @throws \RuntimeException en cas d'erreur d'import du fichier
      */
     #[Route('/import/mouvements/parse', name: 'import_mouvements_parse', methods: ['POST'])]
     public function parse(Request $request): Response
@@ -257,7 +257,7 @@ class MouvementsImportController extends AbstractController
      * Renvoie une instance du handler d'import.
      *
      * @throws BadRequestHttpException si le handler demandé est absent ou non configuré
-     * @throws \Exception              si le handler demandé n'est pas implémenté
+     * @throws \RuntimeException       si le handler demandé n'est pas implémenté
      */
     private function getHandler(Request $request): MouvementsImportHandlerInterface
     {
@@ -279,7 +279,7 @@ class MouvementsImportController extends AbstractController
             }
         }
 
-        throw new \Exception(sprintf("Le handler [%s] n'est pas implémenté.", $handlerIdentifier));
+        throw new \RuntimeException(sprintf("Le handler [%s] n'est pas implémenté.", $handlerIdentifier));
     }
 
     /**

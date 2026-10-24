@@ -57,7 +57,7 @@ final class Balance
     public function diviser(int|float $valeur): self
     {
         if (0 === $valeur || 0. === $valeur) {
-            throw new \LogicException('Impossible de diviser une balance par zéro.');
+            throw new \InvalidArgumentException('Impossible de diviser une balance par zéro.');
         }
 
         return new self($this->montant / $valeur);

@@ -55,7 +55,7 @@ class CMExcelMouvementsImportHandler extends AbstractMouvementsImportHandler
          */
         foreach ($configuration['sheets'] as $sheetIndex => $compteId) {
             if (!CompteId::estValide($compteId)) {
-                throw new \RuntimeException(sprintf("Le compte [%s] configuré pour la feuille %d du handler [%s] n'est pas un UUID valide.", $compteId, $sheetIndex, static::HANDLER_ID));
+                throw new \UnexpectedValueException(sprintf("Le compte [%s] configuré pour la feuille %d du handler [%s] n'est pas un UUID valide.", $compteId, $sheetIndex, static::HANDLER_ID));
             }
 
             $compte = $comptes->findFirst(

@@ -15,14 +15,14 @@ final readonly class CompteDenormalizer implements Denormalizer
     {
         $dateOuverture = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', "{$data['date_ouverture']} 00:00:00");
         if (!$dateOuverture instanceof \DateTimeImmutable) {
-            throw new \Exception("Date d'ouverture du compte invalide : {$data['date_ouverture']}");
+            throw new \UnexpectedValueException("Date d'ouverture du compte invalide : {$data['date_ouverture']}");
         }
 
         $dateFermeture = null;
         if (is_string($data['date_fermeture'])) {
             $dateFermeture = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', "{$data['date_fermeture']} 00:00:00");
             if (!$dateFermeture instanceof \DateTimeImmutable) {
-                throw new \Exception("Date de fermeture du compte invalide : {$data['date_fermeture']}");
+                throw new \UnexpectedValueException("Date de fermeture du compte invalide : {$data['date_fermeture']}");
             }
         }
 
