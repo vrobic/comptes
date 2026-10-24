@@ -256,18 +256,19 @@ class MouvementsImportController extends AbstractController
     /**
      * Renvoie une instance du handler d'import.
      *
-     * @throws \Exception si le handler demandé est invalide
+     * @throws BadRequestHttpException si le handler demandé est absent ou non configuré
+     * @throws \Exception              si le handler demandé n'est pas implémenté
      */
     private function getHandler(Request $request): MouvementsImportHandlerInterface
     {
         $handlerIdentifier = $request->request->get('handlerIdentifier');
 
         if (!is_string($handlerIdentifier)) {
-            throw new \Exception('Handler manquant.');
+            throw new BadRequestHttpException('Handler manquant.');
         }
 
         if (!in_array($handlerIdentifier, array_keys($this->handlers))) {
-            throw new \Exception(sprintf("Le handler [%s] n'est pas configuré.", $handlerIdentifier));
+            throw new BadRequestHttpException(sprintf("Le handler [%s] n'est pas configuré.", $handlerIdentifier));
         }
 
         $this->handlerIdentifier = $handlerIdentifier;
