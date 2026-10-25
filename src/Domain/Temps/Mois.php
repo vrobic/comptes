@@ -61,7 +61,7 @@ final readonly class Mois
             10 => 'octobre',
             11 => 'novembre',
             12 => 'décembre',
-            default => throw new \RuntimeException(sprintf("Le mois [%d] n'a pas de nom.", $this->mois)),
+            default => throw new \LogicException(sprintf("Le mois [%d] n'a pas de nom.", $this->mois)),
         };
     }
 }
