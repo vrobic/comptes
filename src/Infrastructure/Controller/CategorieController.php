@@ -233,7 +233,7 @@ final class CategorieController extends AbstractController
     public function edit(Request $request): Response
     {
         if ($request->isMethod('POST') && !$this->isCsrfTokenValid('categories_edit', $request->request->getString('_token'))) {
-            throw new AccessDeniedHttpException('Jeton CSRF invalide');
+            throw new AccessDeniedHttpException('Jeton CSRF invalide.');
         }
 
         $keywords = $this->keywordRepository->findAll();
@@ -271,14 +271,14 @@ final class CategorieController extends AbstractController
                                 && $categorieId instanceof CategorieId
                                 && $categorieParenteId->estÉgalÀ($categorieId)
                             ) {
-                                throw new BadRequestHttpException("Impossible de définir la catégorie $categorieParenteId comme parente de $categorieId (référence circulaire)");
+                                throw new BadRequestHttpException(sprintf('Impossible de définir la catégorie [%s] comme parente de [%s] (référence circulaire).', $categorieParenteId, $categorieId));
                             }
 
                             if ($categorieParenteId instanceof CategorieId) {
                                 $categorieParente = $this->categorieRepository->find($categorieParenteId);
 
                                 if (!$categorieParente instanceof Categorie) {
-                                    throw new BadRequestHttpException("Catégorie $categorieParenteId introuvable");
+                                    throw new BadRequestHttpException(sprintf('Catégorie [%s] introuvable.', $categorieParenteId));
                                 }
                             } else {
                                 $categorieParente = null;
@@ -294,7 +294,7 @@ final class CategorieController extends AbstractController
                             $categorie = $this->categorieRepository->find($categorieId);
 
                             if (!$categorie instanceof Categorie) {
-                                throw new BadRequestHttpException("Catégorie $categorieId introuvable");
+                                throw new BadRequestHttpException(sprintf('Catégorie [%s] introuvable.', $categorieId));
                             }
 
                             if (array_key_exists('nom', $variablesDéfinies)) {
@@ -368,7 +368,7 @@ final class CategorieController extends AbstractController
                                     $keywordCategorieId = $keywordCategorie->id;
 
                                     if (!$keywordCategorieId->estÉgalÀ($categorieId)) {
-                                        throw new BadRequestHttpException("Le mot-clé \"$keyword\" ne peut pas être ajouté à la catégorie \"$categorie\" puisqu'il est déjà affecté à \"$keywordCategorie\".");
+                                        throw new BadRequestHttpException(sprintf("Le mot-clé [%s] ne peut pas être ajouté à la catégorie [%s] puisqu'il est déjà affecté à [%s].", $keyword, $categorie, $keywordCategorie));
                                     }
 
                                     $keyword->categorie = $categorie;
@@ -405,7 +405,7 @@ final class CategorieController extends AbstractController
                             );
 
                             if (!$mouvementsDeLaCatégorie->isEmpty()) {
-                                throw new BadRequestHttpException("La catégorie $categorieId ne peut pas être supprimée car elle est utilisée par {$mouvementsDeLaCatégorie->count()} mouvements.");
+                                throw new BadRequestHttpException(sprintf('La catégorie [%s] ne peut pas être supprimée car elle est utilisée par [%d] mouvements.', $categorieId, $mouvementsDeLaCatégorie->count()));
                             }
 
                             if ($keywordsParCatégorieId->has($categorieId)) {

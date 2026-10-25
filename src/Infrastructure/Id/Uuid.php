@@ -12,7 +12,7 @@ readonly class Uuid implements IdInterface
     public function __construct(private string $valeur)
     {
         if (!self::estValide($this->valeur)) {
-            throw new \InvalidArgumentException(sprintf("La classe %s n'autorise pas la valeur %s.", self::class, $this->valeur));
+            throw new \InvalidArgumentException(sprintf("La classe [%s] n'autorise pas la valeur [%s].", self::class, $this->valeur));
         }
     }
 

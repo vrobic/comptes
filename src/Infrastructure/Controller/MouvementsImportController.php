@@ -83,7 +83,7 @@ class MouvementsImportController extends AbstractController
     public function parse(Request $request): Response
     {
         if (!$this->isCsrfTokenValid('import_mouvements_parse', $request->request->getString('_token'))) {
-            throw new AccessDeniedHttpException('Jeton CSRF invalide');
+            throw new AccessDeniedHttpException('Jeton CSRF invalide.');
         }
 
         /** @var MouvementsImportHandlerInterface $handler */
@@ -164,7 +164,7 @@ class MouvementsImportController extends AbstractController
     public function import(Request $request): Response
     {
         if (!$this->isCsrfTokenValid('import_mouvements_import', $request->request->getString('_token'))) {
-            throw new AccessDeniedHttpException('Jeton CSRF invalide');
+            throw new AccessDeniedHttpException('Jeton CSRF invalide.');
         }
 
         // Identifiants des mouvements à importer
@@ -193,7 +193,7 @@ class MouvementsImportController extends AbstractController
                 $date = \DateTimeImmutable::createFromFormat('d-m-Y H:i:s', "$dateString 00:00:00");
                 // createFromFormat décale les dates impossibles (31-02 devient 03-03) et lit 26 comme l'an 26 : la date relue doit être celle saisie
                 if (!$date instanceof \DateTimeImmutable || $date->format('d-m-Y') !== $dateString) {
-                    throw new BadRequestHttpException("Date du mouvement invalide : $dateString");
+                    throw new BadRequestHttpException(sprintf('Date du mouvement invalide : [%s].', $dateString));
                 }
                 $mouvement->date = $date;
             }
@@ -208,7 +208,7 @@ class MouvementsImportController extends AbstractController
                     $categorie = $this->categorieRepository->find($categorieId);
 
                     if (!$categorie instanceof Categorie) {
-                        throw new BadRequestHttpException("Catégorie $categorieId introuvable");
+                        throw new BadRequestHttpException(sprintf('Catégorie [%s] introuvable.', $categorieId));
                     }
                 } else {
                     $categorie = null;
@@ -224,7 +224,7 @@ class MouvementsImportController extends AbstractController
                     $compte = $this->compteRepository->find($compteId);
 
                     if (!$compte instanceof Compte) {
-                        throw new BadRequestHttpException("Compte $compteId introuvable");
+                        throw new BadRequestHttpException(sprintf('Compte [%s] introuvable.', $compteId));
                     }
 
                     $mouvement->compte = $compte;
@@ -303,7 +303,7 @@ class MouvementsImportController extends AbstractController
 
         // Handlers disponibles
         if ($fileExtension !== $this->handlers[$this->handlerIdentifier]['extension']) {
-            throw new UnsupportedMediaTypeHttpException("Le handler $this->handlerIdentifier ne supporte pas le type de fichier $fileExtension.");
+            throw new UnsupportedMediaTypeHttpException(sprintf('Le handler [%s] ne supporte pas le type de fichier [%s].', $this->handlerIdentifier, $fileExtension));
         }
 
         $splFile = $file->openFile();
