@@ -38,7 +38,7 @@ final readonly class CategorieValueResolver implements ValueResolverInterface
         }
 
         if (!is_string($categorieId) || !CategorieId::estValide($categorieId)) {
-            throw new BadRequestHttpException("La catégorie $categorieId est invalide.");
+            throw new BadRequestHttpException(sprintf('La catégorie [%s] est invalide.', $categorieId));
         }
 
         $categorieId = new CategorieId($categorieId);
@@ -46,7 +46,7 @@ final readonly class CategorieValueResolver implements ValueResolverInterface
         $categorie = $this->categorieRepository->find($categorieId);
 
         if (!$categorie instanceof Categorie) {
-            throw new NotFoundHttpException("La catégorie $categorieId n'existe pas.");
+            throw new NotFoundHttpException(sprintf("La catégorie [%s] n'existe pas.", $categorieId));
         }
 
         return [$categorie];

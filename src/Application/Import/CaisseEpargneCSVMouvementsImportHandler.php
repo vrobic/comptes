@@ -78,7 +78,7 @@ class CaisseEpargneCSVMouvementsImportHandler extends AbstractMouvementsImportHa
                 // Alors la ligne en cours est un mouvement
                 if ($isValidDate) {
                     if (count($cols) !== count($headers)) {
-                        throw new \Exception("La ligne $currentLine ne comporte pas le même nombre de colonnes que la ligne $headersLine (en-tête).");
+                        throw new \Exception(sprintf('La ligne [%d] ne comporte pas le même nombre de colonnes que la ligne [%d] (en-tête).', $currentLine, $headersLine));
                     }
 
                     $rows[] = array_combine($headers, $cols);
@@ -92,7 +92,7 @@ class CaisseEpargneCSVMouvementsImportHandler extends AbstractMouvementsImportHa
             // Date
             $date = \DateTimeImmutable::createFromFormat('d/m/y H:i:s', "{$row['date']} 00:00:00");
             if (!$date instanceof \DateTimeImmutable) {
-                throw new \Exception("Date du mouvement invalide : {$row['date']}");
+                throw new \Exception(sprintf('Date du mouvement invalide : [%s].', $row['date']));
             }
 
             // Montant

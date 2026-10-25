@@ -20,7 +20,7 @@ final readonly class MouvementDenormalizer implements Denormalizer
     {
         $date = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', "{$data['date']} 00:00:00");
         if (!$date instanceof \DateTimeImmutable) {
-            throw new \Exception("Date du mouvement invalide : {$data['date']}");
+            throw new \Exception(sprintf('Date du mouvement invalide : [%s].', $data['date']));
         }
 
         return new Mouvement(

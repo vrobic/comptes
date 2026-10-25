@@ -30,7 +30,7 @@ readonly class ConfigurationLoader
     {
         $fileContent = file_get_contents(sprintf('%s/%s', $this->projectDir, $this->configFilePath));
         if (false === $fileContent) {
-            throw new \Exception(sprintf('Échec de lecture du fichier de configuration %s.', $this->configFilePath));
+            throw new \Exception(sprintf('Échec de lecture du fichier de configuration [%s].', $this->configFilePath));
         }
 
         try {
@@ -41,7 +41,7 @@ readonly class ConfigurationLoader
                 ]
             );
         } catch (ParseException $e) {
-            throw new \Exception(sprintf('Fichier YAML %s invalide.', $this->configFilePath), previous: $e);
+            throw new \Exception(sprintf('Fichier YAML [%s] invalide.', $this->configFilePath), previous: $e);
         }
 
         return $processedConfiguration;

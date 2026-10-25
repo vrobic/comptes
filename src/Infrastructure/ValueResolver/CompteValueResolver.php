@@ -37,7 +37,7 @@ final readonly class CompteValueResolver implements ValueResolverInterface
         }
 
         if (!is_string($compteId) || !CompteId::estValide($compteId)) {
-            throw new BadRequestHttpException("Le compte $compteId est invalide.");
+            throw new BadRequestHttpException(sprintf('Le compte [%s] est invalide.', $compteId));
         }
 
         $compteId = new CompteId($compteId);
@@ -45,7 +45,7 @@ final readonly class CompteValueResolver implements ValueResolverInterface
         $compte = $this->compteRepository->find($compteId);
 
         if (!$compte instanceof Compte) {
-            throw new NotFoundHttpException("Le compte $compteId n'existe pas.");
+            throw new NotFoundHttpException(sprintf("Le compte [%s] n'existe pas.", $compteId));
         }
 
         return [$compte];

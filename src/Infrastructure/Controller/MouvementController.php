@@ -36,7 +36,7 @@ final class MouvementController extends AbstractController
     public function __invoke(Request $request): RedirectResponse
     {
         if (!$this->isCsrfTokenValid('mouvements_edit', $request->request->getString('_token'))) {
-            throw new AccessDeniedHttpException('Jeton CSRF invalide');
+            throw new AccessDeniedHttpException('Jeton CSRF invalide.');
         }
 
         // Valeurs postées
@@ -62,7 +62,7 @@ final class MouvementController extends AbstractController
 
                             // createFromFormat décale les dates impossibles (31-02 devient 03-03) et lit 26 comme l'an 26 : la date relue doit être celle saisie
                             if (!$date instanceof \DateTimeImmutable || $date->format('d-m-Y') !== $dateString) {
-                                throw new BadRequestHttpException("Date du mouvement invalide : $dateString");
+                                throw new BadRequestHttpException(sprintf('Date du mouvement invalide : [%s].', $dateString));
                             }
                         }
 
@@ -76,7 +76,7 @@ final class MouvementController extends AbstractController
                                 $categorie = $this->categorieRepository->find($categorieId);
 
                                 if (!$categorie instanceof Categorie) {
-                                    throw new BadRequestHttpException("Catégorie $categorieId introuvable");
+                                    throw new BadRequestHttpException(sprintf('Catégorie [%s] introuvable.', $categorieId));
                                 }
                             } else {
                                 $categorie = null;
@@ -90,7 +90,7 @@ final class MouvementController extends AbstractController
                                 $compte = $this->compteRepository->find($compteId);
 
                                 if (!$compte instanceof Compte) {
-                                    throw new BadRequestHttpException("Compte $compteId introuvable");
+                                    throw new BadRequestHttpException(sprintf('Compte [%s] introuvable.', $compteId));
                                 }
                             }
                         }
@@ -111,7 +111,7 @@ final class MouvementController extends AbstractController
                             $mouvement = $this->mouvementRepository->find($mouvementId);
 
                             if (!$mouvement instanceof Mouvement) {
-                                throw new BadRequestHttpException("Mouvement $mouvementId introuvable");
+                                throw new BadRequestHttpException(sprintf('Mouvement [%s] introuvable.', $mouvementId));
                             }
 
                             if (array_key_exists('date', $variablesDéfinies)) {
