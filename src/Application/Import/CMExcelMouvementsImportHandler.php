@@ -71,6 +71,10 @@ class CMExcelMouvementsImportHandler extends AbstractMouvementsImportHandler
 
         $xlsx = SimpleXLSX::parse($file->getRealPath());
 
+        if (!$xlsx instanceof SimpleXLSX) {
+            throw new FichierImportInvalideException(sprintf('Fichier Excel illisible : [%s].', SimpleXLSX::parseError()));
+        }
+
         foreach ($comptesBySheets as $sheetIndex => $compte) {
             /** @var int $rowIndex */
             foreach ($xlsx->rows($sheetIndex) as $rowIndex => $row) {
@@ -93,13 +97,24 @@ class CMExcelMouvementsImportHandler extends AbstractMouvementsImportHandler
                 $montant = sprintf('%0.2f', $montant);
                 $montant = new Montant((float) $montant);
 
+                // Date : une cellule sans format de date donne un nombre, une cellule vide une chaîne vide, une cellule absente null
+                if (!is_string($date) || '' === $date) {
+                    throw new FichierImportInvalideException(sprintf('Date du mouvement invalide : [%s].', $date));
+                }
+
+                try {
+                    $dateMouvement = new \DateTimeImmutable($date);
+                } catch (\DateMalformedStringException $e) {
+                    throw new FichierImportInvalideException(sprintf('Date du mouvement invalide : [%s].', $date), previous: $e);
+                }
+
                 $mouvement = new Mouvement(
                     new MouvementId((string) $this->idGenerator->générer()),
-                    new \DateTimeImmutable($date),
+                    $dateMouvement,
                     null, // sera définie plus tard par la classification
                     $compte,
                     $montant,
-                    $description
+                    (string) $description // une cellule numérique donne un nombre, une cellule absente null
                 );
 
                 $mouvements = $mouvements->add($mouvement);
