@@ -5,6 +5,11 @@ framework:
     # Note that the session will be started ONLY if you read or write from it.
     session: true
 
+    # Un fichier d'import qui ne respecte pas le format du handler est une erreur de l'utilisateur, et non du serveur
+    exceptions:
+        App\Application\Import\FichierImportInvalideException:
+            status_code: 400
+
     #esi: true
     #fragments: true
 

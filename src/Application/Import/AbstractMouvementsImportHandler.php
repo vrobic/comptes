@@ -69,6 +69,8 @@ abstract class AbstractMouvementsImportHandler implements MouvementsImportHandle
 
     /**
      * Lit les mouvements du fichier, dans leur ordre d'apparition.
+     *
+     * @throws FichierImportInvalideException si le fichier ne respecte pas le format attendu
      */
     abstract protected function lireMouvements(\SplFileObject $file): MouvementCollection;
 
