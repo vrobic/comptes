@@ -34,14 +34,14 @@ class CaisseEpargneCSVMouvementsImportHandler extends AbstractMouvementsImportHa
         $configuration = $this->configuration[static::HANDLER_ID]['config'];
 
         if (!CompteId::estValide($configuration['compte'])) {
-            throw new \RuntimeException(sprintf("Le compte [%s] configuré pour le handler [%s] n'est pas un UUID valide.", $configuration['compte'], static::HANDLER_ID));
+            throw new \UnexpectedValueException(sprintf("Le compte [%s] configuré pour le handler [%s] n'est pas un UUID valide.", $configuration['compte'], static::HANDLER_ID));
         }
 
         // Le compte bancaire dans lequel importer les mouvements
         $compte = $this->compteRepository->find(new CompteId($configuration['compte']));
 
         if (!$compte instanceof Compte) {
-            throw new \RuntimeException(sprintf("Le compte [%s] configuré pour le handler [%s] n'existe pas.", $configuration['compte'], static::HANDLER_ID));
+            throw new \UnexpectedValueException(sprintf("Le compte [%s] configuré pour le handler [%s] n'existe pas.", $configuration['compte'], static::HANDLER_ID));
         }
 
         /**
