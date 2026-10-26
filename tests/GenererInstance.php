@@ -11,6 +11,8 @@ use App\Domain\Compte\Compte;
 use App\Domain\Compte\CompteId;
 use App\Domain\Compte\Plafond;
 use App\Domain\Compte\Solde;
+use App\Domain\Keyword\Keyword;
+use App\Domain\Keyword\KeywordId;
 
 final class GenererInstance
 {
@@ -52,6 +54,18 @@ final class GenererInstance
             is_string($catégorieParente) ? new CategorieId($catégorieParente) : null,
             new CategorieIdCollection(),
             $rang
+        );
+    }
+
+    public static function keyword(
+        string $id = '5b0d5f4e-3c8a-4f0e-9a7d-2e6c1b8f4a90',
+        string $word = 'DECATHLON',
+        ?Categorie $catégorie = null,
+    ): Keyword {
+        return new Keyword(
+            new KeywordId($id),
+            $word,
+            $catégorie ?? self::catégorie(),
         );
     }
 }
