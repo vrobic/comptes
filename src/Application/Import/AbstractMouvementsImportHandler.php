@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Import;
 
+use App\Domain\Categorie\CategorieCollection;
 use App\Domain\Categorie\Classification;
 use App\Domain\Compte\CompteRepositoryInterface;
 use App\Domain\DataStructure\Maybe;
@@ -42,8 +43,14 @@ abstract class AbstractMouvementsImportHandler implements MouvementsImportHandle
     {
         $mouvementsParClassification = new MouvementsParClassification();
 
+        // Les mots-clés de description
+        $keywords = $this->keywordRepository->findAll();
+
         foreach ($this->lireMouvements($file) as $mouvement) {
-            $classification = $this->getClassification($mouvement);
+            // Les catégories probables du mouvement, d'après tous les mots-clés de description
+            $categories = $keywords->trouverLesCatégories($mouvement->description);
+
+            $classification = $this->getClassification($mouvement, $categories);
 
             $mouvementsParClassification = $mouvementsParClassification->ajouter($classification, $mouvement);
         }
@@ -57,13 +64,10 @@ abstract class AbstractMouvementsImportHandler implements MouvementsImportHandle
     abstract protected function lireMouvements(\SplFileObject $file): MouvementCollection;
 
     /**
-     * Détermine la classification d'un mouvement.
+     * Détermine la classification d'un mouvement selon ses catégories probables.
      */
-    private function getClassification(Mouvement $mouvement): Classification
+    private function getClassification(Mouvement $mouvement, CategorieCollection $categories): Classification
     {
-        // Les catégories probables du mouvement, d'après tous les mots-clés de description
-        $categories = $this->keywordRepository->findAll()->trouverLesCatégories($mouvement->description);
-
         if (!$categories->isEmpty()) {
             if (count($categories) > 1) {
                 $classification = Classification::AMBIGUOUS;
