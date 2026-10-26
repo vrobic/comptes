@@ -24,5 +24,5 @@ services:
 ###> doctrine/doctrine-bundle ###
   database:
     ports:
-      - "3306"
+      - "127.0.0.1::3306"
 ###< doctrine/doctrine-bundle ###
