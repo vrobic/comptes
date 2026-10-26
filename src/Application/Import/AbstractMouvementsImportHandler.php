@@ -7,7 +7,6 @@ namespace App\Application\Import;
 use App\Domain\Categorie\CategorieCollection;
 use App\Domain\Categorie\Classification;
 use App\Domain\Compte\CompteRepositoryInterface;
-use App\Domain\DataStructure\Maybe;
 use App\Domain\Id\IdGeneratorInterface;
 use App\Domain\Keyword\KeywordRepositoryInterface;
 use App\Domain\Mouvement\Mouvement;
@@ -43,14 +42,24 @@ abstract class AbstractMouvementsImportHandler implements MouvementsImportHandle
     {
         $mouvementsParClassification = new MouvementsParClassification();
 
+        $mouvements = $this->lireMouvements($file);
+
         // Les mots-clés de description
         $keywords = $this->keywordRepository->findAll();
 
-        foreach ($this->lireMouvements($file) as $mouvement) {
+        // Les mouvements dont un mouvement de même compte, date et montant existe déjà
+        $doublons = $this->mouvementRepository->trouverLesDoublons($mouvements);
+
+        foreach ($mouvements as $mouvement) {
             // Les catégories probables du mouvement, d'après tous les mots-clés de description
             $categories = $keywords->trouverLesCatégories($mouvement->description);
 
             $classification = $this->getClassification($mouvement, $categories);
+
+            // Doublon probable
+            if ($doublons->contains($mouvement)) {
+                $classification = Classification::WAITING;
+            }
 
             $mouvementsParClassification = $mouvementsParClassification->ajouter($classification, $mouvement);
         }
@@ -77,19 +86,6 @@ abstract class AbstractMouvementsImportHandler implements MouvementsImportHandle
             }
         } else {
             $classification = Classification::UNCATEGORIZED;
-        }
-
-        // Recherche d'un éventuel doublon
-        $similarMouvements = $this->mouvementRepository->findBy(
-            maybeCategoriesIds: Maybe::nothing(),
-            maybeCompteId: Maybe::from($mouvement->compte->id),
-            maybeDateStart: Maybe::from($mouvement->date),
-            maybeDateEnd: Maybe::from($mouvement->date),
-            maybeMontant: Maybe::from($mouvement->montant),
-        );
-
-        if (!$similarMouvements->isEmpty()) {
-            $classification = Classification::WAITING;
         }
 
         return $classification;

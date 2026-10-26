@@ -39,6 +39,11 @@ interface MouvementRepositoryInterface
      */
     public function findLatestOne(): ?Mouvement;
 
+    /**
+     * Parmi les mouvements donnés, renvoie ceux dont un mouvement de même compte, date et montant existe déjà.
+     */
+    public function trouverLesDoublons(MouvementCollection $mouvements): MouvementCollection;
+
     public function save(Mouvement ...$mouvements): void;
 
     public function delete(MouvementId ...$ids): void;
