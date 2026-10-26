@@ -76,6 +76,9 @@ class CMExcelMouvementsImportHandler extends AbstractMouvementsImportHandler
         }
 
         foreach ($comptesBySheets as $sheetIndex => $compte) {
+            // Le nom de la feuille, tel qu'Excel l'affiche dans ses onglets
+            $sheetName = (string) $xlsx->sheetName($sheetIndex);
+
             /** @var int $rowIndex */
             foreach ($xlsx->rows($sheetIndex) as $rowIndex => $row) {
                 // Les lignes sont indexées à partir de 0, alors qu'Excel les numérote à partir de 1
@@ -102,13 +105,13 @@ class CMExcelMouvementsImportHandler extends AbstractMouvementsImportHandler
 
                 // Date : une cellule sans format de date donne un nombre, une cellule vide une chaîne vide, une cellule absente null
                 if (!is_string($date) || '' === $date) {
-                    throw new FichierImportInvalideException(sprintf('Date du mouvement invalide : [%s].', $date));
+                    throw new FichierImportInvalideException(sprintf('Date du mouvement invalide en ligne [%d] de la feuille [%s] : [%s].', $rowNumber, $sheetName, $date));
                 }
 
                 try {
                     $dateMouvement = new \DateTimeImmutable($date);
                 } catch (\DateMalformedStringException $e) {
-                    throw new FichierImportInvalideException(sprintf('Date du mouvement invalide : [%s].', $date), previous: $e);
+                    throw new FichierImportInvalideException(sprintf('Date du mouvement invalide en ligne [%d] de la feuille [%s] : [%s].', $rowNumber, $sheetName, $date), previous: $e);
                 }
 
                 $mouvement = new Mouvement(
