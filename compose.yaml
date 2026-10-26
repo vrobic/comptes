@@ -2,6 +2,9 @@ services:
   php:
     image: ${IMAGES_PREFIX:-}app-php
     restart: unless-stopped
+    depends_on:
+      database:
+        condition: service_healthy
     environment:
       SERVER_NAME: ${SERVER_NAME:-localhost}, php:80
       # The two next lines can be removed after initial installation
