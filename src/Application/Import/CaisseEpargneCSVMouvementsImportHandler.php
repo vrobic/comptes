@@ -62,9 +62,9 @@ class CaisseEpargneCSVMouvementsImportHandler extends AbstractMouvementsImportHa
             '',
         ];
 
-        // Numéros de ligne
-        $currentLine = 0;
-        $headersLine = 4;
+        // Numéros de ligne, comptés à partir de 1 comme dans un tableur
+        $currentLine = 1;
+        $headersLine = 5;
 
         while (is_array($cols = $file->fgetcsv(';', '"', '\\'))) {
             /* @var string[] $cols */
