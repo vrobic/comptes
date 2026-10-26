@@ -61,9 +61,9 @@ class CMCSVMouvementsImportHandler extends AbstractMouvementsImportHandler
             'solde',
         ];
 
-        // Numéros de ligne
-        $currentLine = 0;
-        $headersLine = 0;
+        // Numéros de ligne, comptés à partir de 1 comme dans un tableur
+        $currentLine = 1;
+        $headersLine = 1;
 
         while (is_array($cols = $file->fgetcsv(';', '"', '\\'))) {
             /* @var string[] $cols */
