@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Keyword;
 
+use App\Domain\Categorie\CategorieCollection;
 use App\Domain\DataStructure\Set;
 
 /**
@@ -37,6 +38,25 @@ final class KeywordCollection extends Set
         }
 
         return $map;
+    }
+
+    /**
+     * Trouve les catégories probables d'un mouvement, d'après sa description.
+     */
+    public function trouverLesCatégories(string $description): CategorieCollection
+    {
+        // Les catégories probables du mouvement
+        $categories = new CategorieCollection();
+
+        /** @var Keyword $keyword */
+        foreach ($this as $keyword) {
+            // Si le mot-clé est présent dans la description
+            if ($keyword->estPrésentDans($description)) {
+                $categories = $categories->add($keyword->categorie);
+            }
+        }
+
+        return $categories;
     }
 
     /** @param Keyword $value */
