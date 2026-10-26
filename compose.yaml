@@ -10,17 +10,21 @@ services:
     volumes:
       - caddy_data:/data
       - caddy_config:/config
+    # Ports publiés sur la seule boucle locale : sinon, Docker les ouvre à tout le réseau, en contournant le pare-feu
     ports:
       # HTTP
       - target: 80
+        host_ip: 127.0.0.1
         published: ${HTTP_PORT:-80}
         protocol: tcp
       # HTTPS
       - target: 443
+        host_ip: 127.0.0.1
         published: ${HTTPS_PORT:-443}
         protocol: tcp
       # HTTP/3
       - target: 443
+        host_ip: 127.0.0.1
         published: ${HTTP3_PORT:-443}
         protocol: udp
 
@@ -44,7 +48,7 @@ services:
       # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
       # - ./docker/db/data:/var/lib/mysql:rw
     ports:
-      - "3306:3306"
+      - "127.0.0.1:3306:3306"
 
 volumes:
   caddy_data:
