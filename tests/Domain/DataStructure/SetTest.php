@@ -354,7 +354,7 @@ class SetTest extends TestCase
 
     public function test_map_type_invalide(): void
     {
-        self::expectExceptionObject(new \ErrorException('Warning: Attempt to read property "id" on int'));
+        $this->expectExceptionObject(new \ErrorException('Warning: Attempt to read property "id" on int'));
 
         $set = new FooCollection()
             ->add(new Foo(1))
@@ -456,7 +456,7 @@ class SetTest extends TestCase
 
     public function test_first_set_vide(): void
     {
-        self::expectException(\UnderflowException::class);
+        $this->expectException(\UnderflowException::class);
 
         self::assertFalse(new Set(Foo::class)->first());
     }

@@ -65,7 +65,7 @@ final class BalanceTest extends TestCase
 
     public function test_diviser_par_zéro(): void
     {
-        self::expectException(\LogicException::class);
+        $this->expectException(\LogicException::class);
 
         new Balance(3.)->diviser(0);
     }

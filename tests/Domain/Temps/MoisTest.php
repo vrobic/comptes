@@ -19,14 +19,14 @@ final class MoisTest extends TestCase
 
     public function test_constructeur_invalide_mois_inférieur_à_un(): void
     {
-        self::expectException(\LogicException::class);
+        $this->expectException(\LogicException::class);
 
         new Mois(2019, 0);
     }
 
     public function test_constructeur_invalide_mois_supérieur_à_douze(): void
     {
-        self::expectException(\LogicException::class);
+        $this->expectException(\LogicException::class);
 
         new Mois(2019, 13);
     }
