@@ -18,6 +18,14 @@ final class Keyword
     ) {
     }
 
+    /**
+     * Indique si le mot-clé est présent dans une description.
+     */
+    public function estPrésentDans(string $description): bool
+    {
+        return (bool) preg_match("/\b$this->word\b/i", $description);
+    }
+
     public function __toString(): string
     {
         return $this->word;

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Application\Import;
 
-use App\Application\Mouvement\MouvementCategorizer;
 use App\Domain\Categorie\Classification;
 use App\Domain\Compte\CompteRepositoryInterface;
 use App\Domain\DataStructure\Maybe;
 use App\Domain\Id\IdGeneratorInterface;
+use App\Domain\Keyword\KeywordRepositoryInterface;
 use App\Domain\Mouvement\Mouvement;
 use App\Domain\Mouvement\MouvementRepositoryInterface;
 use App\Infrastructure\Configuration\ConfigurationLoader;
@@ -30,7 +30,7 @@ abstract class AbstractMouvementsImportHandler implements MouvementsImportHandle
         protected readonly MouvementRepositoryInterface $mouvementRepository,
         protected readonly CompteRepositoryInterface $compteRepository,
         protected readonly IdGeneratorInterface $idGenerator,
-        private readonly MouvementCategorizer $mouvementCategorizer,
+        private readonly KeywordRepositoryInterface $keywordRepository,
         ConfigurationLoader $configurationLoader,
     ) {
         $this->configuration = $configurationLoader()['import']['handlers']['mouvements'];
@@ -41,8 +41,8 @@ abstract class AbstractMouvementsImportHandler implements MouvementsImportHandle
      */
     protected function getClassification(Mouvement $mouvement): Classification
     {
-        // Service de catégorisation automatique des mouvements
-        $categories = $this->mouvementCategorizer->getCategories($mouvement);
+        // Les catégories probables du mouvement, d'après tous les mots-clés de description
+        $categories = $this->keywordRepository->findAll()->trouverLesCatégories($mouvement->description);
 
         if (!$categories->isEmpty()) {
             if (count($categories) > 1) {
