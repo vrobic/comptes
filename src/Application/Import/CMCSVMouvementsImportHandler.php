@@ -8,8 +8,8 @@ use App\Domain\Compte\Compte;
 use App\Domain\Compte\CompteId;
 use App\Domain\Mouvement\Montant;
 use App\Domain\Mouvement\Mouvement;
+use App\Domain\Mouvement\MouvementCollection;
 use App\Domain\Mouvement\MouvementId;
-use App\Domain\Mouvement\MouvementsParClassification;
 
 /**
  * Implémente un handler CSV d'import de mouvements de la banque Crédit Mutuel.
@@ -26,9 +26,9 @@ class CMCSVMouvementsImportHandler extends AbstractMouvementsImportHandler
     /**
      * @param \SplFileObject $file Fichier CSV fourni par le Crédit Mutuel
      */
-    public function parse(\SplFileObject $file): MouvementsParClassification
+    protected function lireMouvements(\SplFileObject $file): MouvementCollection
     {
-        $mouvementsParClassification = new MouvementsParClassification();
+        $mouvements = new MouvementCollection();
 
         // Configuration du handler
         $configuration = $this->configuration[static::HANDLER_ID]['config'];
@@ -109,11 +109,9 @@ class CMCSVMouvementsImportHandler extends AbstractMouvementsImportHandler
                 $row['libelle']
             );
 
-            $classification = $this->getClassification($mouvement);
-
-            $mouvementsParClassification = $mouvementsParClassification->ajouter($classification, $mouvement);
+            $mouvements = $mouvements->add($mouvement);
         }
 
-        return $mouvementsParClassification;
+        return $mouvements;
     }
 }
