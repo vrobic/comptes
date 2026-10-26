@@ -24,7 +24,7 @@ final class PeriodeTest extends TestCase
 
     public function test_constructeur_dates_incohérentes(): void
     {
-        self::expectException(\LogicException::class);
+        $this->expectException(\LogicException::class);
 
         new Periode(
             new \DateTimeImmutable('2025-08-21'),

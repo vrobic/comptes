@@ -51,7 +51,7 @@ class MapTest extends TestCase
     #[DataProvider('couplesClésInvalides')]
     public function test_add_clé_invalide(Map $map, mixed $clé): void
     {
-        self::expectExceptionObject(new \InvalidArgumentException('type de la clé invalide'));
+        $this->expectExceptionObject(new \InvalidArgumentException('type de la clé invalide'));
 
         $map->add($clé, new Value());
     }
@@ -59,7 +59,7 @@ class MapTest extends TestCase
     #[DataProvider('couplesValeursInvalides')]
     public function test_add_valeur_invalide(Map $map, mixed $valeur): void
     {
-        self::expectExceptionObject(new \InvalidArgumentException('type de la valeur invalide'));
+        $this->expectExceptionObject(new \InvalidArgumentException('type de la valeur invalide'));
 
         $map->add(new Key(), $valeur);
     }
@@ -126,7 +126,7 @@ class MapTest extends TestCase
     #[DataProvider('couplesValeursInvalides')]
     public function test_remove_clé_invalide(Map $map, mixed $clé): void
     {
-        self::expectExceptionObject(new \InvalidArgumentException('type de la clé invalide'));
+        $this->expectExceptionObject(new \InvalidArgumentException('type de la clé invalide'));
 
         $map->remove($clé);
     }
@@ -163,7 +163,7 @@ class MapTest extends TestCase
     #[DataProvider('couplesValeursInvalides')]
     public function test_get_clé_invalide(Map $map, mixed $clé): void
     {
-        self::expectExceptionObject(new \InvalidArgumentException('type de la clé invalide'));
+        $this->expectExceptionObject(new \InvalidArgumentException('type de la clé invalide'));
 
         $map->get($clé);
     }
@@ -173,7 +173,7 @@ class MapTest extends TestCase
     #[DataProvider('couplesClésScalairesValides')]
     public function test_get_clé_inexistante(Map $map, mixed $clé1, mixed $clé2): void
     {
-        self::expectExceptionObject(new \UnexpectedValueException('clé introuvable'));
+        $this->expectExceptionObject(new \UnexpectedValueException('clé introuvable'));
 
         $map
             ->add($clé1, new Value())
@@ -196,7 +196,7 @@ class MapTest extends TestCase
     #[DataProvider('couplesValeursInvalides')]
     public function test_try_get_clé_invalide(Map $map, mixed $clé): void
     {
-        self::expectExceptionObject(new \InvalidArgumentException('type de la clé invalide'));
+        $this->expectExceptionObject(new \InvalidArgumentException('type de la clé invalide'));
 
         $map->tryGet($clé);
     }
@@ -225,7 +225,7 @@ class MapTest extends TestCase
     #[DataProvider('couplesValeursInvalides')]
     public function test_has_clé_invalide(Map $map, mixed $clé): void
     {
-        self::expectExceptionObject(new \InvalidArgumentException('type de la clé invalide'));
+        $this->expectExceptionObject(new \InvalidArgumentException('type de la clé invalide'));
 
         $map->has($clé);
     }
