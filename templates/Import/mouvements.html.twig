@@ -23,7 +23,7 @@
 
 {% endmacro %}
 
-{% macro mouvements(type, mouvements, comptes, categories) %}
+{% macro mouvements(type, mouvements, categories) %}
 
     {% import _self as macros %}
 
@@ -51,13 +51,11 @@
                         <label for="mouvement-{{ mouvement.id }}" class="sr-only">Importer</label>
                         <input id="mouvement-{{ mouvement.id }}" type="checkbox" name="ids_to_import[]" value="{{ mouvement.id }}" {{ type != 'waiting' ? "checked" }}>
                     </td>
-                    <td>
+                    <td class="input-select2">
                         <label for="compte-{{ mouvement.id }}" class="sr-only">Compte</label>
-                        <select id="compte-{{ mouvement.id }}" name="mouvements[{{ mouvement.id }}][compte]">
+                        <select id="compte-{{ mouvement.id }}" name="mouvements[{{ mouvement.id }}][compte]" data-options="#options-comptes">
                             <option value="">&nbsp;</option>
-                            {% for compte in comptes %}
-                                <option value="{{ compte.id }}" {{ mouvement.compte.id == compte.id ? "selected" }}>{{ compte }}</option>
-                            {% endfor %}
+                            <option value="{{ mouvement.compte.id }}" selected>{{ mouvement.compte }}</option>
                         </select>
                     </td>
                     <td class="input-text">
@@ -154,30 +152,38 @@
             {% endfor %}
         </template>
 
+        {# Tous les comptes, rendus une seule fois : le sélecteur de chaque mouvement ne contient que le sien, et reçoit les autres à son ouverture #}
+        <template id="options-comptes">
+            <option value="">&nbsp;</option>
+            {% for compte in comptes %}
+                <option value="{{ compte.id }}">{{ compte }}</option>
+            {% endfor %}
+        </template>
+
         <form action="{{ path('import_mouvements_import') }}" method="POST">
 
             {% if categorized_mouvements is not empty %}
                 <h2>Mouvements catégorisés</h2>
                 <p>Ils sont prêts à être importés. Tu me fais confiance, non ?</p>
-                {{ macros.mouvements('categorized', categorized_mouvements, comptes, categories) }}
+                {{ macros.mouvements('categorized', categorized_mouvements, categories) }}
             {% endif %}
 
             {% if uncategorized_mouvements is not empty %}
                 <h2>Mouvements non catégorisés</h2>
                 <p>Je n'ai aucune règle qui m'indique dans quelles catégories les ranger. Débrouille-toi !</p>
-                {{ macros.mouvements('uncategorized', uncategorized_mouvements, comptes, categories) }}
+                {{ macros.mouvements('uncategorized', uncategorized_mouvements, categories) }}
             {% endif %}
 
             {% if ambiguous_mouvements is not empty %}
                 <h2>Mouvements ambigus</h2>
                 <p>J'avais un doute sur leurs catégories. Tu peux m'aider ?</p>
-                {{ macros.mouvements('ambiguous', ambiguous_mouvements, comptes, categories) }}
+                {{ macros.mouvements('ambiguous', ambiguous_mouvements, categories) }}
             {% endif %}
 
             {% if waiting_mouvements is not empty %}
                 <h2>Mouvements à confirmer</h2>
                 <p>Des mouvements similaires existent déjà. Tu veux les réimporter ?</p>
-                {{ macros.mouvements('waiting', waiting_mouvements, comptes, categories) }}
+                {{ macros.mouvements('waiting', waiting_mouvements, categories) }}
             {% endif %}
 
             <input type="hidden" name="_token" value="{{ csrf_token('import_mouvements_import') }}">
