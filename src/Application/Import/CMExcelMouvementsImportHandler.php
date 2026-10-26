@@ -78,14 +78,17 @@ class CMExcelMouvementsImportHandler extends AbstractMouvementsImportHandler
         foreach ($comptesBySheets as $sheetIndex => $compte) {
             /** @var int $rowIndex */
             foreach ($xlsx->rows($sheetIndex) as $rowIndex => $row) {
-                if ($rowIndex < self::START_ROW_NUMBER) {
+                // Les lignes sont indexées à partir de 0, alors qu'Excel les numérote à partir de 1
+                $rowNumber = $rowIndex + 1;
+
+                if ($rowNumber < self::START_ROW_NUMBER) {
                     continue;
                 }
 
-                $date = $xlsx->getCell($sheetIndex, sprintf('%s%d', self::DATE_COLUMN_ID, $rowIndex));
-                $debit = $xlsx->getCell($sheetIndex, sprintf('%s%d', self::DEBIT_COLUMN_ID, $rowIndex));
-                $credit = $xlsx->getCell($sheetIndex, sprintf('%s%d', self::CREDIT_COLUMN_ID, $rowIndex));
-                $description = $xlsx->getCell($sheetIndex, sprintf('%s%d', self::DESCRIPTION_COLUMN_ID, $rowIndex));
+                $date = $xlsx->getCell($sheetIndex, sprintf('%s%d', self::DATE_COLUMN_ID, $rowNumber));
+                $debit = $xlsx->getCell($sheetIndex, sprintf('%s%d', self::DEBIT_COLUMN_ID, $rowNumber));
+                $credit = $xlsx->getCell($sheetIndex, sprintf('%s%d', self::CREDIT_COLUMN_ID, $rowNumber));
+                $description = $xlsx->getCell($sheetIndex, sprintf('%s%d', self::DESCRIPTION_COLUMN_ID, $rowNumber));
 
                 // Arrivée à la fin du tableau des mouvements
                 if (null === $debit && null === $credit) {
