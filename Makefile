@@ -57,6 +57,10 @@ stan-baseline: ## Régénère la baseline PHPStan
 test: ## Exécute PHPUnit
 	$(DOCKER_PHP) bin/phpunit
 
+coverage: ## Exécute PHPUnit et mesure la couverture de code (rapport dans var/coverage.txt)
+	$(DOCKER_PHP) env XDEBUG_MODE=coverage bin/phpunit --colors=never --coverage-text=var/coverage.txt
+	$(DOCKER_PHP) cat var/coverage.txt
+
 validate: ## Vérifie composer.json et sa synchronisation avec composer.lock
 	$(DOCKER_PHP) composer validate --strict
 

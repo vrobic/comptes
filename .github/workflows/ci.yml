@@ -75,8 +75,16 @@ jobs:
         if: false # Remove this line if Doctrine Migrations is installed
         run: $DOCKER_PHP bin/console -e test doctrine:migrations:migrate --no-interaction
       -
-        name: Run PHPUnit
-        run: make test
+        name: Run PHPUnit with code coverage
+        run: make coverage
+      -
+        name: Publish code coverage
+        run: |
+          {
+            echo '```'
+            $DOCKER_PHP cat var/coverage.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
       -
         name: Doctrine Schema Validator
         if: false # Remove this line if Doctrine ORM is installed
