@@ -341,6 +341,55 @@ final readonly class MouvementRepository implements MouvementRepositoryInterface
         );
     }
 
+    /**
+     * Ne lit que le compte, la date et le montant des mouvements existants, en une seule requête pour tous les mouvements donnés.
+     */
+    public function trouverLesDoublons(MouvementCollection $mouvements): MouvementCollection
+    {
+        $dates = $mouvements->toArray(
+            static fn (Mouvement $mouvement): \DateTimeImmutable => $mouvement->date
+        );
+
+        if ([] === $dates) {
+            return new MouvementCollection();
+        }
+
+        $rows = $this->connection->fetchAllAssociative(
+            <<<SQL
+                SELECT compte_id, date, montant
+                FROM mouvements
+                WHERE
+                    compte_id IN (:comptes_ids)
+                    AND date BETWEEN :date_debut AND :date_fin;
+            SQL,
+            [
+                'comptes_ids' => array_values(array_unique($mouvements->toArray(
+                    static fn (Mouvement $mouvement): string => (string) $mouvement->compte->id
+                ))),
+                'date_debut' => min($dates),
+                'date_fin' => max($dates),
+            ],
+            [
+                'comptes_ids' => ArrayParameterType::STRING,
+                'date_debut' => Types::DATE_IMMUTABLE,
+                'date_fin' => Types::DATE_IMMUTABLE,
+            ]
+        );
+
+        $clésExistantes = array_flip(array_map(
+            fn (array $row): string => $this->getCléDeDoublon((string) $row['compte_id'], (string) $row['date'], (float) $row['montant']),
+            $rows
+        ));
+
+        return $mouvements->filter(
+            fn (Mouvement $mouvement): bool => isset($clésExistantes[$this->getCléDeDoublon(
+                (string) $mouvement->compte->id,
+                $mouvement->date->format('Y-m-d'),
+                $mouvement->montant->montant
+            )])
+        );
+    }
+
     public function save(Mouvement ...$mouvements): void
     {
         foreach ($mouvements as $mouvement) {
@@ -379,6 +428,14 @@ final readonly class MouvementRepository implements MouvementRepositoryInterface
             ],
             ['ids' => ArrayParameterType::STRING]
         );
+    }
+
+    /**
+     * Le montant est comparé en centimes, pour ne pas dépendre de l'arrondi des nombres à virgule.
+     */
+    private function getCléDeDoublon(string $compteId, string $date, float $montant): string
+    {
+        return sprintf('%s|%s|%d', $compteId, $date, (int) round($montant * 100));
     }
 
     private function préparerRowsPourDenormalizer(array $rows): array
