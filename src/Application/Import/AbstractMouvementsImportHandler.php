@@ -10,7 +10,9 @@ use App\Domain\DataStructure\Maybe;
 use App\Domain\Id\IdGeneratorInterface;
 use App\Domain\Keyword\KeywordRepositoryInterface;
 use App\Domain\Mouvement\Mouvement;
+use App\Domain\Mouvement\MouvementCollection;
 use App\Domain\Mouvement\MouvementRepositoryInterface;
+use App\Domain\Mouvement\MouvementsParClassification;
 use App\Infrastructure\Configuration\ConfigurationLoader;
 
 /**
@@ -36,10 +38,28 @@ abstract class AbstractMouvementsImportHandler implements MouvementsImportHandle
         $this->configuration = $configurationLoader()['import']['handlers']['mouvements'];
     }
 
+    public function parse(\SplFileObject $file): MouvementsParClassification
+    {
+        $mouvementsParClassification = new MouvementsParClassification();
+
+        foreach ($this->lireMouvements($file) as $mouvement) {
+            $classification = $this->getClassification($mouvement);
+
+            $mouvementsParClassification = $mouvementsParClassification->ajouter($classification, $mouvement);
+        }
+
+        return $mouvementsParClassification;
+    }
+
+    /**
+     * Lit les mouvements du fichier, dans leur ordre d'apparition.
+     */
+    abstract protected function lireMouvements(\SplFileObject $file): MouvementCollection;
+
     /**
      * Détermine la classification d'un mouvement.
      */
-    protected function getClassification(Mouvement $mouvement): Classification
+    private function getClassification(Mouvement $mouvement): Classification
     {
         // Les catégories probables du mouvement, d'après tous les mots-clés de description
         $categories = $this->keywordRepository->findAll()->trouverLesCatégories($mouvement->description);
