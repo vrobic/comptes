@@ -27,7 +27,6 @@ L'infrastructure repose désormais sur [Symfony Docker](https://github.com/dungl
 
 ```
 make install
-make up
 make migration-migrate
 ```
 

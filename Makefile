@@ -9,6 +9,7 @@ help: ## Affiche cette aide
 
 install: ## Installe le projet et démarre la stack
 	docker compose build --pull --no-cache
+	$(MAKE) up
 
 up: ## Démarre la stack
 	docker compose up --wait
