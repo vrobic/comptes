@@ -34,9 +34,9 @@ migration-migrate: ## Exécute les migrations qui n'ont pas été jouées sur la
 	$(DOCKER_PHP) bin/console doctrine:migrations:migrate $(MIGRATE_ARGS)
 
 lint: ## Exécute PHPCS, PHPStan et les linters Symfony
-	make cs-fix
-	make stan
-	make lint-symfony
+	$(MAKE) cs-fix
+	$(MAKE) stan
+	$(MAKE) lint-symfony
 
 lint-symfony: ## Exécute les linters Symfony (conteneur de services, Twig, YAML)
 	$(DOCKER_PHP) bin/console lint:container
