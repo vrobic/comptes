@@ -16,8 +16,10 @@ use App\Domain\Compte\CompteRepositoryInterface;
 use App\Domain\DataStructure\Maybe;
 use App\Domain\Id\IdGeneratorInterface;
 use App\Domain\Keyword\Keyword;
+use App\Domain\Keyword\KeywordCollection;
 use App\Domain\Keyword\KeywordId;
 use App\Domain\Keyword\KeywordRepositoryInterface;
+use App\Domain\Keyword\KeywordsParCategorieIdMap;
 use App\Domain\Mouvement\Balance;
 use App\Domain\Mouvement\Mouvement;
 use App\Domain\Mouvement\MouvementRepositoryInterface;
@@ -25,6 +27,7 @@ use App\Domain\Temps\Annee;
 use App\Domain\Temps\Depuis;
 use App\Domain\Temps\Periode;
 use App\Infrastructure\ValueResolver\PeriodeParDefautAttribute;
+use Doctrine\DBAL\Connection;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -40,6 +43,7 @@ final class CategorieController extends AbstractController
         private readonly MouvementRepositoryInterface $mouvementRepository,
         private readonly KeywordRepositoryInterface $keywordRepository,
         private readonly IdGeneratorInterface $idGenerator,
+        private readonly Connection $connection,
     ) {
     }
 
@@ -239,6 +243,37 @@ final class CategorieController extends AbstractController
         $keywords = $this->keywordRepository->findAll();
         $keywordsParCatégorieId = $keywords->trierParCatégorie();
 
+        // Les modifications d'un envoi forment un bloc : si l'une est refusée, aucune n'est enregistrée
+        if ($request->isMethod('POST')) {
+            $this->connection->transactional(fn () => $this->enregistrer($request, $keywords, $keywordsParCatégorieId));
+        }
+
+        if ($request->request->has('redirect_route')) {
+            return $this->redirectToRoute(
+                $request->request->getString('redirect_route'),
+                $request->request->all('redirect_params')
+            );
+        }
+
+        $categories = $this->categorieRepository->findAll();
+
+        return $this->render(
+            'Categorie/edit.html.twig',
+            [
+                'categories' => $categories->toAssociativeArray(),
+                'keywords' => $keywordsParCatégorieId->toAssociativeArray(),
+            ]
+        );
+    }
+
+    /**
+     * Enregistre ou supprime les catégories cochées, selon l'action postée.
+     */
+    private function enregistrer(
+        Request $request,
+        KeywordCollection $keywords,
+        KeywordsParCategorieIdMap $keywordsParCatégorieId,
+    ): void {
         // Valeurs postées
         $action = $request->request->get('action');
         $batchArray = $request->request->all('batch');
@@ -423,22 +458,5 @@ final class CategorieController extends AbstractController
                 }
             }
         }
-
-        if ($request->request->has('redirect_route')) {
-            return $this->redirectToRoute(
-                $request->request->getString('redirect_route'),
-                $request->request->all('redirect_params')
-            );
-        }
-
-        $categories = $this->categorieRepository->findAll();
-
-        return $this->render(
-            'Categorie/edit.html.twig',
-            [
-                'categories' => $categories->toAssociativeArray(),
-                'keywords' => $keywordsParCatégorieId->toAssociativeArray(),
-            ]
-        );
     }
 }
