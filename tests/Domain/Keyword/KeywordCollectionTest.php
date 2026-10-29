@@ -28,53 +28,24 @@ final class KeywordCollectionTest extends TestCase
         self::assertSame([$decathlon, $autreDecathlon], $keywords->toArray());
     }
 
-    public function test_trouver_les_catégories_sans_mot_clé(): void
+    public function test_catégories_sans_mot_clé(): void
     {
-        $categories = new KeywordCollection()->trouverLesCatégories('PAIEMENT CB 1209 DECATHLON');
-
-        self::assertTrue($categories->isEmpty());
+        self::assertTrue(new KeywordCollection()->catégories()->isEmpty());
     }
 
-    public function test_trouver_les_catégories_sans_mot_clé_présent(): void
-    {
-        $keywords = new KeywordCollection()->add(
-            GenererInstance::keyword(word: 'DECATHLON'),
-        );
-
-        $categories = $keywords->trouverLesCatégories('PAIEMENT CB 1209 INTERSPORT');
-
-        self::assertTrue($categories->isEmpty());
-    }
-
-    public function test_trouver_les_catégories_une_catégorie(): void
-    {
-        $sport = self::sport();
-
-        $keywords = new KeywordCollection()->add(
-            GenererInstance::keyword(id: 'a2f3f6f0-6f0e-4f43-8f0c-0c1d6f7e5b01', word: 'DECATHLON', catégorie: $sport),
-            GenererInstance::keyword(id: 'a2f3f6f0-6f0e-4f43-8f0c-0c1d6f7e5b02', word: 'NANTES', catégorie: $sport),
-            GenererInstance::keyword(id: 'a2f3f6f0-6f0e-4f43-8f0c-0c1d6f7e5b03', word: 'SNCF', catégorie: self::transport()),
-        );
-
-        // Deux mots-clés de la même catégorie ne la donnent qu'une fois
-        $categories = $keywords->trouverLesCatégories('PAIEMENT CB 1209 DECATHLON NANTES');
-
-        self::assertSame([$sport], $categories->toArray());
-    }
-
-    public function test_trouver_les_catégories_plusieurs_catégories(): void
+    public function test_catégories(): void
     {
         $sport = self::sport();
         $transport = self::transport();
 
         $keywords = new KeywordCollection()->add(
             GenererInstance::keyword(id: 'a2f3f6f0-6f0e-4f43-8f0c-0c1d6f7e5b01', word: 'DECATHLON', catégorie: $sport),
-            GenererInstance::keyword(id: 'a2f3f6f0-6f0e-4f43-8f0c-0c1d6f7e5b03', word: 'SNCF', catégorie: $transport),
+            GenererInstance::keyword(id: 'a2f3f6f0-6f0e-4f43-8f0c-0c1d6f7e5b02', word: 'SNCF', catégorie: $transport),
+            GenererInstance::keyword(id: 'a2f3f6f0-6f0e-4f43-8f0c-0c1d6f7e5b03', word: 'NANTES', catégorie: $sport),
         );
 
-        $categories = $keywords->trouverLesCatégories('PAIEMENT CB 1209 DECATHLON SNCF');
-
-        self::assertSame([$sport, $transport], $categories->toArray());
+        // Deux mots-clés de la même catégorie ne la donnent qu'une fois
+        self::assertSame([$sport, $transport], $keywords->catégories()->toArray());
     }
 
     public function test_trier_par_catégorie(): void
