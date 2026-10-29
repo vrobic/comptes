@@ -30,6 +30,11 @@ final class DétecterUnMotTest extends TestCase
             "partie d'un mot plus long" => ['EDF', 'PAIEMENT CB 1209 MEDFORD', false],
             'mots séparés autrement' => ['ORANGE SA', 'PRLV SEPA ORANGE-SA', false],
             'texte vide' => ['DECATHLON', '', false],
+            'point' => ['S.A', 'PRLV SEPA ORANGE S.A 123456', true],
+            "point qui n'est pas un joker" => ['S.A', 'PRLV SEPA ORANGE SXA 123456', false],
+            'parenthèse' => ['C(A', 'PAIEMENT CB 1209 C(A NANTES', true],
+            'barre oblique' => ['A/B', 'PAIEMENT CB 1209 A/B NANTES', true],
+            'barre oblique inversée' => ['A\\B', 'PAIEMENT CB 1209 A\\B NANTES', true],
         ];
     }
 }
