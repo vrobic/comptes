@@ -7,10 +7,12 @@ namespace App\Application\Import;
 use App\Domain\Categorie\Classification;
 use App\Domain\Compte\CompteRepositoryInterface;
 use App\Domain\Id\IdGeneratorInterface;
+use App\Domain\Keyword\Keyword;
 use App\Domain\Keyword\KeywordRepositoryInterface;
 use App\Domain\Mouvement\MouvementCollection;
 use App\Domain\Mouvement\MouvementRepositoryInterface;
 use App\Domain\Mouvement\MouvementsParClassification;
+use App\Domain\Texte\DétecterUnMotInterface;
 use App\Infrastructure\Configuration\ConfigurationLoader;
 
 /**
@@ -31,6 +33,7 @@ abstract class AbstractMouvementsImportHandler implements MouvementsImportHandle
         protected readonly CompteRepositoryInterface $compteRepository,
         protected readonly IdGeneratorInterface $idGenerator,
         private readonly KeywordRepositoryInterface $keywordRepository,
+        private readonly DétecterUnMotInterface $détecterUnMot,
         ConfigurationLoader $configurationLoader,
     ) {
         $this->configuration = $configurationLoader()['import']['handlers']['mouvements'];
@@ -49,8 +52,10 @@ abstract class AbstractMouvementsImportHandler implements MouvementsImportHandle
         $doublons = $this->mouvementRepository->trouverLesDoublons($mouvements);
 
         foreach ($mouvements as $mouvement) {
-            // Les catégories probables du mouvement, d'après tous les mots-clés de description
-            $categories = $keywords->trouverLesCatégories($mouvement->description);
+            // Les catégories probables du mouvement, celles des mots-clés présents dans sa description
+            $categories = $keywords
+                ->filter(fn (Keyword $keyword): bool => ($this->détecterUnMot)($mouvement->description, $keyword->word))
+                ->catégories();
 
             // Une seule catégorie probable : elle est proposée d'office
             if (1 === count($categories)) {
