@@ -16,6 +16,6 @@ final readonly class DétecterUnMot implements DétecterUnMotInterface
         // Le mot est cherché comme du texte, et non comme une partie de regex
         $motÉchappé = preg_quote($mot, '/');
 
-        return (bool) preg_match("/\b$motÉchappé\b/i", $texte);
+        return (bool) preg_match("/\b$motÉchappé\b/iu", $texte);
     }
 }
