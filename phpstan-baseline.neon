@@ -67,7 +67,7 @@ parameters:
 			path: src/Infrastructure/Configuration/ConfigurationLoader.php
 
 		-
-			message: '#^Call to function array_key_exists\(\) with ''rang'' and array\{action\: bool\|float\|int\|string\|null, request\: Symfony\\Component\\HttpFoundation\\Request, keywords\: App\\Domain\\Keyword\\KeywordCollection, batchArray\: non\-empty\-array\<mixed\>, categoriesArray\: non\-empty\-array\<mixed\>, keywordsParCatégorieId\: App\\Domain\\Keyword\\KeywordsParCategorieIdMap, categorieArray\: mixed, categorieId\: App\\Domain\\Categorie\\CategorieId\|null, \.\.\.\} will always evaluate to true\.$#'
+			message: '#^Call to function array_key_exists\(\) with ''rang'' and array\{action\: bool\|float\|int\|string\|null, request\: Symfony\\Component\\HttpFoundation\\Request, keywords\: App\\Domain\\Keyword\\KeywordCollection, batchArray\: non\-empty\-array\<mixed\>, categoriesArray\: non\-empty\-array\<mixed\>, keywordsAjoutés\: App\\Domain\\Keyword\\KeywordCollection, keywordsRetirés\: App\\Domain\\Keyword\\KeywordCollection, keywordsParCatégorieId\: App\\Domain\\Keyword\\KeywordsParCategorieIdMap, \.\.\.\} will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 2
 			path: src/Infrastructure/Controller/CategorieController.php
