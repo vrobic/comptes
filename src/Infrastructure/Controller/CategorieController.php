@@ -279,6 +279,11 @@ final class CategorieController extends AbstractController
         $batchArray = $request->request->all('batch');
         $categoriesArray = $request->request->all('categories');
 
+        // Les mots-clés que cet envoi ajoute à une catégorie, enregistrés une fois tout l'envoi lu
+        $keywordsAjoutés = new KeywordCollection();
+        // Les mots-clés que cet envoi retire de leur catégorie : chacun peut être repris par une autre catégorie
+        $keywordsRetirés = new KeywordCollection();
+
         /** @var string $categorieId */
         foreach ($batchArray as $categorieId) {
             if (isset($categoriesArray[$categorieId])) {
@@ -387,43 +392,35 @@ final class CategorieController extends AbstractController
 
                             // Ajoute les mots-clés sélectionnés
                             foreach ($motsAjoutés as $motAjouté) {
-                                // Ce mot-clé existe-il déjà ?
+                                // Un même mot ne peut être ajouté qu'à une seule catégorie par envoi
+                                $déjàAjouté = $keywordsAjoutés->findFirst(
+                                    static fn (Keyword $keyword): bool => $keyword->word === $motAjouté,
+                                );
+
+                                if ($déjàAjouté instanceof Keyword) {
+                                    throw new BadRequestHttpException(sprintf("Le mot-clé [%s] ne peut pas être ajouté à la catégorie [%s] puisqu'il l'est déjà à [%s].", $motAjouté, $categorie, $déjàAjouté->categorie));
+                                }
+
+                                // Un mot qui existe déjà garde son mot-clé, et donc son identifiant
                                 $keyword = $keywords->findFirst(
                                     static fn (Keyword $keyword): bool => $keyword->word === $motAjouté,
                                 );
 
-                                if (!$keyword instanceof Keyword) { // Si non, on le crée
-                                    $keyword = new Keyword(
-                                        new KeywordId((string) $this->idGenerator->générer()),
-                                        $motAjouté,
-                                        $categorie
-                                    );
-                                } else { // Si oui, on vérifie qu'il n'est pas déjà affecté à une autre catégorie
-                                    $keywordCategorie = $keyword->categorie;
-                                    $keywordCategorieId = $keywordCategorie->id;
-
-                                    if (!$keywordCategorieId->estÉgalÀ($categorieId)) {
-                                        throw new BadRequestHttpException(sprintf("Le mot-clé [%s] ne peut pas être ajouté à la catégorie [%s] puisqu'il est déjà affecté à [%s].", $keyword, $categorie, $keywordCategorie));
-                                    }
-
-                                    $keyword->categorie = $categorie;
-                                }
-
-                                $this->keywordRepository->save($keyword);
+                                $keywordsAjoutés = $keywordsAjoutés->add(new Keyword(
+                                    $keyword instanceof Keyword ? $keyword->id : new KeywordId((string) $this->idGenerator->générer()),
+                                    $motAjouté,
+                                    $categorie,
+                                ));
                             }
 
-                            // Supprime les mots-clés qui ne sont plus sélectionnés
                             foreach ($motsSupprimés as $motSupprimé) {
                                 $keyword = $keywords->findFirst(
                                     static fn (Keyword $keyword): bool => $keyword->word === $motSupprimé,
                                 );
 
-                                if (!$keyword instanceof Keyword) {
-                                    continue;
+                                if ($keyword instanceof Keyword) {
+                                    $keywordsRetirés = $keywordsRetirés->add($keyword);
                                 }
-
-                                // Pas besoin de vider la catégorie du mot-clé, il n'a plus de raison d'être donc on le supprime directement
-                                $this->keywordRepository->delete($keyword->id);
                             }
                         }
 
@@ -457,6 +454,36 @@ final class CategorieController extends AbstractController
                         break;
                 }
             }
+        }
+
+        // Ajoute les mots-clés sélectionnés
+        /** @var Keyword $keywordAjouté */
+        foreach ($keywordsAjoutés as $keywordAjouté) {
+            // Ce mot-clé existe-il déjà ?
+            $keyword = $keywords->findFirst(
+                static fn (Keyword $keyword): bool => $keyword->word === $keywordAjouté->word,
+            );
+
+            // Si oui, on vérifie qu'il n'est pas déjà affecté à une autre catégorie, sauf si cet envoi l'en retire
+            if ($keyword instanceof Keyword && !$keyword->categorie->id->estÉgalÀ($keywordAjouté->categorie->id)) {
+                if (!$keywordsRetirés->contains($keyword)) {
+                    throw new BadRequestHttpException(sprintf("Le mot-clé [%s] ne peut pas être ajouté à la catégorie [%s] puisqu'il est déjà affecté à [%s].", $keyword, $keywordAjouté->categorie, $keyword->categorie));
+                }
+
+                // Repris par une autre catégorie, le mot-clé n'est plus à supprimer
+                $keywordsRetirés = $keywordsRetirés->remove($keyword);
+            }
+
+            $this->keywordRepository->save($keywordAjouté);
+        }
+
+        // Supprime les mots-clés retirés qu'aucune catégorie n'a repris : ils n'ont plus de raison d'être
+        if (!$keywordsRetirés->isEmpty()) {
+            $this->keywordRepository->delete(
+                ...$keywordsRetirés->toArray(
+                    static fn (Keyword $keyword): KeywordId => $keyword->id
+                )
+            );
         }
     }
 }
