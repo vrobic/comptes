@@ -7,22 +7,29 @@ namespace App\Infrastructure\Controller;
 use App\Domain\BalanceMensuelle;
 use App\Domain\Categorie\CategorieRepositoryInterface;
 use App\Domain\Compte\Compte;
+use App\Domain\Compte\CompteId;
 use App\Domain\Compte\CompteRepositoryInterface;
+use App\Domain\Compte\Plafond;
 use App\Domain\Compte\Solde;
 use App\Domain\DataStructure\Maybe;
+use App\Domain\Id\IdGeneratorInterface;
 use App\Domain\Mouvement\Montant;
 use App\Domain\Mouvement\Mouvement;
 use App\Domain\Mouvement\MouvementId;
 use App\Domain\Mouvement\MouvementRepositoryInterface;
 use App\Domain\Temps\Date;
+use App\Domain\Temps\DateInvalideException;
 use App\Domain\Temps\Depuis;
 use App\Domain\Temps\HorlogeInterface;
 use App\Domain\Temps\Mois;
 use App\Domain\Temps\Periode;
 use App\Infrastructure\ValueResolver\PeriodeParDefautAttribute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 final class CompteController extends AbstractController
@@ -32,6 +39,7 @@ final class CompteController extends AbstractController
         private readonly MouvementRepositoryInterface $mouvementRepository,
         private readonly CategorieRepositoryInterface $categorieRepository,
         private readonly HorlogeInterface $horloge,
+        private readonly IdGeneratorInterface $idGenerator,
     ) {
     }
 
@@ -39,8 +47,7 @@ final class CompteController extends AbstractController
     public function liste(Request $request): Response
     {
         $comptes = $this->compteRepository->findAll();
-        $aDesComptesFermés = !$comptes->fermés()->isEmpty();
-        $avecFermés = filter_var($request->query->get('avec_fermes', false), FILTER_VALIDATE_BOOL);
+        $avecDétails = filter_var($request->query->get('avec_details', false), FILTER_VALIDATE_BOOL);
 
         $mouvements = $this->mouvementRepository->findAll();
 
@@ -89,9 +96,8 @@ final class CompteController extends AbstractController
         return $this->render(
             'Compte/index.html.twig',
             [
-                'comptes' => !$avecFermés ? $comptes->ouverts() : $comptes,
-                'a_des_comptes_fermes' => $aDesComptesFermés,
-                'avec_fermes' => $avecFermés,
+                'comptes' => $avecDétails ? $comptes : $comptes->ouverts(),
+                'avec_details' => $avecDétails,
                 'mouvements' => $mouvements->toArray(), // pour pouvoir faire mouvements[key+1] en Twig
                 'first_mouvement' => $firstMouvement,
                 'last_mouvement' => $lastMouvement,
@@ -153,7 +159,171 @@ final class CompteController extends AbstractController
                 'categories' => $categories->toAssociativeArray(),
                 'solde_start' => $soldeStart,
                 'balance' => $balance,
+                'a_des_mouvements' => $this->mouvementRepository->aDesMouvements($compte->id),
             ]
         );
+    }
+
+    #[Route('/comptes/new', name: 'comptes_new', methods: ['GET', 'POST'])]
+    public function création(Request $request): Response
+    {
+        if ($request->isMethod('POST')) {
+            if (!$this->isCsrfTokenValid('comptes_edit', $request->request->getString('_token'))) {
+                throw new AccessDeniedHttpException('Jeton CSRF invalide.');
+            }
+
+            $compte = $this->construireLeCompte($request, null);
+            $this->compteRepository->save($compte);
+
+            return $this->redirectToRoute('comptes_compte', ['compteId' => (string) $compte->id]);
+        }
+
+        return $this->render(
+            'Compte/edit.html.twig',
+            [
+                'compte' => null,
+            ]
+        );
+    }
+
+    #[Route('/compte/{compteId}/edit', name: 'comptes_edit', methods: ['GET', 'POST'])]
+    public function édition(Request $request, Compte $compte): Response
+    {
+        if ($request->isMethod('POST')) {
+            if (!$this->isCsrfTokenValid('comptes_edit', $request->request->getString('_token'))) {
+                throw new AccessDeniedHttpException('Jeton CSRF invalide.');
+            }
+
+            $compte = $this->construireLeCompte($request, $compte);
+            $this->compteRepository->save($compte);
+
+            return $this->redirectToRoute('comptes_compte', ['compteId' => (string) $compte->id]);
+        }
+
+        return $this->render(
+            'Compte/edit.html.twig',
+            [
+                'compte' => $compte,
+            ]
+        );
+    }
+
+    #[Route('/compte/{compteId}/delete', name: 'comptes_delete', methods: ['POST'])]
+    public function suppression(Request $request, Compte $compte): RedirectResponse
+    {
+        if (!$this->isCsrfTokenValid('comptes_delete', $request->request->getString('_token'))) {
+            throw new AccessDeniedHttpException('Jeton CSRF invalide.');
+        }
+
+        // Un compte qui a des mouvements se ferme, mais ne se supprime pas
+        if ($this->mouvementRepository->aDesMouvements($compte->id)) {
+            throw new BadRequestHttpException(sprintf('Le compte [%s] a des mouvements : il ne peut pas être supprimé.', $compte));
+        }
+
+        $this->compteRepository->delete($compte->id);
+
+        return $this->redirectToRoute('comptes_comptes');
+    }
+
+    /**
+     * Construit, à partir des valeurs postées, un nouveau compte ou le compte édité.
+     */
+    private function construireLeCompte(Request $request, ?Compte $compte): Compte
+    {
+        // Nom
+        $nom = trim($request->request->getString('nom'));
+        if ('' === $nom) {
+            throw new BadRequestHttpException('Le nom du compte est obligatoire.');
+        }
+
+        // Banque
+        $banque = trim($request->request->getString('banque'));
+        if ('' === $banque) {
+            throw new BadRequestHttpException('La banque du compte est obligatoire.');
+        }
+
+        // Numéro
+        $numero = trim($request->request->getString('numero'));
+        if ('' === $numero) {
+            throw new BadRequestHttpException('Le numéro du compte est obligatoire.');
+        }
+
+        // Plafond, en euros entiers comme en base
+        $plafondString = trim($request->request->getString('plafond'));
+        $plafond = null;
+        if ('' !== $plafondString) {
+            $plafondEntier = filter_var($plafondString, FILTER_VALIDATE_INT);
+            if (false === $plafondEntier) {
+                throw new BadRequestHttpException(sprintf('Plafond du compte invalide : [%s].', $plafondString));
+            }
+            $plafond = new Plafond((float) $plafondEntier);
+        }
+
+        // Solde initial
+        $soldeInitialString = str_replace(',', '.', trim($request->request->getString('solde_initial')));
+        if (!is_numeric($soldeInitialString)) {
+            throw new BadRequestHttpException(sprintf('Solde initial du compte invalide : [%s].', $soldeInitialString));
+        }
+        $soldeInitial = new Solde((float) $soldeInitialString);
+
+        // Date d'ouverture
+        $dateOuvertureString = trim($request->request->getString('date_ouverture'));
+        try {
+            $dateOuverture = Date::créer('d-m-Y H:i:s', "$dateOuvertureString 00:00:00");
+        } catch (DateInvalideException $e) {
+            throw new BadRequestHttpException(sprintf("Date d'ouverture du compte invalide : [%s].", $dateOuvertureString), $e);
+        }
+
+        // Date de fermeture
+        $dateFermetureString = trim($request->request->getString('date_fermeture'));
+        $dateFermeture = null;
+        if ('' !== $dateFermetureString) {
+            try {
+                $dateFermeture = Date::créer('d-m-Y H:i:s', "$dateFermetureString 00:00:00");
+            } catch (DateInvalideException $e) {
+                throw new BadRequestHttpException(sprintf('Date de fermeture du compte invalide : [%s].', $dateFermetureString), $e);
+            }
+        }
+
+        // Rang
+        $rangString = trim($request->request->getString('rang'));
+        $rang = null;
+        if ('' !== $rangString) {
+            $rang = filter_var($rangString, FILTER_VALIDATE_INT);
+            if (false === $rang) {
+                throw new BadRequestHttpException(sprintf('Rang du compte invalide : [%s].', $rangString));
+            }
+        }
+
+        // Les règles du domaine (plafond positif, fermeture après l'ouverture) sont des erreurs de saisie
+        try {
+            $compteSaisi = new Compte(
+                $compte->id ?? new CompteId((string) $this->idGenerator->générer()),
+                $nom,
+                $numero,
+                $banque,
+                $plafond,
+                $soldeInitial,
+                $compte->solde ?? $soldeInitial, // calculé en base, le solde n'est pas enregistré
+                $dateOuverture,
+                $dateFermeture,
+                $rang,
+            );
+        } catch (\DomainException $e) {
+            throw new BadRequestHttpException($e->getMessage(), $e);
+        }
+
+        // Les dates d'un compte encadrent celles de ses mouvements
+        $périodeDesMouvements = $compte instanceof Compte ? $this->mouvementRepository->getPériodeDesMouvements($compte->id) : null;
+        if ($périodeDesMouvements instanceof Periode && !$compteSaisi->estOuvertPendant($périodeDesMouvements)) {
+            $message = sprintf(
+                'Les dates du compte doivent encadrer celles de ses mouvements, du [%s] au [%s].',
+                $périodeDesMouvements->début->format('d-m-Y'),
+                $périodeDesMouvements->fin->format('d-m-Y'),
+            );
+            throw new BadRequestHttpException($message);
+        }
+
+        return $compteSaisi;
     }
 }

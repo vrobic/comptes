@@ -21,4 +21,8 @@ interface CompteRepositoryInterface
         CompteId $compteId,
         Date $date,
     ): Solde;
+
+    public function save(Compte ...$comptes): void;
+
+    public function delete(CompteId ...$ids): void;
 }

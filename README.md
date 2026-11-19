@@ -21,7 +21,6 @@ L'infrastructure repose désormais sur [Symfony Docker](https://github.com/dungl
 * simplification de la configuration d'import
 * recherche de mouvements
 * recatégorisation en masse
-* création, modification et suppression de comptes
 
 ## 📦️ Installation
 
@@ -40,11 +39,11 @@ make down
 
 ### Création des comptes
 
-Puisqu'il n'existe pas encore d'interface pour administrer les comptes, il faut les créer directement en base de données.
+Sur la page d'accueil, cliquer sur « Afficher plus », puis sur « Nouveau compte ». La page de chaque compte permet ensuite de l'éditer, ou de le supprimer tant qu'il n'a aucun mouvement.
 
 ### Moteur d'import
 
-En attendant que sa configuration soit simplifiée, le moteur d'import requiert un rapide paramétrage dans `config/comptes.yaml`. Modifier le tableau `handlers` pour ajuster les identifiants de comptes bancaires.
+En attendant que sa configuration soit simplifiée, le moteur d'import requiert un rapide paramétrage dans `config/comptes.yaml`. Modifier le tableau `handlers` pour ajuster les identifiants de comptes bancaires : celui d'un compte figure dans l'URL de sa page.
 
 ### Catégories
 

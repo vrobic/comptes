@@ -151,6 +151,19 @@ final class MouvementController extends AbstractController
                             );
                         }
 
+                        // La date d'un mouvement est encadrée par celles de son compte
+                        if (!$mouvement->compte->estOuvertLe($mouvement->date)) {
+                            $message = sprintf(
+                                'La date du mouvement [%s] est en dehors des dates du compte [%s], ouvert %s.',
+                                $mouvement->date->format('d-m-Y'),
+                                $mouvement->compte,
+                                $mouvement->compte->dateFermeture instanceof Date ?
+                                    sprintf('du [%s] au [%s]', $mouvement->compte->dateOuverture->format('d-m-Y'), $mouvement->compte->dateFermeture->format('d-m-Y')) :
+                                    sprintf('depuis le [%s]', $mouvement->compte->dateOuverture->format('d-m-Y')),
+                            );
+                            throw new BadRequestHttpException($message);
+                        }
+
                         $this->mouvementRepository->save($mouvement);
 
                         break;

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Domain\Compte;
 
 use App\Domain\DataStructure\Set;
-use App\Domain\Temps\Date;
 
 /**
  * @extends Set<Compte>
@@ -27,13 +26,6 @@ final class CompteCollection extends Set
     {
         return $this->filter(
             static fn (Compte $compte): bool => is_null($compte->dateFermeture)
-        );
-    }
-
-    public function fermés(): self
-    {
-        return $this->filter(
-            static fn (Compte $compte): bool => $compte->dateFermeture instanceof Date
         );
     }
 

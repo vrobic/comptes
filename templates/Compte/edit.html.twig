@@ -1,0 +1,72 @@
+{% extends 'layout.html.twig' %}
+
+{% set titre = compte is null ? "Nouveau compte" : "Édition du compte « %s »"|format(compte) %}
+
+{% block title %} - {{ titre }}{% endblock %}
+
+{% block content %}
+    <h1>{{ titre }}</h1>
+    <form action="{{ compte is null ? path('comptes_new') : path('comptes_edit', {'compteId': compte.id}) }}" method="POST" class="form-horizontal">
+        <div class="form-group">
+            <label for="nom" class="col-md-2 control-label">Nom</label>
+            <div class="col-md-4">
+                <input id="nom" class="form-control" type="text" name="nom" value="{{ compte.nom ?? '' }}" placeholder="Compte courant" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="banque" class="col-md-2 control-label">Banque</label>
+            <div class="col-md-4">
+                <input id="banque" class="form-control" type="text" name="banque" value="{{ compte.banque ?? '' }}" placeholder="Banque" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="numero" class="col-md-2 control-label">Numéro</label>
+            <div class="col-md-4">
+                <input id="numero" class="form-control" type="text" name="numero" value="{{ compte.numero ?? '' }}" placeholder="Numéro" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="plafond" class="col-md-2 control-label">Plafond <small>(en €)</small></label>
+            <div class="col-md-4">
+                <input id="plafond" class="form-control" type="text" name="plafond" value="{{ compte.plafond.montant ?? '' }}" placeholder="néant">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="solde-initial" class="col-md-2 control-label">Solde initial <small>(en €)</small></label>
+            <div class="col-md-4">
+                <input id="solde-initial" class="form-control" type="text" name="solde_initial" value="{{ (compte.soldeInitial.montant ?? 0)|number_format(2, ".", "") }}" placeholder="0.00" required>
+                <p class="help-block">Solde avant le premier mouvement enregistré dans l'application.</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="date-ouverture" class="col-md-2 control-label">Date d'ouverture</label>
+            <div class="col-md-4">
+                <input id="date-ouverture" class="form-control" type="text" name="date_ouverture" value="{{ compte is null ? date()|date('d-m-Y') : compte.dateOuverture|date('d-m-Y') }}" placeholder="{{ date()|date('d-m-Y') }}" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="date-fermeture" class="col-md-2 control-label">Date de fermeture</label>
+            <div class="col-md-4">
+                <input id="date-fermeture" class="form-control" type="text" name="date_fermeture" value="{{ compte is not null and compte.dateFermeture is not null ? compte.dateFermeture|date('d-m-Y') }}" placeholder="{{ date()|date('d-m-Y') }}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="rang" class="col-md-2 control-label">Rang</label>
+            <div class="col-md-4">
+                <input id="rang" class="form-control" type="text" name="rang" value="{{ compte.rang ?? '' }}" placeholder="0">
+                <p class="help-block">Ordre d'affichage parmi les comptes.</p>
+            </div>
+        </div>
+        <input type="hidden" name="_token" value="{{ csrf_token('comptes_edit') }}">
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-4">
+                <button class="btn btn-default" type="submit">
+                    <span class="glyphicon glyphicon-floppy-disk"></span> Enregistrer
+                </button>
+                <a href="{{ compte is null ? path('comptes_comptes', {'avec_details': true}) : path('comptes_compte', {'compteId': compte.id}) }}" class="btn btn-default">
+                    <span class="glyphicon glyphicon-remove"></span> Annuler
+                </a>
+            </div>
+        </div>
+    </form>
+{% endblock %}
