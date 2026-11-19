@@ -14,6 +14,7 @@ use App\Domain\Mouvement\MouvementCollection;
 use App\Domain\Mouvement\MouvementId;
 use App\Domain\Mouvement\MouvementRepositoryInterface;
 use App\Domain\Temps\Date;
+use App\Domain\Temps\Periode;
 use App\Infrastructure\Denormalizer\MouvementDenormalizer;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
@@ -343,6 +344,47 @@ final readonly class MouvementRepository implements MouvementRepositoryInterface
     /**
      * Ne lit que le compte, la date et le montant des mouvements existants, en une seule requête pour tous les mouvements donnés.
      */
+    public function aDesMouvements(CompteId $compteId): bool
+    {
+        return false !== $this->connection->fetchOne(
+            <<<SQL
+                SELECT 1
+                FROM mouvements mouvement
+                WHERE mouvement.compte_id = :compte_id
+                LIMIT 1;
+            SQL,
+            [
+                'compte_id' => (string) $compteId,
+            ]
+        );
+    }
+
+    public function getPériodeDesMouvements(CompteId $compteId): ?Periode
+    {
+        $row = $this->connection->fetchAssociative(
+            <<<SQL
+                SELECT
+                    MIN(mouvement.date) AS debut,
+                    MAX(mouvement.date) AS fin
+                FROM mouvements mouvement
+                WHERE mouvement.compte_id = :compte_id;
+            SQL,
+            [
+                'compte_id' => (string) $compteId,
+            ]
+        );
+
+        // Sans mouvement, MIN et MAX valent NULL
+        if (false === $row || !is_string($row['debut']) || !is_string($row['fin'])) {
+            return null;
+        }
+
+        return new Periode(
+            Date::créer('Y-m-d H:i:s', "{$row['debut']} 00:00:00"),
+            Date::créer('Y-m-d H:i:s', "{$row['fin']} 00:00:00"),
+        );
+    }
+
     public function trouverLesDoublons(MouvementCollection $mouvements): MouvementCollection
     {
         $dates = $mouvements->toArray(

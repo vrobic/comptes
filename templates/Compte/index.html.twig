@@ -7,12 +7,17 @@
 {% block content %}
     <h1>Comptes</h1>
     <div class="row" style="position: relative;">
-        {% if a_des_comptes_fermes %}
-            <a href="{{ path('comptes_comptes', {'avec_fermes': not avec_fermes }) }}" class="btn btn-default" style="position: absolute; top: 5px; right: 20px; z-index: 1;">
-                <span class="glyphicon {{ avec_fermes ? 'glyphicon-eye-close' : 'glyphicon-eye-open' }}"></span>
-                {{ avec_fermes ? 'Masquer les comptes fermés' : 'Afficher les comptes fermés' }}
+        <div style="position: absolute; top: 5px; right: 20px; z-index: 1;">
+            {% if avec_details %}
+                <a href="{{ path('comptes_new') }}" class="btn btn-default">
+                    <span class="glyphicon glyphicon-plus-sign"></span> Nouveau compte
+                </a>
+            {% endif %}
+            <a href="{{ path('comptes_comptes', {'avec_details': not avec_details }) }}" class="btn btn-default">
+                <span class="glyphicon {{ avec_details ? 'glyphicon-eye-close' : 'glyphicon-eye-open' }}"></span>
+                {{ avec_details ? 'Afficher moins' : 'Afficher plus' }}
             </a>
-        {% endif %}
+        </div>
         <div id="chart-1" class="chart col-md-12"></div>
         <script>
             $(function(){

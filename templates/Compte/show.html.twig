@@ -50,6 +50,18 @@
                     <dd>{{ compte.dateFermeture|date('d-m-Y') }}</dd>
                 {% endif %}
             </dl>
+            <div style="margin-bottom: 15px;">
+                <a href="{{ path('comptes_edit', {'compteId': compte.id}) }}" class="btn btn-default">
+                    <span class="glyphicon glyphicon-pencil"></span> Éditer
+                </a>
+                <form action="{{ path('comptes_delete', {'compteId': compte.id}) }}" method="POST" style="display: inline;">
+                    <input type="hidden" name="_token" value="{{ csrf_token('comptes_delete') }}">
+                    {# La valeur delete fait demander une confirmation avant l'envoi #}
+                    <button class="btn btn-default" type="submit" value="delete"{% if a_des_mouvements %} disabled title="Un compte qui a des mouvements ne peut pas être supprimé : renseigne plutôt sa date de fermeture."{% endif %}>
+                        <span class="glyphicon glyphicon-trash"></span> Supprimer
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
     <div class="row">

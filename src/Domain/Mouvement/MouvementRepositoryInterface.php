@@ -8,6 +8,7 @@ use App\Domain\Categorie\CategorieIdCollection;
 use App\Domain\Compte\CompteId;
 use App\Domain\DataStructure\Maybe;
 use App\Domain\Temps\Date;
+use App\Domain\Temps\Periode;
 
 interface MouvementRepositoryInterface
 {
@@ -39,6 +40,13 @@ interface MouvementRepositoryInterface
      * Récupère le mouvement le plus récent.
      */
     public function findLatestOne(): ?Mouvement;
+
+    public function aDesMouvements(CompteId $compteId): bool;
+
+    /**
+     * Période couverte par les mouvements du compte, de la date du premier à celle du dernier, ou null s'il n'en a aucun.
+     */
+    public function getPériodeDesMouvements(CompteId $compteId): ?Periode;
 
     /**
      * Parmi les mouvements donnés, renvoie ceux dont un mouvement de même compte, date et montant existe déjà.
