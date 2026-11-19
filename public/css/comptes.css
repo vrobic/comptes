@@ -269,7 +269,6 @@ form {
 form .form-control {
     border-radius: 2px;
     padding: 6px;
-    font-family: "ubuntu_monoregular";
 }
 form .input-group .form-control {
     min-height: 37px;
