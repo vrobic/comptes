@@ -29,13 +29,6 @@ final class CompteCollection extends Set
         );
     }
 
-    public function fermés(): self
-    {
-        return $this->filter(
-            static fn (Compte $compte): bool => $compte->dateFermeture instanceof \DateTimeInterface
-        );
-    }
-
     public function solde(): Solde
     {
         return $this->reduce(
