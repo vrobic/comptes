@@ -8,22 +8,17 @@ use App\Domain\Compte\Compte;
 use App\Domain\Compte\CompteId;
 use App\Domain\Compte\Plafond;
 use App\Domain\Compte\Solde;
+use App\Domain\Temps\Date;
 
 final readonly class CompteDenormalizer implements Denormalizer
 {
     public function denormalize(array $data): Compte
     {
-        $dateOuverture = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', "{$data['date_ouverture']} 00:00:00");
-        if (!$dateOuverture instanceof \DateTimeImmutable) {
-            throw new \UnexpectedValueException(sprintf("Date d'ouverture du compte invalide : [%s].", $data['date_ouverture']));
-        }
+        $dateOuverture = Date::créer('Y-m-d H:i:s', "{$data['date_ouverture']} 00:00:00");
 
         $dateFermeture = null;
         if (is_string($data['date_fermeture'])) {
-            $dateFermeture = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', "{$data['date_fermeture']} 00:00:00");
-            if (!$dateFermeture instanceof \DateTimeImmutable) {
-                throw new \UnexpectedValueException(sprintf('Date de fermeture du compte invalide : [%s].', $data['date_fermeture']));
-            }
+            $dateFermeture = Date::créer('Y-m-d H:i:s', "{$data['date_fermeture']} 00:00:00");
         }
 
         return new Compte(
