@@ -7,6 +7,7 @@ namespace App\Domain\Mouvement;
 use App\Domain\Categorie\CategorieIdCollection;
 use App\Domain\Compte\CompteId;
 use App\Domain\DataStructure\Maybe;
+use App\Domain\Temps\Date;
 
 interface MouvementRepositoryInterface
 {
@@ -17,8 +18,8 @@ interface MouvementRepositoryInterface
     /**
      * @param Maybe<CategorieIdCollection|null> $maybeCategoriesIds
      * @param Maybe<CompteId>                   $maybeCompteId
-     * @param Maybe<\DateTimeImmutable>         $maybeDateStart     Date de début, incluse
-     * @param Maybe<\DateTimeImmutable>         $maybeDateEnd       Date de fin, incluse
+     * @param Maybe<Date>                       $maybeDateStart     Date de début, incluse
+     * @param Maybe<Date>                       $maybeDateEnd       Date de fin, incluse
      * @param Maybe<Montant>                    $maybeMontant
      */
     public function findBy(

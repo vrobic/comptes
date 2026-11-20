@@ -14,6 +14,7 @@ use App\Domain\Mouvement\Montant;
 use App\Domain\Mouvement\Mouvement;
 use App\Domain\Mouvement\MouvementId;
 use App\Domain\Mouvement\MouvementRepositoryInterface;
+use App\Domain\Temps\Date;
 use App\Domain\Temps\Depuis;
 use App\Domain\Temps\Mois;
 use App\Domain\Temps\Periode;
@@ -73,7 +74,7 @@ final class CompteController extends AbstractController
         // Balance des derniers mois
         $balanceDesDerniersMois = new BalanceMensuelle();
         foreach (range(1, 4) as $nombreMois) {
-            $mois = Mois::fromDate(new \DateTimeImmutable("first day of $nombreMois months ago"));
+            $mois = Mois::fromDate(Date::maintenant()->modify("first day of $nombreMois months ago"));
 
             $balanceDesDerniersMois = $balanceDesDerniersMois->add(
                 $mois,
@@ -109,7 +110,7 @@ final class CompteController extends AbstractController
         Periode $période,
     ): Response {
         // Sans filtre de période et si le compte est clôturé, sa dernière année
-        if (!$request->query->all('date_filter') && $compte->dateFermeture instanceof \DateTimeImmutable) {
+        if (!$request->query->all('date_filter') && $compte->dateFermeture instanceof Date) {
             $période = new Periode(max($compte->dateOuverture, $compte->dateFermeture->modify('-1 year')), $compte->dateFermeture);
         }
 

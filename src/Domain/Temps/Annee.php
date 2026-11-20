@@ -10,7 +10,7 @@ final readonly class Annee
     {
     }
 
-    public static function fromDate(\DateTimeImmutable $date): self
+    public static function fromDate(Date $date): self
     {
         return new self((int) $date->format('Y'));
     }

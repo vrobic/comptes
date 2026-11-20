@@ -10,6 +10,8 @@ use App\Domain\Mouvement\Montant;
 use App\Domain\Mouvement\Mouvement;
 use App\Domain\Mouvement\MouvementCollection;
 use App\Domain\Mouvement\MouvementId;
+use App\Domain\Temps\Date;
+use App\Domain\Temps\DateInvalideException;
 use Shuchkin\SimpleXLSX;
 
 /**
@@ -103,14 +105,10 @@ class CMExcelMouvementsImportHandler extends AbstractMouvementsImportHandler
                 $montant = sprintf('%0.2f', $montant);
                 $montant = new Montant((float) $montant);
 
-                // Date : une cellule sans format de date donne un nombre, une cellule vide une chaîne vide, une cellule absente null
-                if (!is_string($date) || '' === $date) {
-                    throw new FichierImportInvalideException(sprintf('Date du mouvement invalide en ligne [%d] de la feuille [%s] : [%s].', $rowNumber, $sheetName, $date));
-                }
-
+                // Date : une cellule de date donne une chaîne Y-m-d H:i:s, une cellule sans format de date un nombre, une cellule vide une chaîne vide, une cellule absente null
                 try {
-                    $dateMouvement = new \DateTimeImmutable($date);
-                } catch (\DateMalformedStringException $e) {
+                    $dateMouvement = Date::créer('Y-m-d H:i:s', (string) $date);
+                } catch (DateInvalideException $e) {
                     throw new FichierImportInvalideException(sprintf('Date du mouvement invalide en ligne [%d] de la feuille [%s] : [%s].', $rowNumber, $sheetName, $date), previous: $e);
                 }
 

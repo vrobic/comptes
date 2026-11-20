@@ -15,7 +15,7 @@ final readonly class Mois
         }
     }
 
-    public static function fromDate(\DateTimeImmutable $date): self
+    public static function fromDate(Date $date): self
     {
         return new self(
             (int) $date->format('Y'),
@@ -32,14 +32,12 @@ final readonly class Mois
         );
     }
 
-    public function début(): \DateTimeImmutable
+    public function début(): Date
     {
-        return new \DateTimeImmutable()
-            ->setDate($this->année, $this->mois, 1)
-            ->setTime(0, 0, 0, 0);
+        return Date::créer('Y-n-j H:i:s', "{$this->année}-{$this->mois}-1 00:00:00");
     }
 
-    public function fin(): \DateTimeImmutable
+    public function fin(): Date
     {
         return $this->début()
             ->modify('last day of this month')

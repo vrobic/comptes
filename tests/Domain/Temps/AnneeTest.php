@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Domain\Temps;
 
 use App\Domain\Temps\Annee;
+use App\Tests\GenererInstance;
 use PHPUnit\Framework\TestCase;
 
 final class AnneeTest extends TestCase
@@ -13,7 +14,7 @@ final class AnneeTest extends TestCase
     {
         self::assertEquals(
             new Annee(2011),
-            Annee::fromDate(new \DateTimeImmutable('2011-10-25'))
+            Annee::fromDate(GenererInstance::date('2011-10-25'))
         );
     }
 

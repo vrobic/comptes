@@ -6,6 +6,7 @@ namespace App\Domain\Mouvement;
 
 use App\Domain\Categorie\Categorie;
 use App\Domain\Compte\Compte;
+use App\Domain\Temps\Date;
 
 /**
  * Mouvement bancaire.
@@ -14,7 +15,7 @@ class Mouvement
 {
     public function __construct(
         public readonly MouvementId $id,
-        public \DateTimeImmutable $date,
+        public Date $date,
         public ?Categorie $categorie,
         public Compte $compte,
         public Montant $montant,

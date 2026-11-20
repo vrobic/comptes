@@ -25,7 +25,7 @@ final class MouvementCollectionTest extends TestCase
             ->add(
                 $mouvement1 = new Mouvement(
                     new MouvementId('f8fa50d1-7e6d-456c-a89d-19377f5f2dec'),
-                    new \DateTimeImmutable('2025-08-12'),
+                    GenererInstance::date('2025-08-12'),
                     null,
                     $compte,
                     new Montant(5.),
@@ -33,7 +33,7 @@ final class MouvementCollectionTest extends TestCase
                 ),
                 $mouvement2 = new Mouvement(
                     new MouvementId('f9daddb3-51db-4aba-9c15-51ecbd15ba7b'),
-                    new \DateTimeImmutable('2025-08-11'),
+                    GenererInstance::date('2025-08-11'),
                     null,
                     $compte,
                     new Montant(5.),
@@ -68,7 +68,7 @@ final class MouvementCollectionTest extends TestCase
             ->add(
                 $mouvement1 = new Mouvement(
                     new MouvementId('f8fa50d1-7e6d-456c-a89d-19377f5f2dec'),
-                    new \DateTimeImmutable('2025-08-12'),
+                    GenererInstance::date('2025-08-12'),
                     null,
                     $compte,
                     new Montant(5.),
@@ -76,7 +76,7 @@ final class MouvementCollectionTest extends TestCase
                 ),
                 $mouvement2 = new Mouvement(
                     new MouvementId('f9daddb3-51db-4aba-9c15-51ecbd15ba7b'),
-                    new \DateTimeImmutable('2025-08-11'),
+                    GenererInstance::date('2025-08-11'),
                     null,
                     $compte,
                     new Montant(10.),
@@ -84,7 +84,7 @@ final class MouvementCollectionTest extends TestCase
                 ),
                 new Mouvement(
                     new MouvementId('efc28937-66aa-431f-b62d-d0bc3f63bd44'),
-                    new \DateTimeImmutable('2024-12-25'),
+                    GenererInstance::date('2024-12-25'),
                     null,
                     $compte,
                     new Montant(3.),
@@ -99,7 +99,7 @@ final class MouvementCollectionTest extends TestCase
             ],
             [
                 ...$set->filtrerParPériode(
-                    new Periode(new \DateTimeImmutable('2025-06-01'), new \DateTimeImmutable('2025-09-30'))
+                    new Periode(GenererInstance::date('2025-06-01'), GenererInstance::date('2025-09-30'))
                 ),
             ]
         );
@@ -113,7 +113,7 @@ final class MouvementCollectionTest extends TestCase
             ->add(
                 new Mouvement(
                     new MouvementId('f8fa50d1-7e6d-456c-a89d-19377f5f2dec'),
-                    new \DateTimeImmutable('2025-08-12'),
+                    GenererInstance::date('2025-08-12'),
                     GenererInstance::catégorie(id: '4938082d-a57b-4940-a65a-3861fb89270b'),
                     $compte,
                     new Montant(5.),
@@ -121,7 +121,7 @@ final class MouvementCollectionTest extends TestCase
                 ),
                 new Mouvement(
                     new MouvementId('f9daddb3-51db-4aba-9c15-51ecbd15ba7b'),
-                    new \DateTimeImmutable('2025-08-11'),
+                    GenererInstance::date('2025-08-11'),
                     null,
                     $compte,
                     new Montant(10.),
@@ -129,7 +129,7 @@ final class MouvementCollectionTest extends TestCase
                 ),
                 $mouvement3 = new Mouvement(
                     new MouvementId('efc28937-66aa-431f-b62d-d0bc3f63bd44'),
-                    new \DateTimeImmutable('2024-12-25'),
+                    GenererInstance::date('2024-12-25'),
                     GenererInstance::catégorie(id: '592608a2-aa28-4d96-8615-d0aec2d09467'),
                     $compte,
                     new Montant(3.),
@@ -157,7 +157,7 @@ final class MouvementCollectionTest extends TestCase
             ->add(
                 new Mouvement(
                     new MouvementId('f8fa50d1-7e6d-456c-a89d-19377f5f2dec'),
-                    $fin = new \DateTimeImmutable('2025-01-12'),
+                    $fin = GenererInstance::date('2025-01-12'),
                     null,
                     $compte,
                     new Montant(5.),
@@ -165,7 +165,7 @@ final class MouvementCollectionTest extends TestCase
                 ),
                 new Mouvement(
                     new MouvementId('f9daddb3-51db-4aba-9c15-51ecbd15ba7b'),
-                    $début = new \DateTimeImmutable('2025-01-01'),
+                    $début = GenererInstance::date('2025-01-01'),
                     null,
                     $compte,
                     new Montant(5.),
@@ -187,7 +187,7 @@ final class MouvementCollectionTest extends TestCase
             ->add(
                 new Mouvement(
                     new MouvementId('f8fa50d1-7e6d-456c-a89d-19377f5f2dec'),
-                    new \DateTimeImmutable('2025-08-12'),
+                    GenererInstance::date('2025-08-12'),
                     null,
                     $compte,
                     new Montant(5.),
@@ -195,7 +195,7 @@ final class MouvementCollectionTest extends TestCase
                 ),
                 new Mouvement(
                     new MouvementId('f9daddb3-51db-4aba-9c15-51ecbd15ba7b'),
-                    new \DateTimeImmutable('2025-08-11'),
+                    GenererInstance::date('2025-08-11'),
                     null,
                     $compte,
                     new Montant(10.),
@@ -203,7 +203,7 @@ final class MouvementCollectionTest extends TestCase
                 ),
                 new Mouvement(
                     new MouvementId('efc28937-66aa-431f-b62d-d0bc3f63bd44'),
-                    new \DateTimeImmutable('2024-12-25'),
+                    GenererInstance::date('2024-12-25'),
                     null,
                     $compte,
                     new Montant(3.),
@@ -222,7 +222,7 @@ final class MouvementCollectionTest extends TestCase
             ->add(
                 new Mouvement(
                     new MouvementId('f8fa50d1-7e6d-456c-a89d-19377f5f2dec'),
-                    new \DateTimeImmutable('2025-08-12'),
+                    GenererInstance::date('2025-08-12'),
                     null,
                     $compte,
                     new Montant(5.),
@@ -230,7 +230,7 @@ final class MouvementCollectionTest extends TestCase
                 ),
                 new Mouvement(
                     new MouvementId('f9daddb3-51db-4aba-9c15-51ecbd15ba7b'),
-                    new \DateTimeImmutable('2025-08-11'),
+                    GenererInstance::date('2025-08-11'),
                     null,
                     $compte,
                     new Montant(10.),
@@ -238,7 +238,7 @@ final class MouvementCollectionTest extends TestCase
                 ),
                 new Mouvement(
                     new MouvementId('efc28937-66aa-431f-b62d-d0bc3f63bd44'),
-                    new \DateTimeImmutable('2024-12-25'),
+                    GenererInstance::date('2024-12-25'),
                     null,
                     $compte,
                     new Montant(3.),
@@ -247,7 +247,7 @@ final class MouvementCollectionTest extends TestCase
             );
 
         $map = $set->balanceAnnuelle(
-            new Periode(new \DateTimeImmutable('2025-06-01'), new \DateTimeImmutable('2025-09-30'))
+            new Periode(GenererInstance::date('2025-06-01'), GenererInstance::date('2025-09-30'))
         );
 
         self::assertCount(2, $map);
@@ -275,7 +275,7 @@ final class MouvementCollectionTest extends TestCase
             ->add(
                 new Mouvement(
                     new MouvementId('f8fa50d1-7e6d-456c-a89d-19377f5f2dec'),
-                    new \DateTimeImmutable('2025-08-12'),
+                    GenererInstance::date('2025-08-12'),
                     null,
                     $compte,
                     new Montant(5.),
@@ -283,7 +283,7 @@ final class MouvementCollectionTest extends TestCase
                 ),
                 new Mouvement(
                     new MouvementId('f9daddb3-51db-4aba-9c15-51ecbd15ba7b'),
-                    new \DateTimeImmutable('2025-08-11'),
+                    GenererInstance::date('2025-08-11'),
                     null,
                     $compte,
                     new Montant(10.),
@@ -291,7 +291,7 @@ final class MouvementCollectionTest extends TestCase
                 ),
                 new Mouvement(
                     new MouvementId('efc28937-66aa-431f-b62d-d0bc3f63bd44'),
-                    new \DateTimeImmutable('2024-12-25'),
+                    GenererInstance::date('2024-12-25'),
                     null,
                     $compte,
                     new Montant(3.),
@@ -300,7 +300,7 @@ final class MouvementCollectionTest extends TestCase
             );
 
         $map = $set->balanceMensuelle(
-            new Periode(new \DateTimeImmutable('2025-06-01'), new \DateTimeImmutable('2025-09-30'))
+            new Periode(GenererInstance::date('2025-06-01'), GenererInstance::date('2025-09-30'))
         );
 
         self::assertCount(10, $map);
