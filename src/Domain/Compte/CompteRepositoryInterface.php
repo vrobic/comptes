@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Compte;
 
+use App\Domain\Temps\Date;
+
 interface CompteRepositoryInterface
 {
     public function findAll(): CompteCollection;
@@ -17,6 +19,6 @@ interface CompteRepositoryInterface
      */
     public function getSoldeÀDate(
         CompteId $compteId,
-        \DateTimeImmutable $date,
+        Date $date,
     ): Solde;
 }

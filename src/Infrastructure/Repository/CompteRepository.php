@@ -9,6 +9,7 @@ use App\Domain\Compte\CompteCollection;
 use App\Domain\Compte\CompteId;
 use App\Domain\Compte\CompteRepositoryInterface;
 use App\Domain\Compte\Solde;
+use App\Domain\Temps\Date;
 use App\Infrastructure\Denormalizer\CompteDenormalizer;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;
@@ -53,7 +54,7 @@ final readonly class CompteRepository implements CompteRepositoryInterface
 
     public function getSoldeÀDate(
         CompteId $compteId,
-        \DateTimeImmutable $date,
+        Date $date,
     ): Solde {
         return new Solde(
             (float) $this->connection->createQueryBuilder()

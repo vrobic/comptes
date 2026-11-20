@@ -7,8 +7,8 @@ namespace App\Domain\Temps;
 final readonly class Periode
 {
     public function __construct(
-        public \DateTimeImmutable $début,
-        public \DateTimeImmutable $fin,
+        public Date $début,
+        public Date $fin,
     ) {
         if ($début > $fin) {
             throw new \LogicException(sprintf('La période du [%s] au [%s] est invalide : son début est postérieur à sa fin.', $début->format('d-m-Y'), $fin->format('d-m-Y')));

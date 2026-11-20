@@ -13,6 +13,7 @@ use App\Domain\Mouvement\Mouvement;
 use App\Domain\Mouvement\MouvementCollection;
 use App\Domain\Mouvement\MouvementId;
 use App\Domain\Mouvement\MouvementRepositoryInterface;
+use App\Domain\Temps\Date;
 use App\Infrastructure\Denormalizer\MouvementDenormalizer;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
@@ -125,14 +126,14 @@ final readonly class MouvementRepository implements MouvementRepositoryInterface
         }
         if ($maybeDateStart->estDéfini) {
             $wheres[] = 'mouvement.date >= :date_start';
-            /** @var \DateTimeImmutable $dateStart */
+            /** @var Date $dateStart */
             $dateStart = $maybeDateStart->getValeur();
             $params['date_start'] = $dateStart;
             $types['date_start'] = Types::DATETIME_IMMUTABLE;
         }
         if ($maybeDateEnd->estDéfini) {
             $wheres[] = 'mouvement.date <= :date_end';
-            /** @var \DateTimeImmutable $dateEnd */
+            /** @var Date $dateEnd */
             $dateEnd = $maybeDateEnd->getValeur();
             $params['date_end'] = $dateEnd;
             $types['date_end'] = Types::DATETIME_IMMUTABLE;
@@ -345,7 +346,7 @@ final readonly class MouvementRepository implements MouvementRepositoryInterface
     public function trouverLesDoublons(MouvementCollection $mouvements): MouvementCollection
     {
         $dates = $mouvements->toArray(
-            static fn (Mouvement $mouvement): \DateTimeImmutable => $mouvement->date
+            static fn (Mouvement $mouvement): Date => $mouvement->date
         );
 
         if ([] === $dates) {

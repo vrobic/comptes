@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\ValueResolver;
 
+use App\Domain\Temps\Date;
+use App\Domain\Temps\DateInvalideException;
 use App\Domain\Temps\Depuis;
 use App\Domain\Temps\Periode;
 use Symfony\Component\HttpFoundation\InputBag;
@@ -27,15 +29,14 @@ final readonly class PeriodeValueResolver implements ValueResolverInterface
             $dateStartString = $dateFilter->getString('start');
             $dateEndString = $dateFilter->getString('end');
 
-            $dateStart = \DateTimeImmutable::createFromFormat('d-m-Y H:i:s', "$dateStartString 00:00:00");
-            $dateEnd = \DateTimeImmutable::createFromFormat('d-m-Y H:i:s', "$dateEndString 23:59:59");
-
-            if (!($dateStart instanceof \DateTimeImmutable) || !($dateEnd instanceof \DateTimeImmutable) || $dateStart > $dateEnd) {
-                throw new BadRequestHttpException('La période de dates est invalide.');
+            try {
+                $dateStart = Date::créer('d-m-Y H:i:s', "$dateStartString 00:00:00");
+                $dateEnd = Date::créer('d-m-Y H:i:s', "$dateEndString 23:59:59");
+            } catch (DateInvalideException $e) {
+                throw new BadRequestHttpException('La période de dates est invalide.', $e);
             }
 
-            // createFromFormat décale les dates impossibles (31-02 devient 03-03) et lit 25 comme l'an 25 : la date relue doit être celle reçue
-            if ($dateStart->format('d-m-Y') !== $dateStartString || $dateEnd->format('d-m-Y') !== $dateEndString) {
+            if ($dateStart > $dateEnd) {
                 throw new BadRequestHttpException('La période de dates est invalide.');
             }
 
@@ -70,15 +71,8 @@ final readonly class PeriodeValueResolver implements ValueResolverInterface
         $year = (int) $year;
         $lastDayOfMonth = (int) $lastDayOfMonth;
 
-        $dateStart = \DateTimeImmutable::createFromFormat('Y-n-j H:i:s', "$year-$month-1 00:00:00");
-        if ($dateStart instanceof \DateTimeImmutable) {
-            $dateStart = $dateStart->modify('-1 year')->setTime(0, 0); // Depuis un an
-        }
-        $dateEnd = \DateTimeImmutable::createFromFormat('Y-n-j H:i:s', "$year-$month-$lastDayOfMonth 23:59:59");
-
-        if (!($dateStart instanceof \DateTimeImmutable) || !($dateEnd instanceof \DateTimeImmutable) || $dateStart > $dateEnd) {
-            throw new BadRequestHttpException('La période de dates est invalide.');
-        }
+        $dateStart = Date::créer('Y-n-j H:i:s', "$year-$month-1 00:00:00")->modify('-1 year')->setTime(0, 0); // Depuis un an
+        $dateEnd = Date::créer('Y-n-j H:i:s', "$year-$month-$lastDayOfMonth 23:59:59");
 
         return new Periode($dateStart, $dateEnd);
     }
@@ -94,12 +88,8 @@ final readonly class PeriodeValueResolver implements ValueResolverInterface
         $year = (int) $year;
         $lastDayOfMonth = (int) $lastDayOfMonth;
 
-        $dateStart = \DateTimeImmutable::createFromFormat('Y-n-j H:i:s', "$year-$month-1 00:00:00");
-        $dateEnd = \DateTimeImmutable::createFromFormat('Y-n-j H:i:s', "$year-$month-$lastDayOfMonth 23:59:59");
-
-        if (!($dateStart instanceof \DateTimeImmutable) || !($dateEnd instanceof \DateTimeImmutable) || $dateStart > $dateEnd) {
-            throw new BadRequestHttpException('La période de dates est invalide.');
-        }
+        $dateStart = Date::créer('Y-n-j H:i:s', "$year-$month-1 00:00:00");
+        $dateEnd = Date::créer('Y-n-j H:i:s', "$year-$month-$lastDayOfMonth 23:59:59");
 
         return new Periode($dateStart, $dateEnd);
     }

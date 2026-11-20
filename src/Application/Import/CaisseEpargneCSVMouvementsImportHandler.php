@@ -10,6 +10,8 @@ use App\Domain\Mouvement\Montant;
 use App\Domain\Mouvement\Mouvement;
 use App\Domain\Mouvement\MouvementCollection;
 use App\Domain\Mouvement\MouvementId;
+use App\Domain\Temps\Date;
+use App\Domain\Temps\DateInvalideException;
 
 /**
  * Implémente un handler CSV d'import de mouvements de la banque Caisse d'Épargne.
@@ -72,8 +74,12 @@ class CaisseEpargneCSVMouvementsImportHandler extends AbstractMouvementsImportHa
             // Si on a dépassé la ligne d'en-têtes
             if ($currentLine > $headersLine) {
                 // Si la date est valide et sans month shifting
-                $date = \DateTimeImmutable::createFromFormat('d/m/y', (string) $cols[0]);
-                $isValidDate = $date instanceof \DateTimeImmutable && false === $date->getLastErrors();
+                try {
+                    Date::créer('d/m/y H:i:s', "{$cols[0]} 00:00:00");
+                    $isValidDate = true;
+                } catch (DateInvalideException) {
+                    $isValidDate = false;
+                }
 
                 // Alors la ligne en cours est un mouvement
                 if ($isValidDate) {
@@ -90,9 +96,10 @@ class CaisseEpargneCSVMouvementsImportHandler extends AbstractMouvementsImportHa
 
         foreach ($rows as $row) {
             // Date
-            $date = \DateTimeImmutable::createFromFormat('d/m/y H:i:s', "{$row['date']} 00:00:00");
-            if (!$date instanceof \DateTimeImmutable) {
-                throw new FichierImportInvalideException(sprintf('Date du mouvement invalide : [%s].', $row['date']));
+            try {
+                $date = Date::créer('d/m/y H:i:s', "{$row['date']} 00:00:00");
+            } catch (DateInvalideException $e) {
+                throw new FichierImportInvalideException(sprintf('Date du mouvement invalide : [%s].', $row['date']), previous: $e);
             }
 
             // Montant

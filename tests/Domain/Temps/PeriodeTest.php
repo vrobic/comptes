@@ -7,6 +7,7 @@ namespace App\Tests\Domain\Temps;
 use App\Domain\Temps\Annee;
 use App\Domain\Temps\Mois;
 use App\Domain\Temps\Periode;
+use App\Tests\GenererInstance;
 use PHPUnit\Framework\TestCase;
 
 final class PeriodeTest extends TestCase
@@ -16,8 +17,8 @@ final class PeriodeTest extends TestCase
         self::assertInstanceOf(
             Periode::class,
             new Periode(
-                new \DateTimeImmutable('2025-08-21'),
-                new \DateTimeImmutable('2025-08-21'),
+                GenererInstance::date('2025-08-21'),
+                GenererInstance::date('2025-08-21'),
             )
         );
     }
@@ -27,20 +28,20 @@ final class PeriodeTest extends TestCase
         $this->expectException(\LogicException::class);
 
         new Periode(
-            new \DateTimeImmutable('2025-08-21'),
-            new \DateTimeImmutable('2025-08-20'),
+            GenererInstance::date('2025-08-21'),
+            GenererInstance::date('2025-08-20'),
         );
     }
 
     public function test_étendre(): void
     {
         $périodeA = new Periode(
-            $début = new \DateTimeImmutable('2025-01-01'),
-            new \DateTimeImmutable('2025-03-01'),
+            $début = GenererInstance::date('2025-01-01'),
+            GenererInstance::date('2025-03-01'),
         );
         $périodeB = new Periode(
-            new \DateTimeImmutable('2025-02-01'),
-            $fin = new \DateTimeImmutable('2025-07-01'),
+            GenererInstance::date('2025-02-01'),
+            $fin = GenererInstance::date('2025-07-01'),
         );
 
         $périodeÉtendue = $périodeA->étendre($périodeB);
@@ -57,8 +58,8 @@ final class PeriodeTest extends TestCase
     public function test_années(): void
     {
         $période = new Periode(
-            new \DateTimeImmutable('2025-08-21'),
-            new \DateTimeImmutable('2027-01-01'),
+            GenererInstance::date('2025-08-21'),
+            GenererInstance::date('2027-01-01'),
         );
 
         self::assertEquals(
@@ -74,8 +75,8 @@ final class PeriodeTest extends TestCase
     public function test_mois(): void
     {
         $période = new Periode(
-            new \DateTimeImmutable('2025-08-21'),
-            new \DateTimeImmutable('2026-03-01'),
+            GenererInstance::date('2025-08-21'),
+            GenererInstance::date('2026-03-01'),
         );
 
         self::assertEquals(

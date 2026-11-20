@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Domain\Temps;
 
 use App\Domain\Temps\Mois;
+use App\Tests\GenererInstance;
 use PHPUnit\Framework\TestCase;
 
 final class MoisTest extends TestCase
@@ -35,7 +36,7 @@ final class MoisTest extends TestCase
     {
         self::assertEquals(
             new Mois(2011, 10),
-            Mois::fromDate(new \DateTimeImmutable('2011-10-25'))
+            Mois::fromDate(GenererInstance::date('2011-10-25'))
         );
     }
 
@@ -47,7 +48,7 @@ final class MoisTest extends TestCase
     public function test_début(): void
     {
         self::assertEquals(
-            new \DateTimeImmutable('2024-10-01')->setTime(0, 0, 0, 0),
+            GenererInstance::date('2024-10-01')->setTime(0, 0, 0, 0),
             new Mois(2024, 10)->début()
         );
     }
@@ -55,7 +56,7 @@ final class MoisTest extends TestCase
     public function test_fin(): void
     {
         self::assertEquals(
-            new \DateTimeImmutable('2028-02-29')->setTime(23, 59, 59, 999999),
+            GenererInstance::date('2028-02-29')->setTime(23, 59, 59, 999999),
             new Mois(2028, 2)->fin()
         );
     }

@@ -13,9 +13,15 @@ use App\Domain\Compte\Plafond;
 use App\Domain\Compte\Solde;
 use App\Domain\Keyword\Keyword;
 use App\Domain\Keyword\KeywordId;
+use App\Domain\Temps\Date;
 
 final class GenererInstance
 {
+    public static function date(string $date): Date
+    {
+        return Date::créer('Y-m-d H:i:s', "$date 00:00:00");
+    }
+
     public static function compte(
         string $id = '2274b61c-dfbb-4c1b-b9f6-d6fb6506d8ba',
         string $nom = 'Compte courant',
@@ -36,8 +42,8 @@ final class GenererInstance
             is_float($plafond) ? new Plafond($plafond) : null,
             new Solde($soldeInitial),
             new Solde($solde),
-            new \DateTimeImmutable($dateOuverture),
-            is_string($dateFermeture) ? new \DateTimeImmutable($dateFermeture) : null,
+            self::date($dateOuverture),
+            is_string($dateFermeture) ? self::date($dateFermeture) : null,
             $rang,
         );
     }

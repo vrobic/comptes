@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Compte;
 
+use App\Domain\Temps\Date;
+
 /**
  * Compte bancaire.
  */
@@ -17,15 +19,15 @@ final class Compte
         public ?Plafond $plafond,
         public Solde $soldeInitial, // solde initial, avant le premier mouvement rentré dans l'application
         public readonly Solde $solde,
-        public \DateTimeImmutable $dateOuverture,
-        public ?\DateTimeImmutable $dateFermeture,
+        public Date $dateOuverture,
+        public ?Date $dateFermeture,
         public ?int $rang, // rang d'affichage
     ) {
         if ($this->plafond instanceof Plafond && !$this->plafond->estPositif()) {
             throw new \DomainException("Le plafond d'un compte bancaire doit être positif.");
         }
 
-        if ($this->dateFermeture instanceof \DateTimeImmutable && $this->dateFermeture < $this->dateOuverture) {
+        if ($this->dateFermeture instanceof Date && $this->dateFermeture < $this->dateOuverture) {
             throw new \DomainException("La date de fermeture d'un compte bancaire doit être postérieure ou égale à celle d'ouverture.");
         }
     }

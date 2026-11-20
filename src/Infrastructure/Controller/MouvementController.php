@@ -15,6 +15,8 @@ use App\Domain\Mouvement\Montant;
 use App\Domain\Mouvement\Mouvement;
 use App\Domain\Mouvement\MouvementId;
 use App\Domain\Mouvement\MouvementRepositoryInterface;
+use App\Domain\Temps\Date;
+use App\Domain\Temps\DateInvalideException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -58,11 +60,10 @@ final class MouvementController extends AbstractController
                         // Date
                         if (isset($mouvementArray['date'])) {
                             $dateString = $mouvementArray['date'];
-                            $date = \DateTimeImmutable::createFromFormat('d-m-Y H:i:s', "$dateString 00:00:00");
-
-                            // createFromFormat décale les dates impossibles (31-02 devient 03-03) et lit 26 comme l'an 26 : la date relue doit être celle saisie
-                            if (!$date instanceof \DateTimeImmutable || $date->format('d-m-Y') !== $dateString) {
-                                throw new BadRequestHttpException(sprintf('Date du mouvement invalide : [%s].', $dateString));
+                            try {
+                                $date = Date::créer('d-m-Y H:i:s', "$dateString 00:00:00");
+                            } catch (DateInvalideException $e) {
+                                throw new BadRequestHttpException(sprintf('Date du mouvement invalide : [%s].', $dateString), $e);
                             }
                         }
 
