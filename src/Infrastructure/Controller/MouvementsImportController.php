@@ -118,13 +118,15 @@ class MouvementsImportController extends AbstractController
         // Indique si on doit ignorer les mouvements anciens
         $skipOldOnes = $request->request->get('skipOldOnes', false);
 
-        // Le dernier mouvement inséré
-        $latestMouvement = $this->mouvementRepository->findLatestOne();
+        // Le dernier mouvement présent en base de chaque compte
+        $latestMouvements = $this->mouvementRepository->trouverLesDerniersParCompte();
 
         // Passage des mouvements en session
         foreach ($mouvements as $mouvement) {
+            $latestMouvement = $latestMouvements->tryGet($mouvement->compte->id);
+
             /* Si on doit ignorer les mouvements anciens,
-             * alors on n'importe le mouvement que s'il est plus récent que le dernier présent en base. */
+             * alors on n'importe le mouvement que s'il est plus récent que le dernier présent en base pour son compte. */
             if (false !== $skipOldOnes && $latestMouvement instanceof Mouvement) {
                 $date = $mouvement->date;
                 $latestMouvementDate = $latestMouvement->date;

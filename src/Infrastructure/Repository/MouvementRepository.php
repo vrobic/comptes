@@ -12,6 +12,7 @@ use App\Domain\Mouvement\Montant;
 use App\Domain\Mouvement\Mouvement;
 use App\Domain\Mouvement\MouvementCollection;
 use App\Domain\Mouvement\MouvementId;
+use App\Domain\Mouvement\MouvementParCompteIdMap;
 use App\Domain\Mouvement\MouvementRepositoryInterface;
 use App\Domain\Temps\Date;
 use App\Domain\Temps\Periode;
@@ -293,9 +294,9 @@ final readonly class MouvementRepository implements MouvementRepositoryInterface
         );
     }
 
-    public function findLatestOne(): ?Mouvement
+    public function trouverLesDerniersParCompte(): MouvementParCompteIdMap
     {
-        $row = $this->connection->fetchAssociative(
+        $rows = $this->connection->fetchAllAssociative(
             <<<SQL
                 SELECT
                     mouvement.id,
@@ -317,8 +318,14 @@ final readonly class MouvementRepository implements MouvementRepositoryInterface
                     compte.rang AS compte_rang,
                     compte.date_ouverture AS compte_date_ouverture,
                     compte.date_fermeture AS compte_date_fermeture
-                FROM mouvements mouvement
-                JOIN comptes compte ON mouvement.compte_id = compte.id
+                FROM comptes compte
+                JOIN mouvements mouvement ON mouvement.compte_id = compte.id AND mouvement.id = (
+                    SELECT dernier.id
+                    FROM mouvements dernier
+                    WHERE dernier.compte_id = compte.id
+                    ORDER BY dernier.date DESC, dernier.id DESC
+                    LIMIT 1
+                )
                 LEFT JOIN categories categorie ON mouvement.categorie_id = categorie.id
                 LEFT JOIN categories categories_filles ON categorie.id = categories_filles.categorie_parente_id
                 LEFT JOIN (
@@ -326,19 +333,17 @@ final readonly class MouvementRepository implements MouvementRepositoryInterface
                     FROM mouvements
                     GROUP BY compte_id
                 ) compte_solde ON compte.id = compte_solde.compte_id
-                GROUP BY mouvement.id
-                ORDER BY mouvement.date DESC, mouvement.id DESC
-                LIMIT 1;
+                GROUP BY mouvement.id;
             SQL
         );
 
-        if (false === $row) {
-            return null;
+        $derniersMouvements = new MouvementParCompteIdMap();
+        foreach ($this->préparerRowsPourDenormalizer($rows) as $row) {
+            $mouvement = $this->mouvementDenormalizer->denormalize($row);
+            $derniersMouvements = $derniersMouvements->add($mouvement->compte->id, $mouvement);
         }
 
-        return $this->mouvementDenormalizer->denormalize(
-            $this->préparerRowPourDenormalizer($row)
-        );
+        return $derniersMouvements;
     }
 
     /**
