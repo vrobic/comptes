@@ -172,7 +172,7 @@ class MouvementsImportController extends AbstractController
         }
 
         // Identifiants des mouvements à importer
-        $idsToImport = $request->request->all('ids_to_import');
+        $idsToImport = $request->request->all('batch');
 
         // Données de mouvements à modifier
         $mouvementsData = $request->request->all('mouvements');

@@ -33,8 +33,8 @@
                 <th class="col-md-1">
                     Importer
                     <small>
-                        <span class="glyphicon glyphicon-check trigger" data-trigger="check-all" data-target-name="ids_to_import[]" title="Cocher tout"></span>
-                        <span class="glyphicon glyphicon-unchecked trigger" data-trigger="uncheck-all" data-target-name="ids_to_import[]" title="Décocher tout"></span>
+                        <span class="glyphicon glyphicon-check trigger" data-trigger="check-all" data-target-name="batch[]" title="Cocher tout"></span>
+                        <span class="glyphicon glyphicon-unchecked trigger" data-trigger="uncheck-all" data-target-name="batch[]" title="Décocher tout"></span>
                     </small>
                 </th>
                 <th class="col-md-2">Compte</th>
@@ -49,7 +49,7 @@
                 <tr>
                     <td>
                         <label for="mouvement-{{ mouvement.id }}" class="sr-only">Importer</label>
-                        <input id="mouvement-{{ mouvement.id }}" type="checkbox" name="ids_to_import[]" value="{{ mouvement.id }}" {{ type != 'waiting' ? "checked" }}>
+                        <input id="mouvement-{{ mouvement.id }}" type="checkbox" name="batch[]" value="{{ mouvement.id }}" {{ type != 'waiting' ? "checked" }}>
                     </td>
                     <td class="input-select2">
                         <label for="compte-{{ mouvement.id }}" class="sr-only">Compte</label>
