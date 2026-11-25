@@ -37,9 +37,9 @@ interface MouvementRepositoryInterface
     public function findFirstOne(?CompteId $compteId = null): ?Mouvement;
 
     /**
-     * Récupère le mouvement le plus récent.
+     * Récupère le mouvement le plus récent de chaque compte. Un compte sans mouvement en est absent.
      */
-    public function findLatestOne(): ?Mouvement;
+    public function trouverLesDerniersParCompte(): MouvementParCompteIdMap;
 
     public function aDesMouvements(CompteId $compteId): bool;
 
