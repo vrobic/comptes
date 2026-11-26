@@ -238,10 +238,14 @@ final readonly class MouvementRepository implements MouvementRepositoryInterface
                         GROUP BY compte_id
                     ) compte_solde ON compte.id = compte_solde.compte_id
                     WHERE
-                        mouvement.compte_id = :compte_id
-                    GROUP BY mouvement.id
-                    ORDER BY mouvement.date ASC, mouvement.id ASC
-                    LIMIT 1;
+                        mouvement.id = (
+                            SELECT premier.id
+                            FROM mouvements premier
+                            WHERE premier.compte_id = :compte_id
+                            ORDER BY premier.date ASC, premier.id ASC
+                            LIMIT 1
+                        )
+                    GROUP BY mouvement.id;
                 SQL,
                 [
                     'compte_id' => (string) $compteId,
@@ -278,9 +282,14 @@ final readonly class MouvementRepository implements MouvementRepositoryInterface
                         FROM mouvements
                         GROUP BY compte_id
                     ) compte_solde ON compte.id = compte_solde.compte_id
-                    GROUP BY mouvement.id
-                    ORDER BY mouvement.date ASC, mouvement.id ASC
-                    LIMIT 1;
+                    WHERE
+                        mouvement.id = (
+                            SELECT premier.id
+                            FROM mouvements premier
+                            ORDER BY premier.date ASC, premier.id ASC
+                            LIMIT 1
+                        )
+                    GROUP BY mouvement.id;
                 SQL
             )
         ;
