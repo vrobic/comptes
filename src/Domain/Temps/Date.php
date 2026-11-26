@@ -14,14 +14,6 @@ final class Date extends \DateTimeImmutable
     }
 
     /**
-     * La date et l'heure courantes.
-     */
-    public static function maintenant(): self
-    {
-        return self::createFromInterface(new \DateTimeImmutable());
-    }
-
-    /**
      * Crée une date stricte, sans month shifting : createFromFormat décale les dates impossibles (31-02 devient 03-03)
      * et lit 26 comme l'an 26, la date n'est donc valide que si, relue au même format, elle redonne la chaîne reçue.
      *

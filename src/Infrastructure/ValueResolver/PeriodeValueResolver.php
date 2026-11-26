@@ -7,6 +7,7 @@ namespace App\Infrastructure\ValueResolver;
 use App\Domain\Temps\Date;
 use App\Domain\Temps\DateInvalideException;
 use App\Domain\Temps\Depuis;
+use App\Domain\Temps\HorlogeInterface;
 use App\Domain\Temps\Periode;
 use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,6 +17,11 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 final readonly class PeriodeValueResolver implements ValueResolverInterface
 {
+    public function __construct(
+        private HorlogeInterface $horloge,
+    ) {
+    }
+
     /** @return array<Periode> */
     public function resolve(Request $request, ArgumentMetadata $argument): iterable
     {
@@ -65,7 +71,7 @@ final readonly class PeriodeValueResolver implements ValueResolverInterface
      */
     public function depuisUnAn(): Periode
     {
-        list($year, $month, $lastDayOfMonth) = explode('-', date('Y-n-t'));
+        list($year, $month, $lastDayOfMonth) = explode('-', $this->horloge->maintenant()->format('Y-n-t'));
 
         $month = (int) $month;
         $year = (int) $year;
@@ -82,7 +88,7 @@ final readonly class PeriodeValueResolver implements ValueResolverInterface
      */
     public function depuisUnMois(): Periode
     {
-        list($year, $month, $lastDayOfMonth) = explode('-', date('Y-n-t'));
+        list($year, $month, $lastDayOfMonth) = explode('-', $this->horloge->maintenant()->format('Y-n-t'));
 
         $month = (int) $month;
         $year = (int) $year;
