@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Application\Import;
 
 use App\Domain\Compte\Compte;
-use App\Domain\Compte\CompteId;
 use App\Domain\Mouvement\Montant;
 use App\Domain\Mouvement\Mouvement;
 use App\Domain\Mouvement\MouvementCollection;
@@ -39,8 +38,13 @@ class CMExcelMouvementsImportHandler extends AbstractMouvementsImportHandler
     {
         $mouvements = new MouvementCollection();
 
-        // Configuration du handler
-        $configuration = $this->configuration[static::HANDLER_ID]['config'];
+        $comptes = $this->compteRepository->findAll();
+
+        $xlsx = SimpleXLSX::parse($file->getRealPath());
+
+        if (!$xlsx instanceof SimpleXLSX) {
+            throw new FichierImportInvalideException(sprintf('Fichier Excel illisible : [%s].', SimpleXLSX::parseError()));
+        }
 
         /**
          * Tableau de correspondance entre l'index de la feuille et le compte bancaire.
@@ -49,32 +53,36 @@ class CMExcelMouvementsImportHandler extends AbstractMouvementsImportHandler
          */
         $comptesBySheets = [];
 
-        $comptes = $this->compteRepository->findAll();
-
-        /**
-         * @var int    $sheetIndex
-         * @var string $compteId
-         */
-        foreach ($configuration['sheets'] as $sheetIndex => $compteId) {
-            if (!CompteId::estValide($compteId)) {
-                throw new \UnexpectedValueException(sprintf("Le compte [%s] configuré pour la feuille [%d] du handler [%s] n'est pas un UUID valide.", $compteId, $sheetIndex, static::HANDLER_ID));
+        /* La banque n'exporte que les comptes choisis, chacun sur une feuille dont le nom se termine par son numéro,
+         * précédé de zéros (« Cpt 12345 00012345678 »). Une feuille qui ne correspond à aucun compte est ignorée. */
+        foreach ($xlsx->sheetNames() as $sheetIndex => $sheetName) {
+            if (1 !== preg_match('/(\d+)$/', (string) $sheetName, $matches)) {
+                continue;
             }
 
-            $compte = $comptes->findFirst(
-                static fn (Compte $compte): bool => (string) $compte->id === $compteId
+            $numéro = ltrim($matches[1], '0');
+
+            $comptesDeLaFeuille = $comptes->filter(
+                static fn (Compte $compte): bool => ltrim($compte->numero, '0') === $numéro
             );
 
-            if (!$compte instanceof Compte) {
-                throw new \UnexpectedValueException(sprintf("Le compte [%s] configuré pour la feuille [%d] du handler [%s] n'existe pas.", $compteId, $sheetIndex, static::HANDLER_ID));
+            // Rien n'empêche deux comptes d'avoir le même numéro : la feuille ne peut alors être attribuée à aucun des deux
+            if ($comptesDeLaFeuille->count() > 1) {
+                $message = sprintf(
+                    'La feuille [%s] correspond à plusieurs comptes de même numéro : [%s].',
+                    $sheetName,
+                    implode('], [', $comptesDeLaFeuille->toArray(static fn (Compte $compte): string => (string) $compte)),
+                );
+                throw new FichierImportInvalideException($message);
             }
 
-            $comptesBySheets[$sheetIndex] = $compte;
+            if (!$comptesDeLaFeuille->isEmpty()) {
+                $comptesBySheets[(int) $sheetIndex] = $comptesDeLaFeuille->first();
+            }
         }
 
-        $xlsx = SimpleXLSX::parse($file->getRealPath());
-
-        if (!$xlsx instanceof SimpleXLSX) {
-            throw new FichierImportInvalideException(sprintf('Fichier Excel illisible : [%s].', SimpleXLSX::parseError()));
+        if ([] === $comptesBySheets) {
+            throw new FichierImportInvalideException('Aucune feuille du fichier ne correspond à un compte.');
         }
 
         foreach ($comptesBySheets as $sheetIndex => $compte) {
