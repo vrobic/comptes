@@ -16,6 +16,7 @@ use App\Domain\Mouvement\MouvementId;
 use App\Domain\Mouvement\MouvementRepositoryInterface;
 use App\Domain\Temps\Date;
 use App\Domain\Temps\Depuis;
+use App\Domain\Temps\HorlogeInterface;
 use App\Domain\Temps\Mois;
 use App\Domain\Temps\Periode;
 use App\Infrastructure\ValueResolver\PeriodeParDefautAttribute;
@@ -30,6 +31,7 @@ final class CompteController extends AbstractController
         private readonly CompteRepositoryInterface $compteRepository,
         private readonly MouvementRepositoryInterface $mouvementRepository,
         private readonly CategorieRepositoryInterface $categorieRepository,
+        private readonly HorlogeInterface $horloge,
     ) {
     }
 
@@ -74,7 +76,7 @@ final class CompteController extends AbstractController
         // Balance des derniers mois
         $balanceDesDerniersMois = new BalanceMensuelle();
         foreach (range(1, 4) as $nombreMois) {
-            $mois = Mois::fromDate(Date::maintenant()->modify("first day of $nombreMois months ago"));
+            $mois = Mois::fromDate($this->horloge->maintenant()->modify("first day of $nombreMois months ago"));
 
             $balanceDesDerniersMois = $balanceDesDerniersMois->add(
                 $mois,
